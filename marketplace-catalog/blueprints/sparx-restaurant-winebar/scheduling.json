@@ -1,0 +1,339 @@
+{
+  "policies": [
+    {
+      "handle": "table-standard",
+      "name": "Table reservation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 180],
+      "policyText": "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead."
+    },
+    {
+      "handle": "bar-standard",
+      "name": "Bar seats",
+      "depositType": "none",
+      "cancellationWindowHours": 12,
+      "reminderOffsetsMin": [180],
+      "policyText": "Bar stools are the loosest booking we do — grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "t2-a",
+      "name": "Two-top · window",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "t2-b",
+      "name": "Two-top · nook",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "t2-c",
+      "name": "Two-top · candle table",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "t4-a",
+      "name": "Four-top · banquette",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "t4-b",
+      "name": "Four-top · corner",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "bar-1",
+      "name": "Bar stools · pair",
+      "kind": "table",
+      "skillTags": ["bar"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "bar-2",
+      "name": "Bar stools · pair",
+      "kind": "table",
+      "skillTags": ["bar"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    },
+    {
+      "handle": "bar-3",
+      "name": "Bar stools · pair",
+      "kind": "table",
+      "skillTags": ["bar"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1440
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1020,
+          "endMinute": 1440
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "table-for-two",
+      "name": "Table for two",
+      "description": "A table for two, for the evening. Two hours is plenty for a bottle and a few plates — we won’t rush you.",
+      "bookingType": "reservation",
+      "durationMinutes": 120,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["two-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    },
+    {
+      "handle": "table-for-four",
+      "name": "Table for four",
+      "description": "A table for three or four. Bring the crew; we’ll keep the bottles coming.",
+      "bookingType": "reservation",
+      "durationMinutes": 135,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["four-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    },
+    {
+      "handle": "bar-seats",
+      "name": "Bar seats",
+      "description": "A pair of stools at the counter — the best seats in the house, right across from the open bottles. For one or two, a glass and a plate.",
+      "bookingType": "reservation",
+      "durationMinutes": 90,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["bar"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bar-standard"
+    }
+  ]
+}

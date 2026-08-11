@@ -1,0 +1,2215 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "6825775b-c974-486f-b262-31f1374b4c0e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "8935f667-fb0d-4035-992a-8550d7bb62cd",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "6eede9e3-aa63-4861-8ac4-8dc6f5758dcb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "0d3e86d3-2b29-45b1-9bfa-7c78db4ceb9d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "f0f9da48-1ec0-436e-bfbf-99c9c927ce99",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "377c92a6-80fc-470c-82b1-4cf0f264fbe2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "161e13fa-924b-409e-991f-6d8b595758b7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "36af251a-f59e-4b3d-98e5-ceae623c8689",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "370d2b4e-5a1e-42d9-90f0-cc753c7b1177",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "80626d9a-5572-4019-8fd7-cfdb884a8094",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bda5c3f6-f2e1-4b6a-b1a8-cbbda97efa1b",
+                  "ord": "a2"
+                }
+              ],
+              "id": "f6fbb9f6-1bd6-4bdd-94a4-762e4f6b8742",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "cdb27d12-6c36-4e68-9517-44872a9877b6",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "ab0efc2e-ed5c-4ebf-8f0a-13faf85b37e9",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "25e4f810-e48c-41e7-92ef-98dd3d904651",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "a8b02225-7fdb-4488-81b4-c5b91ace0b8d",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "fc2038c6-701c-4f3f-b118-2824fa0b30c6",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "a0896b15-86e2-470c-8966-1bc50d8a61e2",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "c6f106d5-adda-40d1-9a0c-6da27f692fc1",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "cefd952b-9293-4d60-929f-daff1a1b4ed5",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "25de9cb7-c383-42bd-ae74-b64f611eb46c",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2dc8db8d-965a-4d7a-9472-b9a3d3d5d6db",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "a51c794b-9c69-45c4-946b-921985a7d24e",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "69006ba4-a7ff-41ff-abe0-b6792faa1f0f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2ecab207-1849-4e3b-b46f-390ad3442c3b",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "1606c101-525c-4e9f-8137-b73d9e065a11",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5c87e4fa-4063-484d-8c59-ab65dfba454a",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "a5f546f7-8ba9-436a-98b7-2d3f0bad41b4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8fda7903-450e-4529-9aa3-fe5b781adb11",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "78d20c1b-a786-4436-a050-02e69b0bdd4b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "7dc3bb80-851d-4ddc-b607-b48309e1f2bb",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "2ece4494-5cce-4fc7-b1f0-7a3b62a34599",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "182e8b59-6086-4328-b1d1-9054491894de",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "9faf8859-08c9-4efb-9075-a553c5119c21",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0d25776c-0475-46fa-92b7-9c6a8f5126ce",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "1c8ad676-031c-4406-a799-945a4c0d17d1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "90bfeceb-780b-480e-a832-1c9f61f5b8ec",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "a064bfcd-ef28-499f-9976-6ef7719ce473",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e372e720-cdb8-4a81-bdc0-7e56f963dc5b",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "921f34b7-12d0-49de-9297-77eb97788dd2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "0d0c584a-dac8-4b13-b53d-48b0919ad037",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "76761e9f-cc4c-44a1-b193-9762c3812c7a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "5b2ec592-bd48-4a8a-92e3-5e488cc2e74a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "58c4be1b-a17c-43b3-bd48-a3ad001c03cd",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "d9219d5f-2080-4249-ab08-0421083aef85",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "55f099f7-a74e-4edb-b9d0-f960bdb1cdf6",
+                  "ord": "a1"
+                }
+              ],
+              "id": "e6608dcc-54d4-429c-9b00-e495dde695f0",
+              "ord": "a0"
+            }
+          ],
+          "id": "89c71e8e-aad7-45ed-8068-294cd5798d14",
+          "ord": "a2"
+        }
+      ],
+      "id": "559d4e18-8681-4de2-9767-759bd53bc951"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Lumen — a clinical med spa & skin clinic",
+      "seoDescription": "Lumen is a clinical skin studio for HydraFacial, peels, microneedling, laser and IV therapy — planned by licensed providers and measured against real results. Book online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4e29bcc4-a685-476d-86e4-28d1e936a4a8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1704455306925-1401c3012117?w=1600&q=80",
+                  "alt": "A bright, calm treatment room in clinical white and soft mint",
+                  "loading": "eager"
+                },
+                "id": "846b6ca6-0638-437d-8ca6-1c52aa1408f0",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "e2774aeb-868f-473e-babf-c4adb308777b",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Clearer skin, done properly"],
+                    "id": "bd036c02-4ddd-40cc-8f10-6b85a665f347",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A calm, clinical skin studio where every treatment is planned by a licensed provider and measured against results you can actually see."
+                    ],
+                    "id": "b80be47c-c5df-49ae-a487-aa3d6b9cc37a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "789e801a-483a-4d84-8a76-1032a6010c29",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See treatments"],
+                        "id": "1e16ba54-9c22-4a74-b715-912c737f2e40",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e379aadc-5afc-4f60-86c3-99a98ab7b245",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "63e47ac5-3b72-4978-9e3e-aecfdb93f777",
+                "ord": "a2"
+              }
+            ],
+            "id": "d967d108-5220-4395-ac7a-ff72ae43e6c8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Results you can measure"],
+                            "id": "c930112c-77e9-4561-9f57-5b4b64b45cd8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We photograph and baseline your skin first, then check back against it — so progress is something you can see, not just feel."
+                            ],
+                            "id": "3dc42a45-f94f-4c38-8d21-f1e8e6fced2f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b9142d26-bedb-4be1-b16f-ca7bcdbf7b39",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Medical-grade, not spa-grade"],
+                            "id": "566887de-c094-4841-86f4-20183cb334e6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Clinical devices and pharmaceutical-strength formulations, used at the right depth for your skin — not a generic day-spa menu."
+                            ],
+                            "id": "5a163e07-ec80-43d3-b7ff-5790b67c3798",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f6832ad5-fd14-4af1-80b8-19a0ac167d5d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed providers, every time"],
+                            "id": "96057d4c-ddcf-4670-843b-66dc8ec32f9a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A registered nurse or licensed aesthetician performs every treatment, under a medical director. No untrained hands, ever."
+                            ],
+                            "id": "26e07ed7-4057-49ee-822f-e3b74a30a389",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "81ef13a8-7d55-495d-b83e-656f8f76e19b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "80fee88b-dad6-4cc6-81fd-c480ba1980eb",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a3444e41-f5d4-45b1-9699-d39400d7cb0d",
+                "ord": "a0"
+              }
+            ],
+            "id": "9a099f80-2acc-4b70-9f90-f548ceb07b0e",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Treatments"],
+                        "id": "2ff3d83e-3c65-4643-b6b7-9be89fcd9917",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the things we do most. Full pricing and live availability are on the booking page — and a free consultation comes first if you’re not sure."
+                        ],
+                        "id": "51f4bddc-7f56-471d-8006-c126b5f84325",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "78a4c741-cc01-4dd7-83fa-bd36a6d9c611",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["HydraFacial"],
+                                "id": "6b21b946-de92-42db-af9a-b1a21734c71a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$199"],
+                                "id": "c03c1d60-6bba-48ca-8044-69838034188e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f09ba0f8-441d-4845-b94f-f672a5779e0e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "e621a7fa-0b52-448b-8910-640dcd6fbcd8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Cleanse, exfoliate and hydrate — fresher skin, no downtime."
+                            ],
+                            "id": "bfac78c0-cdb2-4d47-91e0-89767e744ddf",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ef8cd9d2-e7e0-41b1-a4f8-bf10b57687c6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Microneedling"],
+                                "id": "b81b7683-9387-4c73-b4a4-2886bba62b15",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$299"],
+                                "id": "db7a4222-be34-4135-b7b7-b5430a876264",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d9997b87-6f42-4816-bd70-a1acc6b1fc05",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "56aa38aa-df46-4fa9-9274-f97d32c697c6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Collagen-induction therapy for texture, lines and scarring."
+                            ],
+                            "id": "9a2ac304-4a7e-45ca-b1ee-93e55c414ad9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "93877aed-ee56-46a0-8536-d3dea057ccfd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Chemical peel"],
+                                "id": "1cb2092c-3667-4a83-9665-9808c246ccff",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$175"],
+                                "id": "3bd7cacd-97c0-41bd-91c9-9ba0712f4f3a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b6000636-1316-47c2-a229-913f35aa557a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "624d73c9-3f85-402d-9104-43f6b2fab62e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A tailored peel for tone and smoothness, dialed to your skin."
+                            ],
+                            "id": "8a8a5c81-f385-4209-b3f5-6884c05ae4ce",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c1c9fb90-c7d7-477d-b286-5dbae506ce5c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Laser hair removal"],
+                                "id": "21a4b851-cbb6-424e-b230-13b799a51184",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$149"],
+                                "id": "b45b9205-94c7-4e26-ae26-8b5a89510858",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b51ba1fc-27df-44cf-ae80-5f8108407dcf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "82b8ac05-85e9-4e4b-a8ab-cf586b7aea4e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Comfortable, effective reduction — safe across skin types."
+                            ],
+                            "id": "efc1a5aa-1591-4b8d-982c-e7a6f8161729",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6a8c18de-734d-4ba7-ba62-57921b614c45",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["IV therapy"],
+                                "id": "3428029a-c283-416e-a05b-0f79b7e6bab3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "5ea1092a-9c41-42b3-a727-424d931d8493",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5dfeeabb-ea8e-4c7d-9917-c3da18947bd1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "d083d707-ce22-40a4-a7f6-f19425103fba",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Nurse-administered drips for hydration, energy and recovery."
+                            ],
+                            "id": "e5852b5e-d7e9-465a-a182-f413eb3d38ea",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e8013429-8878-4d0d-a207-f69f54bd9d29",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Skin analysis"],
+                                "id": "a834dd57-484f-4328-ada6-9ac04465c8cb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$75"],
+                                "id": "4da51ad9-2daf-443b-a2e6-e49236f4d038",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7fd19b98-4b81-4446-ac1a-94222a17392d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "6a9f2f17-c09e-4546-942b-0195e2e04fa7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Imaging and measured baselines to plan what comes next."],
+                            "id": "03c8cf4b-f4f2-4e79-b8eb-edf6a09db2f5",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "de63db0e-86df-4dff-adf9-ad1cf8e8822d",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "586a5184-b20e-4a3e-b1ef-c6777d7a1775",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "92fe5c43-9759-4808-9def-6d2c414e1abb",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d69731d5-92f1-4666-9553-4233a09b7f70",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "dcdd434b-fc10-4142-9c68-3e332bd9dbd8",
+                "ord": "a0"
+              }
+            ],
+            "id": "77524dc2-760c-4117-a184-7b0a910ad642",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1761718209694-70031ee64f82?w=1600&q=80",
+                      "alt": "A clean, light-filled skin-clinic interior",
+                      "loading": "lazy"
+                    },
+                    "id": "91aa2ebe-edf6-4de3-b58b-0f03d7c42f17",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The Lumen approach"],
+                        "id": "c46b4b1e-f7d0-4a4f-99e5-ff236a103fe2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We don’t sell you a package on day one. Every plan starts with a consultation and a proper skin analysis, so what we recommend is based on your skin — not a menu we’re trying to move."
+                        ],
+                        "id": "2ec7b3b1-d2a9-4632-98ac-7d44814f70ad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Then we build a course of treatments with clear expectations: what it does, how long it takes, and when you’ll see it. Honest, medical, and paced for real results that hold."
+                        ],
+                        "id": "8eceeaaa-fb50-4bbf-b8f7-adf6d1dcee77",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "74249f41-8bd2-4626-8448-31b2ac4695c5",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "84d4413a-a276-4236-9a32-f6483b9f9260",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "467a0780-7e6d-4437-9227-46db304e111f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f100ec92-3a4a-4374-9403-f988763f3dd4",
+                "ord": "a0"
+              }
+            ],
+            "id": "a7872e30-d101-4832-a980-04bf697747e7",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your providers"],
+                        "id": "5167dd17-c8a9-46c2-967c-45d0709c6806",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — a licensed provider you’ll get to know, with a medical director overseeing every plan."
+                        ],
+                        "id": "6cac1ee4-96fa-4168-90c3-368b43391a79",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "88256361-a9f3-4a2a-9580-37901b8ecddc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?w=1600&q=80",
+                              "alt": "Dr. Elise Warren, medical director",
+                              "loading": "lazy"
+                            },
+                            "id": "6c2c9d22-277b-43ac-8359-42eb8e74104b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Elise Warren"],
+                                "id": "32846341-58b2-4f8e-a5a8-2f8332e91001",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Medical director"],
+                                "id": "8db85218-87d0-45bf-b947-5c2c5bcbd221",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Oversees every treatment plan. Leads peels, microneedling and laser."
+                                ],
+                                "id": "60bd691d-1794-4605-bf69-e572818c5aeb",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "5636783f-5f60-44f4-a429-25e78d995bf7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ea7bc790-dce7-440d-990d-e0443c91ddf7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1678695972687-033fa0bdbac9?w=1600&q=80",
+                              "alt": "Jordan Pierce, RN, aesthetic nurse",
+                              "loading": "lazy"
+                            },
+                            "id": "62bdf424-57fc-4d12-841f-d70ed3a1dc82",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jordan Pierce, RN"],
+                                "id": "c9edb0f4-41fa-4a86-86eb-bf86cafe9439",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Aesthetic nurse"],
+                                "id": "b8b21186-618b-4e65-95f4-51577cf79dd9",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Registered nurse for IV therapy, skin analysis and consultations."
+                                ],
+                                "id": "e1301524-ab96-452b-8be5-2bf6647e04ba",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "1f809573-0673-4078-a76c-d594253a5003",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "de2296c0-9beb-447e-ac67-76185afcd6f0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1733685372841-0e8235350158?w=1600&q=80",
+                              "alt": "Simone Alvarez, licensed aesthetician",
+                              "loading": "lazy"
+                            },
+                            "id": "b46c498a-2449-464b-9576-a5b1235eb42d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Simone Alvarez"],
+                                "id": "d58bc931-b283-4ae6-80fb-8a672da3a04b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Licensed aesthetician"],
+                                "id": "1348d33e-ffa4-4384-a958-357e88b540f4",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Facials, peels and microneedling, with a gentle, thorough hand."
+                                ],
+                                "id": "022eaf8e-f967-4df2-9681-40b784900b15",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f24ceaf6-33d9-4426-a8ba-5cb665f03228",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "418b8938-8aac-4816-95a2-87b8a865b5e3",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f8bf71c0-6f31-4967-aa70-bf5f651b1d11",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "fe7a62a7-2b6b-4e48-956f-a07772539a47",
+                "ord": "a0"
+              }
+            ],
+            "id": "f040a69b-fe74-4582-82a2-e5bcf69e1757",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“The first place that showed me the numbers instead of upselling me. Three months in, my skin genuinely looks like the plan they mapped out.”"
+                    ],
+                    "id": "634b16bb-d531-440e-bb60-c86b7c09ab6e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Danielle, client since 2024"],
+                    "id": "36b4ece3-cf20-4798-b4b7-0fcc6d98195d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "996a8c85-fbdc-4894-a898-1524da5b4793",
+                "ord": "a0"
+              }
+            ],
+            "id": "14b8090c-0652-4d1d-a961-e7f5f0fc4263",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Start with a free consultation"],
+                    "id": "76785006-83ea-4a09-a09a-df057683be4a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Tell us what’s bothering you and we’ll build a plan — no pressure, no package. It takes about a minute to book."
+                    ],
+                    "id": "0812fb48-4e25-4540-a417-65563fd3cb7b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "4421155a-aaa6-4052-af06-66f288ad226d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "bb3a9678-36cf-4abe-8d92-fe17e4bc757a",
+                "ord": "a0"
+              }
+            ],
+            "id": "4e424977-d1c1-4250-bc44-31eca8d8f5c8",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Lumen",
+      "seoDescription": "See what Lumen offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c3e1022e-5c2a-4c4e-85b9-1ce2e76035b2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1761718209794-e0588aafbcc4?w=1600&q=80",
+                  "alt": "A provider performing a facial treatment",
+                  "loading": "eager"
+                },
+                "id": "7ad7a7bd-f141-41a2-b64c-78592c76a8d2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "fd5a43c7-e599-4d13-9405-4cf8d406e2b4",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your appointment"],
+                    "id": "bfa4c8e0-dc40-4b01-827d-29aebef2d016",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Start with a complimentary consultation, or choose a treatment to see live availability and pick your provider and time."
+                    ],
+                    "id": "abbae610-7209-4879-a9bc-ef2f1f4c6eff",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "e5e11655-2a16-4c5c-960c-649d42996945",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "48d9dff0-a854-4666-9443-3d77c7655c7a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d9c1ed41-d742-42f4-89cb-ac1941a98416",
+                "ord": "a2"
+              }
+            ],
+            "id": "d4888d22-f7f6-4665-a5d3-25a0d3212248",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "28533afc-cb57-4c1f-bc30-27f217672c41",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Lumen",
+      "seoDescription": "Who Lumen is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ab17b0f6-782e-4837-bde9-6fe93d826ed4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1704455306925-1401c3012117?w=1600&q=80",
+                      "alt": "A bright, calm treatment room in clinical white and soft mint",
+                      "loading": "lazy"
+                    },
+                    "id": "ad51f6b6-12ae-4c24-b924-96501062ff5c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Lumen"],
+                        "id": "11efc6ef-c6e8-4390-b477-657181cba01b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Lumen to do aesthetic skincare the way medicine should be done — with a real assessment, licensed hands, and outcomes you can measure rather than promises you can’t."
+                        ],
+                        "id": "afa66ad4-558c-41c0-85bf-77c4bd64af85",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That means a consultation before a credit card, a plan built around your skin, and providers who tell you honestly what will and won’t work. Calm, clean, and genuinely clinical."
+                        ],
+                        "id": "db079307-0696-4486-aef9-b5e620daf32b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "ebf87707-445f-4e7e-a24a-20254a85ef1f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "52bc240e-fbff-45af-b600-ef20a79326d1",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "3cf8649f-6b5d-4bfa-beb9-6661ab23a97a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1332fd89-3fdb-476f-9b5d-09979837a157",
+                "ord": "a0"
+              }
+            ],
+            "id": "286000a3-fe35-4572-979e-0f9d6672a26f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "72812fa5-dda5-4544-84e6-0d7050f3df7c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Assessment first"],
+                            "id": "a10671bd-5e19-43c5-a192-a89c6c06d710",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every plan opens with imaging and a measured baseline, so we treat your actual skin — not a guess."
+                            ],
+                            "id": "b2bbd339-35d4-42dd-a810-e9283dae6470",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "239a60c8-bf77-4c2b-84e7-96a3981a3be3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Medical oversight"],
+                            "id": "8a9fa2b3-3ab8-43b1-ab84-cade44c5cd82",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A medical director signs off on treatment plans, and a licensed provider performs every session."
+                            ],
+                            "id": "a63f6b92-2c05-4577-a75c-ccc18bcfc296",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6de904a9-0d89-454a-a358-b2db7b305c50",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Paced for results"],
+                            "id": "23ffb346-6dde-4a35-8bf7-7a98c62d005f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We build a realistic course with clear expectations, then check back against your baseline as it holds."
+                            ],
+                            "id": "1402d834-4e3c-4f1e-9e6d-fe89cb0b2810",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fd092d36-ef83-4498-ad00-e846cb208248",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "261ba9fe-31d0-43f9-b118-32a31fef5eda",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5a0e2005-167c-4c44-8c72-3bcea9666e34",
+                "ord": "a0"
+              }
+            ],
+            "id": "e804d1bc-e6af-4fb5-aa23-394fb9962c13",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Lumen",
+      "seoDescription": "Where to find Lumen, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "abab8606-4173-480e-ad9c-60b509342b75",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the clinic"],
+                        "id": "b1dd53f0-5a16-4d20-8af8-a8a003ecb9e9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Lumen Skin Clinic"],
+                            "id": "425b1c04-711b-4e36-a5bf-76601e31108d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["410 Marlowe Avenue"],
+                            "id": "5bb6b2e6-a28b-4c63-b73c-7a53a540450f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 300 · Austin, TX 78703"],
+                            "id": "cae04634-df26-493a-935a-8a2a76493387",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "888955eb-9342-4425-89ec-a7fb64a4a39a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "f1632929-63ac-49da-be45-9fdfecef9695",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 7:00"],
+                                "id": "df6c2456-b16c-4e25-a0aa-d17ec9521479",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "3040f04b-90ec-4220-b27b-34fc59a3411d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "8e62b456-95c4-4d8d-815c-bd99563f0c69",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "4a5a9f5c-bd13-417f-9c8f-42bf5de13e62",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "29ded5f9-526e-4085-bf78-808347f29706",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "d585d8a1-b872-4cb3-90a9-e3b767ae5ae2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 7:00"],
+                                "id": "7277e9f8-9625-4ba4-834a-7475d6545006",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d1bbf19c-23a0-486c-a11d-072afc3d1fa3",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Public holidays"],
+                                "id": "e66a9117-19b4-4aa0-80cf-02a7f872e788",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "ee774c5f-1917-430c-9c6a-1e6351d1a400",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "79d4e182-3509-4903-b3ba-6469a3454a49",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "0f5601ce-6101-4cf5-b8f7-24bbdfff7c27",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f0e2cc95-c9a0-4862-8a34-ec72a6611e71",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "410 Marlowe Avenue, Austin, TX 78703",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "4540a4e7-7136-43e9-af72-570f364fdebd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2c287df7-a457-4b6b-8889-f4923311f25b",
+                "ord": "a0"
+              }
+            ],
+            "id": "d9c5d23f-8f8e-4dc9-b499-627173740c1d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "b00cb194-fd22-4b24-8fb6-86d9c1e85078",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve a consultation or treatment online — no phone tag."
+                    ],
+                    "id": "4c216649-3c5b-484c-81b8-1bc08af58f6e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "5814302e-f918-4d86-89fc-ab8afb94cd07",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "17bb5ce5-89e4-4371-87f8-6b2e7635ccb1",
+                "ord": "a0"
+              }
+            ],
+            "id": "57fce246-ee35-4421-bc8e-7fc49d84211e",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "lumen",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98.5% 0.006 165)",
+      "--color-base-200": "oklch(96% 0.013 168)",
+      "--color-base-300": "oklch(91% 0.017 170)",
+      "--color-base-content": "oklch(30% 0.03 225)",
+      "--color-primary": "oklch(58% 0.07 175)",
+      "--color-secondary": "oklch(45% 0.022 220)",
+      "--color-accent": "oklch(78% 0.062 70)",
+      "--color-neutral": "oklch(32% 0.02 220)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 175)",
+      "--color-secondary-content": "oklch(98% 0.01 220)",
+      "--color-accent-content": "oklch(15% 0.02 70)",
+      "--color-neutral-content": "oklch(98% 0.01 220)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(78% 0.062 70)",
+      "--color-highlight-content": "oklch(15% 0.02 70)",
+      "--color-border": "oklch(91% 0.017 170)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 225)",
+      "--color-base-200": "oklch(18% 0.018 225)",
+      "--color-base-300": "oklch(14% 0.014 225)",
+      "--color-base-content": "oklch(95% 0.008 165)",
+      "--color-primary": "oklch(68% 0.09 175)",
+      "--color-secondary": "oklch(74% 0.02 220)",
+      "--color-accent": "oklch(81% 0.07 70)",
+      "--color-neutral": "oklch(82% 0.015 220)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 175)",
+      "--color-secondary-content": "oklch(15% 0.02 220)",
+      "--color-accent-content": "oklch(15% 0.02 70)",
+      "--color-neutral-content": "oklch(15% 0.015 220)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(81% 0.07 70)",
+      "--color-highlight-content": "oklch(15% 0.02 70)",
+      "--color-border": "oklch(14% 0.014 225)"
+    }
+  }
+}

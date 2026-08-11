@@ -1,0 +1,2303 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "af54f787-e4ad-4fbe-baa2-634bb888e6e3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "37277c16-8278-46b1-ae58-e183750dcd4e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "1c6d14a9-53d4-47b7-8210-8c77ee807ecd",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "9f3c627c-7c4e-4cef-b75e-1860297f35da",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "d7ee760f-3ebf-4f89-9029-7d8f1844dd70",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "0e51fb8e-fad8-4adb-9834-20ef16ff9148",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0e02598c-feb9-4284-a4a1-1c740976a2cb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "8337fb6c-7c73-4f90-bdb1-bc3593ee0d40",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "b9a48597-b2a7-4fc4-8ee4-6d68126cfaf4",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "663f996f-cd5e-48f2-bf78-a772f41b8184",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "668260b1-d8a6-4027-a620-6dd14733f47c",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8a2946b0-253a-4111-ba22-2a40d6fdf050",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "31d08d12-a7f8-4ac1-b4b5-7a67ec9bcf82",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "960999eb-5f6d-4efa-9cce-f04c2d1a0947",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "523a6c85-afb9-4b02-8f18-99a2f7519546",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "69ecbef9-c58d-46b2-8afd-69efee7d799b",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "c04c0f6f-f933-4ba5-991f-f47fd3a66aa9",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "a7498343-5ffb-4415-ad3d-b78d73290e4b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "c8d6b454-8153-4e16-90a7-8ee1afec76eb",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "bf711e31-88a1-4ee8-b003-9b46372756e9",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "eba7fc94-ec68-4b7b-907e-c15a39ffed4d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "4fd2058e-39a8-4b8e-96b6-19eb516a5368",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "3270cf1f-4e27-4282-b456-757aa2e131e4",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "8599c8a8-5aaf-410f-a1f9-4cfdb1186914",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ff75d253-c808-4922-979a-1ce3bd8da660",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "6f450a8f-0ef7-46ef-985e-78f7e07c4778",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8a905b7e-cf94-4cb5-a043-772f9694b668",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "f0353623-30bc-483f-b9ff-4bece168e857",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "569956d0-e133-4186-a2c2-189b820adef0",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "3f2528b9-13c4-495e-9711-fc47dff0ba4d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a346eeca-366c-4a1f-a0ee-e7d8c27039d0",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "346a9afe-8f7d-4e11-9913-0db36a36ed6b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "509fb7cf-f78c-4ab1-a5da-6ac11f9a2e66",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "acddf351-efa6-4294-bfec-0b22a985271e",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "4b6475e0-39c4-438a-bd54-090de815d5a2",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "b5f5c3df-e174-43d5-aa00-59fc07862249",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "9976e41e-3bfd-4db0-9ae9-07b9f849fe68",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "cc678ddd-1b34-41ec-aa97-48e5d16b198a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "88ef1d0c-ef04-4d9b-9f3b-455de0b85113",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "65b579d7-64b1-48c8-8784-922378f81baf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "5d19466d-f9f5-43c3-8f4e-37b8c7188e64",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "11af73f7-4aee-4708-a1f7-cadcb617ffd3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "31eb06d7-ed75-4046-ad9c-a86421d7a590",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "68913f2d-b018-4143-bafb-5da2b783a28f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "931f0b7f-41be-445a-9a66-eab7e7b5136b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "8b0ea6ca-dbd1-4cac-a3ff-8424bac11ea6",
+                  "ord": "a1"
+                }
+              ],
+              "id": "42fb51e0-ba4e-465e-a45e-238612b377da",
+              "ord": "a0"
+            }
+          ],
+          "id": "cd0ad8e2-8cf0-41e6-a30b-4dcd9fd32f83",
+          "ord": "a2"
+        }
+      ],
+      "id": "8f2b7ad2-38d9-4afc-841c-ac449b91a77e"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Good Dog Academy — friendly, force-free dog training",
+      "seoDescription": "Good Dog Academy runs warm, positive-reinforcement classes for puppies and grown dogs — puppy kindergarten, obedience, tricks, private sessions and a free evaluation. Small classes, certified trainers. Enroll online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "784c6548-304a-498a-a7f5-7817294ede5c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1556866261-8763a7662333?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5pbmclMjBjbGFzc3xlbnwwfDB8fHwxNzg2MzkxNDg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A happy group class of dogs and owners training together on a sunny field",
+                  "loading": "eager"
+                },
+                "id": "0337ce05-18f3-4126-8568-22f3bc7fa432",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "6e951d9c-44b1-415f-b301-a0e7291c3dcd",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Every good dog starts here"],
+                    "id": "2fe97c12-c713-449f-9ecf-12647c9b403c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Friendly, force-free classes for puppies and grown dogs alike — small groups, big tails, and real-life manners that stick. Come learn together."
+                    ],
+                    "id": "ee7fdb72-c2e9-4cab-a8b2-679ba3fddad0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Enroll in a class"],
+                        "id": "80d45efb-52b3-4e9e-bd96-d875d924f655",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the classes"],
+                        "id": "dc973348-4ac3-4b7c-8a11-bb64cd9ddec4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a7496c0b-3e46-460b-ba10-a87a564f21d1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c09f4750-7c12-42bd-9831-f57d481bd05e",
+                "ord": "a2"
+              }
+            ],
+            "id": "697f8564-df4d-4074-9b93-5e2e5789168f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Certified, kind trainers"],
+                            "id": "90066e21-1274-4f17-8668-da4f6e42f6f7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every class is led by a certified, positive-reinforcement trainer — no fear, no force, just treats, praise and patience that actually works."
+                            ],
+                            "id": "ad0a865d-82b1-422e-b63e-b4df32e62442",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "57c2b17b-87f7-47ce-95b9-56dd8a5d75bb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Small classes, real attention"],
+                            "id": "20612172-8b9d-40d3-9260-4cb845b0b5eb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We keep every group small so your trainer can see you, help you, and cheer you on. Fewer dogs, more progress, a room that stays calm."
+                            ],
+                            "id": "8bb8dfab-df63-4d75-97d2-c2ce6927220d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "421a98c3-8161-4cd2-8e23-f35dc9fc2157",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["All ages & breeds welcome"],
+                            "id": "6f466131-91a4-495c-9fe3-4f3dc35d4c60",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Eight-week puppy or eight-year-old rescue, tiny or enormous, shy or bouncy — every dog is welcome, and every one goes at its own happy pace."
+                            ],
+                            "id": "1eabd723-bceb-4f46-b552-b2ac95e88c68",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a1f6056c-2c27-414f-90f8-de071a272efd",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Skills for real life"],
+                            "id": "b6a05681-2a12-4e05-8597-d6b8cc0e8636",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We teach the things you actually need — coming when called, walking politely, settling at home — so training works on a Tuesday, not just in class."
+                            ],
+                            "id": "6129aaea-83b1-4120-a88a-ddf6a4fece8a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6b3b64dc-37cb-4c62-9692-3859d93a2b43",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "92b34565-ecd0-42be-8285-fb257653546b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "49796f8e-bd75-48ef-9bd4-cb451a825751",
+                "ord": "a0"
+              }
+            ],
+            "id": "56a68a08-7f18-43d3-b5b7-9444c4a4ccac",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Classes & sessions"],
+                        "id": "fa43f6be-975c-4f58-854d-9ea45c8fc851",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Find the right fit for your dog. Full prices, start dates and live availability are on the enrollment page."
+                        ],
+                        "id": "9373723b-0a33-4bd5-85c9-a06687c9986f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "abb54ace-dea3-41aa-898b-8947820a4c8e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free meet & evaluation"],
+                                "id": "a47d3bb9-017e-44de-ae8a-beeb7c73bd9c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "6c21fe33-f191-49e2-8e94-4358b9e798fe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "61f4ddf0-8641-4b74-9859-40eaa70f4f15",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "8d0084a2-312e-4f63-8a23-484d3db5770e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A no-pressure first visit — start here."],
+                            "id": "aacd176f-c306-4bd1-ab76-3ccaed99d947",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b4646e3a-9d24-46a6-9634-363eaedb3e1d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Puppy kindergarten"],
+                                "id": "f379db43-123d-4650-9727-a9d59e576b02",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "709173b0-5b5d-4102-a48a-72288064c407",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4ed3fcf3-8197-4904-b346-f4d6d63ab5d1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "827e3fef-5d98-4fe5-9b67-52c9f32192c0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Socialization and first good habits."],
+                            "id": "f881250e-8cf7-4fd3-ab7c-9b8f2eac35d8",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "81384400-6d15-4f03-8cd8-5cbbb546a1a2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Basic obedience"],
+                                "id": "b6124820-4b2b-4576-89a3-e076fd95df8f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$140"],
+                                "id": "d2261311-c0dd-4770-b533-cca093f3ca6f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a1456ca6-6022-4575-bc62-85fa12915918",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "a9aaf140-2b98-4ba2-8bbb-7f6f2fd0e4f7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Sit, stay, come and polite walking."],
+                            "id": "a0f0cb60-5b1f-4ed1-a822-70bf55e92a29",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "385fa1c2-a83b-41dd-96d9-eceed86d6c40",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Intermediate skills"],
+                                "id": "4001f4f6-6359-4043-b071-e4c41ab98622",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$140"],
+                                "id": "25ad2c26-9f42-47b7-b599-80e4f2063dad",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "86805d26-36d1-4a7b-b830-68db197d9986",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "2d791629-85dc-40fd-9cfa-5066fdbee891",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Reliable recall and real-world focus."],
+                            "id": "c6b38ed7-bda8-46ef-a4c6-24bbd38c3e05",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9cffd48e-5c5e-4449-af62-0d46f97ed405",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Tricks & games"],
+                                "id": "a385189a-22e4-4462-8b25-761956490926",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$100"],
+                                "id": "55ae5431-6fd4-448f-bae5-2c0238912f8d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "87d767bc-ace9-4cf9-ba5d-bd3e6b50a6e0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "805c109a-cf75-4552-9991-586af06d4fad",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Spin, shake, weave — pure fun."],
+                            "id": "78c8d6db-44cb-4c80-95db-804947a140b6",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8bdee679-0151-4cd8-9bde-7b8bc4183de2",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Private session"],
+                                "id": "ab65dc77-24e3-403a-a9df-f2e0df055c83",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$90"],
+                                "id": "0f99de06-0da6-4e41-9d15-4727e9199869",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a71009bd-51cc-477c-a9af-57bdc27a6bc8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "45e3cddf-8ff0-45d9-8f4f-e560e9a622b6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["One-on-one help for a specific goal."],
+                            "id": "bb3679db-943e-43f9-b71d-da131135f0d4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c9717f79-d554-4d05-8a01-8b0c45fdd43a",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "6b96527b-b40d-4b25-9272-3b90a013937a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & enroll"],
+                        "id": "77dbdc7c-5604-4530-bf47-8e1e1b1d20ab",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "48daca7a-fdd2-4456-beb9-9a329d1009ad",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d71ef64f-48ae-4815-8c4c-9392a2573907",
+                "ord": "a0"
+              }
+            ],
+            "id": "0b525ccd-af9e-4ace-b749-596d8343d60e",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Good dogs at work"],
+                    "id": "341f632e-32f1-4b38-bd7a-14f2640aaf0e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFwcHklMjBkb2clMjBzaXR0aW5nfGVufDB8MHx8fDE3ODYzOTE1MDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A young puppy sitting proudly on cue",
+                          "loading": "lazy"
+                        },
+                        "id": "e5dc6d07-bfbd-40bc-9bd8-728c651a1afb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHVwcHklMjB0cmFpbmluZ3xlbnwwfDB8fHwxNzg2MzkxNTA2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A dog offering a paw to its owner",
+                          "loading": "lazy"
+                        },
+                        "id": "d23a4f26-2a6c-4ba7-8e87-379d3ee04b35",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1586875331842-5409a287612d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwcGxheWluZyUyMHBhcmt8ZW58MHwwfHx8MTc4NjM5MTUwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A pair of dogs playing together after class",
+                          "loading": "lazy"
+                        },
+                        "id": "8d8779dd-f383-4ea5-94dc-976a75eb6486",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "a840f531-9e66-402d-ab72-6bf9b05f108c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e6a92910-e291-4d70-9fc4-23c9b6fa5420",
+                "ord": "a0"
+              }
+            ],
+            "id": "fcb90343-ad5b-4704-bc4e-4cd4af30b8c1",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwb2JlZGllbmNlJTIwdHJhaW5pbmd8ZW58MHwwfHx8MTc4NjM5MTQ5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A trainer rewarding a delighted dog with a treat during a lesson",
+                      "loading": "lazy"
+                    },
+                    "id": "78b40bc7-cb97-4a04-8441-f0e5c9027054",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Force-free, because it works"],
+                        "id": "ebaa3a1e-0b71-412f-a803-91519f51b61a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We train the way dogs actually learn — by rewarding the things we love and setting them up to get it right. No prong collars, no shouting, no fear. Just clear communication and a whole lot of encouragement."
+                        ],
+                        "id": "72cfbfbc-f3bc-49d7-a3fd-598881d7f7e6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It’s kinder, it’s more fun, and it builds a dog who wants to work with you — not one who’s just avoiding a correction. That bond is the whole point, and it’s the part that lasts."
+                        ],
+                        "id": "e8532393-53de-4741-9ff3-a1764b7745f7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free evaluation"],
+                            "id": "4a2abebc-f339-4f0c-a280-aedcf9a40c02",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "87173a83-7707-4984-b1b0-184156f77ab4",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ec079faa-a062-44eb-a6e4-cc457034ef20",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4f477441-c602-4d9a-9805-c913a3e74aac",
+                "ord": "a0"
+              }
+            ],
+            "id": "bfee3854-2dd0-4172-958a-f98cccd2b3ad",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your trainers"],
+                        "id": "5349e753-a28d-4b91-a84f-3f531bc1050b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Certified, endlessly patient, and genuinely happy to be here. You’ll get to know them by name."
+                        ],
+                        "id": "532e296e-b2b2-45ac-811c-fdefef2acf9d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "97804d40-5464-47b7-a6aa-d39b80c4e01a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1551779891-b83901e1f8b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwd29tYW58ZW58MHwwfHx8MTc4NjM5MTQ5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Bailey Nguyen, head trainer, kneeling with a puppy",
+                              "loading": "lazy"
+                            },
+                            "id": "ee375159-2c7d-4c84-9d01-07d9bc8052b1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Bailey Nguyen"],
+                                "id": "7b75fc80-c34a-4b80-8df6-9adab891b8e0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Head trainer"],
+                                "id": "3ff69ab4-b5b4-422f-b92c-d42a1604d2f6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Puppy foundations and everyday obedience. Bailey runs the school and never met a dog she couldn’t win over."
+                                ],
+                                "id": "e369b25a-e9f0-4c7d-a9aa-47d03b8073c3",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "1d26d96b-3630-406b-8e84-726c3f2280f4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "45b56d42-29ec-41ec-8675-387f39467656",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1535812859-6bfd2f132e78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTE0OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Reed, obedience and tricks trainer, with a golden retriever",
+                              "loading": "lazy"
+                            },
+                            "id": "acfe0125-8758-4954-a82e-4436309ba745",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Reed"],
+                                "id": "bd0ec297-8562-4d49-b6ad-4ee48994505f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Obedience & tricks"],
+                                "id": "34469ade-562c-4392-8c49-46cbc5f92d34",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Real-world manners and the crowd-favorite tricks class — proof that serious skills can be seriously fun."
+                                ],
+                                "id": "33df7d32-443b-4063-8868-cbdaebfc4844",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "a7ff5153-4b17-4950-a73f-3d7e0f517ed4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ae8b5904-2dec-45a0-8e23-b8c7a689f547",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1579119134757-5c38803f34fc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3aXRoJTIwZG9nJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4NzQ4N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Shah, puppy and private-session trainer, laughing with a small dog",
+                              "loading": "lazy"
+                            },
+                            "id": "ac9d9699-fe3f-49c8-a62f-f7978b1453df",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Shah"],
+                                "id": "10718a68-7517-4bd4-8abd-685004659814",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Puppy & private sessions"],
+                                "id": "fb45511c-ee4e-4690-98e0-868c70028929",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Gentle with shy dogs and brand-new owners alike. Priya leads puppy classes and one-on-one sessions."
+                                ],
+                                "id": "4252f222-c989-404f-b005-ea00003887da",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3d651cb4-1acb-4481-aa90-a3da5dad15e7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fbe42d0c-d614-42c9-b7b3-1fdd2a399c40",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c3c78799-5c74-42b4-8daa-8a11d6473454",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bd63111f-5d6d-4538-9101-e6ed7820ab15",
+                "ord": "a0"
+              }
+            ],
+            "id": "6ee804b8-4078-45cb-b821-f99897b28533",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We came in with a whirlwind of a rescue and left with a dog who actually looks to us. Nobody made us feel like we were failing — they just cheered every tiny win until they added up.”"
+                    ],
+                    "id": "f300b692-649c-4e81-9e18-cf06d72affe9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Alvarez family, Basic obedience grads"],
+                    "id": "95509575-9330-4575-8f18-1c10ea28b2aa",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "50afa99c-5e9e-4d5e-9929-29306bfe7cc1",
+                "ord": "a0"
+              }
+            ],
+            "id": "8e38efd3-65e1-4c7d-b030-9f3ce7a45b90",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to get started?"],
+                    "id": "79010f49-7807-4283-83dd-626e1917d266",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a class or book a free meet & evaluation — choose a time, and you’re set. It takes about a minute."
+                    ],
+                    "id": "0ddf0689-bd40-4acf-ae3d-513faad80e6f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Enroll in a class"],
+                    "id": "6be11ed8-ee7e-4625-b32f-bae30bc7d5bc",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "230a7431-22d4-4a1b-90fc-98ef1f1f656f",
+                "ord": "a0"
+              }
+            ],
+            "id": "b7bde7d4-855f-4ed7-8f1b-4a6a9df2b46d",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Good Dog Academy",
+      "seoDescription": "See what Good Dog Academy offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ac9b0f5a-17e3-452a-9910-7be7dc83e9e8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwb2JlZGllbmNlJTIwdHJhaW5pbmd8ZW58MHwwfHx8MTc4NjM5MTQ5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A trainer rewarding a delighted dog with a treat during a lesson",
+                  "loading": "eager"
+                },
+                "id": "45d133e3-f7b8-4004-ab58-da9c29cb0636",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "5b0ae57b-57ac-4c4e-9ad1-10034935519f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Enroll in a class"],
+                    "id": "0886bc37-71e2-461a-ad0f-cdad62cbe623",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a class or session to see the price, how long it runs and live availability — then pick your trainer and start date."
+                    ],
+                    "id": "7839f8ce-5fd8-4e1c-96e8-4ed99b24a510",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See classes below"],
+                        "id": "06d1f5e4-e9e4-40e3-ab7e-69f506d6e773",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ebdf611f-26ac-4289-a6ab-99668822b34e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a10f34bf-c67c-4fa6-ba3a-543dbaca1058",
+                "ord": "a2"
+              }
+            ],
+            "id": "02c2a9fb-13c7-40f5-ab30-8f6ff35e101b",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "687f6350-305f-43fb-9cb3-c1531d6d0878",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Good Dog Academy",
+      "seoDescription": "Who Good Dog Academy is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6fdec632-b49a-4807-9b31-b09597ea4dc6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1556866261-8763a7662333?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5pbmclMjBjbGFzc3xlbnwwfDB8fHwxNzg2MzkxNDg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A happy group class of dogs and owners training together on a sunny field",
+                      "loading": "lazy"
+                    },
+                    "id": "8393eeb6-5e34-4326-b45f-177af6c807cb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Good Dog Academy"],
+                        "id": "180502e0-cab3-4b5e-bc54-91507ba10883",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Good Dog Academy because training should feel good — for the dog and for you. Too many classes lean on fear and force; we wanted a place built entirely on kindness, treats and encouragement."
+                        ],
+                        "id": "793384be-1c8d-4ecb-8694-77761c60dbad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So this is a school where every dog is welcome, every owner is a beginner at something, and every small win gets a cheer. Come as you are, bring your dog exactly as they are, and let’s build something great together."
+                        ],
+                        "id": "38e52014-057d-4023-8484-6bbd3b1c6f0e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free evaluation"],
+                            "id": "09108200-1f87-4fcc-a8b4-b40f96025c9e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "9a3575dd-a379-47b2-a4d9-799bcf43407c",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b164adf8-4c1c-47e8-b301-5be55882692d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "edabdd3a-6d9b-4f5e-97ec-36b44b425e63",
+                "ord": "a0"
+              }
+            ],
+            "id": "2a6634fb-a793-48d5-bdb3-ac63edb604a1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How the school works"],
+                    "id": "3207f44d-50fc-451c-a446-484f1fe7e24a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Start with a free evaluation"],
+                            "id": "979efc26-5953-4375-a93f-ddd8f2049c67",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Not sure where to begin? Book a free meet & evaluation. We’ll get to know your dog, talk through your goals, and point you to the class that fits."
+                            ],
+                            "id": "7f4f0e66-088b-4482-9a06-d4fe2f5b936d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4ca24607-fea1-45f5-bec2-6de2f0738ae4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Learn together in small groups"],
+                            "id": "3181e9e3-d8d4-4dc1-8ba9-86d5f3445a0a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Classes run as a friendly series in our training hall — small, capped, and full of encouragement. You and your dog learn side by side with others doing the same."
+                            ],
+                            "id": "64a7f188-4141-4d5f-a549-82ed2f3e1f23",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ac53ab8e-d431-44b2-b1e5-f968f75ea84a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Take it home with you"],
+                            "id": "614cf257-f3af-4062-8d0d-7d643b9042cd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every class ends with exactly how to practice this week. The goal is a dog who’s wonderful at home and out in the world, not just in the room."
+                            ],
+                            "id": "d1186fae-c9d5-4994-9703-c1c193a5becf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a145c31c-c675-4428-862f-90a3a5aec627",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "eab35e29-7aa7-4a7c-ad36-88cefc47d809",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8bdc4dc1-8fd5-4485-8a0e-cbe5edf84b00",
+                "ord": "a0"
+              }
+            ],
+            "id": "89de77aa-ae1c-4ce9-bfe6-15895284712e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Good Dog Academy",
+      "seoDescription": "Where to find Good Dog Academy, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d98fe407-1023-4b90-a809-cd272e1b62b0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Come visit the school"],
+                        "id": "e9cb3814-4ac8-4a6b-9cf4-8b7dd1bd5b08",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Good Dog Academy"],
+                            "id": "eee702fc-c96f-46f0-843e-8b19445c7d00",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["212 Maplewood Avenue"],
+                            "id": "cb94f1f5-25fb-4d9a-b19c-401eaf774c84",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Fort Collins, CO 80521"],
+                            "id": "c00a8fa5-3477-439a-a99f-afff481d35f0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "df030357-900b-45a6-ac6e-128b4597734f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "804325fb-6125-47c6-a480-84123ef2b1ec",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "7ca602ad-0968-4d52-a9a8-1ad29c490040",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4d0e2c8c-1390-41b2-87ca-ae068154b148",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Thursday"],
+                                "id": "2c854d8c-4ab3-4e99-869c-101d4795bbc8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 7:00"],
+                                "id": "4cf9391a-ac96-41ae-a870-35672ef38ebf",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "61efda4c-abfd-4f16-9053-63f3ca8e10aa",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday – Saturday"],
+                                "id": "0cb30d3d-e3f1-4da7-be4e-0b3f6a98460d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "e21e3e82-8b89-43f4-a2b4-1d31e2fd3584",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7f85571e-7913-4434-8165-39c3e8408c5c",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "2ed5707f-e1d3-4c1a-80bb-a84024a63da0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "68d66dad-2387-4a2b-a81b-de880c55755c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8c3c797f-1398-4332-b558-b097400cb0f2",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "d0699fd4-fc4f-40a4-a163-26ce418b28e5",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "81e3483c-d586-4783-91a3-29368594d022",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "212 Maplewood Avenue, Fort Collins, CO 80521",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "135ee060-a89c-4575-a34d-f4d78b492c4d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "eb94dd94-6368-4fca-a5f8-788dad76e087",
+                "ord": "a0"
+              }
+            ],
+            "id": "264cc84e-00af-4a67-9dbf-9e716dc623b6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "dfe19d09-ca21-4cfd-a709-55483b0d7efc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live class times and reserve your spot online — no phone tag, no pressure."
+                    ],
+                    "id": "7596377a-bc95-453b-a514-ea4bf3af920f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Enroll in a class"],
+                    "id": "72f10b09-0704-4a06-a4bb-161aeaf4b037",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "dd2ca7ab-ccb5-46fe-9451-fc903b1ce9ce",
+                "ord": "a0"
+              }
+            ],
+            "id": "487bc127-fa16-4f92-909c-d55383675d65",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "gooddog",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.012 95)",
+      "--color-base-200": "oklch(94% 0.018 100)",
+      "--color-base-300": "oklch(88% 0.022 120)",
+      "--color-base-content": "oklch(27% 0.03 190)",
+      "--color-primary": "oklch(64% 0.115 172)",
+      "--color-secondary": "oklch(36% 0.04 195)",
+      "--color-accent": "oklch(72% 0.14 42)",
+      "--color-neutral": "oklch(31% 0.025 195)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "1rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Nunito\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 172)",
+      "--color-secondary-content": "oklch(98% 0.01 195)",
+      "--color-accent-content": "oklch(15% 0.02 42)",
+      "--color-neutral-content": "oklch(98% 0.01 195)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(72% 0.14 42)",
+      "--color-highlight-content": "oklch(15% 0.02 42)",
+      "--color-border": "oklch(88% 0.022 120)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Nunito\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.03 195)",
+      "--color-base-200": "oklch(20% 0.024 195)",
+      "--color-base-300": "oklch(16% 0.02 195)",
+      "--color-base-content": "oklch(95% 0.012 100)",
+      "--color-primary": "oklch(74% 0.115 172)",
+      "--color-secondary": "oklch(80% 0.03 170)",
+      "--color-accent": "oklch(76% 0.13 44)",
+      "--color-neutral": "oklch(84% 0.02 170)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 172)",
+      "--color-secondary-content": "oklch(15% 0.02 170)",
+      "--color-accent-content": "oklch(15% 0.02 44)",
+      "--color-neutral-content": "oklch(15% 0.02 170)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.13 44)",
+      "--color-highlight-content": "oklch(15% 0.02 44)",
+      "--color-border": "oklch(16% 0.02 195)"
+    }
+  }
+}

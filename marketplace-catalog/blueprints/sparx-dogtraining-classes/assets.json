@@ -1,0 +1,42 @@
+[
+  {
+    "id": "dogtraining-hero",
+    "url": "https://images.unsplash.com/photo-1556866261-8763a7662333?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5pbmclMjBjbGFzc3xlbnwwfDB8fHwxNzg2MzkxNDg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A happy group class of dogs and owners training together on a sunny field"
+  },
+  {
+    "id": "dogtraining-method",
+    "url": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwb2JlZGllbmNlJTIwdHJhaW5pbmd8ZW58MHwwfHx8MTc4NjM5MTQ5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A trainer rewarding a delighted dog with a treat during a lesson"
+  },
+  {
+    "id": "dogtraining-bailey",
+    "url": "https://images.unsplash.com/photo-1551779891-b83901e1f8b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwd29tYW58ZW58MHwwfHx8MTc4NjM5MTQ5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Bailey Nguyen, head trainer, kneeling with a puppy"
+  },
+  {
+    "id": "dogtraining-marcus",
+    "url": "https://images.unsplash.com/photo-1535812859-6bfd2f132e78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTE0OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Reed, obedience and tricks trainer, with a golden retriever"
+  },
+  {
+    "id": "dogtraining-priya",
+    "url": "https://images.unsplash.com/photo-1579119134757-5c38803f34fc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3aXRoJTIwZG9nJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4NzQ4N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Shah, puppy and private-session trainer, laughing with a small dog"
+  },
+  {
+    "id": "dogtraining-dog1",
+    "url": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFwcHklMjBkb2clMjBzaXR0aW5nfGVufDB8MHx8fDE3ODYzOTE1MDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A young puppy sitting proudly on cue"
+  },
+  {
+    "id": "dogtraining-dog2",
+    "url": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHVwcHklMjB0cmFpbmluZ3xlbnwwfDB8fHwxNzg2MzkxNTA2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dog offering a paw to its owner"
+  },
+  {
+    "id": "dogtraining-dog3",
+    "url": "https://images.unsplash.com/photo-1586875331842-5409a287612d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwcGxheWluZyUyMHBhcmt8ZW58MHwwfHx8MTc4NjM5MTUwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of dogs playing together after class"
+  }
+]

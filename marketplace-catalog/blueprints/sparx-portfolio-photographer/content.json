@@ -1,0 +1,406 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "tideline",
+    "status": "published",
+    "authorSlug": "mara-ilic",
+    "categories": ["Landscape"],
+    "tags": ["Coast", "Film"],
+    "body": {
+      "title": "Tideline",
+      "excerpt": "One winter along a northern coast, photographed at the hour the light arrives — the line where water meets land, redrawn by every tide.",
+      "featuredImage": {
+        "$asset": "silver-tideline"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A series of thirty-one photographs, made over a single winter on a stretch of northern coast a few miles long. Medium-format film, always at first light, always at low water."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The same beach, walked at dawn through December, January and February. Nothing dramatic happens there — no cliffs, no surf. Just a wide, patient flat of sand and a grey sea that comes and goes twice a day, leaving a new drawing behind each time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is about"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about the tideline itself: the exact edge where the water has just been, marked in weed, foam and the small architecture of what the sea sorts and leaves. That line is never the same twice, and it never lasts — the next tide erases it and draws another. I wanted a record of a few of them, held still."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I worked slowly on purpose. A tripod, a light meter, and the discipline of waiting for the flat minute before the wind picks up and the surface breaks. Most mornings I made one frame, sometimes none. The series is what survived that patience."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The prints"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Tideline prints as a set of six or as single plates, on cotton rag in an edition of fifteen. The tonal range is narrow by design — a coast this quiet has no place for a black or a bright white, only the long grey in between."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "quiet-rooms",
+    "status": "published",
+    "authorSlug": "mara-ilic",
+    "categories": ["Still life"],
+    "tags": ["Interiors", "Domestic light"],
+    "body": {
+      "title": "Quiet Rooms",
+      "excerpt": "Still lifes made in borrowed houses, from the ordinary things people leave behind — a study of domestic light and the objects that hold a life.",
+      "featuredImage": {
+        "$asset": "silver-quiet-rooms"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An ongoing series of still lifes, each made inside a house I did not live in — rentals, a friend’s empty flat, a family home between owners — using only what was already on the shelves."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wherever I was staying. The rule was simple: nothing brought in, nothing bought. A windowsill, an afternoon, and whatever the last person left — a glass, a folded cloth, three pears going soft, a comb. I moved things by inches and let the light do the rest."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is about"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about how ordinary objects hold a life once the person is gone from the room. A still life has always been a quiet argument about time, and a borrowed house makes that argument for you: everything in it is a small evidence of someone, arranged without meaning to be looked at."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The light is the real subject. I only worked in the hour when the sun came in low and raking, when a plain object grows a long shadow and a cheap surface turns to something worth photographing. When the light went flat, I stopped."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The prints"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Quiet Rooms is printed small — the plates are close to life size, the way you would actually stand to look at the things themselves. An edition of twenty, on warm-toned rag."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "north-faces",
+    "status": "published",
+    "authorSlug": "mara-ilic",
+    "categories": ["Portrait"],
+    "tags": ["People", "Editorial"],
+    "body": {
+      "title": "North Faces",
+      "excerpt": "Portraits of people who work outdoors, made where they work and in the weather they work in — a fisherman, a shepherd, a keeper of a light.",
+      "featuredImage": {
+        "$asset": "silver-north-faces"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A set of eighteen portraits of people whose work keeps them outside — made on their ground, in their own light, with no studio and no retouching."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Harbours, hill farms, a lighthouse, a salt works. I went to them rather than asking them to come to me, because a person stands differently on the ground they know. Each sitting took an afternoon: a long conversation first, a few frames near the end, once they had forgotten the camera was there."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is about"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about weather written into a face — the particular composure of people who have spent years reading the sky for a living. I did not want anyone smiling for me, and I did not want anyone braced. Just the ordinary, off-camera expression of someone thinking about the tide, or the ewe, or the walk home."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I shot into whatever light the day gave, and kept it. A flat grey sky is honest light for a working face; it hides nothing and flatters nothing, and that felt right for these particular people."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The prints"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "North Faces prints large, at the scale of a real head, in an edition of ten. Each print carries the sitter’s first name and trade, and nothing else."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "salt",
+    "status": "published",
+    "authorSlug": "mara-ilic",
+    "categories": ["Landscape"],
+    "tags": ["Abstract", "Field"],
+    "body": {
+      "title": "Salt",
+      "excerpt": "A near-white series made on the salt flats at harvest — texture, field and pale, with the horizon deliberately left out.",
+      "featuredImage": {
+        "$asset": "silver-salt"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Twelve photographs made over three days at a working salt lagoon during the summer harvest, when the beds are raked and the pans crust white."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A shallow coastal salt works, all straight lines and standing water. I photographed almost straight down, close in, so the pictures lose their scale — a cracked pan could be a foot across or a mile, and the eye cannot tell which."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is about"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is about the edge of a photograph becoming pure field. With the horizon removed there is nowhere for the eye to rest and no obvious subject — only texture, tone and the faint grid the workers leave. I was interested in how little a landscape can hold and still be a landscape."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The tonal range is almost gone by design: everything sits in the top of the scale, white on white, separated only by grain and the thinnest shadow. Printing it was the hard part — hold too much and it turns grey; hold too little and the surface disappears."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The prints"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Salt prints as a suite of four or as single large plates, on bright rag in an edition of twelve. It is meant to be hung where the wall behind it is white too."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

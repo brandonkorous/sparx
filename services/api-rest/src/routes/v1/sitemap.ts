@@ -29,6 +29,7 @@ import {
   resolvePublicPropertyId,
   productSiteVisibilityWhere,
   contentSiteVisibilityWhere,
+  collectionSiteVisibilityWhere,
 } from '../../lib/property.js';
 import { mintZoneHost } from '../../lib/domain.js';
 
@@ -160,10 +161,14 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
             orderBy: { updatedAt: 'desc' },
             take: COMMERCE_URL_LIMIT,
           }),
-          // Collections — visible whenever not deleted (matches public reads).
-          // Collections aren't site-scoped in Model B (shared across sites).
+          // Collections — not deleted AND visible on THIS site, which is what the public
+          // `/collections/:handle` read tests (`public/commerce.ts`). This used to say
+          // collections "aren't site-scoped in Model B (shared across sites)"; they are,
+          // and the storefront has always scoped them — so a tenant with a second site
+          // published that site's exclusive collections into the primary's sitemap, and a
+          // crawler following one got a 404 on a URL we told it about.
           tx.productCollection.findMany({
-            where: { deletedAt: null },
+            where: { deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
             select: { handle: true, updatedAt: true },
             orderBy: { updatedAt: 'desc' },
             take: COMMERCE_URL_LIMIT,

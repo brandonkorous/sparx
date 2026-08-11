@@ -1,0 +1,2518 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container sticky top-0 z-20 bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center",
+                  "children": [
+                    {
+                      "kind": "host",
+                      "component": "site.brand",
+                      "class": "wordmark inline-flex items-center gap-2",
+                      "props": {
+                        "show": "both"
+                      },
+                      "id": "ad6301ed-eadb-4799-a374-5bc3cd4a4b29",
+                      "ord": "a0"
+                    }
+                  ],
+                  "id": "eac06594-a159-4676-9d8b-9e29f8c28821",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center justify-center gap-8 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "e05a6753-fdd1-4ec4-883a-559067aceb91",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "ccfbf456-83f0-4c55-b584-479121b11806",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "d3519165-c447-4306-8b8d-6fb4579d2679",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "dc91d216-c7e7-428f-82b4-703bda7fe087",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "a283f54a-59ba-4c81-8160-94bca82f9117",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-2",
+                  "children": [
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "864e44b5-f3b7-49e1-84e3-ae55dec33b20",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-ghost btn-sm hidden @sm:inline-block",
+                      "props": {
+                        "label": "Sign in",
+                        "href": "/account/login"
+                      },
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "9e31d905-6f2c-474e-816b-0008154a596c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "5227b721-601c-47b3-a2f3-ff85394b9843",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "1f4045cb-9bfe-46c7-8a55-6717078290ef",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "733cf04f-e0a3-405f-98c7-e810d2de3e71",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e214eb54-ace9-4c40-b85c-18dd370e7022",
+                  "ord": "a2"
+                }
+              ],
+              "id": "0cdd382f-63e6-4e62-a0f1-fab5db379e2c",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "77b7076a-f6b6-4f93-bb56-b8be35cbb996",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "21df3ae8-167e-4894-bf8c-4646b7acacca",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "0b824f11-8d61-422a-b66b-16712b62dd16",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "25ee6e7e-b61b-42dc-9e91-23b3ce730a6d",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "fca59f2d-0f22-4ad6-85d1-95f58f40130e",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "6868a8a0-afd4-4f13-8536-966c5da61851",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "17b7e55f-d9a0-4b36-b25c-76c9d4799de5",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "a6869cf1-74d4-4475-a828-717da9d8ccca",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "1e13214f-2adb-438e-a703-bc6bddca96a7",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "c1b7d91a-1c92-4c96-8226-ab25b15af504",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "5777693f-3135-40b0-a532-159ceb24ec93",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "064106bb-fa83-4697-aaf2-3b85665992ea",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "1d674c41-4e69-4e2f-a6ce-312244500890",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "761d4962-0ccf-4f47-a8cd-46c64dc49958",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "7ade667b-f0f6-4cb5-9f82-64d7692f069c",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "c3ccc31e-e969-44e5-862b-6454314bc689",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "d62cf13f-35f1-4820-ac6b-d1a0929f4249",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "1b5c814c-d436-4402-b13a-5438e20bdc32",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b88420de-b0fd-4ce8-8b0d-8be3feaa7e31",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "03e41aed-aaf5-4ec0-a306-43fe42f7d7f5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b994b646-7ca0-4550-8a2b-f509513bdc99",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "2e4e6297-40fa-43bd-816d-9e2fa37f4f7f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "de3ef020-6c6c-4a70-9e60-c87fc5e97d28",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "01f5867e-b714-4347-b238-a204e8c8c877",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "eff31999-66db-4a6b-be81-ac21c4387328",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "9736ec8f-6252-475d-b030-b1b4c5c0581b",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a2e8c44f-0cdb-4423-92af-0b34e22006d5",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "12c69568-c138-47c6-9335-4249773cd1ec",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "9b918676-e1bd-4d27-9285-7aba2b33e29a",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "08ed3e84-b03e-443e-be59-ec023524ae1c",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "55e7787a-2ce1-48d2-90e3-1230898945b0",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a9c2a976-5bb5-4f31-8967-7b72f59e5ffd",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "515379b1-e624-44eb-bc17-e17059dbbec2",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "d5eb7084-9587-4f46-800b-1473546db6d5",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "6d3b3b2a-5344-45b9-b9b1-91724229a883",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "cf5851c1-dbc0-44a1-8d13-f35532802103",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "ffdc02d0-f1e0-4659-a502-2f74d4421360",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "a871981e-c185-4e3d-8f35-90f9059c94fb",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "f7014805-00cb-48f1-9512-ad5fe5d974f2",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d12b4ded-92d4-426a-8849-669a24a49ada",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "130ad1df-e4a0-432c-8308-7780f0b0284c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ec7a64d9-deee-4fd3-b69c-4ca1f041fbb1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "c7cd7d52-835a-4a02-a35d-c968b4c8f1c5",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d0356797-878e-4a2b-b1b2-28bc22a0c1e0",
+                  "ord": "a1"
+                }
+              ],
+              "id": "56842b8f-da75-46b5-b856-e7bd735d8b41",
+              "ord": "a0"
+            }
+          ],
+          "id": "5386440c-9552-4acd-83c8-ba491e9b0fbf",
+          "ord": "a2"
+        }
+      ],
+      "id": "e552b4e5-6a6a-4b78-914d-5b856a3723ad"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Margin & Co. — notebooks, pens and paper goods for people who write",
+      "seoDescription": "Margin & Co. is a small paper shop for the analog habit — fountain-pen-friendly notebooks, pens worth refilling, planners you keep, and gifts for the desk. Chosen by writing in it, wrapped by hand, posted fast.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2499844b-3f28-4311-9fec-75a4b569a4f9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1554757387-2a28855c78fb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3BlbiUyMGRvdC1ncmlkJTIwbm90ZWJvb2slMjBmb3VudGFpbiUyMHBlbiUyMHdhcm0lMjBjdXB8ZW58MHwwfHx8MTc4NjQwMzg3Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An open notebook and a fountain pen on a desk",
+                  "loading": "lazy"
+                },
+                "id": "e612c90b-8255-41aa-a91d-399902837dbb",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Made for people who still write things down."],
+                        "id": "e3b329c8-5ada-4a3f-9bc2-264c007d27e3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Margin & Co. is a small paper shop for the analog habit — notebooks that lie flat, pens worth refilling, planners you actually keep. Nothing precious, everything usable, made to be written in until it falls apart."
+                        ],
+                        "id": "d2593af5-a7b7-4d47-a8cb-dbc25820f808",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the desk"],
+                            "id": "999e0ff5-5740-4229-a728-b5919dc31ef7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/notebooks"
+                            },
+                            "children": ["Start with a notebook"],
+                            "id": "5a974a7a-bcdd-4d0e-ae7c-d8df98b317b9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5303ace9-eaad-43a4-98e7-2cfbcb617193",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "86601174-c2a2-4763-9f73-4e50dfd2a19b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ac22cf56-fff1-4871-9f55-4f60e7540fd6",
+                "ord": "a1"
+              }
+            ],
+            "id": "127ea972-04e8-46c9-b7d0-0dd9b19e64a9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Start somewhere"],
+                    "id": "3a9a88cd-7c4b-4729-b4d9-f309294df67a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1647559709189-a257be60e147?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBjbG90aC1ib3VuZCUyMGhhcmRjb3ZlciUyMG5vdGVib29rc3xlbnwwfDB8fHwxNzg2NDAzODc5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A stack of cloth-bound notebooks",
+                              "loading": "lazy"
+                            },
+                            "id": "d7d9c62c-9576-4dbf-8cc3-451a16abf6c3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Notebooks"],
+                            "id": "973097ad-c741-4f64-bbff-8e9e7fe6535f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b9cd15d7-1e66-41b3-b7d5-b5ff9775f681",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1455390582262-044cdead277a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm91bnRhaW4lMjBwZW4lMjByZXN0aW5nJTIwaGFuZHdyaXR0ZW4lMjBwYWdlfGVufDB8MHx8fDE3ODY0MDM4ODJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A fountain pen on a written page",
+                              "loading": "lazy"
+                            },
+                            "id": "0af0ead6-6e8a-41b8-a5bc-8da7742a575a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Pens & ink"],
+                            "id": "460b9d7a-bdf8-4d94-8187-7191542f75ab",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1c6d913f-5301-4db3-8fe8-b43465b9de64",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1435527173128-983b87201f4d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3BlbiUyMHdlZWtseSUyMHBsYW5uZXIlMjB3ZWVrJTIwYmxvY2tlZCUyMG91dCUyMGJ5fGVufDB8MHx8fDE3ODY0MDM4ODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "An open weekly planner",
+                              "loading": "lazy"
+                            },
+                            "id": "ff0988f6-94af-49f2-89fa-95437dcb82b6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Planners"],
+                            "id": "37327488-a22c-4ef4-bd52-241c57f89972",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e030bade-c71d-4d6c-b00d-0bbe4c674cf1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1608824405605-88c9d2c847e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JhcHBlZCUyMHN0YXRpb25lcnklMjBnaWZ0JTIwc2V0JTIwdGllZCUyMHJpYmJvbnxlbnwwfDB8fHwxNzg2NDAzODg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A wrapped stationery gift",
+                              "loading": "lazy"
+                            },
+                            "id": "e1c2a230-36d3-4d43-af0b-1277bcfd00b1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Cards & gifts"],
+                            "id": "31683017-9b15-4850-b592-2619d8628a2e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dcad87d9-e743-4dd8-bed4-456c5b26c1e7",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2d61dd9e-b75e-4544-ba2a-aeb2bc5b6d6e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "dd826764-82c2-48bb-ac6d-6a39648c2c14",
+                "ord": "a0"
+              }
+            ],
+            "id": "1dcac770-ac78-4ad8-bf67-76997d4f9b11",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New this season"],
+                    "id": "7cea1550-a78c-4164-af80-891371e570fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "88671b96-4d40-455e-badc-352f33dec1ba",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f30aa504-5ebd-402c-88ce-16346798c50e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "fc99f97a-7f28-4d63-bb93-ac0887f12d23",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "8c5b7247-cb44-4bfe-9696-26c404b5abc0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d053b203-7cfb-446b-8d60-6fd00b1e3265",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2f55edab-adad-409c-bc5f-05c87ee6529c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2b9ddf60-7a7f-4295-b06a-44db24e061a6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "7941805d-1465-4f8c-8ee9-5ce7fd246c3b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e6b3c5ca-9fae-4486-8ae6-f422c9bde4f1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2d6f4d00-0103-4577-9c3c-0ca14b58b3a3",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "0d3cf1dc-4f4b-4fc6-8ca8-8d6c03d3d7e0",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "cdcbf20f-66da-4b10-8789-be4ac7b106a1",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "91f4e0f9-2328-4e07-b24f-73b6a12b054e",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1776352184995-280e1a04d472?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHMlMjBzdGl0Y2hpbmclMjBiaW5kaW5nJTIwbm90ZWJvb2slMjBiZW5jaHxlbnwwfDB8fHwxNzg2NDAzODkxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Hands stitching a notebook binding at a bench",
+                  "loading": "lazy"
+                },
+                "id": "82d8a8d1-99d0-4ade-99a9-111bb995f960",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Paper that earns the ink"],
+                        "id": "3a087d7e-634d-48d3-8ad2-d96fc971726c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every notebook we carry is chosen for one thing: how it feels to write in. Thick, fountain-pen-friendly stock that won’t bleed or ghost, bindings that lie flat, covers that survive a bag. If a sample can’t take a wet nib, it doesn’t make the shelf."
+                        ],
+                        "id": "c3828212-9faf-4206-9c18-9da3b4e9585d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/how-to-choose-a-notebook"
+                        },
+                        "children": ["How we choose paper"],
+                        "id": "374d7bce-bc5a-485d-9372-aec7dfe01220",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ef6fd840-cd47-433b-b9b4-a25499dd9b6f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "38f25558-84c3-47a6-aaff-96bda67a146e",
+                "ord": "a1"
+              }
+            ],
+            "id": "aac4af03-c0d5-45da-a728-2f221512db8d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Notebooks"],
+                    "id": "6fc4f6f9-f6c9-47b2-bbe5-f41380b30066",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "845f8db2-1587-4b61-baa5-acd378d1e92c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "d6ed7551-42ea-447d-a739-9e8280067a30",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "ed9b81dd-4cb0-484f-a10f-17e8c96b006f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "93c9d11d-c44b-4aff-8958-d5ea466c8896",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "094d7951-2170-4e1f-891a-523948659a29",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9327df5e-4a81-4e5a-a920-9e68f78a2878",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "aa97b31b-07cb-4959-87da-2e7af9a40215",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "37a72a69-fb85-4859-8d14-8584ed2da0c0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "0fcc39e3-c153-4ea4-9781-e883565acf94",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e1d4631e-13eb-46e4-ba38-1eda16e64cfc",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "5a5aae40-5b95-4ea2-bc8d-efd1b02dfc98",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.notebooks"
+                },
+                "id": "6bd46d1e-3cdf-4fc8-9ebc-7771024d5ae6",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "f4eee6b8-3ff8-4811-b23b-8db847749841",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1605958031637-ae1ce21c9daa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyc29uJTIwd3JpdGluZyUyMG5vdGVib29rJTIwYnklMjBzdW5saXQlMjB3aW5kb3d8ZW58MHwwfHx8MTc4NjQwMzg5NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A person writing in a notebook by a window",
+                  "loading": "lazy"
+                },
+                "id": "069cdab3-c400-4a20-a61c-b73238b5b417",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["The analog habit"],
+                        "id": "8634b76a-046e-4f91-a8ad-3bf8acb64445",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Writing by hand is slower on purpose — it’s how a thought gets caught before it slips. A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Keep one on the desk and one in the bag, and see what you stop forgetting."
+                        ],
+                        "id": "55870e26-7338-4bf9-97d6-8bc8b7b0a499",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/why-we-still-write-things-down"
+                        },
+                        "children": ["Why we still write things down"],
+                        "id": "d1d4e2d4-0488-4bc4-91dd-50626a146dc7",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "75a155ce-1983-464b-8f8b-66882242942e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "fbe46c46-d965-4307-80bc-f2a049c3c1ef",
+                "ord": "a1"
+              }
+            ],
+            "id": "f615263a-011d-40d2-aa17-52e37cab9625",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Margin & Co.",
+      "seoDescription": "Browse everything Margin & Co. makes, with prices and options at a glance. Stationery & paper goods.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "46ffb322-b4cc-4c0a-9f1f-c0f15ccb1e09",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The whole desk"],
+                    "id": "2086e1aa-749d-43db-b7ff-b023f95020d2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we carry — notebooks and pocket books, pens and ink, planners and desk pads, cards, tape and gift sets. Filter by category or sort however you like; every order is wrapped by hand and posted within two days."
+                    ],
+                    "id": "afff044a-bc5a-4ec4-8f8b-4cdc3bd70eba",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "df42fbba-8c26-45ea-9e5c-e83d15a5c520",
+                "ord": "a0"
+              }
+            ],
+            "id": "8fda1d8a-33e1-4e0a-a8d3-24542d93435a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "6fd81ad8-abed-4803-aa3f-575f6e4ab581",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Margin & Co.",
+      "seoDescription": "Explore the collections at Margin & Co., grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "92a80208-ef16-4b90-ba08-fc5b2bffddec",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "1c0da387-a502-41ff-a47a-0431f7ff38bc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The shop grouped the way people actually buy — the new season’s arrivals, the everyday-carry kit, the planner desk, the writing set, and gifts for the person who loves their stationery."
+                    ],
+                    "id": "ee0514a5-aa7a-453a-8a38-27f3fe1608e8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a69dd216-325f-4638-918e-cdb68b6d469b",
+                "ord": "a0"
+              }
+            ],
+            "id": "df787c53-1c65-457c-a796-4c03dce29a7f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "abaa11ba-4ec7-46de-828e-77be03a6b0e8",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Margin & Co.",
+      "seoDescription": "Review what is in your cart and check out securely at Margin & Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "422b9ae1-d061-4f71-bca2-a3c2ac58d8b3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "342c1e07-72e7-47ce-acef-c9110a3b15af",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free UK shipping over $40, gift wrap on request, and a note tucked in if you ask. Not quite right when it lands? Send it back within 30 days — unused paper should find the right desk."
+                    ],
+                    "id": "a96f6a98-a434-4fb7-b9fa-4caeb4e1d9dc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "22c15350-742e-4b24-9729-8014edf586c4",
+                "ord": "a0"
+              }
+            ],
+            "id": "157eeba6-ea81-4d81-8589-7eeb83efe8d7",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "0fb30211-caf7-495a-9002-7f29e5e8a855",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Margin & Co.",
+      "seoDescription": "Search Margin & Co. for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ab5f134c-06d6-4b89-9a49-d7e7cbe3482c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Margin & Co."],
+                    "id": "6c2e4f87-726e-43e5-b25a-f26cbad9ea32",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a ruling, a nib, an ink colour or a gift? Search the whole shop and the journal below."
+                    ],
+                    "id": "4c64d7b6-3864-45bf-b35b-6f53d80a6127",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3be5318c-2f0f-4e2e-b808-882baad81428",
+                "ord": "a0"
+              }
+            ],
+            "id": "1642f071-9595-4501-8e8f-f5b5965b869e",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "2e01941f-c8b1-413e-8b53-86cea67df81d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Margin & Co.",
+      "seoDescription": "Stories, guides and notes from Margin & Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f6d7458a-bb0e-457e-bbc9-1b71b2b4bb8a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Margin"],
+                    "id": "42b1193c-7df1-4da2-abda-de707fdd51a2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the shop — how to choose paper, how to keep a habit going, and what to give the person who already has a nice pen. Practical, opinionated, no stationery snobbery."
+                    ],
+                    "id": "7ca5d79d-99ae-4691-9ce2-cb2d32311ea4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2a96c6fc-604e-41c2-b6e2-52622010a43b",
+                "ord": "a0"
+              }
+            ],
+            "id": "f9d73264-0eb1-4164-863f-79094857f9ec",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "7656c44a-ee74-4a1e-88cf-72302098791d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "1dda721c-ea76-4306-a005-04190a415bd7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "bbbc4b9b-1cfc-4c21-afe2-1944eb6e040c",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "80638af5-5a2a-4d1e-ba54-6347ba81624c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "9826beb6-a51d-4868-b032-999d8b8374d9",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "797be134-5274-4c4f-8e58-396a0042b379",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "620b0c06-0671-40fe-b419-3fc68d1e7264",
+                "ord": "a0"
+              }
+            ],
+            "id": "e2609f5f-ff44-4fe8-a25f-950bcc367486",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Margin & Co.",
+      "seoDescription": "How Margin & Co. chooses its paper goods — by writing in everything, favouring small makers and refillable classics, and only stocking what we’d keep on our own desk.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8153e1c6-84b0-4486-b904-da1a9050f701",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Margin & Co."],
+                    "id": "672374b7-b6e0-43a2-abfa-eb2923d8f139",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Margin & Co. started at a market stall with a box of notebooks and a strong opinion about paper. It grew the slow way — one favourite pen, one repeat customer, one “what would you actually use?” at a time — and it still runs on the same test: if we wouldn’t keep it on our own desk, we don’t sell it."
+                    ],
+                    "id": "8b560939-a562-4a32-ac52-a14361d01f5e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We carry small makers and a few classics, and we choose everything by writing in it, not by reading the spec sheet. Fountain-pen-friendly stock, bindings that lie flat, refills you can find again in a year. Nothing here is precious — it’s meant to be used up and replaced."
+                    ],
+                    "id": "82b198d8-f861-482a-a205-fc040466a89b",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No mystery “luxury” markups, no throwaway gimmicks, no notebook so nice you’re afraid to open it. Just good paper goods, packed with care and posted quickly, for people who still write things down."
+                    ],
+                    "id": "41f7bed4-98f6-418a-b7db-e4450042c3ac",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "f27e54b9-f498-4f4b-81db-9657c65f24d3",
+                "ord": "a0"
+              }
+            ],
+            "id": "2fd31bb3-0c91-4a45-bbb5-c2b93cc6e7dc",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Margin & Co.",
+      "seoDescription": "Get in touch with Margin & Co. — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a03b7a86-27d6-433d-8544-6e38d88083f3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "5c82c781-d9c7-43b1-b087-9d99cc141f5f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a nib, a wholesale enquiry, or a custom gift order for the office? Tell us what you’re after and a real person at the shop will write back — usually the same day."
+                    ],
+                    "id": "e3202dd6-c9a5-4707-a6f9-972b949cd779",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@marginandco.example"
+                    },
+                    "children": ["Email the shop"],
+                    "id": "711586da-2ee4-49ef-b879-8758ca7589bf",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7d54af79-5e70-41c1-a96a-bc6041ebf20c",
+                "ord": "a0"
+              }
+            ],
+            "id": "cbe13542-d26d-45c7-8427-6dedf2b2e8cb",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Margin & Co.",
+      "seoDescription": "Product details at Margin & Co. — stationery & paper goods, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "a0c81264-851e-4ac5-bbc8-f65b3ed64683",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Margin & Co."],
+                            "id": "9d0633de-934f-4128-a06d-c3193efc7d9d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "2fb12f18-afde-4f3c-ab7b-a96fad417615",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "637272bc-922c-45f8-adbd-df430e69590f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "569124ae-bc1f-49fd-a3ca-712e936e7d28",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "2e5d0e40-5c7e-4262-b897-970c35ec3bc3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "28a5b4f1-070d-483b-baed-a6db4857a76d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "78265c4c-cd14-41aa-8136-295529dd521b",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "11ecf09c-1cf1-404a-ba78-453e181de7c0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "afb9af35-6ea3-4c8e-a339-bd656b5fbdcd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "b3f3ff8a-ab4f-48a4-a69a-efb69718352e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "d623348a-2afd-47b6-bc16-17fc631a622a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "32328085-f937-4a4e-ab16-019020157cdd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0dc8dd3d-a2d1-40ee-be93-5a2039ae9a59",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "357c2f62-be84-4917-9054-c168a6789c21",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "055eac38-a015-4d8e-a6e0-a8d0666ad02a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Packed to be written in"],
+                            "id": "8bf634fc-a78f-401b-9163-183492308050",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every order is checked by hand, wrapped in recycled kraft, and posted within two working days. Adding a card? Tell us at checkout and we’ll write your note and leave the price off."
+                            ],
+                            "id": "9372a1ee-bf6f-41a8-b255-8133e5eb2e43",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5f0b718-13df-4b09-b31f-1c0ad89428e5",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "a7fea248-6d52-4b07-a14d-d2fd33bbda26",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "81ec8f85-55c9-463c-9c36-70d5e64acff1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b5997bb6-a82b-4a23-a503-1c58fb05ddd9",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "21c96ff7-37af-4b48-a7ff-e467636a826c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ad33282a-5b54-4d0e-a472-d756695e11ed",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "c00d1d91-4bd4-4246-8529-506cc6f969cd",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Goes on the same desk"],
+                    "id": "1eb94091-725a-42e8-81e6-84f7ba8c83c0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "a3979f61-ac3f-4c6c-a13a-e5a536218070",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "3d35e3cf-565d-42cf-8d8c-3684db83799f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "219adee4-5db5-4ba6-96d7-7dd9861ec942",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "31cafa80-f2e5-41d6-be17-6b91c810210d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2594b250-495c-48d8-b7b2-2653efc85626",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a7bd2ce6-38a6-4a87-84d5-ef45aa8cc0a2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "456ac646-69a0-4ca7-8ca9-0af530a38fb2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "7ed71839-dc8e-48d0-b644-20d91f67b732",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "2e45c6c5-e204-4452-b835-30a3baf70f9c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5067e784-a314-4350-8580-b0a6dc9099e5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "e6ebe592-56a6-48ed-b93c-676a356cb067",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "8e78d651-8548-43c9-9ae3-2a98ee0f3cb9",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "5439b3fa-3bfb-48f4-ab8f-b59e66769af6",
+            "ord": "a1"
+          }
+        ],
+        "id": "d3e7bce2-89a8-454e-b950-dad073448ece"
+      }
+    }
+  ],
+  "theme": {
+    "name": "margin-press",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.02 85)",
+      "--color-base-200": "oklch(94% 0.028 82)",
+      "--color-base-300": "oklch(89% 0.035 78)",
+      "--color-base-content": "oklch(24% 0.03 260)",
+      "--color-primary": "oklch(38% 0.11 255)",
+      "--color-secondary": "oklch(42% 0.06 255)",
+      "--color-accent": "oklch(52% 0.18 28)",
+      "--color-neutral": "oklch(28% 0.03 260)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Karla\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 255)",
+      "--color-secondary-content": "oklch(98% 0.01 255)",
+      "--color-accent-content": "oklch(98% 0.01 28)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(52% 0.18 28)",
+      "--color-highlight-content": "oklch(98% 0.01 28)",
+      "--color-border": "oklch(89% 0.035 78)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(21% 0.02 260)",
+      "--color-base-200": "oklch(18% 0.02 260)",
+      "--color-base-300": "oklch(15% 0.02 260)",
+      "--color-base-content": "oklch(95% 0.02 85)",
+      "--color-primary": "oklch(76% 0.11 255)",
+      "--color-secondary": "oklch(78% 0.06 255)",
+      "--color-accent": "oklch(72% 0.15 30)",
+      "--color-neutral": "oklch(32% 0.02 260)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 255)",
+      "--color-secondary-content": "oklch(15% 0.02 255)",
+      "--color-accent-content": "oklch(15% 0.02 30)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.15 30)",
+      "--color-highlight-content": "oklch(15% 0.02 30)",
+      "--color-border": "oklch(15% 0.02 260)"
+    }
+  }
+}

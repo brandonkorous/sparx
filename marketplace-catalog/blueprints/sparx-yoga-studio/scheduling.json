@@ -1,0 +1,387 @@
+{
+  "policies": [
+    {
+      "handle": "class-standard",
+      "name": "Class booking",
+      "depositType": "none",
+      "cancellationWindowHours": 12,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Reserve your mat ahead — classes are small and fill up. Cancel at least 12 hours before and your spot frees for the next person; we send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "drop-in",
+      "name": "Drop-in",
+      "depositType": "none",
+      "cancellationWindowHours": 4,
+      "reminderOffsetsMin": [120],
+      "policyText": "Pay as you go — book a single class with no commitment. Life happens; give us a few hours’ notice if your plans change."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "maya",
+      "name": "Maya Rivers",
+      "kind": "staff",
+      "skillTags": ["vinyasa", "hot", "power"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 360,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 360,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 360,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 360,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "anjali",
+      "name": "Anjali Rao",
+      "kind": "staff",
+      "skillTags": ["yin", "restorative", "meditation"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1020,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Menon",
+      "kind": "staff",
+      "skillTags": ["prenatal", "foundations", "gentle"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "sofia",
+      "name": "Sofia Lindqvist",
+      "kind": "staff",
+      "skillTags": ["vinyasa", "foundations", "gentle"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "main-studio",
+      "name": "The Grove (main studio)",
+      "kind": "space",
+      "skillTags": ["studio"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 360,
+          "endMinute": 1290
+        }
+      ]
+    },
+    {
+      "handle": "hot-studio",
+      "name": "The Hearth (hot studio)",
+      "kind": "space",
+      "skillTags": ["hot-studio", "studio"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 360,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 360,
+          "endMinute": 1290
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "vinyasa-flow",
+      "name": "Vinyasa flow",
+      "description": "A breath-led flow that builds heat and moves with you — strong but never rushed. All levels; modifications offered throughout.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 2200,
+      "capacity": 20,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["vinyasa"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "yin-yoga",
+      "name": "Yin yoga",
+      "description": "Long, quiet holds that open the deeper tissues and settle the nervous system. Bring nothing but yourself — props do the work.",
+      "bookingType": "class",
+      "durationMinutes": 75,
+      "priceCents": 2000,
+      "capacity": 20,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["yin"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "hot-yoga",
+      "name": "Hot yoga",
+      "description": "A warm-room flow in The Hearth — heat to loosen, sweat to reset. Come hydrated; leave lighter.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 2500,
+      "capacity": 24,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["hot"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["hot-studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "restorative",
+      "name": "Restorative",
+      "description": "Fully supported, deeply still. A slow, blanketed hour that asks nothing of you but rest — the softest landing in the week.",
+      "bookingType": "class",
+      "durationMinutes": 75,
+      "priceCents": 2000,
+      "capacity": 18,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["restorative"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "foundations",
+      "name": "Foundations",
+      "description": "The beginners’ track — the shapes, the breath and the words, taught slowly and kindly. Brand new? Start exactly here.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 1800,
+      "capacity": 12,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["foundations"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "prenatal",
+      "name": "Prenatal",
+      "description": "A gentle, knowing practice for every trimester — strength, breath and space, with a teacher who’s been there.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 2000,
+      "capacity": 12,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["prenatal"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "community-flow",
+      "name": "Community flow",
+      "description": "Our pay-what-you-can class — an easy, all-levels gentle flow, open to everyone. Come as you are; bring a friend.",
+      "bookingType": "class",
+      "durationMinutes": 45,
+      "priceCents": 1500,
+      "capacity": 24,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["gentle"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "drop-in"
+    }
+  ]
+}

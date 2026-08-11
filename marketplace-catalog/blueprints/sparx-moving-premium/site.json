@@ -1,0 +1,2107 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "935bf1e2-2c05-43d8-bf35-9851c32d24a6",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "5f82b608-601e-4e88-b700-4d3c75c550bf",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "82dbfb43-9f7f-4f09-9d54-e63ea4e1217f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "207aced6-ea9d-44c8-b8a1-05242ab72c0d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "06e21279-fce1-4070-b155-cc69f98ec774",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "97db1a82-6b27-49bf-99b2-8a82e7eb39ec",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0b3b199e-5496-4f8f-a350-c12415aca186",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "74acfdfa-959d-43fe-b666-d0612611f694",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "1f03be83-6573-430c-859d-7d4460231e4e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "7dcb71fe-8591-45ab-9d99-a2ba08a50dee",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "93ec447d-54ab-48d7-ac74-8f57ae61cedf",
+                  "ord": "a2"
+                }
+              ],
+              "id": "fc9e1e69-99b5-4b9c-ab30-9093bdef0fba",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "e7d69216-be3c-48bd-bbf3-64630c9813c1",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "8779b3a4-63f1-42ed-bfc8-dbc132b63958",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "6a6a81e8-c2c9-4ffb-b64f-ea2174cd1936",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "517fbbc9-9c71-4df0-9d42-a44cac4229e9",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "9e30e1b1-88a9-4e48-8926-e62743638dd2",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "3c4d3db1-62b8-4d66-afa8-486f8d15d3db",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "d82ce466-a086-4450-8456-720a020d5c3d",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "8b2cffcd-e224-4a4f-bef8-c9b66e418552",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "cdd51ad8-57f2-4031-81c2-6814245daa8d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "89010046-0f3c-47f5-b0aa-f044b923662b",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "519efcf2-3882-41b9-a097-9367b6f8a54d",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "9ed1dcfe-ee7a-4241-9397-bb7f2d489c35",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "247aca6c-5611-46eb-a16a-cc72d11ea453",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "96faf6d2-1054-41ad-aab4-265bd20657af",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1458f12f-118c-4570-9f65-346da20c741f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "153b3ff6-086e-4099-acca-cbd0eb2f2359",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "62615af1-8351-45cc-bb3c-c3d182cc15dc",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "9e9a8db0-3848-4e5a-bfbf-2445a315cb80",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0ecb740f-f205-4b55-9cfe-53edbb3cea84",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "dd56ac17-86a0-4dc6-9d5a-6c59df6cc6ea",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6da0bef6-8d47-4050-af29-e8e3bd8e650d",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "eef16c35-6abd-4bfb-a9bb-673ecf01f1ae",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "456b11d1-ff30-4ba0-8424-51fef6e3cafa",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "487950ee-8422-4976-911a-5b8c37e30b7f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "cc188440-4c8a-42d6-8401-8e70a5ad6986",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "406e851f-3d00-46fc-aec3-97afbd35e158",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "632a5c59-db1f-44a8-8255-af177da70ea5",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "ff52ebb7-3241-499e-8da6-7cfa8045acd5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "9a76486a-a939-49d2-a518-7bb89509b12d",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "de5dd1dd-5bb1-4689-977d-f69bbbc8b043",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "d84ca055-446d-460d-9221-f619dee1c615",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "af3f7b19-d740-4abe-86b5-9c2c0abbcda6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "87f675aa-1ab9-486a-8166-c84e8b98a8bc",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e216f592-d321-42b1-adf5-0cf75289ea89",
+                  "ord": "a1"
+                }
+              ],
+              "id": "35cbe5c5-a183-4933-ba85-4007de54f26c",
+              "ord": "a0"
+            }
+          ],
+          "id": "7c82e12f-d8a8-4618-8273-a9d4432dcf1e",
+          "ord": "a2"
+        }
+      ],
+      "id": "32d70270-548f-43ff-9f9f-369fb4ceb135"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Whiteglove Movers — premium white-glove & long-distance moving",
+      "seoDescription": "Whiteglove Movers is a premium moving company for long-distance and interstate moves — white-glove packing, fine-art and antiques, corporate relocation and storage. Book a consultation online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "151f3a4e-8672-433c-8975-78e928e684fa",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1581573950452-5a438c5f390f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGhvbWUlMjBtb3Zpbmd8ZW58MHwwfHx8MTc4NjM5NTIwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An elegant home at dusk with movers carrying wrapped furniture with care",
+                  "loading": "eager"
+                },
+                "id": "5c3e6d94-51d2-4d94-a873-4406f4ef7fdc",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "ee81f09a-dff2-4b22-8b72-7274467d602f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A move handled like it’s our own home"],
+                    "id": "b4e280fa-1160-44e8-8813-0f21e379395c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Whiteglove Movers is a premium long-distance and white-glove moving company — meticulous packing, fine-art and antiques, corporate relocation and storage, with a dedicated manager on every move. Book a consultation to begin."
+                    ],
+                    "id": "159050f8-e8e7-4b5b-822d-7538678f1556",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "bc37c45b-db89-47da-883e-f7d16160cd33",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our services"],
+                        "id": "a0d24e80-9785-4ee4-9a5b-51131b0d9b0a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b3a1f079-9388-4248-b9f1-ccd02a9bc369",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7c373628-502d-430d-b7ba-77a5d703e476",
+                "ord": "a2"
+              }
+            ],
+            "id": "8ad3b253-cf41-4ba7-9377-0d722c87fa55",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A dedicated move manager"],
+                            "id": "73cc99b9-eee5-491e-93f8-fb3b568b1b98",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One expert owns your move end to end — the plan, the crew, the timeline. One name, one number, from the first call to the last box."
+                            ],
+                            "id": "1a11fc27-f102-4f8d-a83c-87fdecc6c760",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f20ef0c3-082a-4b51-8b1e-bd9051163c5b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Full white-glove packing"],
+                            "id": "c36c3ef1-4b70-4022-a9ac-4e038ef19ec7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Our crew wraps, boxes and inventories every item by hand, then unpacks and places it in your new home. You never lift a thing."
+                            ],
+                            "id": "64e829a7-6c04-406e-a39a-7c3b556a81fa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "eb464ba3-32d7-4dd0-a38c-8b2fc0595a54",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Fine art & antiques"],
+                            "id": "fb9157e3-3fc9-4805-97b8-72de36dd70fd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Custom crating, climate care and specialist handling for the pieces that can’t be replaced — paintings, pianos, sculpture and heirlooms."
+                            ],
+                            "id": "02a32dca-ea7c-43f3-927e-cc63d07b95c0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "41e548b7-9add-40d0-9f14-eef398265595",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Nationwide & storage"],
+                            "id": "c85d3817-bfea-4a06-b9f5-4e32b8225673",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Long-distance and interstate moves coordinated door to door, with secure, climate-controlled storage for whenever your timing needs it."
+                            ],
+                            "id": "86b9ddab-2ae3-4901-a064-c806cb6e7ce8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4a0d8812-bcaa-41f7-b6a3-cfd92390e9e3",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ce00c924-a516-4a49-86b2-bb7eead2567b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "61a0f017-d865-4bfd-89d2-c3243df4d390",
+                "ord": "a0"
+              }
+            ],
+            "id": "f0c75c71-cd4a-4452-823a-a00c63d92aa4",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways to begin"],
+                        "id": "3bc51df6-cf75-4eae-95d5-47b5c610cb62",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every move starts with a conversation. Here are a few of the ways in — every consultation and estimate is complimentary, and live availability is on the booking page."
+                        ],
+                        "id": "931cc2f9-dffc-4f3b-a619-adf86129f3f4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "856e1ee7-450d-4263-89d8-afc005ad6c96",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["In-home consultation"],
+                                "id": "4ab41bc7-0abc-478a-b667-b2ae678c1005",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "988949f7-ca53-461f-b2d6-d56c8a86e101",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "03230de9-cab7-4bbd-b95a-61b4fcc21e13",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "a691d213-c6a7-4b95-aa38-592910363de3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A complimentary walk-through and a precise, honest estimate."
+                            ],
+                            "id": "c49c26f2-c8af-4253-9fd2-97c64ab2d09c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1bd2ba6c-4833-4a2a-8eb9-38147d615ca9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Virtual video estimate"],
+                                "id": "880542d8-5f94-42e9-94d4-2a6ac98de7f9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "c52cd9ce-d537-44d5-82e1-13852de1c0d2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "217ae426-a93d-4f66-acd4-5b0fb036144e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "96fba652-e519-4c1c-9b78-49be95e1129d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A guided video call and a detailed written estimate — no visit needed."
+                            ],
+                            "id": "0a93d9cc-83ed-4414-ba7f-520b0cee8636",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c93d0662-3da8-4e07-934a-926ca74bb8e7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Long-distance & interstate"],
+                                "id": "dfcce472-9cd7-4ba8-863e-413dcc50e9b9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "0cca644c-d457-4144-9287-794ca81123b9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1bf90261-7cf1-496a-a164-c0143fe9182b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "07112517-2a83-4091-8106-86ab845e528f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Route, timeline and logistics for a cross-country move."],
+                            "id": "ca5d1952-d46f-4c7a-be3d-307dcdcb5cdd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5fed5aea-41eb-41c2-844f-802cdcfea5b8",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fine-art & antiques"],
+                                "id": "0efaca3b-361e-46d0-b89a-cd272e6125c8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "bcbfb7d4-31fe-452d-8876-ca3d50a05988",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "19130c42-659f-48d5-a188-5c4202ce2023",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "02449bba-2897-467d-9aee-3c26463496bb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Custom crating and specialist handling for the irreplaceable."
+                            ],
+                            "id": "8016953f-f05d-4e12-ac6a-a492b4584669",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fac3a1e9-6f5b-41c9-b8ae-44ffba70044a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "8c92dd72-10e7-4a03-b679-5f744300969b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "c9745f0d-c65b-4d0f-aca4-a6b6e50ec0f5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "54a48cc1-4e74-4c9e-85d7-3d88431ca643",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "289f154f-caee-44b2-8c83-07f3fe2b2804",
+                "ord": "a0"
+              }
+            ],
+            "id": "a8a23950-3bf7-4275-b2c9-b36f76e89fd6",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1656543802898-41c8c46683a7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyZWZ1bCUyMHBhY2tpbmclMjBib3hlc3xlbnwwfDB8fHwxNzg2Mzk1MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A packer wrapping a framed artwork in protective material on a padded table",
+                      "loading": "lazy"
+                    },
+                    "id": "405cc1f4-d5cc-4c66-8134-0a704eb8682f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The white-glove process"],
+                        "id": "0fbdd60f-8a87-44a1-945d-fb13bddb845a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It begins with a survey — in your home or over video — where your manager takes a full inventory, understands what matters most, and builds a plan and a fixed, honest estimate before anything is booked."
+                        ],
+                        "id": "aa15eb2b-484b-4632-9e29-b1a8e6a42144",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "On move day our crew arrives on schedule, packs and protects every item by hand, and transports it under one careful watch. At the other end we unpack, place and reassemble — so you arrive to a home that’s ready, not a wall of boxes."
+                        ],
+                        "id": "096f932a-2e6e-4fd6-bdd8-921eb4841758",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "a4310ba0-ba8f-40fc-aa10-b7b4393b1e0b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "97a04fd4-8531-4f47-8957-5019ed8a6944",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "59bd98fd-9f56-4773-8d73-d0bbfd25abf7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d2cded18-5b00-4567-8035-46ee0cd42a66",
+                "ord": "a0"
+              }
+            ],
+            "id": "3e27690a-082b-4370-a69e-0ecb2eafb1a1",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your move managers"],
+                        "id": "9433f7d7-1960-4564-b524-c4caf7548fd6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — the manager you meet is the one who runs your move, start to finish."
+                        ],
+                        "id": "16af52c0-1656-4462-8e7b-207f384c9680",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4f696583-bad0-4930-95e2-209bac097ea1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4NzQxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Bell, senior move manager",
+                              "loading": "lazy"
+                            },
+                            "id": "0331b9ae-023c-4ae4-9681-9ef9170c3000",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Bell"],
+                                "id": "2e386664-d18d-42f1-b6e0-8154a118d0e5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Senior move manager"],
+                                "id": "5fffba85-1bbf-42a5-b743-200579b2cbb6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twenty years of long-distance moves. Marcus plans the complex ones down to the hour."
+                                ],
+                                "id": "4e348d1f-3afb-4ef7-b695-452c7e612b9f",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e472a14a-a5ee-44f9-8a0c-42205166b5a3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8ae151cf-20b2-47d5-acf9-505107983f9a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1637589267610-6c66fc2a086b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTUyMTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Céline Ordóñez, fine-art and antiques manager",
+                              "loading": "lazy"
+                            },
+                            "id": "2ca9b1dd-adc3-4602-bfe8-f1b9810c0a53",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Céline Ordóñez"],
+                                "id": "96e885fb-fe88-4859-b3ff-1e4ec6a71dd5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Fine-art & antiques manager"],
+                                "id": "5f761c76-687c-4c4c-9d2b-d2ab6f7227e1",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Custom crating and museum-grade care for paintings, pianos and heirlooms."
+                                ],
+                                "id": "1a8d64cd-f2e1-4cff-9389-6e129dd27a2c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f318760f-37d8-456e-90ce-b93257717b62",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f68000dd-6cad-4f93-a3db-d2fc6f9e00b3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuYWdlciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTUyMTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Jonah Reyes, corporate relocation manager",
+                              "loading": "lazy"
+                            },
+                            "id": "31fb6fbe-20b0-4c4b-aa04-26cd8ac62d1c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jonah Reyes"],
+                                "id": "3949fa75-c727-49a0-8dac-2ee3d345e4f4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Corporate relocation manager"],
+                                "id": "2f754824-f898-4235-8648-daf84e54241f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Discreet, precisely timed executive and team relocations, coordinated end to end."
+                                ],
+                                "id": "ee5fd71c-940b-425b-8257-c153e60b7836",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e5e55f3e-8eb2-4bb0-b679-ee8b4a46c352",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a89cc2fd-9d85-4507-b955-b8b6c6dc7548",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d8bd93d1-d1a0-405c-8721-d60e61835e32",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "57ab4930-3a52-4553-849c-d61434c8f257",
+                "ord": "a0"
+              }
+            ],
+            "id": "172159c8-4315-4ce9-acc0-c02e50ca7f59",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We moved three states away with a house full of antiques and not a single scratch. Our manager handled everything — we just showed up to a home that was already put together. Genuinely the calmest move of our lives.”"
+                    ],
+                    "id": "2f3002fd-2a7c-4064-bff3-183d5e74fe24",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Ashford family, whole-home interstate relocation"],
+                    "id": "b02f7b15-b3ec-4b59-b3ff-08c25326ca1b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f3810b0c-7a60-40d1-8d48-e5e66c977be8",
+                "ord": "a0"
+              }
+            ],
+            "id": "33d84282-db3a-43d3-8900-a4dd917fb6a0",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to plan a worry-free move?"],
+                    "id": "287cb40c-58f1-42d5-a1e3-9cf2ba6e57ea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a complimentary consultation — choose a move manager, see live availability and pick a time that suits you."
+                    ],
+                    "id": "95a181b0-0fd4-4c73-9e6a-e19cc07d33ec",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "c172b2ed-3868-4303-b566-adcfe2eacdf2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9638df34-8ffb-429d-b0a5-fa9a8afd0fb8",
+                "ord": "a0"
+              }
+            ],
+            "id": "0fc639bd-b530-4c75-b6d3-0229a9e83d27",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Whiteglove Movers",
+      "seoDescription": "See what Whiteglove Movers offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9699fdf4-af9e-4cdc-87cc-128e66166cb5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1656543802898-41c8c46683a7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyZWZ1bCUyMHBhY2tpbmclMjBib3hlc3xlbnwwfDB8fHwxNzg2Mzk1MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A packer wrapping a framed artwork in protective material on a padded table",
+                  "loading": "eager"
+                },
+                "id": "0ddc0300-f262-4804-8357-d89d841136c5",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "313d6553-e054-4112-b286-71a95f1e8d8d",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a consultation"],
+                    "id": "828d26f9-6f3c-4b12-8c78-e11df192f95d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose the kind of move you’re planning to see availability, then pick your move manager and a time. Every consultation and estimate is complimentary."
+                    ],
+                    "id": "0a3c19f0-1c81-4f81-93c1-61a27911b94d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See consultations below"],
+                        "id": "dbd86442-147c-47f4-ad0b-96296a020289",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0663a1d5-b1ec-45c0-9dc7-78e786f5ee7a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e5813ae1-5f11-43cb-8866-4469e745b405",
+                "ord": "a2"
+              }
+            ],
+            "id": "23d53b5c-431a-49a7-b78b-923f94b42ffd",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "6eab838d-6709-47b1-bdcf-0672d04cd311",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Whiteglove Movers",
+      "seoDescription": "Who Whiteglove Movers is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8476f867-25c0-4d58-a839-3a8bcd5e955c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1714647211902-bb711d643a17?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW92aW5nJTIwc2VydmljZSUyMHByb2Zlc3Npb25hbHxlbnwwfDB8fHwxNzg2Mzk1MjExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm, orderly moving van interior with blanket-wrapped pieces neatly secured",
+                      "loading": "lazy"
+                    },
+                    "id": "79e9d119-369e-47c6-a1cb-2a0a55101a27",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Whiteglove Movers"],
+                        "id": "967d651a-588e-4307-ac7b-839e88494d02",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Whiteglove Movers began with a simple conviction: a move should feel handled, not endured. We take on a limited number of moves at a time, so every family and every executive gets a dedicated manager and the full attention the day deserves."
+                        ],
+                        "id": "6e964873-855a-4330-8232-e80d8f8d5d97",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "From a cross-country relocation to a single fragile heirloom, we bring the same care — an honest estimate, a meticulous crew, and a calm hand on every detail from the first survey to the last piece placed."
+                        ],
+                        "id": "6d25a220-c680-4ab1-a1bf-b8da43adca23",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "2292f154-0644-4901-900d-540944c2bde2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "d757205f-2163-461b-96aa-4e8d839b7553",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b6ad2492-5ac9-4ef9-8cbb-51357bfc65e4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3d6e93ee-9d35-4d18-96f2-f009de86d504",
+                "ord": "a0"
+              }
+            ],
+            "id": "cc68c694-762b-48df-8238-4867ee04a429",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "2ee32935-a265-4d57-b482-9cce8bd7b61e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One manager, start to finish"],
+                            "id": "ff481502-411d-4027-8003-3a9d392810a3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’re never handed off. The manager who surveys your home is the one who runs the move — the plan, the crew and the timeline all in one pair of hands."
+                            ],
+                            "id": "54f06922-8588-4c13-a6de-816f9f28defd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5cc31b92-5357-4686-b657-86353b78b4eb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A fixed, honest estimate"],
+                            "id": "18b75a4f-2869-4a59-ab27-f09c7564547b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We survey thoroughly and quote precisely, then hold to it. No day-of surprises, no creeping numbers — just the figure we agreed on."
+                            ],
+                            "id": "5765e630-3f94-48fe-9614-c76938978a01",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2ad374e5-9238-44b7-a728-358e3143ca00",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Fully insured, meticulously careful"],
+                            "id": "e025c3bc-33e2-4f61-84b6-beb7e3f6c9e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every move is fully insured and every item handled as if it were irreplaceable — because to the family it belongs to, it usually is."
+                            ],
+                            "id": "d9c76895-f68f-44fe-9a6f-d6f961e2f86e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "09d3260f-cda4-466d-b6a8-d69cd62f13f5",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "cb59dfd8-1943-4006-b379-6494c67789eb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d9232ce5-2810-4369-afb1-f968b6ea3ee1",
+                "ord": "a0"
+              }
+            ],
+            "id": "e8244edb-19cd-4cdc-aca8-3372611f36f2",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Whiteglove Movers",
+      "seoDescription": "Where to find Whiteglove Movers, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9caab327-3d91-436d-9927-32e52d97b48e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit our office"],
+                        "id": "50bba22b-6faf-4433-a3e8-f01a57d65f59",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Whiteglove Movers"],
+                            "id": "42c5b45c-f997-4534-8b38-189dc84634ad",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["220 Meridian Way"],
+                            "id": "803d3046-3260-4de9-8711-e5731269d9c6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 400 · Seattle, WA 98109"],
+                            "id": "253da37b-73f0-4e52-a7a9-75769ac0febe",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "446494b3-78c2-4219-a396-1282b58b8e0f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "567d069d-b06c-41ab-9e88-13e2a6423da8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "93d03bfa-a145-4112-81ea-872648bd7188",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c1d95092-2386-43d8-87b3-896545122c60",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "06837934-0c6d-463e-99a3-af7699a8ce51",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 4:00"],
+                                "id": "06ae97b3-7fb1-48d5-be29-40ab4dd24dda",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e09b9302-8a2c-4b1b-b246-cd8bb5436d30",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "ec384b8a-c07f-4fc6-8535-3d77c17d68b5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "1ab775c7-992e-4abf-a821-427b0c8a73de",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7dc2e741-5a9b-4b1e-9a08-c464385a87a1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "eb6296b3-2db0-47c1-9e70-15121c5b8366",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "3b770362-8aee-4c64-b9f6-df3e3e7f909f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "220 Meridian Way, Seattle, WA 98109",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "4edee89c-0c31-4daf-869a-666cbcdeff02",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5b89a6e8-6f5a-409b-b76a-57e949f80a9d",
+                "ord": "a0"
+              }
+            ],
+            "id": "6463fa01-d48b-4552-afd0-446665098f19",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "a5be8c0d-b43f-4934-a555-9b5d499b5315",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your complimentary consultation online — no phone tag."
+                    ],
+                    "id": "4468cd37-0386-4e88-b3c4-2f027095ad44",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "915afadc-c484-49ba-9b56-551670ebed7c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0e1a1bad-1c11-4cb2-8848-e2513c8f1259",
+                "ord": "a0"
+              }
+            ],
+            "id": "fb1f5694-315c-49c8-9a3d-b092fec5914a",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "whiteglove",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.005 95)",
+      "--color-base-200": "oklch(92% 0.007 92)",
+      "--color-base-300": "oklch(87% 0.009 90)",
+      "--color-base-content": "oklch(22% 0.02 255)",
+      "--color-primary": "oklch(26% 0.03 255)",
+      "--color-secondary": "oklch(36% 0.02 255)",
+      "--color-accent": "oklch(66% 0.09 74)",
+      "--color-neutral": "oklch(24% 0.02 255)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.1875rem",
+      "--radius-field": "0.1875rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 255)",
+      "--color-secondary-content": "oklch(98% 0.01 255)",
+      "--color-accent-content": "oklch(15% 0.02 74)",
+      "--color-neutral-content": "oklch(98% 0.01 255)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(66% 0.09 74)",
+      "--color-highlight-content": "oklch(15% 0.02 74)",
+      "--color-border": "oklch(87% 0.009 90)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.018 255)",
+      "--color-base-200": "oklch(16% 0.014 255)",
+      "--color-base-300": "oklch(13% 0.01 255)",
+      "--color-base-content": "oklch(93% 0.006 95)",
+      "--color-primary": "oklch(88% 0.02 90)",
+      "--color-secondary": "oklch(80% 0.015 90)",
+      "--color-accent": "oklch(78% 0.085 76)",
+      "--color-neutral": "oklch(86% 0.012 90)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 90)",
+      "--color-secondary-content": "oklch(15% 0.015 90)",
+      "--color-accent-content": "oklch(15% 0.02 76)",
+      "--color-neutral-content": "oklch(15% 0.012 90)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(78% 0.085 76)",
+      "--color-highlight-content": "oklch(15% 0.02 76)",
+      "--color-border": "oklch(13% 0.01 255)"
+    }
+  }
+}

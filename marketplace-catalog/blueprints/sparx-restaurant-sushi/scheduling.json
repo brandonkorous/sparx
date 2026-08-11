@@ -1,0 +1,823 @@
+{
+  "policies": [
+    {
+      "handle": "omakase-hold",
+      "name": "Omakase counter hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 180],
+      "policyText": "A counter seat places a card hold to secure it — nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
+    },
+    {
+      "handle": "table-standard",
+      "name": "Table reservation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 180],
+      "policyText": "Tables are held for 15 minutes past your seating. Plans change — just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "seat-1",
+      "name": "Counter · seat 1",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-2",
+      "name": "Counter · seat 2",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-3",
+      "name": "Counter · seat 3",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-4",
+      "name": "Counter · seat 4",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-5",
+      "name": "Counter · seat 5",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-6",
+      "name": "Counter · seat 6",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-7",
+      "name": "Counter · seat 7",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "seat-8",
+      "name": "Counter · seat 8",
+      "kind": "space",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "t2-a",
+      "name": "Two-top · window",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "t2-b",
+      "name": "Two-top · corner",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    },
+    {
+      "handle": "t4-a",
+      "name": "Four-top · wall",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1230,
+          "endMinute": 1350
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1080,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 1230,
+          "endMinute": 1350
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "omakase-counter",
+      "name": "Omakase counter",
+      "description": "A seat at the bar for the chef’s omakase — twelve to sixteen courses, paced by the counter, about two hours. A card hold secures your seat.",
+      "bookingType": "reservation",
+      "durationMinutes": 120,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "seat",
+          "kind": "space",
+          "skillTags": ["counter"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "omakase-hold"
+    },
+    {
+      "handle": "table-for-two",
+      "name": "Table for two",
+      "description": "A table for two, à la carte from the sashimi, nigiri and roll list. Ninety minutes at your own pace.",
+      "bookingType": "reservation",
+      "durationMinutes": 90,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["two-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    },
+    {
+      "handle": "table-for-four",
+      "name": "Table for four",
+      "description": "A table for three or four, ordering from the à-la-carte list. Bring the group.",
+      "bookingType": "reservation",
+      "durationMinutes": 105,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["four-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    }
+  ]
+}

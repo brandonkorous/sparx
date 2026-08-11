@@ -1,0 +1,288 @@
+{
+  "policies": [
+    {
+      "handle": "class-standard",
+      "name": "Class & session booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to change or cancel and your spot frees up for the next pup — classes are small and fill fast. We send a friendly reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "enrollment-deposit",
+      "name": "Class enrollment deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 2000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Group classes run as a series, so a $20 deposit holds your place in the group and comes right off your total. Let us know 48 hours ahead to move to another start date and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "bailey",
+      "name": "Bailey Nguyen",
+      "kind": "staff",
+      "skillTags": ["puppy", "obedience", "group"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Reed",
+      "kind": "staff",
+      "skillTags": ["obedience", "tricks", "group"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Shah",
+      "kind": "staff",
+      "skillTags": ["puppy", "private", "group"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "training-room",
+      "name": "The Playroom (training hall)",
+      "kind": "space",
+      "skillTags": ["training-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-evaluation",
+      "name": "Free meet & evaluation",
+      "description": "A no-cost, no-pressure first visit — we meet you and your dog, talk through your goals, and point you to the right class. New here? Start exactly here.",
+      "bookingType": "appointment",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["group"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "puppy-kindergarten",
+      "name": "Puppy kindergarten",
+      "description": "The joyful first-steps class for pups 8–20 weeks — gentle socialization, name games, sit and settle, and confidence with the big world. All the good habits, started early.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "capacity": 8,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["group"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["training-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "enrollment-deposit"
+    },
+    {
+      "handle": "basic-obedience-class",
+      "name": "Basic obedience",
+      "description": "The everyday-manners class for dogs of any age — sit, down, stay, come when called, and polite leash walking, all taught force-free and made to stick at home.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "capacity": 10,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["group"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["training-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "enrollment-deposit"
+    },
+    {
+      "handle": "intermediate-class",
+      "name": "Intermediate skills",
+      "description": "The next step once the basics are solid — longer stays, reliable recall with distractions, loose-leash walking in the real world, and a calm, focused dog wherever you go.",
+      "bookingType": "class",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "capacity": 8,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["group"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["training-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "enrollment-deposit"
+    },
+    {
+      "handle": "tricks-class",
+      "name": "Tricks & games",
+      "description": "The pure-fun class — spin, shake, roll over, weave and more. Great for bonding, brilliant for burning mental energy, and the friendliest way to fall in love with training.",
+      "bookingType": "class",
+      "durationMinutes": 45,
+      "priceCents": 10000,
+      "capacity": 6,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["group"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["training-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "enrollment-deposit"
+    },
+    {
+      "handle": "private-session",
+      "name": "Private session",
+      "description": "One-on-one time for a specific goal — a shy pup, a tricky behavior, or just a head start before a class. We build a friendly, force-free plan around your dog.",
+      "bookingType": "appointment",
+      "durationMinutes": 60,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["private"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    }
+  ]
+}

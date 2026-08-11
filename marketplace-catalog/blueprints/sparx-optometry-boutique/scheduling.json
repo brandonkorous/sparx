@@ -1,0 +1,375 @@
+{
+  "policies": [
+    {
+      "handle": "studio-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "exam-no-show",
+      "name": "Exam no-show policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "lateCancelFeeType": "fixed",
+      "lateCancelFeeValue": 2500,
+      "noShowFeeType": "fixed",
+      "noShowFeeValue": 4000,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Eye exams are one-to-one with a doctor and an exam room. Cancel with less than 24 hours’ notice and a $25 late-cancel fee applies; a missed appointment carries a $40 no-show fee."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-lena",
+      "name": "Dr. Lena Okafor",
+      "kind": "staff",
+      "skillTags": ["exam", "contacts", "medical"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1050
+        }
+      ]
+    },
+    {
+      "handle": "dr-omar",
+      "name": "Dr. Omar Reyes",
+      "kind": "staff",
+      "skillTags": ["exam", "contacts", "medical"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "june",
+      "name": "June Park",
+      "kind": "staff",
+      "skillTags": ["styling", "fitting", "lenses"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "tal",
+      "name": "Tal Mercer",
+      "kind": "staff",
+      "skillTags": ["styling", "fitting"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-1",
+      "name": "Exam Room 1",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-2",
+      "name": "Exam Room 2",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "comprehensive-exam",
+      "name": "Comprehensive eye exam",
+      "description": "A full vision and eye-health exam with digital retinal imaging — the one that keeps your prescription and your eyes in check.",
+      "durationMinutes": 45,
+      "priceCents": 12000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "exam-no-show"
+    },
+    {
+      "handle": "contact-lens-exam",
+      "name": "Contact lens exam & fitting",
+      "description": "Everything in the eye exam, plus a fitting and trial lenses — for new wearers or a fresh contact prescription.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "exam-no-show"
+    },
+    {
+      "handle": "eyewear-styling",
+      "name": "Eyewear styling session",
+      "description": "Sit down with a stylist and try the studio — we’ll pull frames for your face, colouring and how you live, no pressure to buy.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "lens-consultation",
+      "name": "Premium lens consultation",
+      "description": "A short sit-down on lenses — thinner high-index, anti-glare, blue-light and progressive options — so your pair works as hard as it looks.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "frame-trunk-show-appointment",
+      "name": "Trunk show appointment",
+      "description": "A private slot during a visiting designer trunk show — first look at the new collection with a stylist to guide you.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "adjustment-repair",
+      "name": "Adjustment & minor repair",
+      "description": "Frames feeling loose or crooked? Drop in for a professional adjustment, nose-pad swap or minor repair — quick and on us.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "second-pair-styling",
+      "name": "Second-pair styling",
+      "description": "You’ve got the everyday pair — now the sunglasses, the reading pair or the bold one. A focused session for your next frame.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    }
+  ]
+}

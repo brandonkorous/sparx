@@ -1,0 +1,1104 @@
+{
+  "categories": [
+    {
+      "handle": "optical",
+      "name": "Optical",
+      "description": "Prescription and blue-light frames.",
+      "featured": true
+    },
+    {
+      "handle": "sunglasses",
+      "name": "Sunglasses",
+      "description": "UV400 sun, classic and polarised.",
+      "featured": true
+    },
+    {
+      "handle": "blue-light",
+      "name": "Blue-light",
+      "description": "Screen glasses that cut glare.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Home try-on and frame care.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The latest frames to land.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["ashby", "marlowe", "coast", "home-try-on"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The frames people keep reaching for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["ashby", "juno", "coast", "focus"]
+    },
+    {
+      "handle": "optical-frames",
+      "name": "Optical",
+      "description": "Prescription and blue-light frames.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ashby", "marlowe", "juno", "quill", "ridley"]
+    },
+    {
+      "handle": "sunglasses",
+      "name": "Sunglasses",
+      "description": "UV400 sun in classic, polarised and prescription.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["coast", "dune"]
+    },
+    {
+      "handle": "blue-light",
+      "name": "Blue-light",
+      "description": "Screen glasses that cut glare and strain.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["focus"]
+    },
+    {
+      "handle": "home-try-on",
+      "name": "Start here",
+      "description": "Try five at home, free — and keep them cared for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["home-try-on", "care-kit"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ashby",
+      "title": "Ashby",
+      "description": "A slim round frame in lightweight metal — the quiet all-rounder that suits almost everyone. Sculpted nose pads and spring hinges keep it comfortable all day, and the keyhole bridge gives it a bit of vintage character without shouting about it.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["optical", "round", "metal", "unisex"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["new-arrivals", "optical-frames", "best-sellers"],
+      "seoTitle": "Ashby — round metal optical frames | Frame & Lens",
+      "seoDescription": "A slim, lightweight round metal frame with spring hinges and a keyhole bridge. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Gold"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Silver"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-ASHBY-GOL-PRE",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Gold",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-ASHBY-GOL-BLU",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Gold",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-ASHBY-BLA-PRE",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-ASHBY-BLA-BLU",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-ASHBY-SIL-PRE",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Silver",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-ASHBY-SIL-BLU",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Silver",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ashby",
+          "isPrimary": true,
+          "alt": "Ashby"
+        }
+      ]
+    },
+    {
+      "handle": "marlowe",
+      "title": "Marlowe",
+      "description": "A bold rectangular frame cut from Italian acetate, with enough weight to make a statement and enough polish to wear to work. The tortoise is hand-finished so no two are identical; the black is a proper matte, not a plasticky gloss.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["optical", "rectangle", "acetate", "bold"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["new-arrivals", "optical-frames"],
+      "seoTitle": "Marlowe — bold acetate optical frames | Frame & Lens",
+      "seoDescription": "A bold rectangular Italian-acetate frame in hand-finished tortoise, matte black or crystal. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-MARLOWE-TOR-PRE",
+          "priceCents": 15500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-MARLOWE-TOR-BLU",
+          "priceCents": 15500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-MARLOWE-BLA-PRE",
+          "priceCents": 15500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-MARLOWE-BLA-BLU",
+          "priceCents": 15500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-MARLOWE-CRY-PRE",
+          "priceCents": 15500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-MARLOWE-CRY-BLU",
+          "priceCents": 15500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-marlowe",
+          "isPrimary": true,
+          "alt": "Marlowe"
+        }
+      ]
+    },
+    {
+      "handle": "juno",
+      "title": "Juno",
+      "description": "A modern cat-eye with a soft upsweep — flattering, feminine and never fussy. Lifted outer corners open up the face and the low-set hinges keep the silhouette clean. A little bit of an occasion, in a frame you can wear every day.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["optical", "cat-eye", "acetate"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["optical-frames", "best-sellers"],
+      "seoTitle": "Juno — cat-eye optical frames | Frame & Lens",
+      "seoDescription": "A soft, modern cat-eye in Italian acetate with a flattering upsweep. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-JUNO-TOR-PRE",
+          "priceCents": 15000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-JUNO-TOR-BLU",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-JUNO-BLA-PRE",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-JUNO-BLA-BLU",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-JUNO-CRY-PRE",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-JUNO-CRY-BLU",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-juno",
+          "isPrimary": true,
+          "alt": "Juno"
+        }
+      ]
+    },
+    {
+      "handle": "quill",
+      "title": "Quill",
+      "description": "A barely-there frame in Japanese titanium — you forget you’re wearing it. Half the weight of acetate, flexible enough to survive real life, and hypoallergenic for anyone who reacts to cheaper metals. The choice when you want your glasses to disappear.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["optical", "titanium", "rimless", "lightweight"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["optical-frames"],
+      "seoTitle": "Quill — titanium optical frames | Frame & Lens",
+      "seoDescription": "A featherlight, flexible Japanese-titanium frame — hypoallergenic and barely there. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Gunmetal"
+            },
+            {
+              "value": "Rose gold"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-QUILL-GUN-PRE",
+          "priceCents": 17500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Gunmetal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-QUILL-GUN-BLU",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Gunmetal",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-QUILL-ROS-PRE",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rose gold",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-QUILL-ROS-BLU",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rose gold",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "FL-QUILL-BLA-PRE",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-QUILL-BLA-BLU",
+          "priceCents": 17500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-quill",
+          "isPrimary": true,
+          "alt": "Quill"
+        }
+      ]
+    },
+    {
+      "handle": "ridley",
+      "title": "Ridley Readers",
+      "description": "A proper pair of reading glasses, not a chemist’s afterthought. The same acetate and hinges as our optical line, glazed with magnified reading lenses in the strength you choose — so the pair on your bedside table looks as good as the one on your face.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["reading", "acetate", "optical"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["optical-frames"],
+      "seoTitle": "Ridley Readers — designer reading glasses | Frame & Lens",
+      "seoDescription": "Well-made reading glasses in Italian acetate, glazed to the reading strength you choose. Tortoise, black or crystal.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "+1.00"
+            },
+            {
+              "value": "+1.50"
+            },
+            {
+              "value": "+2.00"
+            },
+            {
+              "value": "+2.50"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-RIDLEY-TOR-100",
+          "priceCents": 9500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-TOR-150",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-TOR-200",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-TOR-250",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "+2.50"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-BLA-100",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-BLA-150",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-BLA-200",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-BLA-250",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "+2.50"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-CRY-100",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-CRY-150",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-CRY-200",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "FL-RIDLEY-CRY-250",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "+2.50"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ridley",
+          "isPrimary": true,
+          "alt": "Ridley Readers"
+        }
+      ]
+    },
+    {
+      "handle": "coast",
+      "title": "Coast",
+      "description": "A slim keyhole sunglass with a retro edge and full UV400 protection — bright, clear and light on the face. Add polarised lenses to cut glare off water and roads, or take them prescription so you finally stop squinting through borrowed shades.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["sunglasses", "uv400", "acetate"],
+      "categoryHandles": ["sunglasses"],
+      "collectionHandles": ["new-arrivals", "sunglasses", "best-sellers"],
+      "seoTitle": "Coast — keyhole sunglasses | Frame & Lens",
+      "seoDescription": "A slim keyhole sunglass with UV400 protection — classic tint, polarised or prescription. Tortoise, black or crystal.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic tint"
+            },
+            {
+              "value": "Polarised"
+            },
+            {
+              "value": "Prescription sun"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-COAST-TOR-CLA",
+          "priceCents": 13500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-COAST-TOR-POL",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-COAST-TOR-PRE",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "FL-COAST-BLA-CLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-COAST-BLA-POL",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-COAST-BLA-PRE",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "FL-COAST-CRY-CLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-COAST-CRY-POL",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-COAST-CRY-PRE",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Prescription sun"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-coast",
+          "isPrimary": true,
+          "alt": "Coast"
+        }
+      ]
+    },
+    {
+      "handle": "dune",
+      "title": "Dune",
+      "description": "An oversized sunglass that means it — generous coverage, a strong brow line and lenses dark enough for real sun. Substantial without being heavy, thanks to a hollow-core acetate. The pair you reach for on the brightest days and the longest drives.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["sunglasses", "oversized", "uv400"],
+      "categoryHandles": ["sunglasses"],
+      "collectionHandles": ["sunglasses"],
+      "seoTitle": "Dune — oversized sunglasses | Frame & Lens",
+      "seoDescription": "An oversized sunglass with generous coverage and UV400 lenses — classic, polarised or prescription. Tortoise, black or honey.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Honey"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic tint"
+            },
+            {
+              "value": "Polarised"
+            },
+            {
+              "value": "Prescription sun"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-DUNE-TOR-CLA",
+          "priceCents": 14000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-DUNE-TOR-POL",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-DUNE-TOR-PRE",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "FL-DUNE-BLA-CLA",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-DUNE-BLA-POL",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-DUNE-BLA-PRE",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "FL-DUNE-HON-CLA",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "FL-DUNE-HON-POL",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "FL-DUNE-HON-PRE",
+          "priceCents": 14000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Prescription sun"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dune",
+          "isPrimary": true,
+          "alt": "Dune"
+        }
+      ]
+    },
+    {
+      "handle": "focus",
+      "title": "Focus",
+      "description": "Screen glasses that earn their keep. The Focus lens filters blue light and cuts the glare that gives you a 4pm headache, in a clean modern frame you won’t mind wearing on a call. Take it plano if your eyes are fine, or with your prescription built in.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Frame & Lens",
+      "tags": ["blue-light", "screen", "acetate"],
+      "categoryHandles": ["blue-light"],
+      "collectionHandles": ["blue-light", "best-sellers"],
+      "seoTitle": "Focus — blue-light glasses | Frame & Lens",
+      "seoDescription": "Blue-light filtering screen glasses that cut glare and eye strain — plano or prescription. Tortoise, black or crystal.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Non-prescription"
+            },
+            {
+              "value": "Prescription"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FL-FOCUS-TOR-NON",
+          "priceCents": 11500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Non-prescription"
+          }
+        },
+        {
+          "sku": "FL-FOCUS-TOR-PRE",
+          "priceCents": 11500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-FOCUS-BLA-NON",
+          "priceCents": 11500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Non-prescription"
+          }
+        },
+        {
+          "sku": "FL-FOCUS-BLA-PRE",
+          "priceCents": 11500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "FL-FOCUS-CRY-NON",
+          "priceCents": 11500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Non-prescription"
+          }
+        },
+        {
+          "sku": "FL-FOCUS-CRY-PRE",
+          "priceCents": 11500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Prescription"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-focus",
+          "isPrimary": true,
+          "alt": "Focus"
+        }
+      ]
+    },
+    {
+      "handle": "home-try-on",
+      "title": "Home Try-On Kit",
+      "description": "Choose any five frames and we’ll send them to you to try for five days — free, with return shipping included and no deposit taken. Wear them, photograph them, ask everyone you know. Keep the one you love and send the rest back; you only pay when you order the real pair, glazed to your prescription.",
+      "status": "active",
+      "productType": "Service",
+      "vendor": "Frame & Lens",
+      "tags": ["home-try-on", "free", "service"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["home-try-on", "new-arrivals"],
+      "seoTitle": "Home Try-On Kit — five frames, five days, free | Frame & Lens",
+      "seoDescription": "Try any five Frame & Lens frames at home for five days, free, with return shipping included. No deposit.",
+      "variants": [
+        {
+          "sku": "FL-TRYON",
+          "priceCents": 0,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tryon",
+          "isPrimary": true,
+          "alt": "A home try-on kit box with five frames"
+        }
+      ]
+    },
+    {
+      "handle": "care-kit",
+      "title": "Care Kit",
+      "description": "Everything to keep a pair looking new — a microfibre cloth, an alcohol-free lens spray that won’t strip your coatings, and a slim hard case that actually fits in a bag. The small kit that makes good glasses last for years.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Frame & Lens",
+      "tags": ["accessories", "care", "case"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["home-try-on"],
+      "seoTitle": "Care Kit — lens cloth, spray & case | Frame & Lens",
+      "seoDescription": "A microfibre cloth, alcohol-free lens spray and a slim hard case to keep your glasses looking new.",
+      "variants": [
+        {
+          "sku": "FL-CARE",
+          "priceCents": 1500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-care",
+          "isPrimary": true,
+          "alt": "A care kit — cloth, spray and hard case"
+        }
+      ]
+    }
+  ]
+}

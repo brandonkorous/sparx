@@ -1,0 +1,269 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "take-off-a-first-fix",
+    "status": "published",
+    "body": {
+      "title": "How to take off a first-fix without a second run to the yard",
+      "excerpt": "A missed pack of studs or a short box of screws stops a first-fix dead. Here’s a simple take-off that gets the whole job on one order and one delivery.",
+      "featuredImage": {
+        "$asset": "post-firstfix"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The quiet killer on a first-fix isn’t the work — it’s the second trip. You set out, you start banging in studs, and halfway through the wall you’re a pack short or the screws have run out. Now someone’s in the van heading back to the yard while the job stands still. A proper take-off, done before you order, means the whole fix lands on one delivery and the crew never stops."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Count the walls, not the guesses"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Work off the drawing, not memory. Measure the run of every stud wall, divide by your stud spacing — 400 or 600 centres — and add the heads, sills and noggins. That gives you a real length of CLS, which turns straight into a number of packs. Do the same for the board: floor area of walls and ceilings, divided by the coverage of a 2400×1200 sheet, plus ten per cent for cuts and waste. Now you’re ordering to the job, not rounding in your head at the counter."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Don’t forget the consumables"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The materials people forget are the small ones that stop the job all the same — screws, collated nails, grab adhesive, sealant, scrim tape. Keep a standing first-fix list and tick it against every take-off, or buy the fixings as a bundle so the tub and the case come in the same box as the timber. It’s the cheap stuff that sends you back to the yard."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Order it as one delivery"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Once you’ve got the packs, the pallets and the fixings on one list, put it on the account as a single order and book a timed drop. One delivery to site, one signature, one invoice at the end of the month — and a first-fix that runs start to finish without a single trip back to the counter."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "spec-pir-insulation-to-a-u-value",
+    "status": "published",
+    "body": {
+      "title": "Speccing PIR insulation to hit a U-value",
+      "excerpt": "Building Control wants a U-value, not a vibe. Here’s how to pick a PIR thickness that passes, and why the right board saves you money on the whole build-up.",
+      "featuredImage": {
+        "$asset": "post-insulation"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Insulation is one of the few materials where guessing costs you twice — once if you under-spec and fail Building Control, and once if you over-spec and pay for board you didn’t need. PIR is the workhorse because it does more per millimetre than mineral wool, so you hit the target U-value in a thinner build-up. But you still have to pick the thickness on purpose."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start from the target U-value"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every element — floor, wall, roof — has a target U-value set by the current Building Regulations, and lower is better-insulated. PIR’s low thermal conductivity means a given thickness gets you further down toward that target than most alternatives. Your designer or a Building Control officer will give you the number to hit; the thickness follows from it and from what the rest of the build-up already contributes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Thicker board, smaller pack"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "PIR ships by the pack, and the thicker the board, the fewer sheets on a pack — a pack of 25mm holds far more boards than a pack of 100mm. That matters for ordering: work out the board area you need to cover, then check how many packs each thickness takes, so the delivery and the price are no surprise. Order the thickness the U-value calls for, not the one that looks cheapest per pack."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cut clean, fit tight"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "PIR only performs if it’s fitted without gaps — air paths around a sloppy cut let the heat straight past the board. Cut it a shade oversize with a fine blade, friction-fit it tight between studs or rafters, and tape or foam the joints. Spec the right thickness and fit it properly, and the wall passes first time."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "order-groundworks-by-the-bulk-bag",
+    "status": "published",
+    "body": {
+      "title": "Ordering groundworks materials by the bulk bag",
+      "excerpt": "Aggregates are heavy, cheap by weight and expensive to get wrong. Here’s how to work out the sub-base you need and order it in bulk bags that actually turn up on time.",
+      "featuredImage": {
+        "$asset": "post-groundworks"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Groundworks is where a job is won or lost before anything visible goes up. Get the sub-base right and everything on top of it sits true for decades; skimp on it and the drive cracks, the slab moves and the snagging never ends. The material itself is cheap — it’s the getting-it-wrong that costs — so the order is worth a few minutes of arithmetic."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Work out the volume, then the bags"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A sub-base is a volume: area to be covered, times the compacted depth. A drive or a shed base usually wants around 100 to 150mm of MOT Type 1, well compacted; a slab under load can want more — check the design. Multiply the area by the depth to get cubic metres, then convert to weight (MOT Type 1 runs roughly two tonnes to the cubic metre) and divide by the bag weight. A handled bulk bag around 850kg makes the sums easy and the delivery tidy."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Compact in layers"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Don’t tip the whole lot and whack it once. Lay the sub-base in layers of no more than 100mm or so and compact each one with a plate or a roller before the next goes on. Layered and compacted, MOT Type 1 locks up into a hard, free-draining base; dumped in one go, the bottom never consolidates and the whole thing settles later."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Order a bag spare"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The one certainty in groundworks is that the hole is bigger than it looked. Bulk bags are cheap and a part-used bag keeps under a sheet, so order one more than the sums say — running a bag short mid-pour, waiting a day for another delivery while the base half-sets, costs far more than the spare aggregate ever will."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

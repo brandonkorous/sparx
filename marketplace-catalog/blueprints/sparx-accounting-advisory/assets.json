@@ -1,0 +1,27 @@
+[
+  {
+    "id": "accounting-advisory-hero",
+    "url": "https://images.unsplash.com/photo-1713461983836-de0a45009424?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluYW5jaWFsJTIwYWR2aXNvciUyMG9mZmljZXxlbnwwfDB8fHwxNzg2MzkwMDYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, glass-walled boardroom at dusk over a city skyline"
+  },
+  {
+    "id": "accounting-advisory-boardroom",
+    "url": "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3MlMjBtZWV0aW5nJTIwYm9hcmRyb29tfGVufDB8MHx8fDE3ODYzOTAwNjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Advisors reviewing figures around a long table in soft light"
+  },
+  {
+    "id": "accounting-advisory-elena",
+    "url": "https://images.unsplash.com/photo-1696960190591-60d693f4d50d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0JTIwcHJvZmVzc2lvbmFsfGVufDB8MHx8fDE3ODYzOTAwNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Vasquez, CPA and managing partner"
+  },
+  {
+    "id": "accounting-advisory-marcus",
+    "url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3NtYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfDB8fHwxNzg2MzkwMDcxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Bell, CPA and CFO advisory lead"
+  },
+  {
+    "id": "accounting-advisory-priya",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBleGVjdXRpdmUlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDc0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, CFP and wealth planning director"
+  }
+]

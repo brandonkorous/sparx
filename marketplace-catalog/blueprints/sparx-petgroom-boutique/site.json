@@ -1,0 +1,2111 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "f9c3d3e5-8738-4039-abbc-de6cd43c6975",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "5b45fbb5-141e-4359-83e2-5ec1cc617dfc",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "214cbcec-072e-4942-9914-d5fa8b952edf",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "e912e766-5303-4caa-af8d-a393a3764fc2",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "81d9c4e9-c6fa-4c03-a57b-e53d5ad68507",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "372cadfc-c3a6-4582-b3a4-9524b066b804",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "1c2a56a8-7104-499f-8abd-b2ea7a1fffc3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "e4649813-5d19-4745-9ff1-e67f394aeff2",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "8d79129a-5267-46dd-ac74-5610198edbd8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "90b6a87c-23c1-40b2-8cf2-2579ccf4242f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "2d60feb2-53b4-46ce-bd87-d1468360d397",
+                  "ord": "a2"
+                }
+              ],
+              "id": "12d6551d-9ed3-46d9-8ad2-c371e69c3f98",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "a8f28f0e-66a5-4f29-9787-3f855899a6b0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "e349ca04-d775-4a4a-aa94-9ad528463b37",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "002f30bf-e678-4023-8f60-fb00f46130f6",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "f38237eb-fe33-4c95-8096-5448eb880379",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "79a37830-b7ee-4003-a75b-90617d6df98b",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "88685cf7-2c3f-41f3-8a14-8e3554167667",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "3f5f8a68-72b5-449d-9413-62d730275711",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "97570c97-6b23-40d5-86c1-b5b8be09c369",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "036a058b-2508-47c9-a9ff-78e21db18f92",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "24364b36-2e07-4210-90b3-ce5b04e6bdd0",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "2e4ceda6-8429-432e-b7e1-3ed47fb3b2f4",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "e9045cee-0fcc-42af-934b-8fe2bbd9fc83",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0852dde8-0545-4a2f-8f95-db4608744994",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "3b356224-3f30-4ba4-9919-34c1c0e92745",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f77c31a7-25da-47b0-b01f-dd3fbdd8ac0d",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "5f81d8e2-99d7-47a1-9d5f-80be98131db9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ce58cfca-b6b7-4d26-86c1-253af9b33194",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "6c3741ec-dfa7-4a81-b163-f6ce225c165d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "551d2ea5-f7b5-410e-a8ff-a4b6a28e1420",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "b36ae895-3b3d-4d51-96c7-be04011e01a7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b8d6e069-4d06-437f-9142-412f0652fe2b",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "c96a985a-dc6d-444a-a5e1-dc624e07512c",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "5b0cd715-7b56-46da-81bc-0d99a4e7854f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "1dae217b-cbe6-43f2-9703-dc61bb681e62",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6070ea50-2bd1-410a-9869-2dcdfdd8d9c3",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "bbb45aae-1a87-45ad-b6c3-0b3c7b50ff49",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f6da8ea1-eea2-4b86-bc3c-b91e86e66d8e",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "b26f9683-daf8-474b-bade-95ae737a4f3b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "36974610-a350-4ef4-b299-f4115a20f375",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "38073886-e33a-4fbc-9365-b54b2fe60d51",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "78683bf6-3a5f-49b9-8c72-21a4d11edf03",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4096a6bf-c167-4aac-abe2-c1239a471ac3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "16fe2044-6ec4-4aae-bcc2-636aa195d164",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "3c329659-2b3f-4209-a310-b1bb8122b873",
+                  "ord": "a1"
+                }
+              ],
+              "id": "d846e0e1-81f5-42f7-b6c5-0e5221095dc6",
+              "ord": "a0"
+            }
+          ],
+          "id": "855f50f3-0611-41ee-b61c-568425b9256c",
+          "ord": "a2"
+        }
+      ],
+      "id": "2dec79ad-e7fe-4863-bf3f-3787476feeab"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "The Groom Room — a boutique pet spa & grooming salon",
+      "seoDescription": "The Groom Room is a calm, one-pet-at-a-time grooming salon: signature spa grooms, breed hand styling, spa add-ons and gentle cat grooming by master groomers. Book online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "199a8270-c74c-4614-8613-14ca182ac9a4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1611173622933-91942d394b04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwc3BhJTIwZ3Jvb21pbmd8ZW58MHwwfHx8MTc4NjM4NzUwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A small dog resting calmly on a soft towel in a quiet, sunlit grooming suite",
+                  "loading": "eager"
+                },
+                "id": "9bd8013f-4487-4f90-9900-3e11e42cc20b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "f0dea5a2-26d8-47f9-87c9-878ad8d87fef",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A quiet, gentle spa day for your best friend"],
+                    "id": "f03491d5-7113-4ebd-8787-cb817a716c7e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A boutique grooming salon where your pet is the only one in the room — hand-styled by master groomers, never crated, never hurried."
+                    ],
+                    "id": "96267089-8f6e-4522-8470-ff351fded847",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book online"],
+                        "id": "fc323862-6cef-4c3f-9b9f-c31de83cae5c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the spa menu"],
+                        "id": "e3a08b30-f698-4b55-8832-8612427e9324",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8b94af69-c5de-4bcf-a7cd-d264b8aa5eeb",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d89413f3-4bca-4834-bbb0-714f268bdbfb",
+                "ord": "a2"
+              }
+            ],
+            "id": "bf22ca10-774b-45dd-8ff1-83675ed2e68d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1765100018948-24a80a072c21?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGV0JTIwZ3Jvb21pbmclMjBzYWxvbiUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzODc1MDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A serene private grooming suite with a single table and soft daylight",
+                      "loading": "lazy"
+                    },
+                    "id": "58067c2f-242e-4104-afbd-a1ca37f31a5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["One pet at a time, start to finish"],
+                        "id": "a40ecae5-4bfa-492f-b90a-03f94a345dfd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The Groom Room isn’t a busy shop with a wall of cages. Each pet has a private suite and a single master groomer for the whole visit — bath, style and finish, all by the same gentle pair of hands."
+                        ],
+                        "id": "9d7c4933-69e7-4c82-a103-378e2ef2f887",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No kennels between steps, no waiting in a crate to dry. Just a calm, unhurried hour that most pets — and their people — genuinely look forward to."
+                        ],
+                        "id": "3452d1ea-e0af-42f5-8bfb-ec17531bc3ef",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a suite"],
+                            "id": "f2842491-663d-4c1b-8abe-122c53d2119b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "246ef29a-21af-4524-95bf-05b4f0c5ca49",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4795e10a-b04e-4779-945f-1a30a64f9485",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2e9947ec-4332-4524-beff-bec6e531da97",
+                "ord": "a0"
+              }
+            ],
+            "id": "3573a861-f6b3-48aa-a879-b76f8b8922df",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The spa menu"],
+                        "id": "ca0a1c89-2791-4bf1-b3f3-42d19f07687f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of our most-loved visits. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "9ee243c8-c9a9-4403-b5c0-eec158930fe6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b1e8f853-1167-4748-b2a4-58be234e19c6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Signature spa groom"],
+                                "id": "7134c114-c34e-4ca2-bec4-a91e39466fc5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$115"],
+                                "id": "96a2b29d-da99-4ab1-a9a7-536f6440fdc6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8f685cd2-88ff-43a9-b169-cba784126869",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "bd83d1b6-02f3-4d64-9cbf-ff7673f99c7f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Warm bath, hand-fluff dry, breed finish, nails and ears."
+                            ],
+                            "id": "830f07d9-5084-4799-95a5-f9ee92ddbf5a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "018dbe35-d725-4c95-95fc-27c29bb6080d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Breed-specific hand styling"],
+                                "id": "6a56fab3-01a7-4b02-b496-a9bfecec4f3f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$155"],
+                                "id": "da6b9540-4487-45a0-847a-aed1cad70d3d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5af594f8-4477-4560-89eb-875eb3b0a887",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr 30 min"],
+                            "id": "6158d1f9-b5b0-44f6-9b75-a3471c78e2af",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Scissored and hand-finished to your breed’s standard."],
+                            "id": "68ac3c1e-e976-4984-a6a4-26a91e5c954d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3e98612e-4413-4c28-b4e4-a973f644e557",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Spa add-on ritual"],
+                                "id": "14a5ff20-c7e7-4644-bfb3-f48802b5eaf2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$55"],
+                                "id": "924c30c7-c138-412b-9f84-a0fd1d15b6fb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "475b75c0-69e9-4379-a46d-5c292cdd2bd9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "feb9c4f8-743f-4aab-b2ad-559003b93f96",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Blueberry facial, pawdicure and a conditioning mask."],
+                            "id": "8991ac8f-c713-4f20-b623-5569ce349db1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6c7da47e-0f78-4080-a8c8-6c880b271ac3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Cat spa groom"],
+                                "id": "a79cf189-e79b-4d1c-ae19-e47314c22236",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "4fd45bc1-6614-49b2-853c-aa000962ba7e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2e73b6fe-44de-4a41-9858-0f471b22d73b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "6148e148-7dc6-4d4b-a832-b7846d7d2869",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A gentle groom in our quiet room, away from the dogs."],
+                            "id": "07ea1cac-731c-430b-894d-6e67726854a1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c78616f2-47bc-4760-83ec-e9b1ec249fcc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "3c7e3799-3e59-4697-a220-f2b0859746ad",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "dd3537e4-0f70-4e90-9da7-cd24677398cf",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "52fd5e15-f90c-4f7c-bdaf-647305b06fea",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e46db764-78e1-4268-8e5d-b808b1d3e215",
+                "ord": "a0"
+              }
+            ],
+            "id": "72db68b3-122d-4ca0-a709-2c904dce44de",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Why they leave calmer than they arrived"],
+                    "id": "ad640563-ab2a-493c-86ee-a1179aa07c04",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One pet at a time"],
+                            "id": "946c3128-8c99-4ac0-aa48-46df2d47a205",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Your pet is the only one being groomed in their suite — no chaos, no barking crowd, no crate between the bath and the blow-dry."
+                            ],
+                            "id": "b711116d-5ac3-4f03-b854-c3302abb9575",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0260af1a-058f-4a93-b350-15121a6d564a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Master groomers only"],
+                            "id": "ff8e2af1-ef18-4160-8692-3b9fb1027546",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every groom is done by a certified master groomer who reads your pet’s comfort and shapes every line by hand."
+                            ],
+                            "id": "6a827f40-d8bb-48f3-bd99-eeb9632ecf60",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d4889bdf-d5d9-4f06-a86b-feb5a2cf44d2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Premium, gentle products"],
+                            "id": "36a1834e-db63-4f8d-b6a7-102b6c23512c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Sulphate-free, skin-kind shampoos and conditioners chosen for sensitive coats — nothing harsh, nothing rushed."
+                            ],
+                            "id": "b1d0cd12-c8b5-43b4-9c44-1f147f3d5a1a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c7a059e7-238f-4c33-a822-664cf2d055cc",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A calm, private suite"],
+                            "id": "17dec7b3-cab1-45bd-a6a6-0115a9e7d27d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Soft light, quiet music and low-stress handling. We move at your pet’s pace, not a conveyor belt’s."
+                            ],
+                            "id": "0f0286c9-bf3e-4569-a410-d20403a4a3ff",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d04e3108-8c49-4e41-ae56-5aaa580ce4e1",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "41dc96ad-a4d6-4333-a153-545c7df69328",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "703ec24f-0649-434a-8239-f3edd84f24c9",
+                "ord": "a0"
+              }
+            ],
+            "id": "a6363549-70bd-4994-859b-e6695f7fa2f1",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your master groomers"],
+                        "id": "7e87b583-f5a5-4ccc-a9dc-0321aad5b475",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll see the same trusted groomer each visit."
+                        ],
+                        "id": "d20b4ae1-5fc8-4417-8a52-44d86b985c62",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "cdcace0c-6094-477d-ac2b-19c5ceb56aea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMGVsZWdhbnR8ZW58MHwwfHx8MTc4NjM4NzUxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Eloise Fairbanks, master groomer and founder",
+                              "loading": "lazy"
+                            },
+                            "id": "5792eb97-532c-498b-8657-7188686de463",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Eloise Fairbanks"],
+                                "id": "b76394b2-95b0-4f11-aaae-3f02ebf53fff",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Master groomer · Founder"],
+                                "id": "5d43975e-61aa-4ee6-bde3-0c76ab203754",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twenty years of breed styling and hand-stripping. Eloise opened The Groom Room to slow grooming down."
+                                ],
+                                "id": "60cee62f-7f84-4bd4-9e29-cf11d303d637",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "61389452-f322-46ce-b622-20719d5afb6b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fa06da1f-d105-46e3-9039-473b2219b830",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MHwwfHx8MTc4NjM4NzUxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Devlin, master groomer and cat specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "49befdda-d502-4053-ab2a-c6494890c891",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Devlin"],
+                                "id": "71272ac1-3465-4a29-ad5b-b686edeaa06b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Master groomer · Cat specialist"],
+                                "id": "54e9579a-7aef-4a00-a07f-ab3fa3ca5cd6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Our quiet-room cat expert and de-shed specialist — endlessly patient with the nervous ones."
+                                ],
+                                "id": "de4ed71c-f79e-4767-a744-f0cd247c6189",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "d21f6636-6b36-4cf1-8b81-e230af12dcaf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "86fcd3f4-8b9d-44b7-a02b-bc0a7f11be14",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1758599543125-0a927f1d7a3b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfDB8fHwxNzg2Mzg3NTE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Anand, master groomer and spa specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "d8bfe82b-ae21-43e1-a00f-77ce75871f07",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Anand"],
+                                "id": "8ecac80e-eb40-4c34-a54d-3c1266c7a4ee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Master groomer · Spa specialist"],
+                                "id": "085935ff-0d39-4531-9025-8ee618314fa6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Spa rituals, facials and finishing. Priya’s grooms leave every coat glossy and soft."
+                                ],
+                                "id": "eb751e27-82e1-4bbb-88c0-57c31f90753f",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "49ed5357-0d0f-450c-ba85-69f3a62222d9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d7830493-26cd-4f6a-9342-89ea0475ea89",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "14eeeac6-2b11-4dca-a626-bd1d6f3c35b1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d9011e4-28e9-4e03-badb-80aa4c812704",
+                "ord": "a0"
+              }
+            ],
+            "id": "3f6dbc3f-bf4c-40d5-bf79-152fd40686f6",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“My anxious rescue used to shake at the groomer. Here he naps on the table. Same person every time, one dog in the room — it changed everything for him.”"
+                    ],
+                    "id": "bd28f7a6-d091-4156-af7f-52ac7a82b563",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Hannah & Biscuit, clients since 2024"],
+                    "id": "be0be9fc-ad94-4219-aa82-33df78b4f558",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7f96aac9-3def-4ac5-abe6-bd6efd28c6c3",
+                "ord": "a0"
+              }
+            ],
+            "id": "d0eb10b5-92c7-4b72-933a-184ad70c6f42",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Reserve a quiet hour for your pet"],
+                    "id": "52c3d5a3-814d-400c-a7c5-6e7add3eedeb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Choose a service, pick your master groomer, and see live availability. It takes about a minute."
+                    ],
+                    "id": "5a434242-b301-4108-a78c-fcf837ae87eb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "b3778c70-ae66-4d16-a0e8-3bf34026c4d0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "2230e2fe-e598-4dcd-8339-b93d1375edd8",
+                "ord": "a0"
+              }
+            ],
+            "id": "e61f513c-f38e-485a-bfa6-6b29043d95ca",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — The Groom Room",
+      "seoDescription": "See what The Groom Room offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e4417ca8-a9c2-4c53-8fd2-4d40d7a27a01",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1765100018948-24a80a072c21?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGV0JTIwZ3Jvb21pbmclMjBzYWxvbiUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzODc1MDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A serene private grooming suite with a single table and soft daylight",
+                  "loading": "eager"
+                },
+                "id": "fe091cf1-30ad-4be9-bc67-e69ed3cd32be",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "ff9c3f46-2062-4fea-a55e-557053f18518",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your pet’s spa visit"],
+                    "id": "e60076cd-4803-4d94-8036-8aac55001f43",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service to see prices and live availability, then pick your master groomer and a time that suits."
+                    ],
+                    "id": "110af926-1481-4082-8604-a581d21479b3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "ea6c6874-12bb-4206-82a4-73bd40f11df0",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "16a51ed2-47da-4b85-b88d-ba593a2ce7b9",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4bb102d0-9652-43d9-b073-100340dd2b92",
+                "ord": "a2"
+              }
+            ],
+            "id": "3302490e-192d-400c-a17f-8da3898e0bf0",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "ae14e602-4793-41d1-a3fe-b1a9bbe258aa",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — The Groom Room",
+      "seoDescription": "Who The Groom Room is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f2f78a00-1846-4d1f-91c7-0ecb3d038591",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1611173622933-91942d394b04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwc3BhJTIwZ3Jvb21pbmd8ZW58MHwwfHx8MTc4NjM4NzUwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A small dog resting calmly on a soft towel in a quiet, sunlit grooming suite",
+                      "loading": "lazy"
+                    },
+                    "id": "037787b5-3fd7-4b9d-a096-5f2b84296cf0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About The Groom Room"],
+                        "id": "7b1eb857-b20d-40e3-8ec8-20598e44d9b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened The Groom Room because grooming had become a production line — cages, clippers and a queue. We wanted the opposite: a calm, private, one-pet-at-a-time salon where a groom feels like a spa day, not an ordeal."
+                        ],
+                        "id": "cf537d4f-28de-4ebc-b654-ada9e8ab983b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every visit is handled start to finish by one master groomer in a private suite, with gentle products and all the time your pet needs. No crates, no rush, no stress — just a beautiful, comfortable groom."
+                        ],
+                        "id": "a1f08c82-d167-49f9-b422-0c4ce9388cb9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "5b3184f2-1055-45ed-a869-63371b265869",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b97a0a35-a890-4335-b81f-770bc760d707",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b9282138-57ff-4459-b2a2-8cce94c6c799",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1368f6e6-55fa-46aa-adbf-526a7567ba53",
+                "ord": "a0"
+              }
+            ],
+            "id": "fb6a4dcf-710a-484a-8e1a-515ac17ab84e",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we care for your pet"],
+                    "id": "51bbf4c5-c008-4baf-937f-d026add34cab",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A consultation first"],
+                            "id": "d1ae0d00-406f-4719-8766-21205798ef8b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Before any signature groom we meet your pet, learn their coat and temperament, and agree the look together — no surprises."
+                            ],
+                            "id": "dea2d0be-3ddc-47f1-9465-33089beda12f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d2c770c-da89-4d30-8e23-0e4c53c45a1d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Low-stress handling"],
+                            "id": "d3efced1-afee-4032-a2df-728508bcfb4c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We work at your pet’s pace with calm, force-free handling, and we stop for breaks whenever they need one."
+                            ],
+                            "id": "d204b047-d7c5-4a0c-b7e3-e12f0a6db5ce",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2d5f22f6-98d5-44f8-b207-d2104d0dc218",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Honest, gentle aftercare"],
+                            "id": "1833612d-fd4a-4809-a6b5-5fce93ecc346",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You leave with simple advice on coat care between visits, and a groomer who remembers your pet next time."
+                            ],
+                            "id": "5e274e56-7d85-4f81-8205-fecc2598643d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2cee2812-66e3-4475-8f38-2821bacadb25",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "fe43a646-d93a-4fd9-b5d2-8d8dc83c5b60",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "893baa86-3eff-4142-b638-e8ea26fc2bb2",
+                "ord": "a0"
+              }
+            ],
+            "id": "05ba4010-7c0d-40e6-8baa-19df9c46ea4f",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — The Groom Room",
+      "seoDescription": "Where to find The Groom Room, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1fe4c90b-fdc4-4412-b5f4-4e3e42080f1b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the salon"],
+                        "id": "97c6a194-9525-4b4d-93f6-8fb505396d8d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["The Groom Room"],
+                            "id": "cda0f959-eb46-4dc6-a879-4a2dc9f27269",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["46 Marigold Lane"],
+                            "id": "ca30a059-53a8-4cf0-ab7a-d57e44f96e61",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 1 · Asheville, NC 28801"],
+                            "id": "eb3fa29b-075c-491f-910c-1ccf22d8cddb",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "333be8f3-24db-4c3a-883b-a1a39cf44b80",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Friday"],
+                                "id": "09bbbb6c-4e71-4fe3-88b1-afde2be1e332",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "2049dc2a-269e-4bef-96e1-c9f8b7114ec3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e075bc7b-5b23-4eb3-86ea-7cc73d86006b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "79c4d218-0508-40dd-a8e8-7f5962112c43",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "459496d6-5405-4414-9fd0-d9fe89ee90fb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1a82f842-63f7-41b8-a865-e4031eb87457",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday – Monday"],
+                                "id": "13712767-620a-49f2-b533-c8b841b304b5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "9a2f6741-fe68-46c6-84a1-c074ffda5852",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9184209b-f1da-4514-9776-917a2fc0928f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5e529b33-a086-4b83-837f-117583d4016d",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ca1d86ef-89d3-4dfd-a429-6ed28c663881",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "46 Marigold Lane, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "8fbdd475-ad26-4cc3-b7a2-2533d231607b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "64800bc4-4d7c-4056-a555-88030a34e5d0",
+                "ord": "a0"
+              }
+            ],
+            "id": "7f57274b-8ac4-49ce-aedd-73a109f8762a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "a5ca85ce-9bc5-4a50-847c-ee0ff4a42f76",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your pet’s suite online — no phone tag."
+                    ],
+                    "id": "5e17ad1f-8095-493e-ba3d-762095122470",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "918916bd-9b04-4cca-916e-60943faa72ae",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ff5a02e3-8875-4408-aa69-8a0c2ec62de7",
+                "ord": "a0"
+              }
+            ],
+            "id": "ede61e94-3e90-4b99-beb9-035b00b6e878",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "groomroom",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.006 90)",
+      "--color-base-200": "oklch(93% 0.009 85)",
+      "--color-base-300": "oklch(88% 0.012 82)",
+      "--color-base-content": "oklch(24% 0.03 330)",
+      "--color-primary": "oklch(38% 0.09 330)",
+      "--color-secondary": "oklch(42% 0.05 80)",
+      "--color-accent": "oklch(78% 0.05 20)",
+      "--color-neutral": "oklch(28% 0.02 330)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(98% 0.01 330)",
+      "--color-secondary-content": "oklch(98% 0.01 80)",
+      "--color-accent-content": "oklch(15% 0.02 20)",
+      "--color-neutral-content": "oklch(98% 0.01 330)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(78% 0.05 20)",
+      "--color-highlight-content": "oklch(15% 0.02 20)",
+      "--color-border": "oklch(88% 0.012 82)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.025 330)",
+      "--color-base-200": "oklch(16% 0.02 330)",
+      "--color-base-300": "oklch(13% 0.016 330)",
+      "--color-base-content": "oklch(95% 0.006 90)",
+      "--color-primary": "oklch(66% 0.11 330)",
+      "--color-secondary": "oklch(80% 0.08 82)",
+      "--color-accent": "oklch(82% 0.06 20)",
+      "--color-neutral": "oklch(84% 0.02 330)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 330)",
+      "--color-secondary-content": "oklch(15% 0.02 82)",
+      "--color-accent-content": "oklch(15% 0.02 20)",
+      "--color-neutral-content": "oklch(15% 0.02 330)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(82% 0.06 20)",
+      "--color-highlight-content": "oklch(15% 0.02 20)",
+      "--color-border": "oklch(13% 0.016 330)"
+    }
+  }
+}

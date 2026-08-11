@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "voltline-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel a visit. We text a reminder the day before and two hours ahead, with your electrician’s name and arrival window."
+    },
+    {
+      "handle": "voltline-priority",
+      "name": "Commercial / priority",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Larger commercial jobs are scheduled around a crew, so we ask for 48 hours’ notice to reschedule. We confirm the visit once we’ve reviewed the site details you send."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "nadia",
+      "name": "Nadia Okafor",
+      "kind": "staff",
+      "skillTags": ["ev", "panel", "assessment"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 450,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 450,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 450,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 450,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 450,
+          "endMinute": 990
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Marsh",
+      "kind": "staff",
+      "skillTags": ["smart-home", "install", "solar"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "ruben",
+      "name": "Ruben Diaz",
+      "kind": "staff",
+      "skillTags": ["commercial", "panel", "assessment"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 930
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 930
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 930
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 930
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 930
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "site-assessment",
+      "name": "Home site assessment",
+      "description": "An electrician walks your home, checks your panel and wiring, and maps out what your project needs — the honest starting point for any bigger job.",
+      "durationMinutes": 90,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["assessment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "ev-charger-consult",
+      "name": "EV charger install consult",
+      "description": "We look at where you park, your panel’s spare capacity and the cable run, then quote a wall charger sized to your car. Free, no obligation.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["ev"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "free-estimate",
+      "name": "Free estimate",
+      "description": "Have a specific job in mind? Book a no-cost visit and leave with a clear, written price — no surprises, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["assessment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "smart-home-consult",
+      "name": "Smart-home & automation consult",
+      "description": "Lighting, switches, sensors and hubs that actually talk to each other. We plan a setup that fits how you live — plainly explained, nothing over-sold.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["smart-home"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "panel-modernization-consult",
+      "name": "Panel modernization consult",
+      "description": "An older or maxed-out breaker panel is the quiet limit on everything else. We assess yours and lay out an upgrade path, permits and all.",
+      "durationMinutes": 75,
+      "priceCents": 4900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["panel"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "solar-battery-hookup-consult",
+      "name": "Solar & battery hookup consult",
+      "description": "Adding panels or a home battery? We handle the electrical side — the connection, the transfer switch and the inspection — and explain the rebates you qualify for.",
+      "durationMinutes": 90,
+      "priceCents": 4900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["solar"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-standard"
+    },
+    {
+      "handle": "commercial-site-visit",
+      "name": "Commercial site visit",
+      "description": "A scoping visit for a fit-out, tenant improvement or facility upgrade. Send the basics when you book and we’ll confirm a crewed time to walk the site.",
+      "durationMinutes": 120,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["commercial"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "voltline-priority"
+    }
+  ]
+}

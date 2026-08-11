@@ -1,0 +1,368 @@
+{
+  "policies": [
+    {
+      "handle": "roadready-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Life happens — just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
+    },
+    {
+      "handle": "roadready-noshow",
+      "name": "No-show policy",
+      "depositType": "deposit",
+      "depositAmountCents": 2000,
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Behind-the-wheel time is one-on-one, so these lessons hold a $20 deposit that comes off your total. Cancel or reschedule with 24 hours’ notice and it carries over; a no-show forfeits the hold."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "maria",
+      "name": "Maria Alvarez",
+      "kind": "staff",
+      "skillTags": ["behind-wheel", "teen", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "james",
+      "name": "James Park",
+      "kind": "staff",
+      "skillTags": ["drivers-ed", "teen", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 930,
+          "endMinute": 1170
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 930,
+          "endMinute": 1170
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 930,
+          "endMinute": 1170
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 930,
+          "endMinute": 1170
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "tanya",
+      "name": "Tanya Brooks",
+      "kind": "staff",
+      "skillTags": ["road-test", "behind-wheel", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "training-car-1",
+      "name": "Training Car 1 (dual-brake sedan)",
+      "kind": "asset",
+      "skillTags": ["training-car"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "training-car-2",
+      "name": "Training Car 2 (dual-brake sedan)",
+      "kind": "asset",
+      "skillTags": ["training-car"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-consultation",
+      "name": "Free consultation",
+      "description": "A no-pressure chat to map out a plan — where you are, what you need for your license, and the schedule that fits. Great for nervous first-timers and their parents.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-standard"
+    },
+    {
+      "handle": "intro-lesson",
+      "name": "Intro drive",
+      "description": "A gentle first time behind the wheel in an empty lot and quiet streets — seat, mirrors, brakes and your very first turns, all at your pace.",
+      "durationMinutes": 45,
+      "priceCents": 4500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["behind-wheel"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-noshow"
+    },
+    {
+      "handle": "behind-the-wheel-lesson",
+      "name": "Behind-the-wheel lesson",
+      "description": "A full one-on-one driving lesson in a dual-brake car — real roads, real traffic, building confidence turn by turn with a patient instructor beside you.",
+      "durationMinutes": 90,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["behind-wheel"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-noshow"
+    },
+    {
+      "handle": "drivers-ed-session",
+      "name": "Driver’s-ed classroom session",
+      "description": "The classroom half of learning to drive — road signs, right-of-way, safe following distance and the rules of the road, taught in plain language for teens.",
+      "durationMinutes": 120,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["drivers-ed"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-standard"
+    },
+    {
+      "handle": "permit-prep-session",
+      "name": "Permit prep",
+      "description": "Everything you need to walk into the DMV ready for the written permit test — practice questions, the tricky signs, and the stuff that trips people up.",
+      "durationMinutes": 60,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["drivers-ed"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-standard"
+    },
+    {
+      "handle": "road-test-prep",
+      "name": "Road-test prep",
+      "description": "A dress-rehearsal for test day on the actual test route — parallel parking, three-point turns and the checklist examiners grade, so you show up calm and ready.",
+      "durationMinutes": 90,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["road-test"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-noshow"
+    },
+    {
+      "handle": "refresher-lesson",
+      "name": "Refresher lesson",
+      "description": "Back after a break, or just want to shake off the nerves? A focused hour to rebuild confidence on the skills that feel rusty — no judgment, just practice.",
+      "durationMinutes": 60,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["behind-wheel"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roadready-noshow"
+    }
+  ]
+}

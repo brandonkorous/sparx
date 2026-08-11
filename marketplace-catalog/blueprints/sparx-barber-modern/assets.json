@@ -1,0 +1,42 @@
+[
+  {
+    "id": "barber-modern-shop",
+    "url": "https://images.unsplash.com/photo-1596362601603-b74f6ef166e4?w=1600&q=80",
+    "alt": "A bright, modern barbershop with white walls and chrome chairs"
+  },
+  {
+    "id": "barber-modern-chairs",
+    "url": "https://images.unsplash.com/photo-1541533848490-bc8115cd6522?w=1600&q=80",
+    "alt": "A row of clean styling stations under bright light"
+  },
+  {
+    "id": "barber-modern-marcus",
+    "url": "https://images.unsplash.com/photo-1717700921740-a1440f3b89a4?w=1600&q=80",
+    "alt": "Marcus Reed, master barber"
+  },
+  {
+    "id": "barber-modern-deshawn",
+    "url": "https://images.unsplash.com/photo-1595294572864-ddb46d169dbb?w=1600&q=80",
+    "alt": "DeShawn Wells, barber"
+  },
+  {
+    "id": "barber-modern-tony",
+    "url": "https://images.unsplash.com/photo-1619233543112-fe382ff3693d?w=1600&q=80",
+    "alt": "Tony Alvarez, barber"
+  },
+  {
+    "id": "barber-modern-work1",
+    "url": "https://images.unsplash.com/photo-1593702295094-aea22597af65?w=1600&q=80",
+    "alt": "A crisp skin fade with a sharp line-up"
+  },
+  {
+    "id": "barber-modern-work2",
+    "url": "https://images.unsplash.com/photo-1605497787865-e6d4762b386f?w=1600&q=80",
+    "alt": "A textured crop with a clean taper"
+  },
+  {
+    "id": "barber-modern-work3",
+    "url": "https://images.unsplash.com/photo-1604355240616-5e907f42b431?w=1600&q=80",
+    "alt": "A full cut and beard, edged tight"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "law-modern-office",
+    "url": "https://images.unsplash.com/photo-1778800053717-9c0ad9b8751d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwbGF3JTIwb2ZmaWNlfGVufDB8MHx8fDE3ODYzOTAwMzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A modern downtown law office with floor-to-ceiling windows at dusk"
+  },
+  {
+    "id": "law-modern-boardroom",
+    "url": "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2ZmaWNlJTIwYm9hcmRyb29tJTIwbWVldGluZ3xlbnwwfDB8fHwxNzg2MzkwMDM1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sharp glass-walled boardroom set for a strategy session"
+  },
+  {
+    "id": "law-modern-marcus",
+    "url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3NtYW4lMjBwb3J0cmFpdCUyMHN1aXR8ZW58MHwwfHx8MTc4NjM5MDAzN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Reid, managing partner, corporate & M&A"
+  },
+  {
+    "id": "law-modern-elena",
+    "url": "https://images.unsplash.com/photo-1637589267610-6c66fc2a086b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTAwNDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Vasquez, partner, commercial litigation & employment"
+  },
+  {
+    "id": "law-modern-david",
+    "url": "https://images.unsplash.com/photo-1734159350022-0acc5f934da5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3eWVyJTIwcG9ydHJhaXQlMjBtYW4lMjBzdWl0fGVufDB8MHx8fDE3ODYzOTAwNDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "David Chen, partner, intellectual property & contracts"
+  }
+]

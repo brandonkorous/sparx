@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "ceramic-nonstick-explained",
+    "status": "published",
+    "body": {
+      "title": "How ceramic nonstick actually works — and how to keep it",
+      "excerpt": "Ceramic nonstick isn’t a coating you baby, but it isn’t indestructible either. Here’s what it is, why we chose it, and the two habits that make it last for years.",
+      "featuredImage": {
+        "$asset": "ek-post-nonstick"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Nonstick” has meant a lot of things over the years, and not all of them good. The old slick coatings did their job but were built on PFAS chemistry — the “forever chemicals” nobody wants flaking into dinner. Ceramic nonstick is a different idea entirely: a thin, glass-like mineral layer, cured onto the pan, that food slides off because the surface is genuinely smooth rather than chemically slippery. No PFAS, no PFOA, nothing to worry about at high heat."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why we build it on clad aluminium"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A nonstick surface is only as good as the metal under it. A cheap ceramic pan is a stamped aluminium disc that hot-spots and warps, and the moment it warps, the coating stops making even contact and starts to fail. Ours is fully clad — aluminium bonded through the whole body, not just the base — so heat spreads evenly and the surface stays flat. Even heat is what lets you cook on medium instead of blasting the pan, and cooking on medium is most of why the surface lasts."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The two habits that keep it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "First: keep the heat moderate. Ceramic doesn’t need a screaming-hot pan to release food, and overheating an empty pan is the fastest way to dull any nonstick. Preheat on medium, add a little fat, and you’re set. Second: use soft tools and skip the abrasives — a silicone spatula, a soft sponge, no metal and no scouring pads. Let a hot pan cool before it hits water, hand-wash when you can, and store it with a liner if you stack it. Do that, and a ceramic pan stays slick for years instead of months."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "small-kitchen-edit",
+    "status": "published",
+    "body": {
+      "title": "The short list that replaces a drawer full of gadgets",
+      "excerpt": "You don’t need forty tools. You need a handful of good ones that each do several jobs. Here’s the edit we’d outfit a first kitchen with.",
+      "featuredImage": {
+        "$asset": "ek-post-tools"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Open most kitchen drawers and you’ll find the same thing: a garlic press used twice, an avocado slicer, an egg separator, and one good knife buried under all of it. Single-use gadgets are sold on a moment of “oh, clever” and then live in the way for a decade. A well-designed kitchen is the opposite — a small number of tools, each of which quietly does five things."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The five that earn their place"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A chef’s knife handles almost every cut; a paring knife covers the small, close work the big blade can’t. One good ceramic frypan does eggs, sears, sautés and a quick sauce. A set of nesting prep bowls turns a chaotic counter into a calm one — everything measured out before the heat goes on. A digital scale makes baking and coffee actually repeatable. And one flexible silicone spatula-slash-turner moves everything without scratching a thing. That’s it. That’s a kitchen."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy for the job, not the moment"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The test for any tool is simple: will you reach for it every week, and does it do more than one thing? If the answer to either is no, it’s a drawer-filler dressed up as a solution. Spend the gadget money on fewer, better pieces that fit together and last, and the kitchen gets calmer and the cooking gets easier. Less stuff, more cooking — that’s the whole idea."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "design-for-the-counter",
+    "status": "published",
+    "body": {
+      "title": "Why we design for the counter, not the cupboard",
+      "excerpt": "Most kitchen tools are designed to be photographed, then hidden. We design the opposite way — for the things you leave out and see every day.",
+      "featuredImage": {
+        "$asset": "ek-post-counter"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A lot of kitchenware is designed for the box it’s sold in — a bright colour, a busy shape, a feature list printed on the shrink-wrap. It looks great on a shelf and wrong on your counter. We design from the other end: the tools you use most are the ones you leave out, so we make them for the counter you live with, not the cupboard they hide in."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Calm on the outside, clever on the inside"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That means restraint where you can see it. Muted, matte finishes that don’t shout or date. Shapes that sit quietly next to a plant and a coffee jar. Handles at angles that feel right in the hand rather than dramatic in a photo. The engineering we’re proud of — the clad base, the to-the-degree kettle, the seamless silicone over a steel core — lives on the inside, doing the work without asking for attention."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A range that belongs together"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Designing for the counter also means designing as a family. Every piece shares a palette and a language, so the pan you buy this year still belongs beside the bowls you add next year. Nothing clashes, nothing looks orphaned, and a kitchen built one piece at a time still looks like it was planned. When your tools are calm and consistent, the counter feels finished — and a finished-feeling kitchen is a nicer place to cook."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

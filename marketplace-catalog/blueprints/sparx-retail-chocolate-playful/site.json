@@ -1,0 +1,2545 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "82c1fc19-9491-460b-a8af-ae036031caeb",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "714bdbf0-cc6c-46fd-8654-2ed781b30d7a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "66d5db99-eaaa-457c-bbbb-664f2da7330c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "c5be9ae6-ddfe-427f-8843-6fbcb67ea0da",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "924f06ce-f3ef-4f68-88b7-5acb4a319add",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "cdc0d0c8-618b-4906-b421-b43bc15cb91b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "246273ec-f301-462d-a15e-a667dcd01f2f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "3fadc032-1a1f-4cb5-8746-30585345b547",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "66a8a02a-adad-442e-aeb3-95a6d4f93303",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "e506067d-71a0-434a-a55a-c2d7a00dc947",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "0111a623-b6a2-49a5-8b17-a0047f52d96f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "6f0644dd-ba32-4052-a7d7-254114859d3c",
+                  "ord": "a2"
+                }
+              ],
+              "id": "bc6975e6-d0c7-4726-81d4-bc48b0f28831",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "52396674-4885-4d91-98bc-c17265c28705",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "ddbbe591-803f-4fc1-b70b-46bf93786914",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c4b1afe6-8a59-4fc6-9a1e-18a7203b0c25",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "f2bb0f83-916a-4e38-98f7-eac3bdcf2f68",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "193bbcdf-de0d-43a0-b14d-fc0bb4be6a7d",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "082eca0e-2771-4819-b4d6-56b198614812",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "db9f00e4-9ab3-402b-bc84-25649254f41b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "294f5064-6789-4812-b2de-74cdaac199bc",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "7b389f26-b2b0-43b0-972f-2ca3c7d19086",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "2883baa5-ccf5-424b-8cd3-3ce0fbedaab7",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "aa6d37c9-a49b-4242-9f6c-88e512608e20",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "c5e1b770-d0fd-4f08-b5ed-9e0d6d3405ff",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "7d0fa6ba-88b3-4d47-b407-632dd5e3a922",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "64a9e211-17a2-43ee-8c7e-7c3c42297416",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "73820431-17bf-4632-9ea4-42a13b446a46",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "2e999e03-2f83-43a2-85db-7fcee9fa9023",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "a91d2822-07bf-48bb-9cd7-53032931b440",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "ca97c73d-4063-4a24-8927-1903419366a5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b9a50bf7-b791-490a-926d-c4f78287196c",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "867e1773-6626-4967-81d8-e82b992bda83",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "25265f33-ac7b-42d2-8c43-60427fb652f0",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "79c6cb50-e8b4-4865-aa61-b2971695d396",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3ce54d1e-6691-412b-bf47-35a1bbaa77c5",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "8f6a213f-a8d4-4445-b088-eace9dd50050",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "fdc95601-ed4f-42d0-a729-d9f31d244bb2",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "8d71c1e9-88ed-44ff-8203-e63e8b9823f0",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "16ebb3d3-613d-460f-8a32-0a8b58aee18d",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "41d41503-778c-4fa2-ae9f-27223c552408",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "a4622195-edf9-465a-b1b1-c9bae3d0e9ca",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "9a71582b-94d6-49bd-b74b-04d090a022c0",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "10a2e495-fb29-45e6-b4e2-b78aca4164cb",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "79fc1d38-ac73-47d3-ba41-bb0f4557cd86",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "e3a310f3-ab55-4c25-8804-669c7278a87e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e557cdbf-6db4-4589-8737-9b9cda2ef97b",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "d4936c85-bd68-4223-9fb2-cc24ba4f21c2",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "d0c6092c-56de-4e43-9a61-a9d27dacadff",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "1027de51-42e9-4edf-abdc-6c5e8c5e08d3",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "beb12712-1ba5-404a-bc48-2d45e955de24",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "88c4f798-7169-4d58-b888-1f1e5ea8e8fc",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0b082b07-a834-45e2-9ee0-593b71226b55",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "845c69ec-59f8-46a8-bf21-9b77be8f44db",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "63aa92ad-25cd-4c5a-a018-503002ad7a14",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "1f0a950e-d5e8-42f6-be68-b24385380880",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e80487f7-37d0-456c-9957-6587d8b27a51",
+                  "ord": "a1"
+                }
+              ],
+              "id": "91e482ee-ec9c-4db0-a7b7-c3bdac815fc9",
+              "ord": "a0"
+            }
+          ],
+          "id": "e0e31fde-bc81-4990-bc87-153d34b49551",
+          "ord": "a2"
+        }
+      ],
+      "id": "a61337b8-bc1e-4351-9c37-0074a4d9b110"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Sweet Tooth Co. — bright, gift-forward chocolate & sweets",
+      "seoDescription": "Sweet Tooth Co. makes colourful chocolate for people who like a bit of joy — hand-painted bonbons, hot-cocoa bombs, dipped treats, gift boxes and a monthly subscription. Treats, gifts, and a little everyday joy.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "81111aee-fcf0-44d2-94cc-d461debf82cb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1731504799529-5d11973b8005?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29sb3VyZnVsJTIwc3ByZWFkJTIwZ2xvc3N5JTIwZmlsbGVkJTIwYm9uYm9ucyUyMHdyYXBwZWQlMjB0cmVhdHN8ZW58MHwwfHx8MTc4NjQxNjI1MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A colourful spread of bonbons and treats",
+                  "loading": "lazy"
+                },
+                "id": "be423f48-916c-457b-b7c7-e7d4343e508b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Chocolate, but make it fun."],
+                        "id": "46190360-acbf-48b6-9d6f-168aaa0fbe71",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Sweet Tooth Co. makes bright, colourful chocolate for people who like a bit of joy with their cocoa — jewel-coloured bonbons, hot-cocoa bombs, dipped treats and gift boxes packed to make someone’s day. Treats, gifts, and a little everyday happy."
+                        ],
+                        "id": "6b34941b-b64e-48ca-a343-f36616ee8f83",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the treats"],
+                            "id": "6fbf77ad-5577-4b39-ab48-191fd933bfd0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/products/subscription"
+                            },
+                            "children": ["Start a subscription"],
+                            "id": "cba81381-58b7-4818-b968-00fc74e723c5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fb71d47d-7d59-4bb5-a585-170bd453e5df",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f2255731-cf15-48e9-b8a8-47702ae72567",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4c37f189-b656-42d8-bd28-d2f1aa00deb3",
+                "ord": "a1"
+              }
+            ],
+            "id": "5012ab5c-a5d7-44fa-b92b-c00758e9a250",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Pick your treat"],
+                    "id": "b678ab02-2663-46f3-9900-e6b5c494b421",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "overflow-hidden rounded-box bg-base-200",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "img",
+                                "class": "aspect-square w-full object-cover transition duration-200 group-hover:-rotate-2 group-hover:scale-105",
+                                "attrs": {
+                                  "src": "https://images.unsplash.com/photo-1774978238615-881981af6948?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3BlbiUyMGJveCUyMGpld2VsLWNvbG91cmVkJTIwYm9uYm9uc3xlbnwwfDB8fHwxNzg2NDE2MjU0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                                  "alt": "An open box of colourful bonbons",
+                                  "loading": "lazy"
+                                },
+                                "id": "68ef8e02-de08-47ad-b09d-ad740038d862",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "86cbe7ff-eed9-47d6-afd2-caa0aa8c5433",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Boxes"],
+                            "id": "44860958-5f1f-4f83-86e9-5b86c6467816",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1ac06c7c-0020-401c-b96f-6115c6a16c4f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "overflow-hidden rounded-box bg-base-200",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "img",
+                                "class": "aspect-square w-full object-cover transition duration-200 group-hover:-rotate-2 group-hover:scale-105",
+                                "attrs": {
+                                  "src": "https://images.unsplash.com/photo-1548741396-8fc32fa22ffd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHMlMjBjaG9vc2luZyUyMGNob2NvbGF0ZXMlMjBmaWxsJTIwcGljay15b3VyLW93biUyMGJveHxlbnwwfDB8fHwxNzg2NDE2MjU3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                                  "alt": "Choosing chocolates for a pick-your-own box",
+                                  "loading": "lazy"
+                                },
+                                "id": "5b31c325-0142-4e3d-b580-4ea2bdda6d63",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "48f44c65-7a72-421e-9bc2-e84c8e084472",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Build your own"],
+                            "id": "4106f02e-a608-4713-bd84-44cafa222977",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fa3bdf62-3a3b-4d47-b0b8-ccab1af4d0e4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "overflow-hidden rounded-box bg-base-200",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "img",
+                                "class": "aspect-square w-full object-cover transition duration-200 group-hover:-rotate-2 group-hover:scale-105",
+                                "attrs": {
+                                  "src": "https://images.unsplash.com/photo-1504288041952-91e61c2ebc6e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmliYm9uZWQlMjBjaG9jb2xhdGUlMjBnaWZ0JTIwYm94JTIwYm93fGVufDB8MHx8fDE3ODY0MTYyNjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                                  "alt": "A ribboned chocolate gift box",
+                                  "loading": "lazy"
+                                },
+                                "id": "163adefc-c80c-45e0-90a3-467efc9bf6a9",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "b848ec46-1087-4934-a89c-63e8898d6321",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Gifts"],
+                            "id": "414fec29-40da-4709-a247-ca226de641a3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dcf69d7b-bb94-4d33-9535-205d25b94c15",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/products/subscription"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "overflow-hidden rounded-box bg-base-200",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "img",
+                                "class": "aspect-square w-full object-cover transition duration-200 group-hover:-rotate-2 group-hover:scale-105",
+                                "attrs": {
+                                  "src": "https://images.unsplash.com/photo-1647221598398-934ed5cb0e4f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBicmlnaHQlMjBjaG9jb2xhdGUlMjBib3hlcyUyMHRpZWQlMjByaWJib258ZW58MHwwfHx8MTc4NjQxNjI2NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                                  "alt": "A stack of bright chocolate boxes",
+                                  "loading": "lazy"
+                                },
+                                "id": "fe380e99-f81a-46d1-b928-bf87579d0831",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "f67dcbd8-bc41-4147-9d6e-38bb7d4ab7f9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Subscription"],
+                            "id": "6edd35b7-7775-4bf6-ac58-e4f5bceb3ae1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e232c24f-3dfe-46e1-b6d4-5b5fd407364b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "093041c9-1f07-4651-b437-2f7f25a9620a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "85899f2c-56a0-451a-8721-8f1e8b742433",
+                "ord": "a0"
+              }
+            ],
+            "id": "4651720c-53c8-49e3-a999-03a7e77b4949",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Treats trending now"],
+                    "id": "0f2c664c-dc10-4915-89ba-3d0dc40a1f87",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "affe98ad-25fa-4e2f-a458-aad9cd4cd0f9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "c26c5ee3-b249-4a5f-ac2e-93c4b23738b4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "a14432c7-5125-48ac-b7a6-5174bb4344bc",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "bd88d174-d0a8-43d2-b3a5-35a72ff7b3b4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "acf74bcd-d9db-40c9-8578-0ec4ce5aeba0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c21d0cfc-20c2-427a-929c-0a91415eab2e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "378bf0fc-10b8-4d46-9ceb-a3a6e72204ff",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "751b6db5-8bb7-46d4-88b6-30f29f190d2e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "375e4cf7-b0dc-4622-a8d5-beb39b4f273e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6531ff78-7993-4eec-8631-c0997b1cbd4b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "599ed86c-ffd5-4baa-bc59-0cfa0363544e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "080d7e2b-2d79-4719-be5b-0abbf59129fb",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "c4670d86-4811-4381-80eb-869c5f2d6cec",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1602748837803-7e1648244fed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hvY29sYXRpZXIlMjBwaXBpbmclMjBjb2xvdXJmdWx8ZW58MHwwfHx8MTc4NjQxNjMzN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A chocolatier piping colourful bonbon shells",
+                  "loading": "lazy"
+                },
+                "id": "d953ebf1-0f49-4f1e-a06d-d982be341664",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Made bright, made by hand"],
+                        "id": "effec276-4c5b-4f2b-8b25-f8c3827c9ec1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every bonbon is hand-shelled, hand-filled and hand-decorated in small colourful batches — because the fun is in the colour, and the colour is in the care. We use proper chocolate and real fillings, then make it look like a party."
+                        ],
+                        "id": "ac8416bc-b086-4f1b-8b0a-df9d821b3fc7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/whats-in-a-bonbon"
+                        },
+                        "children": ["How we make them"],
+                        "id": "75ab93b2-2f25-4d90-b9f4-2c0f317e8251",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6a55ca77-b3c9-4fbe-b3e0-7b10513f7857",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "9d8dc71c-684c-48ac-9a9b-288a602760c8",
+                "ord": "a1"
+              }
+            ],
+            "id": "c338a65c-b92e-44ec-b563-9ec29015f060",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Bonbon boxes"],
+                    "id": "63bbd4d8-ca9c-4ce4-bdfe-22f092bc64f9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "fa5a4981-0084-42c5-b2a2-bab785b51391",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "b022099f-dad0-4db0-aa83-1cb0f8624972",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "f8712d5f-b25a-4155-b2fa-de23f82b4232",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "19a50f4b-29b6-4859-88a4-e38109a66ce7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c56434db-413e-4550-bef5-428f7183375d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c3e81e0a-1824-4939-acee-d0142a118e6e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "0675080e-ac57-4a0c-b38f-c1f651553d8b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "4edafa10-7326-497a-bb93-8db4ce5085c4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "c947214b-9b09-4512-b350-2c0f8004b0a2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e4c3234f-0dc4-49f3-b996-3765ad30eb12",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "2eb384e6-65d6-449b-acb3-42f67e22828f",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.boxes"
+                },
+                "id": "0d0cc818-2b1a-4b16-92d1-aa9429fb871f",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "8dc2fabb-540c-4205-a13c-42a9ab8546f6",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1622467827417-bbe2237067a9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JhcHBlZCUyMHRyZWF0JTIwYm94fGVufDB8MHx8fDE3ODY0MTYzNDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A wrapped treat box on a doorstep with a balloon",
+                  "loading": "lazy"
+                },
+                "id": "285ee09a-4313-4146-b7ab-8cd6ba5be1d0",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A little treat, every month"],
+                        "id": "7f80cace-9f3d-47eb-aa59-32579b51a5c8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A subscription is the good kind of habit: a fresh box of bright, seasonal treats lands on your doorstep on your schedule. Skip, swap or cancel any time — no lock-in, just something to look forward to (and yes, you can send it to someone else)."
+                        ],
+                        "id": "742d0b3f-1a37-45ce-9f96-583f7c5005c8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/products/subscription"
+                        },
+                        "children": ["Start a subscription"],
+                        "id": "4c8c2efa-785e-471e-96bc-20b54e714907",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b4288a89-2b97-4018-94ca-582e3cfc0eb2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "be257cb8-9759-4d60-a492-b17b319da7c3",
+                "ord": "a1"
+              }
+            ],
+            "id": "6287637b-3b40-46a4-b3e2-97f408aca81e",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Sweet Tooth Co.",
+      "seoDescription": "Browse everything Sweet Tooth Co. makes, with prices and options at a glance. Chocolate & sweet shop.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f22d6379-2732-4785-809f-1d26f511eae6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Shop the treats"],
+                    "id": "3adc5503-1cdf-4749-ba32-5a878e09e2be",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we’re making right now — bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, gift boxes and the subscription. Filter by occasion or price, or sort however you like; it’s all made fresh and packed to travel."
+                    ],
+                    "id": "d07dd5ae-9e7c-4e3f-a868-292c806417f9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d4e8436f-72ca-4138-9750-d36eca9e28ba",
+                "ord": "a0"
+              }
+            ],
+            "id": "6778f082-9748-43fa-a530-f32c95f98e57",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "4e512cdb-7337-4fcb-9f56-ccc9774cfb84",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Sweet Tooth Co.",
+      "seoDescription": "Explore the collections at Sweet Tooth Co., grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b0b21c3e-f4e9-439b-8a4a-83f66463e950",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "73fb9c2b-37dc-4055-a754-59f0e13abdc3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The treats grouped the way people actually shop — what’s new, the boxes everyone comes back for, gifts ready to send, and the little treats that make a Tuesday better."
+                    ],
+                    "id": "2ff99d03-c0e1-4d3c-83b9-af980def024c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0a93c11d-fcf2-4fe0-8323-67701ab9dfd1",
+                "ord": "a0"
+              }
+            ],
+            "id": "60dc83e4-5cce-4928-b029-f183cce2c88a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "f2e1ada9-8822-48a7-8548-ce6eb9ce7074",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Sweet Tooth Co.",
+      "seoDescription": "Review what is in your cart and check out securely at Sweet Tooth Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "468d7d2c-cea5-4313-9e43-26f87c8e2cc9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "ffbaa022-8511-4f71-8fbd-054918d2cf04",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping on orders over $40, and everything is made fresh and packed to arrive looking its best. Sending it as a gift? Add a note at checkout. Something not quite right? Tell us and we’ll make it good — treats should be pure joy, start to finish."
+                    ],
+                    "id": "f7408268-cfab-4b6c-b04e-6a5ff6097e06",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1fad4ed7-fc36-4570-ab24-529d6bc9ac32",
+                "ord": "a0"
+              }
+            ],
+            "id": "c08382b1-88e1-42f3-8065-526a2c2cee24",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "6f1aced5-074a-4619-ae13-1ee996a8a4c4",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Sweet Tooth Co.",
+      "seoDescription": "Search Sweet Tooth Co. for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "075e54f5-67e7-4dfa-bfb6-3992cfbfeea5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Sweet Tooth Co."],
+                    "id": "fcac348f-cc2d-42b5-83f2-d4cc0fd20f4f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a flavour, a gift under $25, or a birthday box? Search the whole shop and the journal below."
+                    ],
+                    "id": "d61223aa-d3ab-4563-86ef-13027c33a393",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d943f00d-64d4-4b28-a004-df8361b2a790",
+                "ord": "a0"
+              }
+            ],
+            "id": "4fbdad30-c004-42b2-9dd0-65a53ab766bd",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e1d64b91-a7ff-40d8-90af-8aa87e3ac53a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Sweet Tooth Co.",
+      "seoDescription": "Stories, guides and notes from Sweet Tooth Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f7baa067-7d77-4861-be53-52dd13600f04",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Sweet Tooth journal"],
+                    "id": "da502688-db3c-44e6-985c-f30b80258a58",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Fun from the kitchen — how to build the perfect gift box, the right way to melt a cocoa bomb, and how a bonbon actually gets its colour. Sweet, useful, no snobbery."
+                    ],
+                    "id": "524423a6-6821-4417-acaa-7608716dbdc2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "00e4e2df-8ac0-483b-aba7-b5efbb655b43",
+                "ord": "a0"
+              }
+            ],
+            "id": "14c53f9f-60a9-4b0f-b506-362728b1ddda",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "069fdf8b-32b6-4b87-acc8-dd087933705c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "18e84a05-bb92-46d6-9119-874c2077ab9d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f2b0fc2d-f4bb-4b23-b472-8f5609105e8d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "21a6500c-9287-4719-a13d-8c7d18210ce6",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "30cde4d8-50f5-441c-a8f0-3374d5ae07be",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "59d9ef52-2c7f-4928-bc4e-b4e8fbe775e9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "324c09b1-73c8-49f0-a1c0-a5f386bbc26c",
+                "ord": "a0"
+              }
+            ],
+            "id": "34eda814-668e-407a-8d2c-1d4bcb0187a0",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Sweet Tooth Co.",
+      "seoDescription": "How Sweet Tooth Co. makes it — proper chocolate, real fillings, hand-shelled and hand-decorated in small colourful batches, packed to arrive looking as good as it tastes.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a110c089-eea3-4d3c-885c-1086e5ef2651",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Sweet Tooth Co."],
+                    "id": "f8000198-d0c4-4233-bc98-63cb0b66b8c8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Sweet Tooth Co. started at a market stall with a folding table, a tray of hand-piped bonbons, and a simple idea: chocolate is a treat, so it should feel like one. Not precious, not stuffy — bright, generous and a little bit silly, the kind of thing that makes a grown adult grin."
+                    ],
+                    "id": "364f2ef3-e4cc-46d0-93f2-017f63a5fa64",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We use proper chocolate and real fillings — slow-cooked caramels, fresh fruit purées, actual vanilla — then we make it look like a party. Everything is hand-shelled, hand-filled and hand-decorated in small colourful batches, made the week it ships so it reaches you at its best."
+                    ],
+                    "id": "a9e71aef-3300-4d77-a704-d6626b270d56",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Most of what we make is a gift for someone — a birthday, a thank-you, a “thinking of you.” So we pack every box to arrive looking as good as it tastes, and we’ll write the card for you. Treats, gifts, and a little everyday joy: that’s the whole job."
+                    ],
+                    "id": "12513d54-5139-404d-ab6d-4b1d759e4f7e",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "43e9b744-0c1b-4ed2-9858-c2a09d86d893",
+                "ord": "a0"
+              }
+            ],
+            "id": "6e65f85f-ed95-419b-b366-8d32ac0b2a14",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Sweet Tooth Co.",
+      "seoDescription": "Get in touch with Sweet Tooth Co. — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3831b73a-4e48-4cd4-9286-2eb09db71675",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "ad0f1504-d77e-4d8f-ae8b-eadb94175572",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a flavour, a big order for a party or a wedding, or want a custom box with your colours on it? Tell us what you’re dreaming up and a real person at the kitchen will get right back to you."
+                    ],
+                    "id": "45e74ef9-f54b-4cbb-b9dd-f46a47749eaa",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@sweettoothco.example"
+                    },
+                    "children": ["Email the kitchen"],
+                    "id": "9c8226ad-914b-44c5-a0b1-e7173283706a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9b4b1eb1-1845-4184-ac67-0919f64f8a9c",
+                "ord": "a0"
+              }
+            ],
+            "id": "410d8602-60a5-4469-a182-38aa478e5a30",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Sweet Tooth Co.",
+      "seoDescription": "Product details at Sweet Tooth Co. — chocolate & sweet shop, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "33f1691a-7812-43a7-955b-8c382ba379dd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Sweet Tooth Co."],
+                            "id": "fb4b037b-e543-4a49-b431-86b22e3faeab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d696921f-0a3d-4b11-be3d-19a2ef68e9cc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "05995284-c817-4357-936f-79182e40c348",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "56d0e9ca-527e-49bc-9a34-580dbab3e860",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "36827dd4-3f84-446a-98ae-55978dc00680",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bc4be64e-3043-4e71-9fe3-4bd8da4c3578",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Almost gone"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "8faa3f06-5f9f-43e8-a023-8e6634ba7eab",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "2a09512a-3383-4aba-953b-149fd61d6795",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "50d6a36b-b6fc-4747-b874-5e9e65673140",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "19f7a91b-c20e-44d3-83a8-3881745d02f3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "015c7b7b-f566-430a-9555-dc2ce6ec0e57",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "baffe3f1-97d3-40e7-8584-9d495d3404ea",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cf47a8eb-3a03-4fc0-a2ec-ba3c2cfc78ee",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "d3bccd97-7fc9-488c-88bd-59c89f15de6c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "18624dcd-24a3-44a7-bcbb-553eac63372c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Made fresh, packed to delight"],
+                            "id": "1ce0b472-b92d-4356-ac76-22111ca6d552",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Everything is made the week it ships and packed to arrive looking as good as it tastes — nestled, cushioned and travel-cool. Add a gift note at checkout and we’ll tuck in a hand-written card. Keep it somewhere cool (not the fridge) and enjoy within a month."
+                            ],
+                            "id": "c5d8384d-55fb-4426-a504-d1f9d92f69c1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "92b6fd34-1f5a-4de2-81de-f70a7ba1480e",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "4eb3b909-64dc-490d-98bc-ba9347397ae6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "28241c68-e822-4400-a6e3-359846a8c879",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b5d628c6-b22e-4bda-8c99-dc288a27f49e",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "f90a6d1c-bdbd-49ca-b677-bbfa0b804482",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bd63f726-d69a-47e7-a24b-de933c6b2e27",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "327f3165-c541-46d5-993d-d1de22dc5427",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Add a little extra"],
+                    "id": "bfafbf33-e3d5-408c-beeb-9fd9be263193",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0bbb2371-32db-4416-b9b1-fd10c4cf0337",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "62600e05-db4e-4ffd-a0be-37b96b5fcc91",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "6317bd52-5e83-46b1-b17f-daa66d87c811",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "4591be33-d3b7-486e-a8d0-101c61317c08",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "950ef78e-b381-4582-ad70-be3c68a3ab09",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "912527b3-7e99-4450-91a5-8a95fa68d773",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "dba996ee-8944-4246-9e2e-4d28d38499b5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8eca4d7a-eeb1-4eeb-84eb-a5776850170b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "4d489542-d514-4319-be9a-492bef305495",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "07c6f287-2472-4840-9fc4-716d4eb0e3f8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "5287c4a7-1203-424a-bda7-cd22b6c38957",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "330a1113-8e87-4907-977f-6ecaa81a897b",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "fac6af0d-bde1-423d-bea1-1f601823eee2",
+            "ord": "a1"
+          }
+        ],
+        "id": "00b9eb24-8c15-4bc5-b50a-b5bf23b916e0"
+      }
+    }
+  ],
+  "theme": {
+    "name": "cocoa-pop",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.018 95)",
+      "--color-base-200": "oklch(95% 0.03 88)",
+      "--color-base-300": "oklch(91% 0.04 82)",
+      "--color-base-content": "oklch(27% 0.05 40)",
+      "--color-primary": "oklch(56% 0.2 8)",
+      "--color-secondary": "oklch(42% 0.06 50)",
+      "--color-accent": "oklch(46% 0.16 330)",
+      "--color-neutral": "oklch(30% 0.04 40)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "1.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Nunito\", sans-serif",
+      "--font-head": "\"Fredoka\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 8)",
+      "--color-secondary-content": "oklch(98% 0.01 50)",
+      "--color-accent-content": "oklch(98% 0.01 330)",
+      "--color-neutral-content": "oklch(98% 0.01 40)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(46% 0.16 330)",
+      "--color-highlight-content": "oklch(98% 0.01 330)",
+      "--color-border": "oklch(91% 0.04 82)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fredoka\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(26% 0.04 35)",
+      "--color-base-200": "oklch(22% 0.04 35)",
+      "--color-base-300": "oklch(18% 0.035 35)",
+      "--color-base-content": "oklch(96% 0.02 95)",
+      "--color-primary": "oklch(68% 0.18 10)",
+      "--color-secondary": "oklch(82% 0.05 60)",
+      "--color-accent": "oklch(80% 0.14 330)",
+      "--color-neutral": "oklch(32% 0.03 35)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 10)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 330)",
+      "--color-neutral-content": "oklch(98% 0.01 35)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.14 330)",
+      "--color-highlight-content": "oklch(15% 0.02 330)",
+      "--color-border": "oklch(18% 0.035 35)"
+    }
+  }
+}

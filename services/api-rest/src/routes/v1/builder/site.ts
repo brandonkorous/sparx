@@ -35,6 +35,10 @@
 //   GET    /v1/builder/site/records/:entity/:recordId/usages
 //                                     → which trees PIN a specific record — the blast
 //                                       radius of deleting a product / entry
+//   GET    /v1/builder/site/record-samples
+//                                     → one REAL storefront path per record detail
+//                                       page, so Preview on a product template opens
+//                                       an actual product instead of the product list
 //   GET    /v1/builder/site/type-census
 //                                     → every node type present, most-used first;
 //                                       diff against the renderer's known set to find
@@ -56,6 +60,7 @@ import {
   draftVersionService,
   nodeIndexService,
   opLogService,
+  recordSampleService,
   siteService,
 } from '@sparx/builder';
 import { withTenant } from '@sparx/db';
@@ -165,6 +170,27 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const census = await nodeIndexService.typeCensus(await toBuilderContext(request));
     return ok(census);
+  });
+
+  /**
+   * A real storefront path for each record detail page — `{'commerce.product':
+   * '/products/brake-kit'}`.
+   *
+   * A record page's address is `/products/:handle`, which is where the page LIVES but not
+   * somewhere a browser can go: `:handle` is a literal segment to the router, so Preview
+   * used to open the route index (`/products`) and show an author laying out a product
+   * DETAIL page the product LIST instead. This names one record the template can actually
+   * render against.
+   *
+   * A record type is omitted when the tenant has no visible record of that kind yet, and
+   * the studio falls back to the index — so an empty catalog is the old behaviour rather
+   * than a broken link. Five single-row reads; the studio asks once per site.
+   */
+  app.get('/v1/builder/site/record-samples', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const paths = await recordSampleService.recordSamplePaths(await toBuilderContext(request));
+    return ok({ paths });
   });
 
   // What differs between the author's draft and what visitors are actually served.

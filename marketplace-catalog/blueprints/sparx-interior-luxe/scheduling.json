@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "atelier-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and two hours ahead."
+    },
+    {
+      "handle": "design-deposit",
+      "name": "Design deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 10000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Full-service and in-home consultations hold a $100 deposit that is credited toward your project. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elise",
+      "name": "Elise Marchand",
+      "kind": "staff",
+      "skillTags": ["residential", "fullservice", "styling"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "henrik",
+      "name": "Henrik Vald",
+      "kind": "staff",
+      "skillTags": ["renovation", "residential", "sourcing"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "sofia",
+      "name": "Sofia Lindqvist",
+      "kind": "staff",
+      "skillTags": ["styling", "residential", "fullservice"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A complimentary introductory call to talk through your space, your goals and how we can help.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "atelier-standard"
+    },
+    {
+      "handle": "design-consultation",
+      "name": "Design consultation",
+      "description": "A focused session on your rooms, your goals and a clear plan for getting there.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "atelier-standard"
+    },
+    {
+      "handle": "full-service-design-consult",
+      "name": "Full-service design consultation",
+      "description": "The starting consultation for a complete, managed design project — concept through install.",
+      "durationMinutes": 90,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "design-deposit"
+    },
+    {
+      "handle": "renovation-consult",
+      "name": "Renovation consultation",
+      "description": "For kitchens, baths and larger works — we plan the design, the trades and the timeline together.",
+      "durationMinutes": 90,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "design-deposit"
+    },
+    {
+      "handle": "furnishing-styling-consult",
+      "name": "Furnishing & styling consultation",
+      "description": "Layering the finishing pieces — furniture, textiles and objects that make a room feel complete.",
+      "durationMinutes": 60,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "atelier-standard"
+    },
+    {
+      "handle": "single-room-consult",
+      "name": "Single-room consultation",
+      "description": "One room, fully considered — a plan, a palette and the pieces to bring it together.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "atelier-standard"
+    },
+    {
+      "handle": "in-home-consultation",
+      "name": "In-home consultation",
+      "description": "We come to you — walk the space together, take it in, and map what’s possible on the spot.",
+      "durationMinutes": 90,
+      "priceCents": 30000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["residential"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "design-deposit"
+    }
+  ]
+}

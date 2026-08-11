@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "travel-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Free to book, free to change — just give us at least 48 hours’ notice to reschedule or cancel your consultation. We’ll send a reminder two days before and again two hours ahead."
+    },
+    {
+      "handle": "planning-deposit",
+      "name": "Trip-planning deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 7500,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "In-depth planning sessions hold a $75 planning fee that comes straight off your trip when you book. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marisol",
+      "name": "Marisol Vega",
+      "kind": "staff",
+      "skillTags": ["trekking", "safari", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "desmond",
+      "name": "Desmond Okoye",
+      "kind": "staff",
+      "skillTags": ["diving", "cruise", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["expedition", "trekking", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A free, no-pressure 30 minutes to talk through where you dream of going, when, and what kind of adventure fits you. We’ll point you to the right next step.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "travel-standard"
+    },
+    {
+      "handle": "custom-adventure-consult",
+      "name": "Custom adventure planning",
+      "description": "A deep dive into a one-of-a-kind trip built around you — routing, timing, budget and the details that make it yours. For travelers who know roughly where, not exactly how.",
+      "durationMinutes": 60,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "trekking-trip-consult",
+      "name": "Trekking & hiking consult",
+      "description": "Plan a multi-day trek — Patagonia, the Alps, Nepal, the Andes. We’ll match the route to your fitness, sort permits and huts, and get the logistics off your plate.",
+      "durationMinutes": 45,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "safari-consult",
+      "name": "Safari & wildlife consult",
+      "description": "Design a safari around the migration, the season and the animals you most want to see, with camps and guides we know and trust on the ground.",
+      "durationMinutes": 45,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["safari"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "dive-trip-consult",
+      "name": "Dive trip consult",
+      "description": "From liveaboards to reef-side lodges — plan a dive trip matched to your certification and the marine life on your list, with the timing that gives you the best water.",
+      "durationMinutes": 45,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["diving"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "expedition-cruise-consult",
+      "name": "Expedition cruise consult",
+      "description": "Antarctica, the Arctic, the Galápagos and beyond — choose the right ship, cabin and departure, and understand exactly what a small-ship expedition is really like.",
+      "durationMinutes": 60,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "group-adventure-consult",
+      "name": "Small-group & private departures",
+      "description": "Planning a trip for a family, a friend group or a milestone celebration? We’ll build a small-group or private adventure that keeps everyone happy and moving.",
+      "durationMinutes": 60,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "specialist",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    }
+  ]
+}

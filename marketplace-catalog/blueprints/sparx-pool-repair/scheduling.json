@@ -1,0 +1,251 @@
+{
+  "policies": [
+    {
+      "handle": "service-standard",
+      "name": "Standard service call",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to change or cancel a service call. We text a reminder the day before and two hours ahead, with your technician’s name and arrival window."
+    },
+    {
+      "handle": "project-consult",
+      "name": "Project consult",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Estimates and upgrade consults are booked ahead and reminded twice, so we arrive with the right people and a plan. Reschedule any time with a day’s notice."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "ray",
+      "name": "Ray Alvarez",
+      "kind": "staff",
+      "skillTags": ["repair", "pumps", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["leak", "heater", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "devin",
+      "name": "Devin Cole",
+      "kind": "staff",
+      "skillTags": ["renovation", "automation", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "service-call-diagnostic",
+      "name": "Service call & diagnostic",
+      "description": "A technician comes out, traces the fault and explains exactly what’s wrong in plain terms — then gives you a fixed price to fix it before any work starts. The flat call fee comes off the repair if you go ahead.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "free-repair-estimate",
+      "name": "Free repair estimate",
+      "description": "Know what’s broken and just want a number? We assess the equipment or the problem and give you a written, no-pressure quote for the repair — parts and labor spelled out. Always free.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-consult"
+    },
+    {
+      "handle": "pump-motor-repair",
+      "name": "Pump & motor repair",
+      "description": "A noisy, leaking or dead pump diagnosed and repaired — seals, bearings, motors and variable-speed drives across every major brand. We carry the common parts, so most jobs are done in a single visit.",
+      "durationMinutes": 90,
+      "priceCents": 14900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "heater-repair",
+      "name": "Heater & heat-pump repair",
+      "description": "Gas heaters and heat pumps that won’t fire, short-cycle or throw error codes — traced to the real cause and repaired, not just reset. A specialist who reads the board instead of guessing at parts.",
+      "durationMinutes": 90,
+      "priceCents": 15900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["heater"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "leak-detection",
+      "name": "Leak detection",
+      "description": "Losing water and can’t find where? We pressure-test the plumbing, dye-test the shell and fittings, and pinpoint the leak without tearing up your deck — then show you exactly what it takes to seal it.",
+      "durationMinutes": 120,
+      "priceCents": 19900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["leak"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "equipment-upgrade-consult",
+      "name": "Equipment & automation upgrade",
+      "description": "Trade an old, power-hungry setup for a modern one — variable-speed pumps, efficient heaters and phone-controlled automation that runs the whole pad. We size it to your pool and show the running-cost savings before you spend.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-consult"
+    },
+    {
+      "handle": "resurfacing-consult",
+      "name": "Resurfacing & renovation consult",
+      "description": "Rough plaster, stained tile or a dated shell? We walk the pool, talk through finishes and give you a clear renovation plan with a written estimate — resurfacing, tile, coping and deck, all in one scope.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "project-consult"
+    }
+  ]
+}

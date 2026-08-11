@@ -1,0 +1,251 @@
+{
+  "policies": [
+    {
+      "handle": "plumbing-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a visit. We text a reminder the day before and confirm when the plumber is on the way."
+    },
+    {
+      "handle": "emergency-priority",
+      "name": "Emergency priority",
+      "depositType": "none",
+      "cancellationWindowHours": 2,
+      "reminderOffsetsMin": [120],
+      "policyText": "Emergency calls are dispatched to the first available plumber, often same-day. We confirm the arrival window by text so you’re never left waiting."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["repair", "drain", "water-heater"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "diego",
+      "name": "Diego Ramos",
+      "kind": "staff",
+      "skillTags": ["repair", "install", "remodel"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "sam",
+      "name": "Sam Whitfield",
+      "kind": "staff",
+      "skillTags": ["emergency", "repair", "gas"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free estimate",
+      "description": "We come out, look at the job and give you a flat, written price before any work starts — no charge, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "diagnostic-visit",
+      "name": "Diagnostic service call",
+      "description": "A flat call-out fee to find the problem. If you go ahead with the repair the same day, this comes right off the total.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "drain-cleaning",
+      "name": "Drain cleaning",
+      "description": "A slow or backed-up drain cleared and tested — kitchen, bath, laundry or main line.",
+      "durationMinutes": 90,
+      "priceCents": 14900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["drain"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "leak-repair",
+      "name": "Leak repair",
+      "description": "A dripping pipe, fitting or valve tracked down and fixed right the first time, with the area left clean.",
+      "durationMinutes": 60,
+      "priceCents": 17900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "water-heater-service",
+      "name": "Water heater service",
+      "description": "Flush, inspect and repair a tank or tankless heater — or a straight quote to replace one that’s had its day.",
+      "durationMinutes": 90,
+      "priceCents": 21900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["water-heater"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "fixture-install",
+      "name": "Fixture install",
+      "description": "A new faucet, toilet, sink, garbage disposal or shower valve supplied and fitted, tested before we leave.",
+      "durationMinutes": 120,
+      "priceCents": 19900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["install"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "plumbing-standard"
+    },
+    {
+      "handle": "emergency-callout",
+      "name": "Emergency call-out",
+      "description": "A burst pipe, no water or a backed-up main — we dispatch the first available plumber and confirm your arrival window by text.",
+      "durationMinutes": 120,
+      "priceCents": 24900,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "plumber",
+          "kind": "staff",
+          "skillTags": ["emergency"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "emergency-priority"
+    }
+  ]
+}

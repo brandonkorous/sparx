@@ -1,0 +1,1893 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "7b16cea6-f987-4c0e-a85d-8f2a9fb577e2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "b1d48ccc-998a-4dff-805f-9673a8479ae3",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "b3c2e571-0146-4ef7-bb7c-517c07992315",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "5ac2ea35-98d1-4713-acbb-3d3fc1b95cfb",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "bb28f0e3-f8b6-4867-a133-d25f627a7440",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "228319d4-21ff-4ad7-9463-7cb650773315",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "77b423b5-2b70-44a2-a0ec-9867c2b28585",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "c0689897-fe52-41a6-8332-7bdbf3ad8dc9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "d2a05cd3-4fb0-4585-9682-6c04a05b2d44",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "5fbfcad8-52b3-42e8-8ff8-6c4ba866c22c",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8a3fe4a7-d4c0-4033-a478-62d806c8897f",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "1655c996-b3f2-47f3-9993-e592a6f8f2ca",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "a05f83d3-ba92-4533-85a0-50c1acefe5b4",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "fcf0e9e5-7af6-4045-89a2-b5ba2ee17cc4",
+                  "ord": "a2"
+                }
+              ],
+              "part": "panel",
+              "id": "df337b84-ec14-4d09-ae45-dd8b922ef290",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "dbdb8adb-8c1e-483c-95a6-8d92cc093839",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "c55e41fd-07d2-48c4-9ac3-dfb19d80639d",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "266c898b-f496-4d94-826c-e6e44a342f84",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "abcf3ddf-ed46-4ec0-a6f3-b763b60f1fa6",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "96be1d51-d4ac-4b9e-9c30-da160f4b49df",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "fd62ef0e-db25-4ac0-ac1c-50daf4f640af",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "54bb74fd-7efb-4dd6-a6cc-08b36482ec33",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "4afc975d-5d4d-4435-8c07-5520f1e46d5c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4c7552c2-856e-49c3-a1b7-2323bd4c4fbd",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "9459ce86-48cf-4269-920d-1fae1d782059",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5f3a0260-effa-462d-ab5c-47679aa65dcf",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "99dd4b23-d24b-42ce-90ee-769f908ccbb0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "22af6e46-c64f-4373-92cd-16744a9aa469",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "6d2d051f-419f-442a-b3bc-eb35f09dbf38",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "fb0c807e-165d-4943-bd02-31bb103ef245",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "55bf8387-fd4b-4f7b-a6fe-58b4563a0c2a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7ff94fc2-6aa0-4d30-b8a4-2d2a4f4840b5",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "f709b307-281a-4c71-bf48-5497664ca755",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f3823e3c-264f-4bf2-856f-3620af8d10b8",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "6b95a0d3-273e-4270-b634-3829f3c8ec7a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "108675f4-5a03-47f9-a7be-8bcf43259c8e",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "27c9c288-0e73-4688-af36-818596817c6a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "5a0205bd-92ad-43d6-93db-746c3677c0e6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4c7a5363-f9c8-4d33-bf60-d76eafe5467c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "639834f3-05aa-42bb-a73d-09143680dce8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "024ec123-2bfa-44a6-8aa4-ab659ba37730",
+                  "ord": "a1"
+                }
+              ],
+              "id": "3e17e9db-2668-42c3-867c-93b278813f12",
+              "ord": "a0"
+            }
+          ],
+          "id": "0f770c27-0982-4852-8ab3-54f858bbf298",
+          "ord": "a2"
+        }
+      ],
+      "id": "8b8def6c-2f39-4ccb-8309-bca3b5c62465"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Mara Ilić — photographer",
+      "seoDescription": "Mara Ilić is a photographer working in portrait, landscape and still life — selected series, a photographer’s statement, and how to commission work or buy a print.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ec3ddcaf-e105-45e9-b276-7797852d046a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "w-full",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1534568292380-49954e6859e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMGxhbmRzY2FwZSUyMGhvcml6b24lMjBmb2clMjBmaXJzdCUyMGxpZ2h0fGVufDB8MHx8fDE3ODYzOTk3NTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A wide, still landscape at first light — a low horizon and pale, even sky",
+                      "loading": "eager"
+                    },
+                    "id": "01f249d8-7d31-4f31-9e3e-dfe1b5d131be",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d0198c69-1947-4f66-b1fb-747f7e32331e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "@container px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-5xl flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "max-w-4xl text-4xl font-normal leading-tight tracking-tight text-base-content @2xl:text-6xl @5xl:text-7xl",
+                        "children": ["Photographs that hold still."],
+                        "id": "7917a5ca-5100-4190-ae0e-5f9d541d4fb3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content @2xl:text-xl",
+                        "children": [
+                          "Mara Ilić — portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page."
+                        ],
+                        "id": "327d30de-cec1-4fd8-816d-9239a68db975",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["View the work"],
+                                "id": "421571c3-0c9d-49c4-9355-647e1609a7e5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "a3971571-ce72-466d-a2bb-b34f722a18ad",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fdeae181-10f1-48e9-b754-308668195970",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-secondary",
+                            "attrs": {
+                              "href": "/about"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["About Mara"],
+                                "id": "f07bb64c-af6e-4c21-9eaf-89e75513a3ed",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "b8454046-e90b-467e-81d0-053682e46e84",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "58111ff1-8ed7-4464-b86f-8516f2222d1f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5fbcf6e1-55aa-4e11-8633-61e84b71a596",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2e75d9fe-63d2-49a5-a249-c9dd61764b46",
+                "ord": "a1"
+              }
+            ],
+            "id": "94619d2c-00d8-4a8c-865e-fe3d5307cf89",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "flex flex-col gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "@container px-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mx-auto flex w-full max-w-5xl flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Selected series"],
+                            "id": "9082ec07-37a2-429b-b1c2-a492d449db8a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "max-w-2xl text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-3xl",
+                            "children": [
+                              "Three bodies of work made over the last few years — the coast, the rooms, and the people who live by them."
+                            ],
+                            "id": "da99a7ee-92f1-4d81-b785-272f500afc6c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2e1598e3-15f2-4a5c-8480-6f828c848a6d",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0b94abad-042b-4a11-ad17-6e26752d95aa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "article",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block w-full",
+                        "attrs": {
+                          "href": "/blog/tideline"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover transition hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1599731657300-ec850de01ab8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8YmVhY2glMjBzZWElMjBzYW5kJTIwbG93JTIwdGlkZSUyMG1pbmltYWwlMjBncmV5fGVufDB8MHx8fDE3ODYzOTk3NTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "The line where a grey sea meets wet sand at low tide, redrawn by the water",
+                              "loading": "lazy"
+                            },
+                            "id": "3a4db2c9-bad7-4525-bee3-139b4d09b20f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "d8570a87-ef2e-41ef-9e3b-9f0e10ddd230",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "@container px-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "mx-auto flex w-full max-w-5xl flex-col gap-3 @2xl:flex-row @2xl:items-baseline @2xl:justify-between",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
+                                    "children": ["Tideline"],
+                                    "id": "ba8b6ebd-3518-4794-979f-588aca7aa6d7",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-xl text-base leading-relaxed text-secondary",
+                                    "children": [
+                                      "One winter along a northern coast, photographed at the hour the light arrives."
+                                    ],
+                                    "id": "d3373744-cd1c-4b0b-a09b-a6e4e717a82b",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "eb7444bd-c117-4863-8a69-22b24d88861f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/blog/tideline"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["View series"],
+                                    "id": "f4b273e2-044a-4268-923d-5699361379ba",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["→"],
+                                    "id": "8c848187-5e70-4a05-aa26-f2a7163a865a",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "9e98ce90-6fac-4388-855a-6b61cbbe1f4f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d217369a-99ce-4266-8b1f-2ff58d993905",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "a644aa6a-3247-48a0-961f-3fc81e259d6c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "341f6af1-6c98-4653-9f69-24c73f5d159b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "article",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block w-full",
+                        "attrs": {
+                          "href": "/blog/quiet-rooms"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover transition hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1763890699217-62a9f7638da6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RpbGwlMjBsaWZlJTIwd2luZG93c2lsbCUyMHNvZnQlMjBsaWdodHxlbnwwfDB8fHwxNzg2Mzk5NzYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A still life of ordinary objects on a windowsill in soft, raking domestic light",
+                              "loading": "lazy"
+                            },
+                            "id": "58721c02-b404-4886-b660-3b50777a7a14",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "66196d7d-ebfc-4245-94d3-c5d1e342e135",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "@container px-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "mx-auto flex w-full max-w-5xl flex-col gap-3 @2xl:flex-row @2xl:items-baseline @2xl:justify-between",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
+                                    "children": ["Quiet Rooms"],
+                                    "id": "82e32135-598f-412c-a0a5-2e03727c33af",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-xl text-base leading-relaxed text-secondary",
+                                    "children": [
+                                      "Still lifes made in borrowed houses, from the things people leave behind."
+                                    ],
+                                    "id": "acafd2ab-49a0-44bf-8065-5f53e38cbd60",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "1e0a67ae-3c9f-43fc-a0ad-be22dbbe62c0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/blog/quiet-rooms"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["View series"],
+                                    "id": "fdac3600-ae2c-4a59-8719-97f1ccfbb928",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["→"],
+                                    "id": "6de33425-5430-43a5-82de-2f2e27ea1251",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "69d82a83-9452-4c9f-9e40-e995d09a97dd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d6544ce4-53f2-429e-a1c4-689ac7400491",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "45bef6bb-1459-46d2-bada-5441cb129c5b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4da1d149-9d4e-4406-b27a-798ea475e1a4",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "article",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block w-full",
+                        "attrs": {
+                          "href": "/blog/north-faces"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover transition hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759349107284-fdd3b76c57eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9ydHJhaXQlMjBwZXJzb24lMjBvdXRkb29ycyUyMHdlYXRoZXJlZHxlbnwwfDB8fHwxNzg2Mzk5NzYzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A weathered portrait of a person who works outdoors, looking just off camera",
+                              "loading": "lazy"
+                            },
+                            "id": "794a4b49-e5ef-43e8-b978-b1d7fca9d110",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "c9981389-9d3a-4930-b09e-e6b518e1ab70",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "@container px-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "mx-auto flex w-full max-w-5xl flex-col gap-3 @2xl:flex-row @2xl:items-baseline @2xl:justify-between",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col gap-2",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
+                                    "children": ["North Faces"],
+                                    "id": "32247463-d3a6-4ca0-9a5b-26c9352e154b",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "p",
+                                    "class": "max-w-xl text-base leading-relaxed text-secondary",
+                                    "children": [
+                                      "Portraits of people who work outdoors, made where they work, in the weather they work in."
+                                    ],
+                                    "id": "015aa031-3110-4c8c-a63c-a6fe7aa53770",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "6d8a240e-6625-424a-9d30-b8a3d9d1a861",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                                "attrs": {
+                                  "href": "/blog/north-faces"
+                                },
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["View series"],
+                                    "id": "be49a66e-8ec7-431c-8d6e-60358b9eb597",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": ["→"],
+                                    "id": "727b0025-d883-45b4-ae0d-2600d9e9a0e1",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "71a2adf1-ad47-4dca-965a-4314a8ba8229",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b9552e32-b99f-478a-af12-38818ae728aa",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "580f6239-50ca-41cd-9970-fee41967acb5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "507d729b-bece-4bb1-ae2f-d5d381da01e2",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "f2eb1eec-2761-459a-8d77-618d6415be9a",
+                "ord": "a0"
+              }
+            ],
+            "id": "d174504a-63d0-4a7e-8d4a-3735699138f5",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-4xl",
+                    "children": [
+                      "I photograph slowly, in the light that is already there — and I wait for the moment a thing goes quiet enough to hold still."
+                    ],
+                    "id": "d92afef4-0009-4728-80b6-9eb190977a59",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c3c4a8e6-b269-4b58-b355-3eb915314e4b",
+                "ord": "a0"
+              }
+            ],
+            "id": "77e342f6-ac8e-47d7-9f0c-6fb8f2e64763",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content @2xl:text-xl",
+                    "children": [
+                      "Commissions and print sales by request — portraits, editorial, and a small edition of archival prints from each series."
+                    ],
+                    "id": "28613d24-a8de-4cea-83e4-afdb34a006fd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["Enquire about a commission or a print"],
+                        "id": "733a1669-ea93-4798-ad41-70dd2470d775",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["→"],
+                        "id": "a3af6371-098c-435f-93bc-2520218d18ce",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6f08650a-ca95-4c9f-9d95-f2aecadfddbb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e9f75fa4-56ba-49b5-86a2-b8caa8143c63",
+                "ord": "a0"
+              }
+            ],
+            "id": "7cd531c5-10d3-4996-a9bf-08f1e28b9579",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Mara Ilić",
+      "seoDescription": "Selected projects and case studies by Mara Ilić — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c75f95a6-b0ff-47d7-b99c-2c8610d04d32",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-12 @3xl:pt-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Series"],
+                    "id": "c2d72e0c-7680-462e-b02d-0f230c86ea6a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-secondary",
+                    "children": [
+                      "Complete bodies of work — landscape, still life and portrait. Each opens to the full series and a short note on where it was made."
+                    ],
+                    "id": "c01fbfbd-a9d0-4f5a-8e72-8315588e21b7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "01e0af14-dcb7-467a-963c-3f73f2bdec18",
+                "ord": "a0"
+              }
+            ],
+            "id": "856a63e7-c859-433a-b133-d33e5febbfb4",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "c687c6b0-df5b-49ab-b8fa-0dc43644c056",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "489342db-c321-4687-9284-94463f53fbd1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f66130bb-ed08-4ce2-a5a4-4b3233fbd51f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "c4fa7060-8a99-46f2-a646-2b6447cbf5db",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "83585b97-650f-4b6e-b0a3-425fb2ae7630",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "ebf9934c-e548-42e4-a9c5-db48e6d5c36c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ea0e7a6f-2885-42a4-99d9-6bee32250def",
+                "ord": "a0"
+              }
+            ],
+            "id": "76596f7a-0b05-4cb8-9b55-016731cae93a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Mara Ilić — photographer",
+      "seoDescription": "A photographer working slowly and in natural light, between the coast and the studio — portraiture, landscape and still life, printed in small editions.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b52a16f6-6c74-4290-966c-46348fa61fc9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-12 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["About Mara"],
+                        "id": "025bd099-39e4-47b3-82de-4b67a731606c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there — I would rather wait an hour for the weather than change it afterwards."
+                        ],
+                        "id": "dcb8bf84-8be3-48e3-99ae-451392bdb22c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment — when a scene settles and goes still enough to hold."
+                        ],
+                        "id": "38f655a8-bbb9-4ef8-a867-ef7862d9999e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I shoot on film and digital, print in editions, and take on a small number of portrait and editorial commissions each year. Work has appeared in independent journals and gallery shows across the north."
+                        ],
+                        "id": "34089d68-c651-4594-a354-e5495eb307b5",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "61af0a64-ca93-4dfa-8dcc-34c9cf5cddfa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1618746647602-1384364ac94b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGhvdG9ncmFwaGVyJTIwcG9ydHJhaXQlMjBzdHVkaW8lMjBsaWdodHxlbnwwfDB8fHwxNzg2Mzk5NzcwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Mara Ilić, photographer, in even studio light",
+                          "loading": "lazy"
+                        },
+                        "id": "2502e314-802b-4e4d-9dce-29228272e188",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Working in"],
+                            "id": "f63c00d0-43e9-4abf-a9a9-a1d54e26dcb6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Portraiture, landscape and still life — on film and digital, in natural light. Archival pigment prints in small editions."
+                            ],
+                            "id": "5134419c-8f5f-4f44-b1a8-11fcbabb3cd1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "012cde24-11a9-461f-9567-025226f37a24",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3f861d99-362a-4a35-b441-6e8251b9aa3f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e874f261-84c5-4c68-82cf-673f375d7957",
+                "ord": "a0"
+              }
+            ],
+            "id": "c9d97253-fc9e-4d83-86cf-990704146328",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Mara Ilić",
+      "seoDescription": "Start a project with Mara Ilić — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "da766eeb-df6f-42a4-be5d-08be951ff795",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Commissions & prints"],
+                    "id": "4c762634-e49c-4802-b388-d9ae30dc2369",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back."
+                    ],
+                    "id": "44a8a115-6566-4e9b-81d8-c4337a8b29cc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:studio@marailic.example"
+                        },
+                        "children": ["Write to the studio"],
+                        "id": "13fbd660-d232-47a9-8a02-50b4784d1c31",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the series first"],
+                        "id": "7a815ca0-4e23-4e6b-8433-af02099847a1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a751b5ec-48e1-4f69-a852-a2857addc4ee",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-2 border-t border-base-300 pt-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                        "children": ["Studio"],
+                        "id": "2f1a3083-5dcf-4e9a-b038-16bfe5a91a4e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-secondary",
+                        "children": [
+                          "By appointment, on the north coast. Print orders ship worldwide."
+                        ],
+                        "id": "b91c07eb-4eb6-4c58-b83e-5cf1d30c5c78",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "59863a27-ca23-4dd1-b973-c03182d63c3f",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "5221a9c3-c65e-4403-8941-a27cbcde90b6",
+                "ord": "a0"
+              }
+            ],
+            "id": "440c9941-2d04-41fc-aa82-7cabc1d4865c",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Mara Ilić",
+      "seoDescription": "A project by Mara Ilić — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-secondary",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "6be123ba-290e-452a-99cb-e33c409469bb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All series"],
+                            "id": "de199ce6-b13a-4ae5-883d-94f3eafb9f20",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9297691a-4d2d-44de-86ae-e00f2b151f9a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "2b3996b4-4195-4064-a5b5-ba1e9f0343e3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-normal leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "d8f2546a-a27a-4e65-b2b1-246142a84cbd",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-secondary",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "b9e8ec73-155f-479c-9e91-a30a5c886783",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-10 w-10 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "a70eef62-8599-43b5-bb91-7ebdd6bac909",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "9c013e8b-fca7-4631-a2f0-aaa4407d1f58",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "70001e0e-ca04-46e0-84b4-ffa414c78279",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "344d28aa-25fa-4539-996e-d29bdd89bfbf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bbdcfbca-892f-4b04-9979-897af30441a0",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "82890064-c9f5-486f-8f32-257a72849fa2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8e91067c-57eb-4187-a794-6034ab7b693c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 pb-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "w-full",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "cabbef00-45f9-4356-94d8-7c1054ac0e88",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d3f23e8e-e248-46d6-9c36-25dc2d30caf5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "9f66e9a6-0535-4657-9f36-fa3783cfe90a",
+                "ord": "a1"
+              }
+            ],
+            "id": "23d8eef5-b2bc-438e-b677-072aebef2837",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "9e8071c7-6032-42da-86e1-fbffa07c0f87",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "be2c43e7-8671-4ffa-8581-28eeaf921626",
+                "ord": "a0"
+              }
+            ],
+            "id": "00cb26ed-7927-49a0-87c6-249d904b7a18",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 border-t border-base-300 pt-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "7acec944-d5ce-45bd-95fc-d08c066ca787",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "52ae2b05-3bee-4264-96de-608ab4286c80",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "0d9b582a-859a-4536-9659-6a7132cb285d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "205745df-1689-4038-886d-45ef297d08d5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "345bc641-8ef5-4852-93a8-62332f7672ef",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3723749a-3085-4119-b1c9-c62946cce5a4",
+                "ord": "a0"
+              }
+            ],
+            "id": "be898f7f-c62d-42f2-bcf2-31a073873a2f",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "362e84a7-85c3-44e2-b8ed-9933848b2bc1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "03ad774b-5ccb-4854-87d5-deae3dec693e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "4ccb9fb0-f201-4eff-b49d-0ea7728669cd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "071d948d-b789-4cb4-a8c3-ffc32534dc0f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "0bf17425-5560-41c8-b697-9abb9301aeca",
+                "ord": "a0"
+              }
+            ],
+            "id": "9e8cd608-14ae-4003-9797-41d1806080c3",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "48b712e8-3696-4b0d-833d-1f775381a9dc"
+      }
+    }
+  ],
+  "theme": {
+    "name": "silver",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.001 250)",
+      "--color-base-200": "oklch(95% 0.002 250)",
+      "--color-base-300": "oklch(90% 0.003 250)",
+      "--color-base-content": "oklch(15% 0.002 260)",
+      "--color-primary": "oklch(18% 0.002 260)",
+      "--color-secondary": "oklch(40% 0.004 260)",
+      "--color-accent": "oklch(50% 0.006 260)",
+      "--color-neutral": "oklch(16% 0.002 260)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0rem",
+      "--radius-field": "0rem",
+      "--radius-box": "0rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.002 260)",
+      "--color-secondary-content": "oklch(98% 0.004 260)",
+      "--color-accent-content": "oklch(98% 0.006 260)",
+      "--color-neutral-content": "oklch(98% 0.002 260)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.006 260)",
+      "--color-highlight-content": "oklch(98% 0.006 260)",
+      "--color-border": "oklch(90% 0.003 250)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(14% 0.002 260)",
+      "--color-base-200": "oklch(11% 0.002 260)",
+      "--color-base-300": "oklch(8% 0.002 260)",
+      "--color-base-content": "oklch(96% 0.002 250)",
+      "--color-primary": "oklch(95% 0.002 250)",
+      "--color-secondary": "oklch(66% 0.004 260)",
+      "--color-accent": "oklch(60% 0.006 260)",
+      "--color-neutral": "oklch(28% 0.002 260)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.002 250)",
+      "--color-secondary-content": "oklch(15% 0.004 260)",
+      "--color-accent-content": "oklch(15% 0.006 260)",
+      "--color-neutral-content": "oklch(98% 0.002 260)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(60% 0.006 260)",
+      "--color-highlight-content": "oklch(15% 0.006 260)",
+      "--color-border": "oklch(8% 0.002 260)"
+    }
+  }
+}

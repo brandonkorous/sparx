@@ -1,0 +1,32 @@
+[
+  {
+    "id": "manuscript-desk",
+    "url": "https://images.unsplash.com/photo-1578589335615-9e804277a5af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JpdGVyJTIwZGVzayUyMG5vdGVib29rJTIwY29mZmVlJTIwbW9ybmluZ3xlbnwwfDB8fHwxNzg2Mzk5ODExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A writer’s desk in morning light — loose pages, a notebook, and a cooling cup of coffee"
+  },
+  {
+    "id": "manuscript-city",
+    "url": "https://images.unsplash.com/photo-1629770533831-7c5181ac29f9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmFpbiUyMGNpdHklMjBzdHJlZXQlMjBkdXNrJTIwbGlnaHRzfGVufDB8MHx8fDE3ODYzOTk4MTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A rain-slicked city street at dusk, shopfront light pooling on the pavement"
+  },
+  {
+    "id": "manuscript-window",
+    "url": "https://images.unsplash.com/photo-1780399334727-19bfe82d27bb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmFpbiUyMHdpbmRvdyUyMGJvb2slMjBpbnRlcmlvciUyMHF1aWV0fGVufDB8MHx8fDE3ODYzOTk4MTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rain running down a window over a quiet interior, an open book on the sill"
+  },
+  {
+    "id": "manuscript-letters",
+    "url": "https://images.unsplash.com/photo-1699662585297-8bcb021fd94c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGV0dGVycHJlc3MlMjBtZXRhbCUyMHR5cGUlMjBjbG9zZSUyMHVwfGVufDB8MHx8fDE3ODYzOTk4MjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tray of metal letterpress type, close enough to read the mirrored letters"
+  },
+  {
+    "id": "manuscript-shelf",
+    "url": "https://images.unsplash.com/photo-1719310469053-8c5c0c6803d3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va3NoZWxmJTIwd29ybiUyMGJvb2tzJTIwc3BpbmVzfGVufDB8MHx8fDE3ODYzOTk4MjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wall of well-read books, spines worn soft at the corners"
+  },
+  {
+    "id": "manuscript-portrait",
+    "url": "https://images.unsplash.com/photo-1600188769045-bc6026bfc8cd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JpdGVyJTIwcG9ydHJhaXQlMjB3aW5kb3clMjBkYXlsaWdodHxlbnwwfDB8fHwxNzg2Mzk5ODI4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Portrait of Iris Bellamy, writer, at a window in even daylight"
+  }
+]

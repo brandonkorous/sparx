@@ -1,0 +1,250 @@
+{
+  "policies": [
+    {
+      "handle": "evenair-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us a day’s notice if you need to change your visit and we’ll happily move it. We text a reminder the day before and two hours ahead, and our tech calls when they’re on the way."
+    },
+    {
+      "handle": "evenair-priority",
+      "name": "Priority & maintenance",
+      "depositType": "none",
+      "cancellationWindowHours": 12,
+      "reminderOffsetsMin": [1440, 240, 60],
+      "policyText": "Maintenance-plan members and urgent no-heat / no-cool calls get priority scheduling and same-day windows when they’re open. Change or cancel up to 12 hours ahead at no charge."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Reyes",
+      "kind": "staff",
+      "skillTags": ["ac", "heating", "tune-up"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 450,
+          "endMinute": 1050
+        }
+      ]
+    },
+    {
+      "handle": "dana",
+      "name": "Dana Okonkwo",
+      "kind": "staff",
+      "skillTags": ["install", "heating", "iaq"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "luis",
+      "name": "Luis Ferraro",
+      "kind": "staff",
+      "skillTags": ["ac", "repair", "emergency", "tune-up"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-install-estimate",
+      "name": "Free install estimate",
+      "description": "A no-pressure home visit to size up a new furnace, AC or heat pump and give you an honest, written quote — free, with financing options laid out plainly.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["install"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "ac-tune-up",
+      "name": "AC tune-up",
+      "description": "A full spring check-up so your air conditioner runs cool and efficient all summer — coils, refrigerant, drain and airflow, all cleaned and tested.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["tune-up"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "furnace-tune-up",
+      "name": "Furnace tune-up",
+      "description": "A fall safety-and-comfort check on your furnace or heat pump — burners, heat exchanger, filter and thermostat — so winter starts warm and worry-free.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["heating"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "system-diagnostic",
+      "name": "System diagnostic",
+      "description": "Something not right — weak airflow, odd noises, uneven rooms? A tech tracks down the cause and explains your options before any work begins.",
+      "durationMinutes": 75,
+      "priceCents": 12900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "install-consult",
+      "name": "Install consultation",
+      "description": "Ready to replace a system? A sit-down with our install lead to plan the right equipment, sizing and timeline for your home — no hard sell.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["install"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "air-quality-assessment",
+      "name": "Indoor air-quality assessment",
+      "description": "A walkthrough of what you’re breathing at home — filtration, humidity, ventilation and dust — with simple, honest fixes ranked by what actually helps.",
+      "durationMinutes": 60,
+      "priceCents": 7900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["iaq"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-standard"
+    },
+    {
+      "handle": "emergency-service",
+      "name": "Emergency no-heat / no-cool",
+      "description": "No heat in a cold snap or no cooling in a heat wave? Request a priority visit and we’ll get a tech to you as fast as our schedule allows.",
+      "durationMinutes": 120,
+      "priceCents": 17900,
+      "requiresApproval": true,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["emergency"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evenair-priority"
+    }
+  ]
+}

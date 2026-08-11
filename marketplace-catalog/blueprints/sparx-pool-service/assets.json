@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pool-service-hero",
+    "url": "https://images.unsplash.com/photo-1558617320-e695f0d420de?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBzd2ltbWluZyUyMHBvb2x8ZW58MHwwfHx8MTc4NjM5NDIwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sparkling clean backyard swimming pool with crystal-clear blue water"
+  },
+  {
+    "id": "pool-service-recurring",
+    "url": "https://images.unsplash.com/photo-1542029401157-d21e500b1385?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMGNsZWFuaW5nJTIwc2tpbW1lcnxlbnwwfDB8fHwxNzg2Mzk0MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pristine pool skimmed and balanced, ready to swim on a sunny afternoon"
+  },
+  {
+    "id": "pool-service-about",
+    "url": "https://images.unsplash.com/photo-1657383543368-7d929944be6a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFja3lhcmQlMjBwb29sJTIwd2F0ZXJ8ZW58MHwwfHx8MTc4NjM5NDIxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A BlueWave technician skimming and servicing a residential pool"
+  },
+  {
+    "id": "pool-service-carlos",
+    "url": "https://images.unsplash.com/photo-1530983822321-fcac2d3c0f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMHRlY2huaWNpYW4lMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2Mzk0MjE1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Carlos Mendez, lead pool technician"
+  },
+  {
+    "id": "pool-service-jasmine",
+    "url": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Jasmine Park, water-care specialist"
+  },
+  {
+    "id": "pool-service-tyler",
+    "url": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Tyler Brooks, service technician"
+  }
+]

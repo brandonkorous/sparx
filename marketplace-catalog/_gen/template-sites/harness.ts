@@ -61,7 +61,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
  *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.1.0';
+const BUNDLE_VERSION = '1.2.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -87,6 +87,13 @@ export type PageKey =
 export interface TemplateSiteSpec {
   /** The `docs/templates/*` sparx slug — the key into `TEMPLATE_THEME_BY_SLUG`. */
   slug: string;
+  /** An INLINE bespoke theme (a `defineTheme` output), used verbatim when present instead of
+   *  looking the slug up in the theme registries. This is what lets a large family of
+   *  generators (a retail/commerce family) each be fully SELF-CONTAINED — its own theme lives
+   *  in its own file, so parallel authoring never contends on a shared `*-themes.ts` registry.
+   *  Omit it and the harness resolves the slug through `TEMPLATE_THEME_BY_SLUG` /
+   *  `CONTENT_THEME_BY_SLUG` exactly as the original ten reference templates do. */
+  theme?: Theme;
   /** The bundle key / directory name (`sparx-<slug>`). */
   key: string;
   /** Marketplace card identity. */
@@ -165,6 +172,11 @@ export interface TemplateSiteSpec {
   content: unknown[];
   /** AssetDecl[] — every image URL the bundle references, each with alt. */
   assets: unknown[];
+  /** EmailDecl[] — brand-voiced MARKETING starters (UNKEYED; the platform's keyed
+   *  transactional defaults — order/shipping/dunning — are separate and never duplicated
+   *  here). Omit and a `retail` shop gets the default welcome + win-back (`commerceEmails`);
+   *  a `content` template gets none. Pass an explicit array to override either way. */
+  emails?: unknown[];
 }
 
 // ── Site composition ────────────────────────────────────────────────────────────
@@ -305,7 +317,7 @@ function defaultContact(): Node[] {
  *  the projection the golden bundle's site.json is in). The bespoke theme comes from
  *  `TEMPLATE_THEME_BY_SLUG[slug]`, resolved to the flat ship-ready token bag. */
 export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unknown> {
-  const rawTheme = rawThemeForSlug(spec.slug);
+  const rawTheme = spec.theme ?? rawThemeForSlug(spec.slug);
   if (!rawTheme) throw new Error(`harness: no template theme for slug "${spec.slug}"`);
   const theme = resolveSparxTheme(rawTheme);
 
@@ -314,6 +326,9 @@ export function composeTemplateSite(spec: TemplateSiteSpec): Record<string, unkn
   const chromeOpts: SiteChromeOptions = {
     commerceEnabled: true,
     cmsEnabled: true,
+    // A wholesale/trade site's nav CTA opens an account, not a chat — unless the template's
+    // own chrome overrides it. (Retail keeps the default "Get in touch".)
+    ...(spec.vertical === 'b2b' ? { ctaLabel: 'Open a trade account' } : {}),
     ...(spec.chrome ?? {}),
   };
   const frame = frameForBundle(chromeOpts);
@@ -423,6 +438,7 @@ import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
@@ -448,9 +464,11 @@ const blueprint = {
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/
@@ -505,7 +523,7 @@ function manifestJson(opts: {
  *  `blueprints/<key>/`. Returns the resolved theme (light tokens) so a caller can
  *  render a preview against the exact same look the bundle ships. */
 export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string; theme: Theme }> {
-  const rawTheme = rawThemeForSlug(spec.slug);
+  const rawTheme = spec.theme ?? rawThemeForSlug(spec.slug);
   if (!rawTheme) throw new Error(`harness: no template theme for slug "${spec.slug}"`);
   const resolved = resolveSparxTheme(rawTheme);
   const light = resolved.tokens ?? {};
@@ -546,11 +564,18 @@ export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string;
   const dir = join(blueprintsDir, spec.key);
   await fs.mkdir(join(dir, 'media'), { recursive: true });
 
+  // A shop's default marketing starters (welcome + win-back) unless the spec authors its own —
+  // for any COMMERCE vertical (retail OR b2b/wholesale); a content template ships none. Both
+  // installed as drafts.
+  const emails =
+    spec.emails ?? (spec.vertical === 'content' ? ([] as unknown[]) : commerceEmails(spec));
+
   await fs.writeFile(join(dir, 'site.json'), json(site));
   await fs.writeFile(join(dir, 'commerce.json'), json(spec.commerce));
   await fs.writeFile(join(dir, 'authors.json'), json(spec.authors ?? []));
   await fs.writeFile(join(dir, 'content.json'), json(spec.content));
   await fs.writeFile(join(dir, 'assets.json'), json(spec.assets));
+  await fs.writeFile(join(dir, 'emails.json'), json(emails));
   await fs.writeFile(
     join(dir, 'blueprint.ts'),
     blueprintTs({
@@ -628,4 +653,131 @@ function contactBand(): Node {
       }),
     ],
   });
+}
+
+// ── Marketing-email starters ──────────────────────────────────────────────────────
+//
+// A shop should greet a new subscriber and win a lapsed one back. These are the two
+// brand-voiced MARKETING starters every retail template ships (drafts on install),
+// tokenized with the canonical merge tags (`{{site.name}}`, `{{customer.firstName}}`,
+// `{{site.url}}`) so a fork re-themes to the tenant. MARKETING ONLY — order confirmation /
+// shipping / dunning are platform KEYED transactional defaults and are never duplicated here.
+
+/** Build ONE silica `EmailDocument` in the shape the email editor saves + `renderSilicaEmail`
+ *  sends (body → section → heading / paragraphs / button). Colours carry the `*Auto` flags so
+ *  the mail re-themes light/dark per tenant, exactly like the core blueprints' emails. Node
+ *  ids are namespaced per email so a doc's nodes stay unique. */
+function emailDoc(
+  ns: string,
+  o: {
+    subject: string;
+    preheader: string;
+    heading: string;
+    paragraphs: string[];
+    button: { label: string; href: string };
+  }
+): Record<string, unknown> {
+  let seq = 0;
+  const eid = (k: string): string => `${ns}-${k}-${(seq += 1)}`;
+  const text = (html: string, heading = false): Record<string, unknown> => ({
+    id: eid('text'),
+    kind: 'text',
+    html,
+    align: 'left',
+    color: '#18181b',
+    colorAuto: true,
+    fontSize: heading ? 28 : 16,
+    fontWeight: heading ? 'bold' : 'normal',
+    lineHeight: heading ? 36 : 26,
+  });
+  const spacer = (height: number): Record<string, unknown> => ({
+    id: eid('spacer'),
+    kind: 'spacer',
+    height,
+  });
+
+  const blocks: Record<string, unknown>[] = [text(o.heading, true), spacer(10)];
+  o.paragraphs.forEach((p, i) => {
+    blocks.push(text(p));
+    blocks.push(spacer(i === o.paragraphs.length - 1 ? 22 : 14));
+  });
+  blocks.push({
+    id: eid('button'),
+    kind: 'button',
+    label: o.button.label,
+    href: o.button.href,
+    bg: '#111827',
+    bgAuto: true,
+    color: '#ffffff',
+    colorAuto: true,
+    radius: 6,
+    align: 'left',
+    paddingX: 24,
+    paddingY: 12,
+  });
+
+  return {
+    version: '1',
+    subject: o.subject,
+    preheader: o.preheader,
+    root: {
+      id: eid('body'),
+      kind: 'body',
+      width: 600,
+      bg: '#f4f4f5',
+      bgAuto: true,
+      contentBg: '#ffffff',
+      contentBgAuto: true,
+      fontFamily: 'Arial, Helvetica, sans-serif',
+      colorScheme: 'light dark',
+      children: [
+        {
+          id: eid('section'),
+          kind: 'section',
+          bg: '#ffffff',
+          bgAuto: true,
+          paddingX: 24,
+          paddingY: 24,
+          children: blocks,
+        },
+      ],
+    },
+  };
+}
+
+/** The default MARKETING starters for a shop — a welcome and a win-back, both installed as
+ *  drafts (`publish: false`, like every blueprint email). The copy is shop-voiced but
+ *  vertical-neutral (it reads right for a coffee roaster, a boutique, or a plant shop alike)
+ *  and the CTAs point at the site's live `/shop`. */
+function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
+  return [
+    {
+      name: 'Welcome',
+      publish: false,
+      doc: emailDoc('shop-welcome', {
+        subject: 'Welcome to {{site.name}}',
+        preheader: 'So glad you found us — here’s where to start.',
+        heading: 'Welcome, {{customer.firstName}}',
+        paragraphs: [
+          'Thanks for joining {{site.name}}. We put a lot of care into what we make and sell, and we’re glad you’re here to see it.',
+          'Have a look around whenever you’re ready — new arrivals, best sellers, and everything in between are waiting in the shop.',
+        ],
+        button: { label: 'Shop now', href: '{{site.url}}/shop' },
+      }),
+    },
+    {
+      name: 'We saved your spot',
+      publish: false,
+      doc: emailDoc('shop-winback', {
+        subject: 'Still thinking it over, {{customer.firstName}}?',
+        preheader: 'Your favourites are waiting at {{site.name}}.',
+        heading: 'We’d love to see you again',
+        paragraphs: [
+          'It’s been a little while, {{customer.firstName}}. Whenever you’re ready, {{site.name}} is right where you left it.',
+          'We’ve had a few new things land since your last visit — come take a look and see what’s caught our eye lately.',
+        ],
+        button: { label: 'See what’s new', href: '{{site.url}}/shop' },
+      }),
+    },
+  ];
 }

@@ -1,0 +1,528 @@
+{
+  "categories": [
+    {
+      "handle": "ppe",
+      "name": "PPE",
+      "description": "Gloves, masks, gowns and personal protective equipment.",
+      "featured": true
+    },
+    {
+      "handle": "consumables",
+      "name": "Consumables",
+      "description": "Syringes, thermometers and everyday clinical consumables.",
+      "featured": true
+    },
+    {
+      "handle": "wound-care",
+      "name": "Wound care",
+      "description": "Gauze, dressings and wound-care supplies.",
+      "featured": true
+    },
+    {
+      "handle": "infection-control",
+      "name": "Infection control",
+      "description": "Disinfectant wipes, hand sanitiser and hygiene supplies.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The lines practices reorder most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "nitrile-exam-gloves-case",
+        "procedure-face-masks-box",
+        "disinfectant-wipes-case",
+        "hand-sanitiser-case"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "Lines just added to the catalog.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["isolation-gowns-case", "digital-thermometers-box", "clinic-starter-kit"]
+    },
+    {
+      "handle": "everyday-essentials",
+      "name": "Everyday essentials",
+      "description": "The consumables no treatment room runs without.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "nitrile-exam-gloves-case",
+        "procedure-face-masks-box",
+        "sterile-gauze-swabs-box",
+        "luer-lock-syringes-case",
+        "digital-thermometers-box",
+        "adhesive-wound-dressings-box",
+        "clinic-starter-kit"
+      ]
+    },
+    {
+      "handle": "infection-prevention",
+      "name": "Infection prevention",
+      "description": "Protect the team, keep the practice clean.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "procedure-face-masks-box",
+        "disinfectant-wipes-case",
+        "hand-sanitiser-case",
+        "isolation-gowns-case"
+      ]
+    },
+    {
+      "handle": "wound-care-supplies",
+      "name": "Wound care",
+      "description": "Gauze, dressings and everything to dress a wound.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["sterile-gauze-swabs-box", "adhesive-wound-dressings-box"]
+    },
+    {
+      "handle": "bulk-consumables",
+      "name": "Bulk consumables",
+      "description": "Buy the case, reorder on a standing order.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "nitrile-exam-gloves-case",
+        "disinfectant-wipes-case",
+        "hand-sanitiser-case",
+        "luer-lock-syringes-case",
+        "adhesive-wound-dressings-box"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "nitrile-exam-gloves-case",
+      "title": "Nitrile Exam Gloves, 4-mil — Case of 1000",
+      "description": "Powder-free blue nitrile examination gloves, 4-mil, textured fingertips, AQL 1.5 — the everyday clinical glove for exams, treatment and handling. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size; stock the full size run so no room is caught short.",
+      "status": "active",
+      "productType": "PPE",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["ppe", "gloves", "nitrile", "exam", "consumable"],
+      "categoryHandles": ["ppe"],
+      "collectionHandles": ["best-sellers", "everyday-essentials", "bulk-consumables"],
+      "seoTitle": "Nitrile Exam Gloves 4-mil, Case of 1000 | Meridian Medical",
+      "seoDescription": "Powder-free blue nitrile examination gloves, 4-mil, AQL 1.5, case of 1000. Sizes S–XL, sold by the case.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            },
+            {
+              "value": "X-Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MMS-PPE-NITR-S",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small"
+          }
+        },
+        {
+          "sku": "MMS-PPE-NITR-M",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium"
+          }
+        },
+        {
+          "sku": "MMS-PPE-NITR-L",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        },
+        {
+          "sku": "MMS-PPE-NITR-XL",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "X-Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gloves",
+          "isPrimary": true,
+          "alt": "A case of blue nitrile examination gloves"
+        }
+      ]
+    },
+    {
+      "handle": "procedure-face-masks-box",
+      "title": "Procedure Face Masks, Type IIR — Box of 50",
+      "description": "Type IIR fluid-resistant ear-loop procedure masks, 3-ply with an adjustable nose wire, EN 14683 tested. Box of 50. MOQ 10 boxes — buy the outer and keep every treatment room and reception stocked.",
+      "status": "active",
+      "productType": "PPE",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["ppe", "masks", "type-iir", "infection-control", "consumable"],
+      "categoryHandles": ["ppe"],
+      "collectionHandles": ["best-sellers", "infection-prevention", "everyday-essentials"],
+      "seoTitle": "Procedure Face Masks Type IIR, Box of 50 | Meridian Medical",
+      "seoDescription": "Type IIR fluid-resistant 3-ply ear-loop procedure masks, EN 14683, box of 50. Sold by the box.",
+      "variants": [
+        {
+          "sku": "MMS-PPE-MASK-50",
+          "priceCents": 850,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-masks",
+          "isPrimary": true,
+          "alt": "Procedure Face Masks, Type IIR — Box of 50"
+        }
+      ]
+    },
+    {
+      "handle": "disinfectant-wipes-case",
+      "title": "Surface Disinfectant Wipes — Case of 12",
+      "description": "Alcohol-free bactericidal, virucidal and fungicidal surface wipes — effective against enveloped viruses, EN 14476 compliant, for daily clinical surface and equipment cleaning. Case of 12 canisters (200 wipes each). MOQ 1 case.",
+      "status": "active",
+      "productType": "Infection control",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["infection-control", "disinfectant", "wipes", "cleaning", "consumable"],
+      "categoryHandles": ["infection-control"],
+      "collectionHandles": ["best-sellers", "infection-prevention", "bulk-consumables"],
+      "seoTitle": "Surface Disinfectant Wipes, Case of 12 | Meridian Medical",
+      "seoDescription": "Alcohol-free bactericidal, virucidal surface wipes, EN 14476, case of 12 canisters of 200. Daily clinical cleaning.",
+      "variants": [
+        {
+          "sku": "MMS-IC-WIPES-12",
+          "priceCents": 4100,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-wipes",
+          "isPrimary": true,
+          "alt": "Surface Disinfectant Wipes — Case of 12"
+        }
+      ]
+    },
+    {
+      "handle": "sterile-gauze-swabs-box",
+      "title": "Sterile Gauze Swabs — Box of 100",
+      "description": "Sterile 8-ply 100% cotton gauze swabs, individually wrapped, highly absorbent and low-linting for wound cleaning, dressing and prep. Box of 100. MOQ 5 boxes. Choose the swab size your procedures call for.",
+      "status": "active",
+      "productType": "Wound care",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["wound-care", "gauze", "sterile", "dressing", "consumable"],
+      "categoryHandles": ["wound-care"],
+      "collectionHandles": ["wound-care-supplies", "everyday-essentials"],
+      "seoTitle": "Sterile Gauze Swabs, Box of 100 | Meridian Medical",
+      "seoDescription": "Sterile 8-ply cotton gauze swabs, individually wrapped, box of 100. Sizes 5×5cm to 10×10cm, sold by the box.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5 × 5 cm"
+            },
+            {
+              "value": "7.5 × 7.5 cm"
+            },
+            {
+              "value": "10 × 10 cm"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MMS-WC-GAUZE-5",
+          "priceCents": 1100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "5 × 5 cm"
+          }
+        },
+        {
+          "sku": "MMS-WC-GAUZE-75",
+          "priceCents": 1400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "7.5 × 7.5 cm"
+          }
+        },
+        {
+          "sku": "MMS-WC-GAUZE-10",
+          "priceCents": 1700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "10 × 10 cm"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gauze",
+          "isPrimary": true,
+          "alt": "A box of sterile gauze swabs"
+        }
+      ]
+    },
+    {
+      "handle": "luer-lock-syringes-case",
+      "title": "Luer-Lock Syringes — Case of 800",
+      "description": "Sterile single-use luer-lock syringes with a clear barrel and bold graduations, latex-free, for accurate dosing and irrigation. Case of 800 (8 boxes of 100). MOQ 1 case. Pick the volume your clinic uses most.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["consumables", "syringes", "luer-lock", "sterile", "diagnostics"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["everyday-essentials", "bulk-consumables"],
+      "seoTitle": "Luer-Lock Syringes, Case of 800 | Meridian Medical",
+      "seoDescription": "Sterile single-use luer-lock syringes, latex-free, case of 800. 3 mL, 5 mL or 10 mL, sold by the case.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "3 mL"
+            },
+            {
+              "value": "5 mL"
+            },
+            {
+              "value": "10 mL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MMS-CON-SYR-3",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "3 mL"
+          }
+        },
+        {
+          "sku": "MMS-CON-SYR-5",
+          "priceCents": 6200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "5 mL"
+          }
+        },
+        {
+          "sku": "MMS-CON-SYR-10",
+          "priceCents": 7400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "10 mL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-syringes",
+          "isPrimary": true,
+          "alt": "A case of sterile luer-lock syringes"
+        }
+      ]
+    },
+    {
+      "handle": "isolation-gowns-case",
+      "title": "Disposable Isolation Gowns — Case of 50",
+      "description": "Fluid-resistant AAMI Level 2 disposable isolation gowns with knit cuffs and full back coverage — single-use protection for examinations, procedures and infection-control precautions. Case of 50. MOQ 2 cases. Choose the fit.",
+      "status": "active",
+      "productType": "PPE",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["ppe", "gowns", "isolation", "infection-control", "consumable"],
+      "categoryHandles": ["ppe"],
+      "collectionHandles": ["new-in", "infection-prevention"],
+      "seoTitle": "Disposable Isolation Gowns, Case of 50 | Meridian Medical",
+      "seoDescription": "Fluid-resistant AAMI Level 2 disposable isolation gowns, knit cuffs, case of 50. Regular or Large, sold by the case.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Regular"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MMS-PPE-GOWN-R",
+          "priceCents": 11200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Regular"
+          }
+        },
+        {
+          "sku": "MMS-PPE-GOWN-L",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gowns",
+          "isPrimary": true,
+          "alt": "A case of disposable isolation gowns"
+        }
+      ]
+    },
+    {
+      "handle": "hand-sanitiser-case",
+      "title": "Alcohol Hand Sanitiser Gel, 500 mL — Case of 12",
+      "description": "70% alcohol hand sanitiser gel with added emollient to protect skin through repeated use, EN 1500 hygienic hand-rub compliant, in a 500 mL pump bottle. Case of 12. MOQ 2 cases — stock every room, station and reception desk.",
+      "status": "active",
+      "productType": "Infection control",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["infection-control", "hand-sanitiser", "hygiene", "consumable"],
+      "categoryHandles": ["infection-control"],
+      "collectionHandles": ["best-sellers", "infection-prevention", "bulk-consumables"],
+      "seoTitle": "Alcohol Hand Sanitiser Gel 500 mL, Case of 12 | Meridian Medical",
+      "seoDescription": "70% alcohol hand sanitiser gel with emollient, EN 1500, 500 mL pump, case of 12. Sold by the case.",
+      "variants": [
+        {
+          "sku": "MMS-IC-SAN-12",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sanitiser",
+          "isPrimary": true,
+          "alt": "Alcohol Hand Sanitiser Gel, 500 mL — Case of 12"
+        }
+      ]
+    },
+    {
+      "handle": "digital-thermometers-box",
+      "title": "Digital Clinical Thermometers — Box of 12",
+      "description": "Fast-read digital clinical thermometers with a flexible tip, fever alarm and last-reading memory, CE marked for clinical use. Box of 12 with spare batteries. MOQ 2 boxes — a reliable diagnostic every room should have to hand.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["consumables", "thermometer", "diagnostics", "clinical"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["new-in", "everyday-essentials"],
+      "seoTitle": "Digital Clinical Thermometers, Box of 12 | Meridian Medical",
+      "seoDescription": "Fast-read digital clinical thermometers, flexible tip, fever alarm, CE marked, box of 12. Sold by the box.",
+      "variants": [
+        {
+          "sku": "MMS-CON-THERM-12",
+          "priceCents": 5400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-thermometer",
+          "isPrimary": true,
+          "alt": "Digital Clinical Thermometers — Box of 12"
+        }
+      ]
+    },
+    {
+      "handle": "adhesive-wound-dressings-box",
+      "title": "Adhesive Wound Dressings — Box of 100",
+      "description": "Sterile individually wrapped adhesive island dressings with a low-adherent absorbent pad and a breathable, water-resistant border — for minor wounds, post-procedure cover and everyday first aid. Box of 100. MOQ 5 boxes.",
+      "status": "active",
+      "productType": "Wound care",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["wound-care", "dressings", "adhesive", "sterile", "consumable"],
+      "categoryHandles": ["wound-care"],
+      "collectionHandles": ["wound-care-supplies", "everyday-essentials", "bulk-consumables"],
+      "seoTitle": "Adhesive Wound Dressings, Box of 100 | Meridian Medical",
+      "seoDescription": "Sterile adhesive island wound dressings, breathable water-resistant border, box of 100. Sold by the box.",
+      "variants": [
+        {
+          "sku": "MMS-WC-DRESS-100",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dressings",
+          "isPrimary": true,
+          "alt": "Adhesive Wound Dressings — Box of 100"
+        }
+      ]
+    },
+    {
+      "handle": "clinic-starter-kit",
+      "title": "Clinic Starter Kit",
+      "description": "A curated kit of the consumables a new practice or satellite clinic runs out of first — nitrile gloves, procedure masks, disinfectant wipes, hand sanitiser, sterile gauze and adhesive dressings, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a treatment room from empty.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Meridian Medical Supplies",
+      "tags": ["consumables", "kit", "starter", "bundle"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["new-in", "everyday-essentials"],
+      "seoTitle": "Clinic Starter Kit | Meridian Medical",
+      "seoDescription": "A curated starter kit of essential clinical consumables — gloves, masks, wipes, sanitiser, gauze and dressings, priced below the sum.",
+      "variants": [
+        {
+          "sku": "MMS-KIT-CLINIC-STARTER",
+          "priceCents": 17900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-starter-kit",
+          "isPrimary": true,
+          "alt": "Clinic Starter Kit"
+        }
+      ]
+    }
+  ]
+}

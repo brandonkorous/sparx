@@ -1,0 +1,358 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-long-way-to-the-desk",
+    "status": "published",
+    "authorSlug": "iris-bellamy",
+    "categories": ["Essay"],
+    "tags": ["Work", "Writing life"],
+    "body": {
+      "title": "The Long Way to the Desk",
+      "excerpt": "On the small, stubborn rituals we build around work — and what they quietly protect us from.",
+      "featuredImage": {
+        "$asset": "manuscript-desk"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For a long time I believed the trouble with my working day was a problem of scheduling, the kind a better calendar might fix. I moved the hard hours earlier, then later. I tried the cold clarity of six in the morning and the warm fatigue of four in the afternoon. None of it took, and it took me longer than I care to admit to understand why: the difficulty was never when I sat down, but what I had to be willing to feel once I got there."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The ritual before the work"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every writer I know keeps a private liturgy — the walk, the second coffee, the tidying of a desk that was already tidy. We are gently mocked for it, and we deserve to be, a little. But I have stopped believing the rituals are procrastination in a better coat. They are the slow work of lowering the volume of everything that is not the sentence, until the sentence is the loudest thing in the room. The walk is not avoidance; it is tuning."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "What the ritual protects, I think, is the willingness to be bad for a while. You cannot get to a true paragraph without passing through several false ones, and the false ones are humiliating in a way that the empty page is not. An empty page is only potential. A bad paragraph is evidence. The ritual is how you make it safe to produce evidence."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What the day is for"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I have come to measure a working day not by how much I produced but by whether I told myself the truth in it. Some days the truth is that the piece is not working and the honest move is to cut the half I was proudest of. Those days feel like losses and are not. The word count went down and the writing went up, and no calendar in the world has a column for that."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So I keep the rituals, and I have stopped apologising for them. The long way to the desk turns out to be the only way I know that reliably arrives. What looks like delay from the outside is, from the inside, the sound of a room going quiet enough to work in."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-the-night-shift-knows",
+    "status": "published",
+    "authorSlug": "iris-bellamy",
+    "categories": ["Reporting"],
+    "tags": ["Cities", "Labour"],
+    "body": {
+      "title": "What the Night Shift Knows",
+      "excerpt": "Three months among the people who keep a city running while it sleeps, and the hours the daytime never sees.",
+      "featuredImage": {
+        "$asset": "manuscript-city"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The city I thought I knew ends around eleven at night. After that a different one takes over, run by people the daytime rarely meets: the bakers proving tomorrow’s bread, the nurses on the long ward, the drivers moving the goods that will be on shelves before the first commuter is awake. For three months I kept their hours, and the thing that stayed with me was not how hard the work is — though it is — but how invisible it is designed to be."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The economy of the small hours"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A night shift is arranged so that you never see it working. The bins are emptied, the floors are cleaned, the systems are patched, all in the window between the last person leaving and the first arriving, so that the morning looks like it simply happened. The people I followed spoke about this with a kind of dry pride. Their job, as one cleaner put it to me at three in the morning, is to make it look like nobody has a job."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That invisibility has a price, and the people who pay it are the ones least able to. Night work pays a premium that rarely covers what it costs the body, and the shift patterns fall hardest on those with the fewest other options — new arrivals, students, parents fitting work around a second job or a child. The premium is real. So is the sleep debt, the missed dinners, the slow erosion of the ordinary daytime life the rest of us take as the baseline."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What the daytime owes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I went looking for hardship and found competence. The night shift is not a lesser version of the day; it is a distinct expertise, a way of reading a quiet building or an empty road that the daytime never has to learn. The people who work it know things about the city — where it leaks, where it strains, who it forgets — that no daytime survey will ever surface, because the daytime is not awake to ask."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We could pay for that knowledge, and mostly we do not. The least the daytime owes the night is to stop pretending the morning arrives on its own. It arrives because someone stayed up to make it. This piece is a small attempt to keep them awake in the record, at least, a little longer than the shift itself."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "notes-on-attention-14",
+    "status": "published",
+    "authorSlug": "iris-bellamy",
+    "categories": ["Newsletter"],
+    "tags": ["Attention", "The Long Field"],
+    "body": {
+      "title": "Notes on Attention, No. 14",
+      "excerpt": "A fortnightly letter — this issue, on the difference between being interrupted and being distracted.",
+      "featuredImage": {
+        "$asset": "manuscript-window"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Welcome back to The Long Field. It rained here all week, which is the best weather for a newsletter about attention, because rain is the rare interruption that does not ask anything of you. You can watch it or not; it will carry on. I have been thinking about that — the difference between an interruption and a distraction — because I suspect we have been blaming the wrong one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Interruption is external; distraction is a deal"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An interruption comes from outside: the doorbell, the child, the colleague at your desk. It is rude, and it is honest — it declares itself and then it is over. A distraction is quieter and less innocent, because a distraction is something you agree to. The phone does not reach into your pocket. You reach for it, in the small gap where the work got hard, and you make a tiny private deal: a moment of relief now, in exchange for the thread you were holding."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Naming it as a deal changed how I felt about it, because a deal can be renegotiated and a victimhood cannot. I am not being stolen from. I am selling something cheaply, over and over, and the buyer is very good at making the price look like nothing."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A small practice"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So here is the practice I have been keeping, offered in the spirit of one reader to another rather than as advice. When I notice the reach — and the whole thing is learning to notice the reach — I try to name what I am fleeing before I flee it. Usually it is a sentence I do not know how to finish. Naming it does not make the sentence easier. But it moves the difficulty back into view, where it can be worked on, instead of letting it dissolve into a feed."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That is all for this issue. As ever, hit reply and tell me what you are paying attention to, or failing to — I read every one, and the best of them end up shaping where this letter goes next. Back in a fortnight. — Iris"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-novel-that-refuses-to-end",
+    "status": "published",
+    "authorSlug": "iris-bellamy",
+    "categories": ["Criticism"],
+    "tags": ["Books", "Reading"],
+    "body": {
+      "title": "The Novel That Refuses to End",
+      "excerpt": "On long books, slow reading, and why the best endings are the ones that decline to resolve.",
+      "featuredImage": {
+        "$asset": "manuscript-shelf"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a particular pleasure, almost illicit now, in a novel that will not be hurried. I mean the long book — the eight-hundred-page kind that asks for a season of your life and gives no sign, for the first two hundred pages, that it intends to reward the loan. We are trained to distrust these books. They are inefficient. They do not respect our time. And that, I have come to think, is precisely the point of them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Length as an argument"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A long novel is not a short novel that lost discipline. Its length is an argument about how meaning accumulates: slowly, by repetition and return, the way a person actually comes to understand a marriage or a city or themselves. A book that arrives at its insight in two hundred crisp pages is telling you that understanding is a matter of the right information. The long book insists it is a matter of time, and time cannot be summarised. You have to serve it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is why the great long novels are so often about ordinary duration — a year on an estate, a family across three generations, a single day stretched to the width of a life. The form and the subject agree. Nothing important, they say, happens quickly, and the book will not insult the slowness of real change by pretending otherwise."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The ending that declines to resolve"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "And so the endings. The books I love most tend to close without closing — a last image rather than a last answer, a door left ajar. Readers sometimes feel cheated by this, and I understand the feeling, but I think it is the opposite of a cheat. A resolution is a small lie a novel can tell to send you home comfortable. The refusal to resolve is the book keeping faith with its own argument: that the thing it has been describing is still going on, out past the final page, in the same unfinished way your own life is."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Read slowly enough and you stop waiting for the ending at all. The book becomes a place you live for a while rather than a problem you are solving, and when it lets you go, unresolved, it leaves you where all the best reading leaves you — back in your own unfinished life, slightly better at bearing that it does not resolve either."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

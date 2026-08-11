@@ -1,0 +1,2100 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "344fe51a-8f8d-4563-8b47-046c0a5d01d2",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "c8a31958-25f3-4398-bbaa-8cdb54f65451",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "a7b794d7-9ac4-489f-a014-095b5377c8e5",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "2ce4f96f-ee0b-468d-b4bd-f1f06b0120b7",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "ecb087d2-a101-4594-8509-cc1b38c2a6c0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "c3a515f3-7939-4750-b0a2-24d9dd87ae06",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "015a5a75-dec6-4a63-8624-d02e0d643e74",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "eb967aec-7d99-4337-8e43-92870e25fde8",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "df3c3b7d-146c-475e-ac75-cdc9db1a2925",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "662b421d-15a2-40c2-9a5e-2740e5958ea9",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bd618945-9a5d-43ba-b437-3b6a60a830db",
+                  "ord": "a2"
+                }
+              ],
+              "id": "e880b5d9-a3fa-4a46-8450-c075169e0868",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "e0307512-095a-45e4-97fd-47370996dbfd",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "de50229d-89fb-4cd0-a3e0-70363d96368f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "5922b58e-9c64-4d02-a466-331262ff9708",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "ddcef2ff-aba8-43f8-9c84-c7ba7cb7d041",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "63f7d55b-ff56-49ae-9e12-bc6fcf5e0505",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "7c6a89c5-ee96-41d7-91bf-d98ae7caf24c",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "0d8f3008-891f-4dc7-a369-bd69953bf946",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "5ab0f4ce-f37a-4e2a-9e71-814baeac45f1",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "8ffb730b-a07e-4395-bcfb-534ff87cd7bf",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ffc76432-efb5-4a8f-916d-e9716a619530",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "27c0b8ab-1080-4d9a-8e24-4dfc5e82d331",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ab63ddc4-4b9a-47a8-9e69-b03f17e705f1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "fca4e99e-f2d0-446a-b4eb-d512d8447e54",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "883f7369-f688-406a-8ae5-50cf4ce7bfac",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f2e0e611-0d0a-4933-9901-df3323d4e849",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "99e27b31-6ad6-4fea-8c23-9d44bf1a997c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d8d9f73b-0b20-447f-92d5-b67e18051f95",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "16dfcea5-9895-4f6d-baa8-9eb02f8dee78",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c591c7ee-1ec9-44ce-a504-e539af1bacfa",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "fd23dd85-1209-40b2-9790-bc97c13f0ed6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "70b10612-f5a7-4530-9025-46c5d017f038",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "61b60f77-7d9a-428f-b9f8-fcf99538ae8a",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "7d389c35-ee10-44ba-9e4c-87a0bf446dbe",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "538c151b-5aa1-4fd3-9545-14934872b594",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7dbd8e7d-0ccf-43ae-ab26-5cb70ab2c518",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "b5d715d1-7bb6-4751-be5f-14411c078694",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "590aeb7b-b20d-48f6-b7ac-7511c2fa1e8f",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "76f29640-a4b5-4d83-b99d-9a6496273aa9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a9c2142d-a556-4309-9e76-5eb013c74fcf",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b16bfdfa-6069-4ee0-b035-92f751e99b60",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "29ba157e-5f18-463a-a658-7466f81f8f4d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "576ad235-74a0-4b4a-9350-133ff2c267c4",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "fa5ac3b3-723e-4199-8603-ce3f0bbd9dc1",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "89488bf5-3d3c-48a7-932d-3e8c354f1aac",
+                  "ord": "a1"
+                }
+              ],
+              "id": "acb5a3e2-a0ff-4706-a3a4-162ec9973329",
+              "ord": "a0"
+            }
+          ],
+          "id": "4083d831-af02-4a54-8d56-c3e39951bec0",
+          "ord": "a2"
+        }
+      ],
+      "id": "d8e69880-448a-47a3-9b06-99e38f002425"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Verdant Grounds — landscape design & build",
+      "seoDescription": "Verdant Grounds designs and builds custom landscapes — patios, planting, irrigation and outdoor living. Book a free design consultation online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3b1eb3fd-5679-439e-9bbc-db5efebe0e0d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1778683326192-898fc982e6a6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlZCUyMGdhcmRlbiUyMGJhY2t5YXJkfGVufDB8MHx8fDE3ODYzOTE0NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A lush, layered garden with a stone terrace at golden hour",
+                  "loading": "eager"
+                },
+                "id": "bab8311a-b8ae-4ca4-bee4-0922d5704942",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "e7f5dc69-6080-470d-9250-1b382df7a084",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["The yard you keep meaning to build"],
+                    "id": "378a51e4-ef64-487c-9c54-6da524d52fab",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Verdant Grounds designs and builds landscapes worth coming home to — considered design, real craftsmanship, and plantings that only get better with time."
+                    ],
+                    "id": "d43f858f-5234-4ad1-a4b9-7a67387227bc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a design consultation"],
+                        "id": "6525cc12-52ab-4cd0-8667-2023423dcae3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our work"],
+                        "id": "36b28db6-710e-4ff0-be94-58829d17b52d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "05e5aff5-3083-4c1a-99bb-31e514d9a309",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9aaa03c5-17ba-4ad9-af8b-44a1098cb904",
+                "ord": "a2"
+              }
+            ],
+            "id": "2a2b7eed-f67c-4ae6-a9f1-f0601ccbcb0f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Design that fits your yard"],
+                            "id": "6dcff30e-cb18-482b-b4da-00d2606d6613",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every project starts with a custom design drawn for your space, your light and how you actually want to live outside — never a copy-paste plan."
+                            ],
+                            "id": "bafe630f-0dde-4ee4-927d-d03aa1ebd14c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "14486bc1-dd42-4b60-a10d-9e79da37e044",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed, insured crews"],
+                            "id": "fa76c164-6a95-4011-9835-80e68ed48553",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Our own in-house teams build what we draw. Fully licensed and insured, so the patio, the planting and the irrigation are all on one accountable crew."
+                            ],
+                            "id": "c5b2aee7-a7ae-4cf3-92b0-8294292f8d3e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f908850d-5e60-46c6-8041-635412b60155",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["See it before we build it"],
+                            "id": "1dccc212-886a-494b-b53e-b41bbae62490",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Scaled 2D plans and 3D renderings let you walk the finished yard on screen and change your mind on paper, where it’s free."
+                            ],
+                            "id": "f95cfd10-d1cb-43e0-9cea-c0f40e191d10",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d879ca55-56ce-4240-af17-4b66e234f4c7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A warranty on what grows"],
+                            "id": "9f854b58-6309-4a24-9d8c-0f8d4b7fcf5b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We stand behind our plantings and our build. If something doesn’t take in its first season, we make it right."
+                            ],
+                            "id": "87264d74-5127-4d4c-9708-2db89c3dc6c2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e206a024-c900-4ff5-bd99-286fd4198225",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "de71cc8f-18c1-4259-9259-b3a23468071e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4437b10b-e77e-438f-a568-d8919400da3f",
+                "ord": "a0"
+              }
+            ],
+            "id": "adeeaf54-9923-4d58-bdf4-3f9849b61f54",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Where a project begins"],
+                        "id": "e3912a19-06e1-40f5-9319-f83482bdb1fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every engagement opens with a conversation on your property. Consultations and estimates are free — full design engagements hold a deposit that’s credited toward your plan."
+                        ],
+                        "id": "328a6a61-cc68-4338-b1cd-c2861c774ad6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f8715518-a2e0-4958-bfbd-75c5f6c3d505",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Design consultation"],
+                                "id": "64dac4da-83b3-4f8d-b337-87646a252848",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "380d4e3e-2ba2-4d73-809d-845f454773c2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e0858455-eae1-4c6c-b20e-85d16a7a4a82",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "2f29db85-cfeb-4e82-bbb2-859018c038a3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "An on-site walk-through of your goals and what’s possible."
+                            ],
+                            "id": "547483ea-dbea-4456-8171-d1bd4f60b640",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e2977421-b3c7-4b93-9108-5a921216d071",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Full-property free estimate"],
+                                "id": "0c5e69e2-a196-413a-9239-9508e2f8369b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "b07461af-24f8-47ea-8846-afc6c652b694",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "76ce129d-770d-483c-8959-2086e8173e45",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "777d8fe1-f2c7-450a-b82d-c427164bde13",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A complete measure-up and written estimate for a whole-yard transformation."
+                            ],
+                            "id": "553543e2-0f43-4f37-bbad-3535f2503645",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a5261bf2-0ff0-4eb3-9c2d-616619ed6ee9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Landscape design engagement"],
+                                "id": "7779c687-acef-4762-bd48-b167902d04d6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "fd227d23-68ca-4daa-90f2-8f01d9fe6b6f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "77c477e9-d1ea-4bfb-a71c-2a2aca9a1346",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "2145e248-50b8-4cec-9610-78ec6bc6fdfc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A site survey and brief that leads to scaled 2D & 3D plans."
+                            ],
+                            "id": "163f79a3-ba39-46c1-92e0-5d15fcacfe31",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fd710b36-2919-4f31-a42e-729f97d4f3b3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Hardscape & patio consultation"],
+                                "id": "89f00e21-eba0-4b6a-896c-7940863d5511",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "4a754cbf-250a-4d2f-963b-bf2ee1f9e14a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5614e6c3-1b61-4e16-8b8a-62edd4e0aca7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "5f62eac7-6a9c-4df6-a485-91be152de5ee",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Patios, walls, walkways and fire features, planned on site."
+                            ],
+                            "id": "8cbc0e69-4574-4182-9e7e-b0f8f7be2a63",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7a9147e4-2405-4bf5-b236-d37b4561ceec",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Planting plan consultation"],
+                                "id": "8d3419db-2fd9-465e-9d17-0d3f318a299e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "706d2e63-4fd9-4fc3-abb5-835f8dc99891",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8a88ad1a-587d-48c5-afa1-b44d6f0947e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "403a599d-2865-430e-a357-c0dbc8d5374f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A four-season garden built for your light and soil."],
+                            "id": "6a2d22fa-26f5-43d0-b665-e85d5e686a9a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "72c5cdce-14c3-4f2f-b624-c60e9002d0b0",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Outdoor living design engagement"],
+                                "id": "e9db5d40-9a7c-4582-b92d-2d0ad75b013f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "194c276e-15e9-4a8d-a09b-a823b8bc17ea",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "32d0e1b6-4ac4-4ca2-be00-2ed2fe8bbf60",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "620cd30a-93c1-4e66-bd56-1d686a6a90b0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Kitchens, pergolas and lighting for evenings outside."],
+                            "id": "3fe0d80d-c9da-428d-9989-be4533ca44e7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "faac8494-67d2-487e-a928-d7212e571934",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "29aee3de-f2ab-4e1c-9770-c2aa0cdee8f5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "5f83fd98-a52c-4466-b839-94c654aa38e4",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "42f65893-a559-40ee-aaef-235dca034003",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "063db98e-6b16-49ca-8b0c-dc592b22a46f",
+                "ord": "a0"
+              }
+            ],
+            "id": "96bc7197-8dda-4bf9-bec0-cf085381db5c",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Recent projects"],
+                    "id": "9be8298d-8c4d-4761-8d28-fc3185aea1a4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1780838446281-9394772d07a8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGF0aW8lMjBzdG9uZSUyMGhhcmRzY2FwZXxlbnwwfDB8fHwxNzg2MzkxNDUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A natural-stone patio with built-in seating and soft lighting",
+                          "loading": "lazy"
+                        },
+                        "id": "d46c9959-734c-4c90-ae40-56bc328a299c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1438109382753-8368e7e1e7cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwZmxvd2VyJTIwcGxhbnRpbmd8ZW58MHwwfHx8MTc4NjM5MTQ1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A layered perennial border in full bloom",
+                          "loading": "lazy"
+                        },
+                        "id": "98eebd9f-878a-47c9-9870-8763a5176390",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1657383543368-7d929944be6a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFja3lhcmQlMjBwb29sJTIwbGFuZHNjYXBpbmd8ZW58MHwwfHx8MTc4NjM5MTQ1OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A poolside garden framed by ornamental grasses",
+                          "loading": "lazy"
+                        },
+                        "id": "a0e12829-aa96-4b4f-bc17-a1d22bb7de99",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1663185776834-0c86f6ced17b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwc3RvbmUlMjBwYXRofGVufDB8MHx8fDE3ODYzOTE0NjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A flagstone path winding through a shade garden",
+                          "loading": "lazy"
+                        },
+                        "id": "5a7d47e1-f704-4fda-bd43-3b5c09c08e45",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1527359443443-84a48aec73d2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyZ29sYSUyMG91dGRvb3IlMjBsaXZpbmd8ZW58MHwwfHx8MTc4NjM5MTQ2NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A cedar pergola over an outdoor dining area",
+                          "loading": "lazy"
+                        },
+                        "id": "ea440425-7374-425c-9947-561014a9e4ea",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1624396593447-ae75dcd225a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwd2F0ZXIlMjBmZWF0dXJlfGVufDB8MHx8fDE3ODYzOTE0Njd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A quiet water feature set among boulders and ferns",
+                          "loading": "lazy"
+                        },
+                        "id": "c06d6eb6-ccae-467f-aafc-616a8d873df7",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "3a91b576-586c-4817-a89f-61aff51ce706",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "21077f42-155a-4ce2-b08e-b8779defe3cc",
+                "ord": "a0"
+              }
+            ],
+            "id": "92b04ba9-0009-405d-9ce8-ad15854e8ac6",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1597201278257-3687be27d954?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlJTIwZGVzaWduJTIwcGxhbnxlbnwwfDB8fHwxNzg2MzkxNDQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A landscape designer marking up a planting plan on site",
+                      "loading": "lazy"
+                    },
+                    "id": "47b643f3-75bc-486f-9fa4-8c797f1f3cfb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["From first walk-through to finished yard"],
+                        "id": "2c2c5a16-30be-4d4f-abcc-d005e2cc689d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We start on your property, not in a showroom — walking the space, learning how you live outside, and understanding the light, grade and soil we’re working with."
+                        ],
+                        "id": "36baed33-f2d6-4ed8-8e13-fa1f5b13b56e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "From there we draw a scaled design and 3D renderings so you can see the whole yard before a single stone is set. Once it’s right, our own licensed crews build it — hardscape, planting and irrigation, start to finish."
+                        ],
+                        "id": "ee2ed0d3-2355-4f35-ae71-ebdc54c235d1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start your design"],
+                            "id": "e1e0844f-062b-4699-9722-c4cb10bf32c5",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e29670bb-cbc1-4136-8e6a-9d2b65aa2af2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5bacb029-b4b4-496e-a6c3-1493ce13af02",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0ce8d2c2-2453-4271-aa26-2dd6670dad31",
+                "ord": "a0"
+              }
+            ],
+            "id": "1ff3a83a-8326-4d9c-a273-2f2519394fd7",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They handed us a 3D plan of our own backyard before they touched a shovel. What they built looks exactly like the rendering — only better in person.”"
+                    ],
+                    "id": "f398baa6-0bc5-4f8b-9c4b-9d7248092be9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Okafor family, clients since 2024"],
+                    "id": "8ec7da39-ac30-4de4-bfff-3f48a4c012f3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "deb71e46-d2ca-4ee8-bbc8-874e921d29ce",
+                "ord": "a0"
+              }
+            ],
+            "id": "d556bcee-53ab-4d5b-98d1-4612555e5f05",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s design your yard"],
+                    "id": "fccaaa08-e3d7-40df-95fe-e2d76a6571ab",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free consultation and we’ll walk your property, talk through what’s possible, and show you where to begin. It takes about a minute."
+                    ],
+                    "id": "29cc467b-a12b-4cde-99be-686bb1446b97",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a design consultation"],
+                    "id": "b6ccceb1-84a7-4ed7-801d-7b6dd910245c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "90c4482c-145c-474f-a3b4-ed6feefb5996",
+                "ord": "a0"
+              }
+            ],
+            "id": "2913379a-d274-4741-a056-47dbae07eaa2",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Verdant Grounds",
+      "seoDescription": "See what Verdant Grounds offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "91ae363d-b44e-4c17-a2fd-f9d53b223199",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1597201278257-3687be27d954?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlJTIwZGVzaWduJTIwcGxhbnxlbnwwfDB8fHwxNzg2MzkxNDQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A landscape designer marking up a planting plan on site",
+                  "loading": "eager"
+                },
+                "id": "fe931b01-5018-46a9-9adf-5bafd5f3b5c0",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "26569730-0fcb-4117-bf79-a59e01031369",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your design consultation"],
+                    "id": "dcdc7960-ec0c-45a0-bf07-f9e2fdf6c7dd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose the kind of project you have in mind to see what’s involved and how long each visit takes, then pick your designer and time."
+                    ],
+                    "id": "71100a78-0252-4416-a535-191c2e822fcf",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See consultations below"],
+                        "id": "e30dea5f-a2e4-46ac-950a-03881711e69a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "1f87c1fc-a04b-45d2-812f-5e847edaca12",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7adeb559-e075-4c22-a755-14d20148cb48",
+                "ord": "a2"
+              }
+            ],
+            "id": "5062835b-08b7-4420-b189-583582dae567",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "7724301e-4ebc-454d-a322-c14342253f5e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Verdant Grounds",
+      "seoDescription": "Who Verdant Grounds is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "56fd773e-dc99-40e7-8446-39e5a0e158d8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1597201278257-3687be27d954?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwbGFuZHNjYXBpbmclMjB3b3JrfGVufDB8MHx8fDE3ODYzOTE0NDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A finished backyard with mature plantings and a seating area",
+                      "loading": "lazy"
+                    },
+                    "id": "1d204cdf-d3ee-4163-a336-f64af458d8e4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Verdant Grounds"],
+                        "id": "3d160133-08fb-4848-8e99-8fde31815445",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Verdant Grounds is a design-and-build landscape studio. We’re the rare firm that draws the plan and builds it too — so the vision on paper is the yard you actually get, with no handoffs and no finger-pointing."
+                        ],
+                        "id": "ebd1a657-880e-4e22-82d0-b668a597f9ee",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We founded the studio on a simple idea: a landscape should be designed for the people who live with it, built to last, and beautiful in every season — not just the week it’s planted."
+                        ],
+                        "id": "60c500f7-d4d1-40d1-82bc-a1e7f95f6cef",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "c5d5e5bc-1170-41ac-8899-580207b7d0f7",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "a5ad7656-59ab-4b59-b7a5-7af5e6768d23",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "07e0f826-745d-4b41-a415-8a272a1d3528",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "35bb05d9-cc81-402e-812f-6e0fbd5a2263",
+                "ord": "a0"
+              }
+            ],
+            "id": "a7d6e0e5-1912-4943-96f1-0c66d40787b1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "2f6f30f9-fb26-4aea-a779-32e12c70e157",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Design first, always"],
+                            "id": "7294a074-58e4-4db9-941f-d43b5e49d3dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Nothing gets built until there’s a plan you love. We design for your light, grade and how you want to use the space."
+                            ],
+                            "id": "74846f97-7bfa-4542-b397-83489f1856f1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "15b3e806-ae71-4e5a-8f1d-5ee3f3647f22",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One accountable crew"],
+                            "id": "53deaff3-6c88-44b0-b586-00cf9e481151",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Our own licensed, insured teams handle hardscape, planting and irrigation — one point of responsibility from first cut to final walk-through."
+                            ],
+                            "id": "0cb433e7-fed8-4a00-a160-fac250213c86",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e13c309a-140b-4050-9e8d-fecc819269f0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Built to endure"],
+                            "id": "e7516237-7117-4c6f-8de2-7bf78e820374",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Proper base prep, healthy plant stock and a warranty behind it. We build the yard to still look right in ten years, not ten weeks."
+                            ],
+                            "id": "eac50d56-91fe-487b-8975-b6df1545dc52",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "65552b0d-71a1-43bc-8d09-d43e95ffa877",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "7c8c431a-573c-4a8b-8ad2-714860e6454a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "862fae0f-190a-4514-9422-dba6cc0523b9",
+                "ord": "a0"
+              }
+            ],
+            "id": "441f6a5b-ad94-4bf3-911f-2a8407216621",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Verdant Grounds",
+      "seoDescription": "Where to find Verdant Grounds, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a6b09b4b-493e-4d52-8a1c-8c4b62795849",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the studio"],
+                        "id": "7ab1027c-9839-4422-ba27-47a02620bd9b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Verdant Grounds"],
+                            "id": "b63063c3-bcc0-47dc-bd5f-0651f4723c21",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["640 Cedar Mill Road"],
+                            "id": "8e9b9478-d189-44da-9122-e532b70e7c9a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio B · Asheville, NC 28801"],
+                            "id": "aa341756-b209-472b-8bea-8189eaf4db54",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "974b5b59-53d9-4b50-9349-116498536b6e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "2b565402-6e8f-4a1b-a4f0-b75afd45e15b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 5:00"],
+                                "id": "6d3d80da-111d-490f-a877-ee097dc2375a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4a12966e-38e4-46ed-b8c4-f11884d33903",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "34e5e716-8fe4-4793-8223-ccad294d8bf1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 2:00 (by appointment)"],
+                                "id": "a6f9a11c-138a-438d-9b46-52a684740752",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bf63e133-9bff-4d2c-9635-f6ac48a8b7af",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "8b3ba81b-8de3-4932-9ba4-38a6b67b66ba",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "dd88eec0-3ff8-4039-a566-d1d570c584d2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ac793169-34fe-4988-b549-38beedbeefcf",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "59ab7e55-f533-43e6-8bdc-fc0e59674271",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2de38e40-d978-4687-916a-c3cd882c5206",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "640 Cedar Mill Road, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "a7c89c5a-e9db-4770-8f36-7ef426d29391",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5403d1d0-cf42-4d20-b030-2f5ed04c3345",
+                "ord": "a0"
+              }
+            ],
+            "id": "9eae4703-92c5-4e57-99e8-31de867b980b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "74be9f84-0d99-4c39-b03b-2e0ff031f3c1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve a consultation online — no phone tag, and you’ll pick the designer who fits your project."
+                    ],
+                    "id": "df9e24b1-b05b-47e6-805a-6a4b99d5e990",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a design consultation"],
+                    "id": "de18f8af-73dc-4745-804a-85cc48696eb7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "bc5978f9-a073-475a-933e-89804d9f8df2",
+                "ord": "a0"
+              }
+            ],
+            "id": "a1dcc47c-18f0-4178-a2e4-91aad3bf2437",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "verdant",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.012 95)",
+      "--color-base-200": "oklch(93% 0.014 92)",
+      "--color-base-300": "oklch(88% 0.016 90)",
+      "--color-base-content": "oklch(24% 0.02 150)",
+      "--color-primary": "oklch(45% 0.09 155)",
+      "--color-secondary": "oklch(38% 0.02 150)",
+      "--color-accent": "oklch(64% 0.1 48)",
+      "--color-neutral": "oklch(28% 0.015 150)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 155)",
+      "--color-secondary-content": "oklch(98% 0.01 150)",
+      "--color-accent-content": "oklch(15% 0.02 48)",
+      "--color-neutral-content": "oklch(98% 0.01 150)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(64% 0.1 48)",
+      "--color-highlight-content": "oklch(15% 0.02 48)",
+      "--color-border": "oklch(88% 0.016 90)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 150)",
+      "--color-base-200": "oklch(18% 0.015 150)",
+      "--color-base-300": "oklch(14% 0.012 150)",
+      "--color-base-content": "oklch(95% 0.012 95)",
+      "--color-primary": "oklch(70% 0.1 158)",
+      "--color-secondary": "oklch(78% 0.02 150)",
+      "--color-accent": "oklch(72% 0.09 50)",
+      "--color-neutral": "oklch(82% 0.015 150)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 158)",
+      "--color-secondary-content": "oklch(15% 0.02 150)",
+      "--color-accent-content": "oklch(15% 0.02 50)",
+      "--color-neutral-content": "oklch(15% 0.015 150)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.09 50)",
+      "--color-highlight-content": "oklch(15% 0.02 50)",
+      "--color-border": "oklch(14% 0.012 150)"
+    }
+  }
+}

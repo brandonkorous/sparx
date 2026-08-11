@@ -1,0 +1,314 @@
+{
+  "policies": [
+    {
+      "handle": "session-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel. We’ll send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "session-deposit",
+      "name": "Session deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Booked sessions hold a $50 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries right over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "nadia",
+      "name": "Nadia Brooks",
+      "kind": "staff",
+      "skillTags": ["family", "newborn", "maternity", "portrait"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Marsh",
+      "kind": "staff",
+      "skillTags": ["branding", "headshot", "portrait"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "iris",
+      "name": "Iris Vaughn",
+      "kind": "staff",
+      "skillTags": ["family", "maternity", "portrait"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "the-loft",
+      "name": "The Loft Studio",
+      "kind": "space",
+      "skillTags": ["studio"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Session consultation",
+      "description": "A free, no-pressure call to plan your session — outfits, timing, the look you’re after.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["portrait"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "mini-session",
+      "name": "Mini session",
+      "description": "A quick, bright studio sitting — perfect for a seasonal update or a single great portrait.",
+      "durationMinutes": 20,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["portrait"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "family-session",
+      "name": "Family session",
+      "description": "A relaxed, playful session on location — the park, the beach or your own home.",
+      "durationMinutes": 90,
+      "priceCents": 32500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["family"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "newborn-session",
+      "name": "Newborn session",
+      "description": "A gentle, unhurried studio session in the first few weeks — soft light, lots of cuddles.",
+      "durationMinutes": 90,
+      "priceCents": 38500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["newborn"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "branding-session",
+      "name": "Personal branding session",
+      "description": "On-brand portraits for your website, socials and press — planned around your business.",
+      "durationMinutes": 75,
+      "priceCents": 45000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["branding"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "headshot-session",
+      "name": "Headshot session",
+      "description": "A crisp, confident studio headshot — quick, easy and ready for LinkedIn the same week.",
+      "durationMinutes": 30,
+      "priceCents": 18500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["headshot"],
+          "count": 1
+        },
+        {
+          "role": "studio",
+          "kind": "space",
+          "skillTags": ["studio"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "maternity-session",
+      "name": "Maternity session",
+      "description": "A calm, glowing session on location or in the studio, celebrating the last few weeks.",
+      "durationMinutes": 60,
+      "priceCents": 29500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["maternity"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    }
+  ]
+}

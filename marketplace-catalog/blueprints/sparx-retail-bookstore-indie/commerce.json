@@ -1,0 +1,589 @@
+{
+  "categories": [
+    {
+      "handle": "staff-picks",
+      "name": "Staff picks",
+      "description": "The books we’re hand-selling right now.",
+      "featured": true
+    },
+    {
+      "handle": "fiction",
+      "name": "Fiction",
+      "description": "Novels and short stories.",
+      "featured": true
+    },
+    {
+      "handle": "nonfiction",
+      "name": "Nonfiction",
+      "description": "Memoir, nature, cities and ideas.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "For the readers in your life.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "staff-picks",
+      "name": "This month’s staff picks",
+      "description": "What we’re pressing on people this month.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "the-salt-in-her-name",
+        "small-hours",
+        "a-field-guide-to-leaving",
+        "the-marginalia-book-club"
+      ]
+    },
+    {
+      "handle": "new-this-season",
+      "name": "New this season",
+      "description": "The freshest arrivals on the tables.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "tin-ceilings",
+        "how-cities-breathe",
+        "a-field-guide-to-leaving",
+        "the-salt-in-her-name"
+      ]
+    },
+    {
+      "handle": "the-fiction-shelf",
+      "name": "The fiction shelf",
+      "description": "Novels and short stories we stand behind.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["the-salt-in-her-name", "tin-ceilings", "small-hours"]
+    },
+    {
+      "handle": "the-nonfiction-shelf",
+      "name": "The nonfiction shelf",
+      "description": "Memoir, nature, cities and ideas.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["a-field-guide-to-leaving", "how-cities-breathe", "root-and-branch"]
+    },
+    {
+      "handle": "gifts-for-readers",
+      "name": "Gifts for readers",
+      "description": "Totes, bookmarks, gift cards and the book club.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "marginalia-canvas-tote",
+        "foxed-page-bookmark-set",
+        "marginalia-gift-card",
+        "the-marginalia-book-club"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "the-salt-in-her-name",
+      "title": "The Salt in Her Name",
+      "description": "A debut novel about a woman who returns to a fishing town to bury a mother she barely knew, and stays to untangle a family that would rather she didn’t. Salt-scoured, quietly furious, and tender in the places you don’t expect — the book the whole shop pressed on each other first.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Marisol Vane",
+      "tags": ["fiction", "literary", "debut", "staff-pick"],
+      "categoryHandles": ["fiction", "staff-picks"],
+      "collectionHandles": ["staff-picks", "new-this-season", "the-fiction-shelf"],
+      "seoTitle": "The Salt in Her Name by Marisol Vane | Marginalia Books",
+      "seoDescription": "A salt-scoured debut novel about grief, family and a town that keeps its secrets. A Marginalia staff pick.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-SALT-PB",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-SALT-HC",
+          "priceCents": 2800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-salt",
+          "isPrimary": true,
+          "alt": "The Salt in Her Name by Marisol Vane"
+        }
+      ]
+    },
+    {
+      "handle": "tin-ceilings",
+      "title": "Tin Ceilings",
+      "description": "Three decades in a shrinking mill town, told through the tenants of one crooked apartment block. Frayne writes ordinary lives with the patience of someone who has actually lived one — funny, unshowy, and by the last chapter, quietly devastating.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Odell Frayne",
+      "tags": ["fiction", "literary"],
+      "categoryHandles": ["fiction"],
+      "collectionHandles": ["new-this-season", "the-fiction-shelf"],
+      "seoTitle": "Tin Ceilings by Odell Frayne | Marginalia Books",
+      "seoDescription": "Three decades of ordinary lives in one crooked apartment block — funny, patient and quietly devastating.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-TIN-PB",
+          "priceCents": 1700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-TIN-HC",
+          "priceCents": 2700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tin",
+          "isPrimary": true,
+          "alt": "Tin Ceilings by Odell Frayne"
+        }
+      ]
+    },
+    {
+      "handle": "small-hours",
+      "title": "Small Hours",
+      "description": "Eleven short stories set between midnight and dawn — a night nurse, a locksmith, a woman who can’t stop driving. Belec is a miniaturist of the sleepless hours, and every one of these lands like a held breath. Perfect for readers who think they don’t like short stories.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Junia Belec",
+      "tags": ["fiction", "short-stories", "staff-pick"],
+      "categoryHandles": ["fiction", "staff-picks"],
+      "collectionHandles": ["staff-picks", "the-fiction-shelf"],
+      "seoTitle": "Small Hours by Junia Belec | Marginalia Books",
+      "seoDescription": "Eleven short stories set between midnight and dawn. For readers who think they don’t like short stories.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-HOURS-PB",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-HOURS-HC",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-hours",
+          "isPrimary": true,
+          "alt": "Small Hours by Junia Belec"
+        }
+      ]
+    },
+    {
+      "handle": "a-field-guide-to-leaving",
+      "title": "A Field Guide to Leaving",
+      "description": "A memoir in the shape of a naturalist’s notebook: every chapter is a species — the swift, the eel, the monarch — and a way of departing. Yao braids migration science with the year they left a marriage and a country, and it is one of the most quietly hopeful books we’ve read in ages.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Perrin Yao",
+      "tags": ["nonfiction", "memoir", "nature", "staff-pick"],
+      "categoryHandles": ["nonfiction", "staff-picks"],
+      "collectionHandles": ["staff-picks", "new-this-season", "the-nonfiction-shelf"],
+      "seoTitle": "A Field Guide to Leaving by Perrin Yao | Marginalia Books",
+      "seoDescription": "A memoir in the shape of a naturalist’s notebook, braiding migration science with a year of departures.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-FIELD-PB",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-FIELD-HC",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-field",
+          "isPrimary": true,
+          "alt": "A Field Guide to Leaving by Perrin Yao"
+        }
+      ]
+    },
+    {
+      "handle": "how-cities-breathe",
+      "title": "How Cities Breathe",
+      "description": "A clear-eyed, genuinely readable account of what makes a street feel alive — light, width, corners, the humble bench — from an urbanist who’d rather show you than lecture. You’ll never walk your own neighbourhood the same way again. The nonfiction we keep re-ordering.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Tomas Ekhart",
+      "tags": ["nonfiction", "cities", "design"],
+      "categoryHandles": ["nonfiction"],
+      "collectionHandles": ["new-this-season", "the-nonfiction-shelf"],
+      "seoTitle": "How Cities Breathe by Tomas Ekhart | Marginalia Books",
+      "seoDescription": "A clear, readable account of what makes a street feel alive — light, width, corners, the humble bench.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-CITIES-PB",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-CITIES-HC",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cities",
+          "isPrimary": true,
+          "alt": "How Cities Breathe by Tomas Ekhart"
+        }
+      ]
+    },
+    {
+      "handle": "root-and-branch",
+      "title": "Root and Branch",
+      "description": "A year in an old orchard, and a history of the apple that turns out to be a history of us — trade, empire, obsession, and one grafting knife. Calloway is the rare nature writer who is also very funny. Hand it to anyone who thinks they’re not a \"nature person\".",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Neave Calloway",
+      "tags": ["nonfiction", "nature", "history"],
+      "categoryHandles": ["nonfiction"],
+      "collectionHandles": ["the-nonfiction-shelf"],
+      "seoTitle": "Root and Branch by Neave Calloway | Marginalia Books",
+      "seoDescription": "A year in an old orchard and a history of the apple that turns out to be a history of us.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-ROOT-PB",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "MARG-ROOT-HC",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-root",
+          "isPrimary": true,
+          "alt": "Root and Branch by Neave Calloway"
+        }
+      ]
+    },
+    {
+      "handle": "marginalia-canvas-tote",
+      "title": "Marginalia Canvas Tote",
+      "description": "A heavyweight natural-canvas tote screen-printed with our little mark, cut roomy enough for a hardcover and the three paperbacks you didn’t come in for. Made in small runs; flat-bottomed so it stands up on the counter. The bag you’ll actually reach for.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Marginalia Books",
+      "tags": ["gift", "tote", "accessory"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers"],
+      "seoTitle": "Marginalia Canvas Tote — a roomy book bag | Marginalia Books",
+      "seoDescription": "A heavyweight natural-canvas tote, screen-printed and cut roomy enough for a stack of books.",
+      "variants": [
+        {
+          "sku": "MARG-TOTE",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tote",
+          "isPrimary": true,
+          "alt": "A natural canvas Marginalia tote"
+        }
+      ]
+    },
+    {
+      "handle": "foxed-page-bookmark-set",
+      "title": "The Foxed Page Bookmark Set",
+      "description": "Five letterpress bookmarks on thick cotton stock, each printed with a line we love about reading. Weighty enough to actually stay put, pretty enough to give away, cheap enough to lose one and not mind. The little thing that makes a nice gift complete.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Marginalia Books",
+      "tags": ["gift", "bookmark", "accessory"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers"],
+      "seoTitle": "The Foxed Page Bookmark Set — five letterpress bookmarks | Marginalia Books",
+      "seoDescription": "Five letterpress bookmarks on thick cotton stock, each printed with a line we love about reading.",
+      "variants": [
+        {
+          "sku": "MARG-BOOKMARK",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bookmark",
+          "isPrimary": true,
+          "alt": "A set of five letterpress bookmarks"
+        }
+      ]
+    },
+    {
+      "handle": "marginalia-gift-card",
+      "title": "Marginalia Gift Card",
+      "description": "The safest possible gift for a reader: a Marginalia gift card, redeemable in the shop or online against anything on the shelves. Delivered by email with a note you write, or printed on card to slip into a book — your choice. Never expires, never the wrong size.",
+      "status": "active",
+      "productType": "Gift card",
+      "vendor": "Marginalia Books",
+      "tags": ["gift", "gift-card"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers"],
+      "seoTitle": "Marginalia Gift Card — the safe gift for any reader | Marginalia Books",
+      "seoDescription": "A Marginalia gift card redeemable in the shop or online. Delivered by email or printed on card.",
+      "options": [
+        {
+          "name": "Amount",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "$25"
+            },
+            {
+              "value": "$50"
+            },
+            {
+              "value": "$100"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-GC-25",
+          "priceCents": 2500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Amount": "$25"
+          }
+        },
+        {
+          "sku": "MARG-GC-50",
+          "priceCents": 5000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Amount": "$50"
+          }
+        },
+        {
+          "sku": "MARG-GC-100",
+          "priceCents": 10000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Amount": "$100"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-giftcard",
+          "isPrimary": true,
+          "alt": "A Marginalia Books gift card"
+        }
+      ]
+    },
+    {
+      "handle": "the-marginalia-book-club",
+      "title": "The Marginalia Book Club",
+      "description": "A hand-picked book on your doorstep every month — tell us what you like, and we choose one we’d press into your hands ourselves, wrap it, and post it with the card that says why. Fiction, nonfiction, or a surprise mix; skip or cancel any time. The gift that keeps someone reading widely all year.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Marginalia Books",
+      "tags": ["subscription", "gift", "book-club"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers", "staff-picks"],
+      "seoTitle": "The Marginalia Book Club — a hand-picked book, monthly | Marginalia Books",
+      "seoDescription": "A hand-picked book on your doorstep every month, wrapped with the card that says why. Skip or cancel any time.",
+      "options": [
+        {
+          "name": "Reading",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fiction"
+            },
+            {
+              "value": "Nonfiction"
+            },
+            {
+              "value": "Surprise me"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARG-CLUB-FIC",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Fiction"
+          }
+        },
+        {
+          "sku": "MARG-CLUB-NON",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Nonfiction"
+          }
+        },
+        {
+          "sku": "MARG-CLUB-MIX",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Surprise me"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-club",
+          "isPrimary": true,
+          "alt": "A book-club parcel wrapped in kraft paper"
+        }
+      ]
+    }
+  ]
+}

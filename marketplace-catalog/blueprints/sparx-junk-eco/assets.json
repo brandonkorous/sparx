@@ -1,0 +1,37 @@
+[
+  {
+    "id": "junk-eco-hero",
+    "url": "https://images.unsplash.com/photo-1778864874969-16e2432b2709?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9uYXRpb24lMjBib3hlcyUyMGNoYXJpdHl8ZW58MHwwfHx8MTc4NjM5NTcxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cleared, sunlit room with neatly stacked donation boxes ready for pickup"
+  },
+  {
+    "id": "junk-eco-donation",
+    "url": "https://images.unsplash.com/photo-1604187351574-c75ca79f5807?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVjeWNsaW5nJTIwc29ydGluZ3xlbnwwfDB8fHwxNzg2Mzk1NzIwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Cardboard boxes of clothing and household goods labelled for donation"
+  },
+  {
+    "id": "junk-eco-divert",
+    "url": "https://images.unsplash.com/photo-1653406384710-08688ec6b979?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVjeWNsaW5nJTIwY2VudGVyfGVufDB8MHx8fDE3ODYzOTU3MjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sorted piles of furniture, electronics and recycling separated for reuse"
+  },
+  {
+    "id": "junk-eco-space",
+    "url": "https://images.unsplash.com/photo-1582479429421-321775166674?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjB0aWR5JTIwcm9vbXxlbnwwfDB8fHwxNzg2Mzk1NzI2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An emptied garage with clear floor space after a cleanout"
+  },
+  {
+    "id": "junk-eco-rowan",
+    "url": "https://images.unsplash.com/photo-1530983822321-fcac2d3c0f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5NTcxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rowan Ellis, lead hauler"
+  },
+  {
+    "id": "junk-eco-sena",
+    "url": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg4MjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sena Adeyemi, recycling & e-waste lead"
+  },
+  {
+    "id": "junk-eco-malik",
+    "url": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Malik Torres, cleanout specialist"
+  }
+]

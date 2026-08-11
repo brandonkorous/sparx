@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-tutoring-testprep",
+  "name": "sparx — Tutoring (Test Prep)",
+  "version": "1.0.0",
+  "tagline": "A sharp, score-focused template for tutoring & test prep — book online from day one.",
+  "description": "A bold, confident test-prep site — a deep-indigo primary, a punchy amber accent and sharp Space Grotesk headings on a crisp near-white ground. Installs a working booking flow: a free diagnostic plus SAT, ACT, AP and admissions-essay sessions, with three coaches you book by name and their own after-school and weekend hours. Ships as \"Apex Test Prep\", a results-driven SAT/ACT and college-admissions coaching studio.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Tutoring",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Tutoring (Test Prep) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Tutoring (Test Prep) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#1a3b8b",
+  "sortWeight": 31
+}

@@ -1,0 +1,791 @@
+{
+  "categories": [
+    {
+      "handle": "easy-care",
+      "name": "Easy care",
+      "description": "Forgiving plants that thrive on neglect.",
+      "featured": true
+    },
+    {
+      "handle": "statement",
+      "name": "Statement plants",
+      "description": "Big, sculptural plants that anchor a room.",
+      "featured": true
+    },
+    {
+      "handle": "pots-tools",
+      "name": "Pots & tools",
+      "description": "Pots, watering cans and care kit.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "A new plant every month.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New arrivals",
+      "description": "Just in from the nursery.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["monstera-deliciosa", "fiddle-leaf-fig", "subscription"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The plants people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["snake-plant", "golden-pothos", "plant-care-kit", "subscription"]
+    },
+    {
+      "handle": "statement-plants",
+      "name": "Statement plants",
+      "description": "Big, sculptural plants that anchor a room.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["monstera-deliciosa", "fiddle-leaf-fig"]
+    },
+    {
+      "handle": "beginner-friendly",
+      "name": "Beginner-friendly",
+      "description": "Nearly impossible to kill.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["snake-plant", "golden-pothos", "zz-plant"]
+    },
+    {
+      "handle": "low-light",
+      "name": "Low-light heroes",
+      "description": "Happy in a dim corner or a north-facing room.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["snake-plant", "golden-pothos", "zz-plant"]
+    },
+    {
+      "handle": "pots-and-tools",
+      "name": "Pots & tools",
+      "description": "Everything to pot and care for them.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["terracotta-pot", "watering-can", "plant-care-kit"]
+    },
+    {
+      "handle": "starter-kit",
+      "name": "Starter kit",
+      "description": "New to plants? Start here.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["golden-pothos", "terracotta-pot", "plant-care-kit"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "monstera-deliciosa",
+      "title": "Monstera Deliciosa",
+      "description": "The classic split-leaf that turns a corner into a jungle — big, glossy, dramatic leaves that fenestrate more as it grows. Fast enough to feel rewarding, tough enough to forgive a missed watering. Care level: easy. Light: bright, indirect. Water when the top inch of soil is dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["statement", "easy", "bright-light", "trailing"],
+      "categoryHandles": ["statement"],
+      "collectionHandles": ["new-arrivals", "statement-plants"],
+      "seoTitle": "Monstera Deliciosa — split-leaf houseplant | Fernwood",
+      "seoDescription": "A dramatic, easy-going monstera with big split leaves. Bright indirect light; water when the top inch is dry.",
+      "options": [
+        {
+          "name": "Pot size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        },
+        {
+          "name": "Pot",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "With terracotta pot"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-MONSTERA-S-NP",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-MONSTERA-S-TP",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-MONSTERA-M-NP",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-MONSTERA-M-TP",
+          "priceCents": 6200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-MONSTERA-L-NP",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-MONSTERA-L-TP",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "With terracotta pot"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-monstera",
+          "isPrimary": true,
+          "alt": "Monstera Deliciosa"
+        }
+      ]
+    },
+    {
+      "handle": "snake-plant",
+      "title": "Snake Plant",
+      "description": "The plant we hand to anyone convinced they kill everything. Architectural upright leaves, near-indestructible, and happy to be forgotten for weeks. It even filters the air while it’s at it. Care level: very easy. Light: anything from low to bright. Water sparingly, once the soil is fully dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["easy", "low-light", "air-purifying", "drought-tolerant"],
+      "categoryHandles": ["easy-care"],
+      "collectionHandles": ["best-sellers", "beginner-friendly", "low-light"],
+      "seoTitle": "Snake Plant (Sansevieria) — hard-to-kill houseplant | Fernwood",
+      "seoDescription": "A near-indestructible snake plant that thrives on neglect. Low to bright light; water only when fully dry.",
+      "options": [
+        {
+          "name": "Pot size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        },
+        {
+          "name": "Pot",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "With terracotta pot"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-SNAKE-S-NP",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-SNAKE-S-TP",
+          "priceCents": 4000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-SNAKE-M-NP",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-SNAKE-M-TP",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-SNAKE-L-NP",
+          "priceCents": 6200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-SNAKE-L-TP",
+          "priceCents": 7800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "With terracotta pot"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-snake",
+          "isPrimary": true,
+          "alt": "Snake Plant"
+        }
+      ]
+    },
+    {
+      "handle": "golden-pothos",
+      "title": "Golden Pothos",
+      "description": "A trailing vine that grows fast and asks for almost nothing — drape it off a shelf or train it up a wall and it just keeps going. The one that makes a beginner feel like a natural. Care level: very easy. Light: low to bright, indirect. Water when the top of the soil dries out.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["easy", "low-light", "trailing", "fast-growing"],
+      "categoryHandles": ["easy-care"],
+      "collectionHandles": ["best-sellers", "beginner-friendly", "low-light", "starter-kit"],
+      "seoTitle": "Golden Pothos — easy trailing houseplant | Fernwood",
+      "seoDescription": "A fast, forgiving trailing pothos that grows in almost any light. Perfect first plant.",
+      "options": [
+        {
+          "name": "Pot size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        },
+        {
+          "name": "Pot",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "With terracotta pot"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-POTHOS-S-NP",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-POTHOS-S-TP",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-POTHOS-M-NP",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-POTHOS-M-TP",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-POTHOS-L-NP",
+          "priceCents": 5600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-POTHOS-L-TP",
+          "priceCents": 7200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "With terracotta pot"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pothos",
+          "isPrimary": true,
+          "alt": "Golden Pothos"
+        }
+      ]
+    },
+    {
+      "handle": "fiddle-leaf-fig",
+      "title": "Fiddle-Leaf Fig",
+      "description": "The showpiece — tall, sculptural, with huge violin-shaped leaves that anchor a whole room. It has a reputation for drama, so we grow ours acclimatised and send it settled and steady. Care level: moderate. Light: bright, indirect, and consistent. Water when the top two inches are dry, and don’t move it around.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["statement", "bright-light", "tree", "floor-plant"],
+      "categoryHandles": ["statement"],
+      "collectionHandles": ["new-arrivals", "statement-plants"],
+      "seoTitle": "Fiddle-Leaf Fig — statement floor plant | Fernwood",
+      "seoDescription": "A tall, sculptural fiddle-leaf fig, grown acclimatised. Bright consistent light; steady watering.",
+      "options": [
+        {
+          "name": "Pot size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        },
+        {
+          "name": "Pot",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "With terracotta pot"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-FIDDLE-S-NP",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-FIDDLE-S-TP",
+          "priceCents": 6100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-FIDDLE-M-NP",
+          "priceCents": 5900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-FIDDLE-M-TP",
+          "priceCents": 7500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-FIDDLE-L-NP",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-FIDDLE-L-TP",
+          "priceCents": 9900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "With terracotta pot"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fiddle",
+          "isPrimary": true,
+          "alt": "Fiddle-Leaf Fig"
+        }
+      ]
+    },
+    {
+      "handle": "zz-plant",
+      "title": "ZZ Plant",
+      "description": "Glossy, waxy leaves that look almost too perfect to be real, on a plant that genuinely does not mind a dim office or a two-week holiday. Stores water in its roots, so under-watering beats over-watering every time. Care level: very easy. Light: low to medium. Water only when the soil is bone dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["easy", "low-light", "drought-tolerant", "office"],
+      "categoryHandles": ["easy-care"],
+      "collectionHandles": ["beginner-friendly", "low-light"],
+      "seoTitle": "ZZ Plant (Zamioculcas) — low-light houseplant | Fernwood",
+      "seoDescription": "A glossy, drought-tolerant ZZ plant that thrives in low light and shrugs off neglect.",
+      "options": [
+        {
+          "name": "Pot size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        },
+        {
+          "name": "Pot",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "With terracotta pot"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-ZZ-S-NP",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-ZZ-S-TP",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Small · 4in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-ZZ-M-NP",
+          "priceCents": 4000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-ZZ-M-TP",
+          "priceCents": 5600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Medium · 6in",
+            "Pot": "With terracotta pot"
+          }
+        },
+        {
+          "sku": "FERN-ZZ-L-NP",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FERN-ZZ-L-TP",
+          "priceCents": 8000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pot size": "Large · 10in",
+            "Pot": "With terracotta pot"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-zz",
+          "isPrimary": true,
+          "alt": "ZZ Plant"
+        }
+      ]
+    },
+    {
+      "handle": "terracotta-pot",
+      "title": "Hand-Thrown Terracotta Pot",
+      "description": "A breathable terracotta pot with a matching saucer, thrown in small runs by a local pottery. The unglazed clay wicks away excess water — the single easiest way to stop over-watering — and no two glazes on the rim are exactly alike. Fits a nursery pot straight inside, so re-potting can wait.",
+      "status": "active",
+      "productType": "Pot",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["pots", "terracotta", "ceramics"],
+      "categoryHandles": ["pots-tools"],
+      "collectionHandles": ["pots-and-tools", "starter-kit"],
+      "seoTitle": "Hand-Thrown Terracotta Pot — with saucer | Fernwood",
+      "seoDescription": "A breathable hand-thrown terracotta plant pot with saucer, made in small runs by a local pottery.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small · 4in"
+            },
+            {
+              "value": "Medium · 6in"
+            },
+            {
+              "value": "Large · 10in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-POT-S",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small · 4in"
+          }
+        },
+        {
+          "sku": "FERN-POT-M",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium · 6in"
+          }
+        },
+        {
+          "sku": "FERN-POT-L",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large · 10in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pot",
+          "isPrimary": true,
+          "alt": "A hand-thrown terracotta plant pot"
+        }
+      ]
+    },
+    {
+      "handle": "watering-can",
+      "title": "Long-Spout Watering Can",
+      "description": "A slim brass can with a long, narrow spout that reaches under leaves and pours a slow, controlled stream — so water goes into the soil, not all over the leaves. Half a litre, the right size for a shelf of houseplants, and good-looking enough to leave out.",
+      "status": "active",
+      "productType": "Tool",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["tools", "watering", "brass"],
+      "categoryHandles": ["pots-tools"],
+      "collectionHandles": ["pots-and-tools"],
+      "seoTitle": "Long-Spout Watering Can — brass, 0.5L | Fernwood",
+      "seoDescription": "A slim brass watering can with a long narrow spout for controlled, mess-free indoor watering.",
+      "variants": [
+        {
+          "sku": "FERN-CAN",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-can",
+          "isPrimary": true,
+          "alt": "A long-spout brass watering can"
+        }
+      ]
+    },
+    {
+      "handle": "plant-care-kit",
+      "title": "Plant-Care Starter Kit",
+      "description": "Everything a new plant parent actually needs and nothing they don’t — a pair of clean snips, a fine-mist sprayer, a gentle liquid plant food, and a simple soil moisture stick that ends the “is it time to water?” guesswork. Packed in a reusable box with a one-page cheat sheet.",
+      "status": "active",
+      "productType": "Kit",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["tools", "kit", "beginner", "gift"],
+      "categoryHandles": ["pots-tools"],
+      "collectionHandles": ["pots-and-tools", "starter-kit", "best-sellers"],
+      "seoTitle": "Plant-Care Starter Kit — snips, mister, food & moisture stick | Fernwood",
+      "seoDescription": "A beginner plant-care kit: snips, a mister, gentle plant food and a soil moisture stick, with a cheat sheet.",
+      "variants": [
+        {
+          "sku": "FERN-KIT",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-kit",
+          "isPrimary": true,
+          "alt": "A plant-care starter kit"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Monthly Plant Subscription",
+      "description": "A healthy new plant on your doorstep every month, chosen to match the light you tell us about and to build a collection that actually works together. Pick one plant or two, tell us your room, and skip, swap or pause any time. The gentlest way to grow from one plant to a jungle. Care level: easy. Light: your choice — we match to it.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Fernwood Plant Co.",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["new-arrivals", "best-sellers"],
+      "seoTitle": "Monthly Plant Subscription — a new plant, matched to your light | Fernwood",
+      "seoDescription": "A flexible monthly plant subscription, each plant matched to your light. Skip, swap or pause any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One plant"
+            },
+            {
+              "value": "Two plants"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FERN-SUB-1",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "One plant"
+          }
+        },
+        {
+          "sku": "FERN-SUB-2",
+          "priceCents": 4000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Two plants"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A monthly plant subscription box"
+        }
+      ]
+    }
+  ]
+}

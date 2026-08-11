@@ -1,0 +1,97 @@
+[
+  {
+    "id": "fern-hero",
+    "url": "https://images.unsplash.com/photo-1592150621744-aca64f48394a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3VubGl0JTIwY29ybmVyJTIwaG9tZSUyMGZpbGxlZCUyMGxlYWZ5JTIwcG90dGVkJTIwaG91c2VwbGFudHN8ZW58MHwwfHx8MTc4NjQwMjEyMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sunlit corner of a home filled with leafy potted houseplants"
+  },
+  {
+    "id": "fern-tile-easy",
+    "url": "https://images.unsplash.com/photo-1547516508-e910d368d995?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFyZHklMjBzbmFrZSUyMHBsYW50JTIwcGFsZSUyMGNlcmFtaWMlMjBwb3QlMjB3aW5kb3dzaWxsfGVufDB8MHx8fDE3ODY0MDIxMjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hardy snake plant in a pale ceramic pot on a windowsill"
+  },
+  {
+    "id": "fern-tile-statement",
+    "url": "https://images.unsplash.com/photo-1617228133035-2347f159e755?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMGZpZGRsZS1sZWFmJTIwZmlnJTIwc3RhbmRpbmclMjBicmlnaHQlMjBsaXZpbmclMjByb29tfGVufDB8MHx8fDE3ODY0MDIxMjh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tall fiddle-leaf fig standing in a bright living room"
+  },
+  {
+    "id": "fern-tile-pots",
+    "url": "https://images.unsplash.com/photo-1497990571654-77aa8ec36038?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVycmFjb3R0YSUyMHBvdHMlMjBicmFzcyUyMHdhdGVyaW5nJTIwY2FuJTIwcG90dGluZyUyMGJlbmNofGVufDB8MHx8fDE3ODY0MDIxMzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Terracotta pots and a brass watering can on a potting bench"
+  },
+  {
+    "id": "fern-tile-sub",
+    "url": "https://images.unsplash.com/photo-1575833948662-cc99178abbb8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhbnQlMjBrcmFmdCUyMGJveHxlbnwwfDB8fHwxNzg2NDAyNTMzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small plant in a kraft box left on a doorstep"
+  },
+  {
+    "id": "fern-band-care",
+    "url": "https://images.unsplash.com/photo-1745376935143-8e346fdf1bed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHMlMjBtaXN0aW5nJTIwbGVhdmVzJTIwbW9uc3RlcmElMjBieSUyMHdpbmRvd3xlbnwwfDB8fHwxNzg2NDAyMTM2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Hands misting the leaves of a monstera by a window"
+  },
+  {
+    "id": "fern-band-sub",
+    "url": "https://images.unsplash.com/photo-1678254487407-a28544364f80?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhbnRzJTIwbnVyc2VyeSUyMHBvdHN8ZW58MHwwfHx8MTc4NjQwMjUzN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A row of young plants in nursery pots ready to ship"
+  },
+  {
+    "id": "prod-monstera",
+    "url": "https://images.unsplash.com/photo-1619423089884-bc5b70bc4e2c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9uc3RlcmElMjBkZWxpY2lvc2ElMjBsYXJnZSUyMHNwbGl0JTIwbGVhdmVzJTIwcG90fGVufDB8MHx8fDE3ODY0MDIxNDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A monstera deliciosa with large split leaves in a pot"
+  },
+  {
+    "id": "prod-snake",
+    "url": "https://images.unsplash.com/photo-1573235570946-e5fbb806fae2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dXByaWdodCUyMHNuYWtlJTIwcGxhbnQlMjBzaW1wbGUlMjBwb3R8ZW58MHwwfHx8MTc4NjQwMjE0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An upright snake plant in a simple pot"
+  },
+  {
+    "id": "prod-pothos",
+    "url": "https://images.unsplash.com/photo-1719584256749-e8cc9774610d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z29sZGVuJTIwcG90aG9zJTIwdHJhaWxpbmclMjBoYW5naW5nJTIwcG90fGVufDB8MHx8fDE3ODY0MDIxNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A golden pothos trailing from a hanging pot"
+  },
+  {
+    "id": "prod-fiddle",
+    "url": "https://images.unsplash.com/photo-1761061909562-a90e53027c17?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmlkZGxlLWxlYWYlMjBmaWclMjBicm9hZCUyMGdsb3NzeSUyMGxlYXZlc3xlbnwwfDB8fHwxNzg2NDAyMTUyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fiddle-leaf fig with broad glossy leaves"
+  },
+  {
+    "id": "prod-zz",
+    "url": "https://images.unsplash.com/photo-1485955900006-10f4d324d411?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xvc3N5JTIwenolMjBwbGFudCUyMG1hdHRlJTIwcG90fGVufDB8MHx8fDE3ODY0MDIxNTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A glossy ZZ plant in a matte pot"
+  },
+  {
+    "id": "prod-pot",
+    "url": "https://images.unsplash.com/photo-1653340193326-a803d6d3e3d2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC10aHJvd24lMjB0ZXJyYWNvdHRhJTIwcGxhbnQlMjBwb3QlMjBzYXVjZXJ8ZW58MHwwfHx8MTc4NjQwMjE1OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-thrown terracotta plant pot with a saucer"
+  },
+  {
+    "id": "prod-can",
+    "url": "https://images.unsplash.com/photo-1768726455576-7ac91a8f3a9d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG9uZy1zcG91dCUyMGJyYXNzJTIwd2F0ZXJpbmclMjBjYW58ZW58MHwwfHx8MTc4NjQwMjE2MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A long-spout brass watering can"
+  },
+  {
+    "id": "prod-kit",
+    "url": "https://images.unsplash.com/photo-1619158450110-b47355359742?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8cGxhbnQtY2FyZSUyMGtpdCUyMHBydW5lcnN8ZW58MHwwfHx8MTc4NjQwMjU0MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A plant-care kit of pruners, mister and plant food"
+  },
+  {
+    "id": "prod-subscription",
+    "url": "https://images.unsplash.com/photo-1614959541555-4550895d4b2d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9udGhseSUyMHBsYW50JTIwc3Vic2NyaXB0aW9uJTIwYm94JTIwbmV3JTIwcGxhbnQlMjBpbnNpZGV8ZW58MHwwfHx8MTc4NjQwMjE2N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A monthly plant subscription box with a new plant inside"
+  },
+  {
+    "id": "post-care",
+    "url": "https://images.unsplash.com/photo-1649780730602-407c38b52bd6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2F0ZXJpbmclMjBjYW4lMjBwb3VyaW5nJTIwaW50byUyMHBvdHRlZCUyMHBsYW50JTIwdGFibGV8ZW58MHwwfHx8MTc4NjQwMjE3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A watering can pouring into a potted plant on a table"
+  },
+  {
+    "id": "post-light",
+    "url": "https://images.unsplash.com/photo-1763518821406-55caf89c01fb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3VubGlnaHQlMjBmYWxsaW5nJTIwYWNyb3NzJTIwaG91c2VwbGFudHMlMjBuZWFyJTIwd2luZG93fGVufDB8MHx8fDE3ODY0MDIxNzR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sunlight falling across houseplants near a window"
+  },
+  {
+    "id": "post-repot",
+    "url": "https://images.unsplash.com/photo-1715766911065-83723bc00d2f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhbnQlMjByZXBvdHRlZCUyMHNvaWx8ZW58MHwwfHx8MTc4NjQwMjU0NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A plant being repotted into fresh soil on a bench"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "silver-hero",
+    "url": "https://images.unsplash.com/photo-1534568292380-49954e6859e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMGxhbmRzY2FwZSUyMGhvcml6b24lMjBmb2clMjBmaXJzdCUyMGxpZ2h0fGVufDB8MHx8fDE3ODYzOTk3NTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wide, still landscape at first light — a low horizon and pale, even sky"
+  },
+  {
+    "id": "silver-tideline",
+    "url": "https://images.unsplash.com/photo-1599731657300-ec850de01ab8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8YmVhY2glMjBzZWElMjBzYW5kJTIwbG93JTIwdGlkZSUyMG1pbmltYWwlMjBncmV5fGVufDB8MHx8fDE3ODYzOTk3NTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The line where a grey sea meets wet sand at low tide, redrawn by the water"
+  },
+  {
+    "id": "silver-quiet-rooms",
+    "url": "https://images.unsplash.com/photo-1763890699217-62a9f7638da6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RpbGwlMjBsaWZlJTIwd2luZG93c2lsbCUyMHNvZnQlMjBsaWdodHxlbnwwfDB8fHwxNzg2Mzk5NzYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A still life of ordinary objects on a windowsill in soft, raking domestic light"
+  },
+  {
+    "id": "silver-north-faces",
+    "url": "https://images.unsplash.com/photo-1759349107284-fdd3b76c57eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9ydHJhaXQlMjBwZXJzb24lMjBvdXRkb29ycyUyMHdlYXRoZXJlZHxlbnwwfDB8fHwxNzg2Mzk5NzYzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A weathered portrait of a person who works outdoors, looking just off camera"
+  },
+  {
+    "id": "silver-salt",
+    "url": "https://images.unsplash.com/photo-1648670078167-2b3bea515202?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FsdCUyMGZsYXRzJTIwdGV4dHVyZSUyMHdoaXRlJTIwbWluaW1hbHxlbnwwfDB8fHwxNzg2Mzk5NzY3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A near-white study of salt flats, all texture and pale field with no horizon"
+  },
+  {
+    "id": "silver-portrait",
+    "url": "https://images.unsplash.com/photo-1618746647602-1384364ac94b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGhvdG9ncmFwaGVyJTIwcG9ydHJhaXQlMjBzdHVkaW8lMjBsaWdodHxlbnwwfDB8fHwxNzg2Mzk5NzcwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Portrait of Mara Ilić, photographer, in even studio light"
+  }
+]

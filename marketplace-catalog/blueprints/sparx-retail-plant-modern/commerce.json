@@ -1,0 +1,798 @@
+{
+  "categories": [
+    {
+      "handle": "plants",
+      "name": "Plants",
+      "description": "Sculptural plants chosen for their form.",
+      "featured": true
+    },
+    {
+      "handle": "planters",
+      "name": "Planters",
+      "description": "Stoneware and concrete, made in small runs.",
+      "featured": true
+    },
+    {
+      "handle": "stands",
+      "name": "Stands",
+      "description": "Oak and steel that lift a plant into the light.",
+      "featured": true
+    },
+    {
+      "handle": "care",
+      "name": "Care",
+      "description": "A short, considered care kit.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "The latest pieces in the studio.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "bird-of-paradise",
+        "olive-tree",
+        "fluted-stoneware-planter",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "sculptural",
+      "name": "Sculptural plants",
+      "description": "Plants that hold a room on form alone.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["bird-of-paradise", "rubber-plant", "olive-tree", "cacti-set"]
+    },
+    {
+      "handle": "planters-stands",
+      "name": "Planters & stands",
+      "description": "What finishes the plant.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "fluted-stoneware-planter",
+        "concrete-cylinder-planter",
+        "oak-plant-stand",
+        "steel-tripod-stand"
+      ]
+    },
+    {
+      "handle": "low-effort",
+      "name": "Low effort",
+      "description": "Design-forward, forgiving to keep.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["rubber-plant", "cacti-set", "concrete-cylinder-planter"]
+    },
+    {
+      "handle": "essentials",
+      "name": "The essentials",
+      "description": "A first plant, a planter, a care kit.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "rubber-plant",
+        "fluted-stoneware-planter",
+        "concrete-cylinder-planter",
+        "brass-care-set"
+      ]
+    },
+    {
+      "handle": "gifting",
+      "name": "Gifting",
+      "description": "Composed pieces that make a good gift.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["cacti-set", "brass-care-set", "oak-plant-stand", "subscription"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "bird-of-paradise",
+      "title": "Bird of Paradise",
+      "description": "The room-defining one. Broad, paddle-shaped leaves on tall, clean stems that fan out into a living sculpture — architecture you can stand in a corner. Wants the light to earn those leaves. Form: upright, fanning. Light: bright, some direct sun. Water when the top two inches are dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Frond",
+      "tags": ["statement", "floor-plant", "bright-light", "sculptural"],
+      "categoryHandles": ["plants"],
+      "collectionHandles": ["new-in", "sculptural", "gifting"],
+      "seoTitle": "Bird of Paradise — sculptural floor plant | Frond",
+      "seoDescription": "A tall, fanning bird of paradise — architecture for a corner. Bright light; water when the top two inches are dry.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Petite · 4in"
+            },
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        },
+        {
+          "name": "Planter",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "Styled in stoneware"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-BOP-S-NP",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-BOP-S-ST",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-BOP-M-NP",
+          "priceCents": 9000,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-BOP-M-ST",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-BOP-L-NP",
+          "priceCents": 12600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-BOP-L-ST",
+          "priceCents": 15400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Styled in stoneware"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bird-of-paradise",
+          "isPrimary": true,
+          "alt": "Bird of Paradise"
+        }
+      ]
+    },
+    {
+      "handle": "rubber-plant",
+      "title": "Rubber Plant",
+      "description": "Dark, glossy, near-black leaves with real weight to them — a plant that reads as a solid form rather than a spray of foliage. Low fuss for how good it looks, and it takes an upright shape you can lightly train. Form: upright, broad-leaved. Light: bright, indirect. Water when the top inch is dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Frond",
+      "tags": ["statement", "easy", "bright-light", "sculptural"],
+      "categoryHandles": ["plants"],
+      "collectionHandles": ["sculptural", "low-effort", "essentials"],
+      "seoTitle": "Rubber Plant (Ficus elastica) — architectural houseplant | Frond",
+      "seoDescription": "A dark, glossy, low-fuss rubber plant with real presence. Bright indirect light; water when the top inch is dry.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Petite · 4in"
+            },
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        },
+        {
+          "name": "Planter",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "Styled in stoneware"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-RUBBER-S-NP",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-RUBBER-S-ST",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-RUBBER-M-NP",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-RUBBER-M-ST",
+          "priceCents": 9200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-RUBBER-L-NP",
+          "priceCents": 10000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-RUBBER-L-ST",
+          "priceCents": 12800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Styled in stoneware"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-rubber-plant",
+          "isPrimary": true,
+          "alt": "Rubber Plant"
+        }
+      ]
+    },
+    {
+      "handle": "olive-tree",
+      "title": "Indoor Olive Tree",
+      "description": "Silvery, narrow leaves on slender grey stems — Mediterranean light in plant form, and one of the few trees that reads as calm rather than heavy indoors. Wants the brightest spot you have. Form: airy, tree-like. Light: as bright as you can give it, direct sun welcome. Water when the top two inches are dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Frond",
+      "tags": ["statement", "tree", "bright-light", "sculptural"],
+      "categoryHandles": ["plants"],
+      "collectionHandles": ["new-in", "sculptural"],
+      "seoTitle": "Indoor Olive Tree — silvery statement tree | Frond",
+      "seoDescription": "A slender indoor olive tree with silvery leaves — bright, calm and sculptural. Give it the brightest spot you have.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Petite · 4in"
+            },
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        },
+        {
+          "name": "Planter",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "Styled in stoneware"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-OLIVE-S-NP",
+          "priceCents": 7400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-OLIVE-S-ST",
+          "priceCents": 10200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-OLIVE-M-NP",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-OLIVE-M-ST",
+          "priceCents": 12400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-OLIVE-L-NP",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-OLIVE-L-ST",
+          "priceCents": 16000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Styled in stoneware"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-olive-tree",
+          "isPrimary": true,
+          "alt": "Indoor Olive Tree"
+        }
+      ]
+    },
+    {
+      "handle": "cacti-set",
+      "title": "Sculptural Cacti Set",
+      "description": "Three cacti chosen as a composition — different heights and geometries that stand together like a small still life, and ask for almost nothing in return. The lowest-effort way to add hard, modern line to a shelf or sill. Form: geometric, upright. Light: bright, direct sun. Water sparingly, only when bone dry.",
+      "status": "active",
+      "productType": "Houseplant",
+      "vendor": "Frond",
+      "tags": ["easy", "bright-light", "drought-tolerant", "sculptural"],
+      "categoryHandles": ["plants"],
+      "collectionHandles": ["sculptural", "low-effort", "gifting"],
+      "seoTitle": "Sculptural Cacti Set — a trio of architectural cacti | Frond",
+      "seoDescription": "Three cacti composed as a set — hard modern line for a shelf, and near-indestructible. Bright direct light; water sparingly.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Petite · 4in"
+            },
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        },
+        {
+          "name": "Planter",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Nursery pot"
+            },
+            {
+              "value": "Styled in stoneware"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-CACTI-S-NP",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-CACTI-S-ST",
+          "priceCents": 6600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-CACTI-M-NP",
+          "priceCents": 6000,
+          "inventoryPolicy": "continue",
+          "isDefault": true,
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-CACTI-M-ST",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in",
+            "Planter": "Styled in stoneware"
+          }
+        },
+        {
+          "sku": "FROND-CACTI-L-NP",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Nursery pot"
+          }
+        },
+        {
+          "sku": "FROND-CACTI-L-ST",
+          "priceCents": 12400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in",
+            "Planter": "Styled in stoneware"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cacti-set",
+          "isPrimary": true,
+          "alt": "Sculptural Cacti Set"
+        }
+      ]
+    },
+    {
+      "handle": "fluted-stoneware-planter",
+      "title": "Fluted Stoneware Planter",
+      "description": "A hand-finished stoneware planter with a fine fluted rib and a soft matte glaze that shifts with the light. Thrown in small runs, so no two are identical, and weighted to hold a top-heavy plant steady. Drainage hole and a matching saucer; a nursery pot drops straight inside.",
+      "status": "active",
+      "productType": "Planter",
+      "vendor": "Frond",
+      "tags": ["planters", "stoneware", "ceramics"],
+      "categoryHandles": ["planters"],
+      "collectionHandles": ["new-in", "planters-stands", "essentials"],
+      "seoTitle": "Fluted Stoneware Planter — matte, with saucer | Frond",
+      "seoDescription": "A hand-finished fluted stoneware planter in a soft matte glaze, made in small runs, with drainage and a saucer.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Petite · 4in"
+            },
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-PLANT-FLUTED-S",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Petite · 4in"
+          }
+        },
+        {
+          "sku": "FROND-PLANT-FLUTED-M",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in"
+          }
+        },
+        {
+          "sku": "FROND-PLANT-FLUTED-L",
+          "priceCents": 7800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fluted-planter",
+          "isPrimary": true,
+          "alt": "A fluted stoneware planter"
+        }
+      ]
+    },
+    {
+      "handle": "concrete-cylinder-planter",
+      "title": "Concrete Cylinder Planter",
+      "description": "A plain cast-concrete cylinder — no glaze, no pattern, just weight, texture and a clean edge. It grounds a light, airy plant and looks as good empty as full. Sealed inside against moisture, with a cork base that won’t mark a floor, and a nursery pot sits neatly within.",
+      "status": "active",
+      "productType": "Planter",
+      "vendor": "Frond",
+      "tags": ["planters", "concrete", "minimal"],
+      "categoryHandles": ["planters"],
+      "collectionHandles": ["planters-stands", "low-effort", "essentials"],
+      "seoTitle": "Concrete Cylinder Planter — cast, minimal | Frond",
+      "seoDescription": "A plain cast-concrete cylinder planter — weight, texture and a clean edge, sealed inside with a cork base.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Mid · 8in"
+            },
+            {
+              "value": "Statement · 12in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-PLANT-CONCRETE-M",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Mid · 8in"
+          }
+        },
+        {
+          "sku": "FROND-PLANT-CONCRETE-L",
+          "priceCents": 7200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Statement · 12in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-concrete-planter",
+          "isPrimary": true,
+          "alt": "A concrete cylinder planter"
+        }
+      ]
+    },
+    {
+      "handle": "oak-plant-stand",
+      "title": "Oak Plant Stand",
+      "description": "A slender solid-oak stand that lifts a plant off the floor and into the light, and turns a pot into a small piece of furniture. Three tapered legs, a turned collar to seat the planter, and an oiled finish that warms with age. Sized to cradle a mid or statement planter.",
+      "status": "active",
+      "productType": "Plant stand",
+      "vendor": "Frond",
+      "tags": ["stands", "oak", "furniture"],
+      "categoryHandles": ["stands"],
+      "collectionHandles": ["planters-stands", "gifting"],
+      "seoTitle": "Oak Plant Stand — solid oak, three-leg | Frond",
+      "seoDescription": "A slender solid-oak plant stand that lifts a plant into the light — three tapered legs, oiled finish, turned collar.",
+      "options": [
+        {
+          "name": "Height",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Low · 12in"
+            },
+            {
+              "value": "Tall · 20in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-STAND-OAK-LO",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Height": "Low · 12in"
+          }
+        },
+        {
+          "sku": "FROND-STAND-OAK-HI",
+          "priceCents": 7800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Height": "Tall · 20in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-oak-stand",
+          "isPrimary": true,
+          "alt": "An oak plant stand"
+        }
+      ]
+    },
+    {
+      "handle": "steel-tripod-stand",
+      "title": "Steel Tripod Stand",
+      "description": "Powder-coated steel drawn to the thinnest line that will still carry the weight — a tall tripod that raises a statement plant to eye level and almost disappears under it. Matte black, with capped feet, and a ring collar that holds a large planter dead level. The industrial counterpoint to the oak.",
+      "status": "active",
+      "productType": "Plant stand",
+      "vendor": "Frond",
+      "tags": ["stands", "steel", "minimal"],
+      "categoryHandles": ["stands"],
+      "collectionHandles": ["planters-stands"],
+      "seoTitle": "Steel Tripod Stand — matte black, tall | Frond",
+      "seoDescription": "A tall powder-coated steel tripod stand that raises a statement plant to eye level and nearly disappears under it.",
+      "variants": [
+        {
+          "sku": "FROND-STAND-STEEL",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tripod-stand",
+          "isPrimary": true,
+          "alt": "A steel tripod plant stand"
+        }
+      ]
+    },
+    {
+      "handle": "brass-care-set",
+      "title": "Brass Care Tool Set",
+      "description": "The short kit that keeps a considered plant looking considered — solid-brass snips, a fine-mist brass sprayer, and a slim soil probe that ends the “does it need water?” guessing. Objects worth leaving on the shelf, not hiding in a drawer, and they patina beautifully with use. Comes with a one-card routine.",
+      "status": "active",
+      "productType": "Care",
+      "vendor": "Frond",
+      "tags": ["care", "tools", "brass", "gift"],
+      "categoryHandles": ["care"],
+      "collectionHandles": ["essentials", "gifting"],
+      "seoTitle": "Brass Care Tool Set — snips, mister & soil probe | Frond",
+      "seoDescription": "A short brass plant-care set — snips, a fine-mist sprayer and a soil probe. Objects worth leaving on the shelf.",
+      "variants": [
+        {
+          "sku": "FROND-CARE-SET",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-care-set",
+          "isPrimary": true,
+          "alt": "A brass plant-care tool set"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Plant of the Month",
+      "description": "One curated plant on your schedule, chosen to match the light you tell us about and to build a collection that actually reads as one. Tell us your space, pick a plant on its own or already styled in a planter, and skip, swap or pause any time. The slow, deliberate way to green a home. Light: your choice — we match to it.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Frond",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["plants"],
+      "collectionHandles": ["new-in", "gifting"],
+      "seoTitle": "Plant of the Month — a curated plant, matched to your light | Frond",
+      "seoDescription": "A flexible plant-of-the-month, each plant matched to your light and styled to build one collection. Skip, swap or pause any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Plant only"
+            },
+            {
+              "value": "Plant + planter"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FROND-SUB-P",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Plant only"
+          }
+        },
+        {
+          "sku": "FROND-SUB-PP",
+          "priceCents": 7800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Plant + planter"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A plant-of-the-month delivery"
+        }
+      ]
+    }
+  ]
+}

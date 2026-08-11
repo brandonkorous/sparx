@@ -1,0 +1,246 @@
+{
+  "policies": [
+    {
+      "handle": "catering-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and again the morning of."
+    },
+    {
+      "handle": "tasting-deposit",
+      "name": "Tasting deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Private tastings hold a $50 deposit that’s credited straight to your event when you book with us. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marchetti",
+      "kind": "staff",
+      "skillTags": ["weddings", "tasting", "menu"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["corporate", "tasting", "menu"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["weddings", "corporate", "menu"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "event-consultation",
+      "name": "Event consultation",
+      "description": "A relaxed sit-down to shape your menu, service style, headcount and budget — no charge, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "catering-standard"
+    },
+    {
+      "handle": "wedding-tasting",
+      "name": "Wedding tasting",
+      "description": "Taste your wedding menu course by course and finalize the details with your coordinator.",
+      "durationMinutes": 90,
+      "priceCents": 5000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tasting-deposit"
+    },
+    {
+      "handle": "private-dinner-tasting",
+      "name": "Private dinner tasting",
+      "description": "A guided tasting for an intimate plated dinner at home or a private venue.",
+      "durationMinutes": 75,
+      "priceCents": 5000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tasting-deposit"
+    },
+    {
+      "handle": "corporate-event-consult",
+      "name": "Corporate event consult",
+      "description": "Plan catering for a launch, gala or company celebration — service levels, dietary needs and timing.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "catering-standard"
+    },
+    {
+      "handle": "seasonal-menu-tasting",
+      "name": "Seasonal menu tasting",
+      "description": "Sample the season’s menu — the dishes at their peak right now — and build yours from what you love.",
+      "durationMinutes": 90,
+      "priceCents": 5000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tasting-deposit"
+    },
+    {
+      "handle": "cocktail-reception-consult",
+      "name": "Cocktail reception consult",
+      "description": "Design a canapé and bar experience — passed bites, grazing stations and pairings for a standing crowd.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "catering-standard"
+    },
+    {
+      "handle": "large-event-consult",
+      "name": "Large event consult",
+      "description": "For 100+ guests — logistics, staffing, rentals and flow, mapped out with your lead coordinator.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["menu"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "catering-standard"
+    }
+  ]
+}

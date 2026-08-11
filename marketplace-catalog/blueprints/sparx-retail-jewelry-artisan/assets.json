@@ -1,0 +1,92 @@
+[
+  {
+    "id": "forge-hero",
+    "url": "https://images.unsplash.com/photo-1624588057318-5f1b2eb81012?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8amV3ZWxlciUyMHMlMjBoYW5kcyUyMGhhbW1lcmluZyUyMHNpbHZlciUyMGJhbmQlMjBzdGVlbHxlbnwwfDB8fHwxNzg2NDA0ODQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A jeweler’s hands hammering a silver band on a steel bench block"
+  },
+  {
+    "id": "forge-tile-rings",
+    "url": "https://images.unsplash.com/photo-1636493222937-5169284ed417?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC1mb3JnZWQlMjByYXctc3RvbmUlMjByaW5nJTIwcmVzdGluZyUyMHdlYXRoZXJlZCUyMHdvb2R8ZW58MHwwfHx8MTc4NjQwNDg0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-forged raw-stone ring resting on weathered wood"
+  },
+  {
+    "id": "forge-tile-earrings",
+    "url": "https://images.unsplash.com/photo-1599081753523-a20f731f42c9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFtbWVyZWQlMjBzaWx2ZXIlMjBob29wfGVufDB8MHx8fDE3ODY0MDUxNTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of hammered silver hoop earrings on linen"
+  },
+  {
+    "id": "forge-tile-necklaces",
+    "url": "https://images.unsplash.com/photo-1564842505181-8862a3b9b173?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWl4ZWQtbWV0YWwlMjBwZW5kYW50JTIwbHlpbmclMjBsZWF0aGVyJTIwYmVuY2glMjBtYXR8ZW58MHwwfHx8MTc4NjQwNDg1NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A mixed-metal pendant lying on a leather bench mat"
+  },
+  {
+    "id": "forge-tile-cuffs",
+    "url": "https://images.unsplash.com/photo-1602751584581-2e0372975b46?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC1zdGFtcGVkJTIwYnJvbnplJTIwY3VmZnxlbnwwfDB8fHwxNzg2NDA1MTYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-stamped bronze cuff bracelet on a stone slab"
+  },
+  {
+    "id": "forge-band-bench",
+    "url": "https://images.unsplash.com/photo-1685022515813-c42e8348639b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFrZXIlMjBiZW5jaCUyMGZpbGluZyUyMHBpZWNlJTIwdW5kZXIlMjB3b3JrJTIwbGFtcHxlbnwwfDB8fHwxNzg2NDA0ODYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A maker at the bench filing a piece under a work lamp"
+  },
+  {
+    "id": "forge-band-story",
+    "url": "https://images.unsplash.com/photo-1575839127405-acda7759a2e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmF3JTIwbWV0YWwlMjBvZmZjdXRzJTIwaGFtbWVyJTIwc3RhbXBzJTIwbGFpZCUyMG91dHxlbnwwfDB8fHwxNzg2NDA0ODYyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Raw metal offcuts, a hammer and stamps laid out on a workbench"
+  },
+  {
+    "id": "forge-prod-hoops",
+    "url": "https://images.unsplash.com/photo-1684616289742-2e48aff416bf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFtbWVyZWQlMjBzaWx2ZXIlMjBob29wJTIwZWFycmluZ3MlMjBjYXRjaGluZyUyMGxpZ2h0fGVufDB8MHx8fDE3ODY0MDQ4NjZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Hammered silver hoop earrings catching the light"
+  },
+  {
+    "id": "forge-prod-studs",
+    "url": "https://images.unsplash.com/photo-1727990864585-e2aee3197eeb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMHRleHR1cmVkJTIwcGViYmxlJTIwc3R1ZCUyMGVhcnJpbmdzfGVufDB8MHx8fDE3ODY0MDQ4Njl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of textured pebble stud earrings"
+  },
+  {
+    "id": "forge-prod-rawstone",
+    "url": "https://images.unsplash.com/photo-1717867191656-6f063593c23b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm91Z2gtY3V0JTIwc3RvbmUlMjBzZXQlMjBoYW5kLWJ1aWx0JTIwc2lsdmVyJTIwYmV6ZWwlMjByaW5nfGVufDB8MHx8fDE3ODY0MDQ4NzJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A rough-cut stone set in a hand-built silver bezel ring"
+  },
+  {
+    "id": "forge-prod-signet",
+    "url": "https://images.unsplash.com/photo-1630524250640-97602e7324cc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC1jYXJ2ZWQlMjBzaWduZXQlMjByaW5nJTIwdGV4dHVyZWQlMjBmYWNlfGVufDB8MHx8fDE3ODY0MDQ4NzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-carved signet ring with a textured face"
+  },
+  {
+    "id": "forge-prod-pendant",
+    "url": "https://images.unsplash.com/photo-1749475469147-64c905baae9f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWl4ZWQtbWV0YWwlMjBwZW5kYW50JTIwc2lsdmVyJTIwYnJvbnplJTIwY2hhaW58ZW58MHwwfHx8MTc4NjQwNDg3OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A mixed-metal pendant of silver and bronze on a chain"
+  },
+  {
+    "id": "forge-prod-birthstone",
+    "url": "https://images.unsplash.com/photo-1726136947386-17d7b718aef0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmF3JTIwYmlydGhzdG9uZSUyMHJ1c3RpY3xlbnwwfDB8fHwxNzg2NDA1MTYzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A raw birthstone set in a rustic silver bezel pendant"
+  },
+  {
+    "id": "forge-prod-cuff",
+    "url": "https://images.unsplash.com/photo-1616662178746-6642ccb4f01e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aGFuZC1zdGFtcGVkJTIwb3BlbiUyMGN1ZmYlMjBicmFjZWxldCUyMGJyb256ZXxlbnwwfDB8fHwxNzg2NDA0ODgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-stamped open cuff bracelet in bronze"
+  },
+  {
+    "id": "forge-prod-chain",
+    "url": "https://images.unsplash.com/photo-1605884878538-6468614df578?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC1mb3JnZWQlMjBjaHVua3klMjBjaGFpbiUyMGJyYWNlbGV0JTIwc2lsdmVyfGVufDB8MHx8fDE3ODY0MDQ4ODd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-forged chunky chain bracelet in silver"
+  },
+  {
+    "id": "forge-post-bench",
+    "url": "https://images.unsplash.com/photo-1586789509531-c7886b9d9023?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2lsdmVyJTIwYmFuZCUyMGJlaW5nJTIwc2hhcGVkJTIwbWFuZHJlbCUyMG1hbGxldHxlbnwwfDB8fHwxNzg2NDA0ODg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A silver band being shaped on a mandrel with a mallet"
+  },
+  {
+    "id": "forge-post-metals",
+    "url": "https://images.unsplash.com/photo-1567937926466-054ccbe7cc19?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8c3RlcmxpbmclMjBzaWx2ZXIlMjBicm9uemUlMjBwaWVjZXMlMjBsYWlkJTIwc2lkZSUyMGJ5fGVufDB8MHx8fDE3ODY0MDQ4OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sterling silver and bronze pieces laid side by side"
+  },
+  {
+    "id": "forge-post-care",
+    "url": "https://images.unsplash.com/photo-1636286484290-cfde2456af97?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvdGglMjBzbWFsbCUyMGJydXNoJTIwYmVzaWRlJTIwb3hpZGlzZWQlMjBzaWx2ZXIlMjByaW5nfGVufDB8MHx8fDE3ODY0MDQ4OTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cloth and a small brush beside an oxidised silver ring"
+  }
+]

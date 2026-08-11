@@ -1,0 +1,251 @@
+{
+  "policies": [
+    {
+      "handle": "standard-visit",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel a visit. We text a reminder the day before and two hours ahead, plus a heads-up when your electrician is on the way."
+    },
+    {
+      "handle": "emergency-callout",
+      "name": "Emergency callout",
+      "depositType": "none",
+      "cancellationWindowHours": 2,
+      "reminderOffsetsMin": [60],
+      "policyText": "Emergency callouts are booked as soon as an electrician is free — often same day. We confirm by phone before we head out so you always know who is coming and when."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Hale",
+      "kind": "staff",
+      "skillTags": ["repair", "lighting", "troubleshoot"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "diego",
+      "name": "Diego Ramirez",
+      "kind": "staff",
+      "skillTags": ["panel", "install", "ev"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "ray",
+      "name": "Ray Whitfield",
+      "kind": "staff",
+      "skillTags": ["repair", "safety", "emergency"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free in-home estimate",
+      "description": "We come out, look at the job, and give you a clear written price before any work starts. No charge, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "diagnostic-visit",
+      "name": "Diagnostic visit",
+      "description": "Something not working right — a dead outlet, a tripping breaker, flickering lights? We find the cause and explain the fix in plain language. Fee credited toward the repair.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["troubleshoot"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "outlet-lighting-install",
+      "name": "Outlets & lighting install",
+      "description": "New outlets, USB receptacles, dimmers, under-cabinet or recessed lighting — installed cleanly and safely, tested before we leave.",
+      "durationMinutes": 120,
+      "priceCents": 18500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["lighting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "ceiling-fan-install",
+      "name": "Ceiling fan install",
+      "description": "Replacing an old fixture or wiring a fan where there wasn’t one — mounted solid, balanced, and wired to code.",
+      "durationMinutes": 90,
+      "priceCents": 14500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["install"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "panel-upgrade-consult",
+      "name": "Panel upgrade consult",
+      "description": "Thinking about a service upgrade or a new breaker panel? We assess your current setup, talk through permits, and give you a fixed quote — free.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["panel"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "safety-inspection",
+      "name": "Whole-home safety inspection",
+      "description": "A top-to-bottom check of your panel, outlets, grounding and smoke/CO coverage, with a clear written report of anything that needs attention. A flat fee.",
+      "durationMinutes": 120,
+      "priceCents": 14900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["safety"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "emergency-callout",
+      "name": "Emergency callout",
+      "description": "No power, a burning smell, sparking or a scorched outlet — we prioritize it and confirm by phone before heading out. Booked to the next available electrician.",
+      "durationMinutes": 60,
+      "priceCents": 19900,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "electrician",
+          "kind": "staff",
+          "skillTags": ["emergency"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "emergency-callout"
+    }
+  ]
+}

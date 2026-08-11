@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-yoga-studio",
+  "name": "sparx — Yoga Studio",
+  "version": "1.0.0",
+  "tagline": "A warm, all-levels template for yoga studios — a live class schedule from day one.",
+  "description": "A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as \"Prana\", an all-levels studio where you belong wherever you’re starting.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Yoga studio",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Yoga Studio icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Yoga Studio — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#b96746",
+  "sortWeight": 82
+}

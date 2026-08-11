@@ -1,0 +1,373 @@
+{
+  "policies": [
+    {
+      "handle": "lesson-standard",
+      "name": "Standard lesson",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Life happens — just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you."
+    },
+    {
+      "handle": "no-show",
+      "name": "Studio-time booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit — but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jules",
+      "name": "Jules Kade",
+      "kind": "staff",
+      "skillTags": ["guitar", "bass", "songwriting", "trial"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 780,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 780,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 780,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 780,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 780,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "nova",
+      "name": "Nova Reyes",
+      "kind": "staff",
+      "skillTags": ["vocals", "songwriting", "performance", "trial"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 840,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 840,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 840,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 840,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 840,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "dez",
+      "name": "Dez Okonkwo",
+      "kind": "staff",
+      "skillTags": ["production", "beats", "mixing", "trial"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 720,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 720,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "live-room-a",
+      "name": "Live Room A",
+      "kind": "space",
+      "skillTags": ["studio-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1290
+        }
+      ]
+    },
+    {
+      "handle": "production-suite",
+      "name": "The Production Suite",
+      "kind": "space",
+      "skillTags": ["production-suite", "studio-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1290
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1290
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "trial-lesson",
+      "name": "Book a trial lesson",
+      "description": "Your first lesson, on any instrument — meet an instructor, plug in, and play. Thirty minutes to feel the room, talk about where you want to go, and see if we’re your studio. No commitment after.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["trial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "guitar-lesson",
+      "name": "Guitar lesson",
+      "description": "Electric or acoustic, first chord or first solo. Real technique built around the songs you actually want to play — riffs, rhythm, tone and the theory that makes it click.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["guitar"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "vocal-lesson",
+      "name": "Vocal lesson",
+      "description": "Find your range and your voice. Breath, pitch, tone and stage confidence — pop, R&B, rock or musical theatre, built around the tracks you love to sing.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["vocals"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "bass-lesson",
+      "name": "Bass lesson",
+      "description": "Lock in with the drums and hold the whole thing down. Groove, timing, note choice and the pocket — the instrument that makes a band feel good.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["bass"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "music-production-lesson",
+      "name": "Music production & beat-making",
+      "description": "Build a track from nothing in a real production suite — beats, sampling, arrangement, mixing. Learn your DAW hands-on and walk out with something that sounds like you.",
+      "durationMinutes": 60,
+      "priceCents": 7500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["production-suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "songwriting-session",
+      "name": "Songwriting session",
+      "description": "Turn ideas into finished songs. Melody, lyrics, structure and hooks — write with someone who’s released records and knows how to get you unstuck.",
+      "durationMinutes": 60,
+      "priceCents": 6500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["songwriting"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "performance-coaching",
+      "name": "Performance coaching",
+      "description": "Get ready for the stage. Setlists, presence, nerves and working a room — prep for a gig, an audition or an open mic with a coach who’s played them all.",
+      "durationMinutes": 60,
+      "priceCents": 6500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["performance"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["studio-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+{
+  "policies": [
+    {
+      "handle": "tcm-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel. We send a gentle reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "tcm-no-show",
+      "name": "No-show policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "noShowFeeCents": 4000,
+      "policyText": "Longer treatments hold a chair and a room for you. A missed appointment or a late cancellation (under 24 hours) is charged a $40 no-show fee."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "mei",
+      "name": "Mei Lin Zhao",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "herbs", "cupping"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "fertility", "herbs"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "daniel",
+      "name": "Daniel Okafor",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "pain", "cupping"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "room-jade",
+      "name": "Jade Room",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "room-willow",
+      "name": "Willow Room",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "initial-consult-treatment",
+      "name": "Initial consultation & treatment",
+      "description": "A full intake — your health history, pulse and tongue diagnosis — followed by your first acupuncture treatment.",
+      "durationMinutes": 90,
+      "priceCents": 13000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-no-show"
+    },
+    {
+      "handle": "acupuncture-session",
+      "name": "Acupuncture session",
+      "description": "A focused follow-up treatment, tailored to how you’re feeling that day. For returning patients.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-standard"
+    },
+    {
+      "handle": "cupping-session",
+      "name": "Cupping session",
+      "description": "Traditional cupping to ease tension and improve circulation — on its own or added to acupuncture.",
+      "durationMinutes": 45,
+      "priceCents": 7500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["cupping"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-standard"
+    },
+    {
+      "handle": "herbal-consult",
+      "name": "Herbal medicine consultation",
+      "description": "A sit-down to build a custom herbal formula for your constitution, taken home to support your treatment.",
+      "durationMinutes": 45,
+      "priceCents": 7000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["herbs"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-standard"
+    },
+    {
+      "handle": "fertility-support-session",
+      "name": "Fertility support session",
+      "description": "Acupuncture to support reproductive health and cycle regulation, in step with your wider care.",
+      "durationMinutes": 75,
+      "priceCents": 11000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-no-show"
+    },
+    {
+      "handle": "stress-relief-session",
+      "name": "Stress & sleep session",
+      "description": "A calming, restorative treatment for stress, anxiety and sleep — a quiet hour to reset the nervous system.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-standard"
+    },
+    {
+      "handle": "wellness-consult",
+      "name": "New-patient wellness consult",
+      "description": "A complimentary conversation to talk through what’s going on and whether treatment here is a good fit.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tcm-standard"
+    }
+  ]
+}

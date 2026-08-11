@@ -1,0 +1,32 @@
+[
+  {
+    "id": "acupuncture-modern-hero",
+    "url": "https://images.unsplash.com/photo-1598555763574-dca77e10427e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWN1cHVuY3R1cmUlMjBuZWVkbGVzJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM5MjEwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, minimal treatment room with a single clean table and soft daylight"
+  },
+  {
+    "id": "acupuncture-modern-treatment",
+    "url": "https://picsum.photos/seed/meridianwell-treatment/1600/1000",
+    "alt": "Fine acupuncture needles laid out on a calm neutral surface"
+  },
+  {
+    "id": "acupuncture-modern-studio",
+    "url": "https://images.unsplash.com/photo-1676496962536-d8ef110ff6f0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMHdlbGxuZXNzJTIwc3R1ZGlvJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM5MjEwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm modern reception with sage-toned walls and simple wood details"
+  },
+  {
+    "id": "acupuncture-modern-lena",
+    "url": "https://images.unsplash.com/photo-1526080652727-5b77f74eacd2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3ZWxsbmVzcyUyMHByYWN0aXRpb25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTIxMDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Lena Osei, licensed acupuncturist"
+  },
+  {
+    "id": "acupuncture-modern-marcus",
+    "url": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJhY3RpdGlvbmVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MjExMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Feld, licensed acupuncturist"
+  },
+  {
+    "id": "acupuncture-modern-priya",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBoZWFsdGhjYXJlJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, licensed acupuncturist"
+  }
+]

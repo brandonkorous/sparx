@@ -4,6 +4,17 @@ export type { TenantContext, TxClient } from './tenant-context';
 export { tenantStore } from './tenant-store';
 export type { TenantScope } from './tenant-store';
 
+// Model B per-site scoping (docs/49 §3) — the one answer to "may this site show
+// this row?", shared by the storefront reads and the builder. See ./site-scope
+// for why a visibility filter must have exactly one spelling.
+export {
+  productSiteVisibilityWhere,
+  contentSiteVisibilityWhere,
+  collectionSiteVisibilityWhere,
+  categorySiteVisibilityWhere,
+  mediaSiteVisibilityWhere,
+} from './site-scope';
+
 // Sample data (docs/104, Wave 5) — load/clear/status + the per-industry packs,
 // shared by the dev/e2e seed and the api-rest production seam.
 export {

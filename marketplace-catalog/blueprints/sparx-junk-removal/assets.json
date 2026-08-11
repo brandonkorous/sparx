@@ -1,0 +1,27 @@
+[
+  {
+    "id": "junk-removal-hero",
+    "url": "https://images.unsplash.com/photo-1614359835514-92f8ba196357?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW92aW5nJTIwdHJ1Y2slMjBsb2FkaW5nfGVufDB8MHx8fDE3ODYzOTU3MDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A friendly two-person crew loading an old couch into a junk-removal truck"
+  },
+  {
+    "id": "junk-removal-story",
+    "url": "https://images.unsplash.com/photo-1614359835514-92f8ba196357?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VycyUyMG1vdmluZyUyMGZ1cm5pdHVyZXxlbnwwfDB8fHwxNzg2Mzk1NzA3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cleared-out garage swept clean after a junk pickup"
+  },
+  {
+    "id": "junk-removal-jesse",
+    "url": "https://images.unsplash.com/photo-1530983822321-fcac2d3c0f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5NTcxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Jesse Park, crew lead"
+  },
+  {
+    "id": "junk-removal-marta",
+    "url": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg4MjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marta Nunez, furniture & appliance crew"
+  },
+  {
+    "id": "junk-removal-tyrell",
+    "url": "https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW92ZXIlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2Mzk1NzE0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Tyrell Woods, debris & cleanout crew"
+  }
+]

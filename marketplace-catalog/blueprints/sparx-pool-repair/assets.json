@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pool-repair-equipment",
+    "url": "https://images.unsplash.com/photo-1621245700087-a8617f91cdbe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMHB1bXAlMjBlcXVpcG1lbnR8ZW58MHwwfHx8MTc4NjM5NDIyMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pool equipment pad with a variable-speed pump, heater and automation panel"
+  },
+  {
+    "id": "pool-repair-diagnostics",
+    "url": "https://images.unsplash.com/photo-1722325009084-6bfc230f0860?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMHRlY2huaWNpYW4lMjB3b3JraW5nfGVufDB8MHx8fDE3ODYzOTQyMjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A technician pressure-testing pool plumbing to trace a hidden leak"
+  },
+  {
+    "id": "pool-repair-spa",
+    "url": "https://images.unsplash.com/photo-1781455495098-3643ccc923a0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG90JTIwdHViJTIwc3BhfGVufDB8MHx8fDE3ODYzOTQyMjl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A freshly resurfaced spa with clear water and new tile at dusk"
+  },
+  {
+    "id": "pool-repair-ray",
+    "url": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ray Alvarez, repair and pump lead"
+  },
+  {
+    "id": "pool-repair-priya",
+    "url": "https://images.unsplash.com/photo-1581091224003-01e7c2e69f6f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWNobmljaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5NDIzM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, leak and heater specialist"
+  },
+  {
+    "id": "pool-repair-devin",
+    "url": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Devin Cole, renovation and automation lead"
+  }
+]

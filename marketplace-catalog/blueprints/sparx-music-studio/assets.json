@@ -1,0 +1,27 @@
+[
+  {
+    "id": "amproom-live-room",
+    "url": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBzdHVkaW8lMjBndWl0YXJ8ZW58MHwwfHx8MTc4NjM5MTU0MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A live room with amps, a drum kit and warm stage lighting"
+  },
+  {
+    "id": "amproom-production-suite",
+    "url": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBwcm9kdWN0aW9uJTIwc3R1ZGlvfGVufDB8MHx8fDE3ODYzOTE1NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A production suite with a mixing desk, monitors and a mic booth"
+  },
+  {
+    "id": "amproom-jules",
+    "url": "https://images.unsplash.com/photo-1595971294624-80bcf0d7eb24?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWNpYW4lMjBwb3J0cmFpdCUyMGd1aXRhcnxlbnwwfDB8fHwxNzg2MzkxNTQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Jules Kade, guitar, bass & songwriting instructor"
+  },
+  {
+    "id": "amproom-nova",
+    "url": "https://images.unsplash.com/photo-1517230878791-4d28214057c2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBzaW5nZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkxNTQ4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Nova Reyes, vocals, songwriting & performance coach"
+  },
+  {
+    "id": "amproom-dez",
+    "url": "https://images.unsplash.com/photo-1650765814769-593f0798d6e1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBwcm9kdWNlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1NTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dez Okonkwo, music production & beat-making instructor"
+  }
+]

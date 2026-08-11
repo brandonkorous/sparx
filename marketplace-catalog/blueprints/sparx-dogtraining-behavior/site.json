@@ -1,0 +1,2232 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "d6d0a9a8-80cf-4638-b8d9-fc2d69722dcc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "3b1906fd-b16f-4fbf-89dc-c4abe46f6d17",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "50b819c7-a244-4c76-a8d7-c6e41e763f73",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "c4a41bb8-4e2b-4847-aad8-36eb452f5b95",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "76ddc7a0-1a05-49c0-8d89-49e5868e2e60",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "ad955242-dd78-40f0-a1c4-534072ac3383",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "2b421f69-25c1-46ec-83af-8f65a5248b7d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "c6625ecf-99d1-4c2c-ab63-b4b12f5d2b4e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "de9de0bb-b2e4-4d15-af10-9d15d47a7313",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "e02c4b8a-9703-4ff4-aff1-27e70b0d7ebc",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5fa25e7d-a61b-426d-be0e-642d1a4babe5",
+                  "ord": "a2"
+                }
+              ],
+              "id": "f5813ca3-d65e-42d0-8df0-1c9fb4875e70",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "8a4939da-683f-4f6b-a59b-1242826fabd3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "eb5d8672-d820-4fe7-b715-b4e33d734a1b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "aaf7bde3-be17-41ee-8736-a218a9d1a5f6",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "1f079d70-1026-4e80-90e6-504eedc642ba",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "c3848c67-bedd-4060-bb93-ca5435565252",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "02e44c84-0f4a-4b56-ac29-ce3398f0f82e",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "1cf0ff2f-5849-47af-b50f-ded0df522fce",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6689b597-ccd3-46ea-990e-b4c706a6f468",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "4d5a8f6f-634d-4189-88c3-325b4339d254",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "8e99eb2a-fc49-4d2f-bbf8-11833556858e",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "d1bb868c-17bb-49ee-bab9-5733da6d89f6",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "a96bf112-fd62-48c5-9d89-972ff1abb235",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0c8130e1-82c1-49cb-ae3b-890d0b013799",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "942ceff4-e072-43f5-b65d-255c5cee9ca7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "cf1d38ed-ccda-4c07-aa6d-62bd493c21fa",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "939a0378-4033-4767-bacd-2c51cb66a138",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a704efbf-3e5a-4025-9c8d-b76c16d7ea58",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "8165d918-536e-4c7e-a38d-c14d582a40db",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c787a61a-bfdc-411e-b6e5-f0fed520a77a",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "1f5c69c4-5842-422e-9758-b11f96886eb3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3d816ff3-434f-4e36-b9d3-fa5df5cfd44c",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "e1707594-dcc1-43e5-835f-e388f74d9546",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "544e3716-e9bd-4c6b-9681-3afc1eb6696e",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "fc62dcfa-00a8-4d9e-a6ae-971d38d971db",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4cc32e90-54d6-44f5-9c09-063969c84649",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "a60be287-26f7-4c87-afad-a4a9dd699a39",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6c2ab68b-b7c5-4629-bf4d-f146a1763c91",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "0d32bb56-b8bd-4e68-8354-201dc84d9bb5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "fa393395-abd5-4e92-8127-3f8b4c4c2d1f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "286c685b-799f-4fae-90ca-0f61a8db4189",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "7aaea5f4-6408-411d-a73e-fb8880fa5e8f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "982af22e-afeb-459c-820f-256cbb220891",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "fc156d7f-1a4c-4b1c-aebe-3a3d30403e3b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "96bcb1d1-740a-4559-86ae-4ba237d77302",
+                  "ord": "a1"
+                }
+              ],
+              "id": "719117f0-c355-4804-8c50-56574a2a11a3",
+              "ord": "a0"
+            }
+          ],
+          "id": "ac86d8ad-af0f-4d40-a429-b9e357738157",
+          "ord": "a2"
+        }
+      ],
+      "id": "acaa09d6-c5a4-4538-9bda-504ad55cfc1f"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "K9 Method — private dog training & behavior",
+      "seoDescription": "K9 Method is a results-driven private dog-training and behavior practice: reactivity, aggression, puppy foundations, board-and-train and service-dog work. Book your assessment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f82ca0d1-7bba-443f-9fa0-00173c194bfb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2luZyUyMGRvZyUyMHRyYWluaW5nJTIwZm9jdXN8ZW58MHwwfHx8MTc4NjM5MTUxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A focused working dog holding a steady sit, eyes locked on its handler",
+                  "loading": "eager"
+                },
+                "id": "7005f1db-1cb8-4630-b251-e679d344ea44",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "6f4f65c7-83ab-4707-bd30-90c8fbbd98b0",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Real behavior change, led by specialists"],
+                    "id": "f6ea8ffb-9a1b-448b-bc43-fc8f9644ba9b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Private training and board-and-train for the dogs other programs give up on — reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment."
+                    ],
+                    "id": "57432322-c95e-44c8-84d3-faca52bbad11",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book an assessment"],
+                        "id": "b90c7469-95d3-4c0a-b459-eba865f0cdff",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services"],
+                        "id": "cdd75c6d-8f68-41b3-b811-e52cbaad1a55",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "76fe1dc4-7fcd-4b0e-a461-a53be7156a0c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "23021a6f-3f8e-485e-9d69-b0193379ae34",
+                "ord": "a2"
+              }
+            ],
+            "id": "bc698954-6cd3-4dfc-82ab-60f69556c1a6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Behavior specialists, not generalists"],
+                            "id": "187ae0a6-1a1e-4bdb-a778-66f01811d760",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every trainer here works cases full-time — reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for."
+                            ],
+                            "id": "02760dd6-4846-4ae4-92ac-5f8da4cb4516",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "132e67fa-15ff-4a71-b433-336268d142a1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A proven method, not guesswork"],
+                            "id": "7e5d1798-2a1b-474b-b49b-02f8bb42525b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We assess first, then follow a clear, repeatable plan built on how dogs actually learn. You’ll know the why behind every step and how to measure progress."
+                            ],
+                            "id": "743a23d2-1323-4d9e-be0c-66a9bb27f39b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d7142b4-0140-4bb9-898a-5832ac245492",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["In-home & board-and-train"],
+                            "id": "d3165d22-7fbd-46c1-ab11-c81712753bfc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Train where the behavior happens — in your home and your routine — or send your dog for immersive board-and-train and get the skills handed back to you."
+                            ],
+                            "id": "87e6eab6-d8ae-4622-9a08-350f6ff635c6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f3bd21a0-6d7d-4ff7-887c-a359b243338c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Lifetime support"],
+                            "id": "20dd3ebf-ed7f-49a2-a217-ef637ce038ec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The relationship doesn’t end at the last session. Graduates keep access to follow-ups and guidance, so the results stick for the life of the dog."
+                            ],
+                            "id": "038c0d79-9dc0-493f-bf1e-01717977634f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "149adb11-b1f7-417c-a49a-258f3d70ce17",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "62c507e5-0175-4836-8914-eb5e082bce73",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f51e320f-7167-4a80-b650-ba19150ecf3f",
+                "ord": "a0"
+              }
+            ],
+            "id": "9b147fd4-3bec-4cdc-bca7-0fb474ab9d8e",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we work on"],
+                        "id": "f41612cf-1196-46c0-937f-83fb10d0497c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every path starts with an assessment. Full pricing, session lengths and live availability are on the booking page."
+                        ],
+                        "id": "549205b2-205a-4c76-a13e-fd56a249c6cf",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3f5e3fb8-c899-4d1c-8654-d01d8a9f9f3e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Behavior assessment"],
+                                "id": "9a0de44c-61df-440e-9868-10521a85ffb1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "fbb0dece-376d-4f93-a570-90cfc1163ab5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c3bdc2b0-9831-4f0d-b7bc-19a6e776a8ed",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "ad57f2e4-0986-41d5-8fc1-8469ae66273d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Meet, evaluate, and leave with a written plan."],
+                            "id": "854970ba-1a2c-4c6e-a0cc-9e038ec432d9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "49a656b6-aa0b-49c7-9831-01daf2a184df",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Private session"],
+                                "id": "c9437e27-ed11-4722-9717-7f41ba405ad4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "cae54dad-8413-4230-ac60-1d46500ca877",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9251aa96-82cb-4e29-ab56-7eb0c6ff0b8a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "5e06ee5f-c0ed-4e4d-8162-1060b80ff12b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["One-on-one coaching for dog and handler."],
+                            "id": "0915484d-f461-4908-a843-909159ca69bc",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7dec03f6-0653-4aac-a324-40964bbfcd4a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Puppy foundations consult"],
+                                "id": "b604a41c-ff39-4724-9033-51337bb321c4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$90"],
+                                "id": "ec65fe96-fa32-4552-b832-07cdbacde183",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a7cab37f-2ed9-4a37-b936-402bcfbf0a5d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "225e062d-ac3b-4ebf-82e0-0457860c55da",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Start right and skip the hard re-training."],
+                            "id": "f1ef7fb3-bc6d-4427-8f32-4fd9ad3e0ff7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "985598c3-0632-4f39-b66f-0a1f07855176",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Reactivity consult"],
+                                "id": "70020326-b0af-4be3-bbc1-ea427c9c8ac1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$140"],
+                                "id": "9e05d8c4-1d4e-42dd-9496-243fc73404b7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f9448579-4891-4cea-bd7b-adcf12b25949",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "27e5c584-b630-45ac-94dc-e831095bdff1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Bring the leash intensity down for good."],
+                            "id": "1aeaaa80-2910-4e5e-a231-1716bf68734b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7f2800d9-132a-47f2-8f00-b96c9d0dd1ac",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Aggression consult"],
+                                "id": "4cd63868-a707-403e-8dfb-e9cc8b859733",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$180"],
+                                "id": "5929dfa1-eec4-495b-8cfe-9f49f269c339",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c967a023-0368-40e3-a442-dba8b0e3323d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "0a20726a-9a34-47d8-9bee-da423373bfba",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Serious behavior, assessed and handled safely."],
+                            "id": "1d1bb0c9-af35-4f4c-a430-d908da3b24c3",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a25f42b8-cb98-4a77-a71b-2c0e81f2d786",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Board-and-train consult"],
+                                "id": "488e5a7e-bd52-4df3-999d-74c69865c85d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$200"],
+                                "id": "2d7553d3-b70b-4128-a674-e5f6220e3748",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c205b9f8-fd8b-4279-8dea-ee8fa52509b6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "39134fcc-d6d4-422a-8cc6-f8fc69edc71f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Immersive training, skills transferred to you."],
+                            "id": "185e52d9-9013-42e0-8b53-bd12318baf43",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6bf67afd-0fd2-497e-9409-dda66c9838e3",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "fdf46ceb-99b9-4725-abac-5c8e2de8145b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "2494ff4e-b261-4441-a498-812eca91230b",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ae6fb6ea-5d34-4f7e-b6de-60feb040734d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "2c165a6e-7561-4484-a902-f8f8b53ff959",
+                "ord": "a0"
+              }
+            ],
+            "id": "621ba455-0dfb-4815-b41a-54a6f5758c87",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHdvcmtpbmclMjBkb2d8ZW58MHwwfHx8MTc4NjM5MTUxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A trainer coaching a dog and owner through a calm leash exercise at home",
+                      "loading": "lazy"
+                    },
+                    "id": "d91a515b-2161-441b-86d8-75eac37d5885",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The K9 Method: assess, plan, transform"],
+                        "id": "62b6e156-655f-40f7-b283-425435c201bd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most training fails because it treats symptoms and skips the cause. We do the opposite — a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root."
+                        ],
+                        "id": "60567e8e-bfaf-4425-a251-ca09ba0a3fd0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "And we train you as much as the dog. When you understand the method and can run it yourself, the calm, confident dog you met in session is the one you keep at home."
+                        ],
+                        "id": "240c575d-c911-4156-b5a0-0b7e8b393652",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book an assessment"],
+                            "id": "8823a8ca-50bb-4f17-bf85-56c486421b84",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "c69d4186-bc7c-4311-a875-330fb7f28a85",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "164ccf8e-0910-4701-b081-e5240767b73d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "09011d48-0b53-4083-b217-d01a61ea3790",
+                "ord": "a0"
+              }
+            ],
+            "id": "d04d91a7-a30b-4690-83f9-c2d05795690a",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your specialists"],
+                        "id": "576666ec-2632-4409-8590-c67c4d568dde",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with the specialist whose expertise fits your dog."
+                        ],
+                        "id": "ecb25d85-27e9-4cbb-8a26-47b8889e2d2a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "89096d88-7993-43f5-861b-76ac00036ac9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1551779891-b83901e1f8b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2clMjB0cmFpbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MTUxOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dana Cole, lead behavior specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "65decdd9-e164-4cc4-bac8-541d335bc751",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dana Cole"],
+                                "id": "13b1b8f2-51c4-4c0d-a087-8f120640bd48",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead behavior specialist"],
+                                "id": "7c5be8ef-a03d-440b-bf3e-ba6c437d4b0d",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fifteen years on complex behavior cases and service-dog foundations. Dana builds the plan the whole team trains to."
+                                ],
+                                "id": "d06a1408-73ef-4096-bfaa-9bc2472e9bc4",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "625b3ca0-ed42-4e3d-92a0-0074d5bc7017",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fc51109f-fc49-452a-ac6c-c247e7587389",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1535812859-6bfd2f132e78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTE0OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Reyes, reactivity & aggression specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "ec937dc4-2841-402b-99eb-57a3114cfafb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Reyes"],
+                                "id": "a8cb08a2-0ad8-460b-8627-2787264d5af6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Reactivity & aggression specialist"],
+                                "id": "69695e5d-8338-4a1e-80fa-b8cc3800607b",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Calm under pressure with the toughest cases — leash reactivity, resource guarding and bite histories handled safely and humanely."
+                                ],
+                                "id": "6b477996-7021-4d9d-a6a1-8f76a0b091aa",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f1e8437c-4f61-4dc7-a623-b1f8dd0e32dd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "71caedba-f81b-4f51-854f-dfab32637f63",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1660849636221-9a1fc064d57a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwaGFuZGxlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1MjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Shah, obedience & board-and-train specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "70310083-cd27-4e9f-9bb2-56236c302189",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Shah"],
+                                "id": "e4ca6d2d-74a6-4422-bf33-b47a5e8dde60",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Obedience & board-and-train specialist"],
+                                "id": "84f98b17-a755-4d7e-92fb-91999990f9d7",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Runs the board-and-train program and rock-solid obedience work, then transfers every skill back to the owner."
+                                ],
+                                "id": "15cc6104-9c2a-413d-b41f-e413b8d4c4e7",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "ac18ba05-7c6b-400e-bf27-1b1af02ae283",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dc19c010-1f75-437c-afff-8df4fd3253ce",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b1b8d073-617f-43d6-b91b-60cff8f2d583",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e749ab40-2af0-4cc3-b7e4-2bfbd03fc706",
+                "ord": "a0"
+              }
+            ],
+            "id": "f40be82b-7314-4bd0-bcd7-19c0dea700e6",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog — they taught us how to keep him that way.”"
+                    ],
+                    "id": "27313003-bb61-4bd9-b698-e99634c1b1d4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Alvarez family, K9 Method graduates"],
+                    "id": "34965f2e-c3f8-4b16-a2a5-621c6151c89b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "eaadace3-ac26-48ab-a419-d613c1e37501",
+                "ord": "a0"
+              }
+            ],
+            "id": "9948cc26-12a4-41c2-9956-361fde8e82f8",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["It starts with an assessment"],
+                    "id": "5d2333e6-781f-414f-9485-4eedb6c208b9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Tell us about your dog, meet a specialist, and walk away with a plan. Booking online takes about a minute."
+                    ],
+                    "id": "afec8135-465f-4ca5-92ca-9c9b8655cadf",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book an assessment"],
+                    "id": "19e3c8cf-fabf-4323-b88e-b869e5c11ba0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c27abc74-d637-4aa0-bec1-339febf03e23",
+                "ord": "a0"
+              }
+            ],
+            "id": "258a6374-716b-439c-ae63-d63888eeafb2",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — K9 Method",
+      "seoDescription": "See what K9 Method offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "43f8e677-9afd-487a-b388-2878940d8b84",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHdvcmtpbmclMjBkb2d8ZW58MHwwfHx8MTc4NjM5MTUxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A trainer coaching a dog and owner through a calm leash exercise at home",
+                  "loading": "eager"
+                },
+                "id": "a5739f54-bff6-4966-8e12-b971bf142238",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "42f650f8-be51-4f86-89b6-18886b09c74f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your assessment"],
+                    "id": "c6023f11-010d-4852-bc97-a245212ce6b7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service to see prices and live availability, then pick your specialist and time. Every path begins with an assessment."
+                    ],
+                    "id": "84e17712-720e-46ea-a709-17a0448f5658",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "1332f245-2eda-4e53-99ec-05b5d3a4014a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "8500af97-fcef-4f23-88fa-90d3cb1d41e0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d28a4f8f-97dc-43c8-abb7-a56d27b1b54a",
+                "ord": "a2"
+              }
+            ],
+            "id": "a2528bef-7b39-4fc9-87d0-ad30c74fc1bd",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "cdb8bcba-6936-45c6-9147-544bec8cfccb",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — K9 Method",
+      "seoDescription": "Who K9 Method is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "28df175e-2161-4def-8f63-7f053ed2512d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2luZyUyMGRvZyUyMHRyYWluaW5nJTIwZm9jdXN8ZW58MHwwfHx8MTc4NjM5MTUxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A focused working dog holding a steady sit, eyes locked on its handler",
+                      "loading": "lazy"
+                    },
+                    "id": "8352568a-ce14-400f-b909-db2a5f5beab1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About K9 Method"],
+                        "id": "69b7bfa8-3362-410a-9f46-3df46f5ffed1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "K9 Method exists for the dogs that group classes and quick fixes couldn’t reach — the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results."
+                        ],
+                        "id": "82fa0028-cbdb-4da7-b63b-ec615c6764b6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior — and your family’s safety — like it matters. Because it does."
+                        ],
+                        "id": "897f0547-e8dc-4311-8689-eb8bf8625138",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book an assessment"],
+                            "id": "073b237f-4fdc-472d-a79d-035f1b872624",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f9d4fee6-8c4a-4ab3-9f87-9425799709d1",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "8ddb8159-bcc1-4948-9f00-a6118515b413",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "035ae99f-0e43-4f7f-abcd-2591180511d7",
+                "ord": "a0"
+              }
+            ],
+            "id": "8b87ba90-6a32-4050-97fc-e7a40834eb27",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "1451919a-e795-4a47-a4d9-461056ef5ca8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Assessment first"],
+                            "id": "5596baf4-d177-4f5f-9ac0-267f228ed4be",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We never sell a program before we understand the dog. Every relationship starts with a real evaluation and a written plan you own."
+                            ],
+                            "id": "c8f754a7-5e4e-4fe7-b3cd-a7c34a9fd210",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6d9915fa-0e69-48b5-97e9-853b854ddfce",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Humane, modern methods"],
+                            "id": "85d9185e-fba6-42e0-9269-54cfbae4fc1d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Clear, consistent, science-based training — no intimidation, no gimmicks. We change behavior by teaching, not by force."
+                            ],
+                            "id": "7057b082-938a-4324-bdba-b87076ec3912",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "82219bb0-0186-493c-9fd8-5bae4a102627",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Built to last"],
+                            "id": "7ac171c9-ba91-47ef-a58e-40943d556334",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We coach the owner as hard as the dog and back it with lifetime follow-up support, so the transformation holds for good."
+                            ],
+                            "id": "65fbba7b-dffb-4338-82c2-4f0d24798b8f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b348b53a-44b9-4b65-ba55-3dae1dc169bf",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8f8c1267-bec9-4d8d-af3a-4beef71af792",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d6d11b6f-0d51-486b-a2ef-43ade7383218",
+                "ord": "a0"
+              }
+            ],
+            "id": "dff95d5f-5400-44d9-b9e1-7699395a6d9a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — K9 Method",
+      "seoDescription": "Where to find K9 Method, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "db4825f1-3a89-40d9-b286-bf92bde980d7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the training center"],
+                        "id": "532db517-0bbb-47f8-b409-90a3edf04a23",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["K9 Method"],
+                            "id": "bdc8b370-2ad1-48cd-9282-0f53e98ce6e8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["90 Ironwood Road"],
+                            "id": "45e6cf03-3ec4-43e1-a050-1f354d540760",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 4 · Austin, TX 78745"],
+                            "id": "2b2c5cef-362e-4147-be67-2f4103dcd2dc",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "afe37da3-36d9-49c1-82f2-71123c1b8144",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "4079118e-87dd-41fc-912c-5ad00fa64832",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 7:00"],
+                                "id": "dae8e01d-a1a6-4e19-9aa2-c580f60f250c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bdedfe88-8b26-438d-9cbe-eb028b351e2c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "75f7ea2b-190f-464a-8250-3a62804d2c6a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 3:00"],
+                                "id": "25e687cd-f745-4080-8765-ce66a6f5ca6f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "21b4cd84-4f2b-4de2-9345-b93567aa9d03",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "a215580f-e198-42ce-ad84-de731274d67b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "b03b6093-a2b0-4a1b-9917-e250ae50ff3a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5e1f5b8a-296b-4411-a409-fec283ee82b5",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["In-home sessions"],
+                                "id": "ca019232-68d5-461c-a5f3-8c23a6e64512",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "59aab0ff-998e-46f3-9d94-73bac339c65c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0c796e1e-6f2f-493b-88bf-f0002a187844",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "e642266e-61d5-448a-b00d-b434a0bcaa1c",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "efe2178e-e20f-47fa-884d-992e92c62528",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "90 Ironwood Road, Austin, TX 78745",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "ee3270a5-d700-4b1a-a5be-d60a060e06f0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e7d7f3b6-1a7e-4373-bc8d-0b4726bb3e8e",
+                "ord": "a0"
+              }
+            ],
+            "id": "ad390336-d865-4d91-a925-fb731423c82c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "70fc4778-9c42-42de-a6d6-9bd79cf83b16",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your assessment online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "a7d71d92-5916-4cfb-a37f-c5a5020b5827",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book an assessment"],
+                    "id": "1953eb4c-372e-4c11-a9bf-7ff21decde62",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "afe0a1ce-09d7-4b30-9d7c-3337618f305f",
+                "ord": "a0"
+              }
+            ],
+            "id": "b1b76038-9183-4937-9c8f-10788b2fecee",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "k9method",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 255)",
+      "--color-base-200": "oklch(95% 0.006 255)",
+      "--color-base-300": "oklch(89% 0.009 255)",
+      "--color-base-content": "oklch(22% 0.02 262)",
+      "--color-primary": "oklch(28% 0.03 262)",
+      "--color-secondary": "oklch(34% 0.022 262)",
+      "--color-accent": "oklch(72% 0.16 66)",
+      "--color-neutral": "oklch(26% 0.02 262)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.125rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 262)",
+      "--color-secondary-content": "oklch(98% 0.01 262)",
+      "--color-accent-content": "oklch(15% 0.02 66)",
+      "--color-neutral-content": "oklch(98% 0.01 262)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(72% 0.16 66)",
+      "--color-highlight-content": "oklch(15% 0.02 66)",
+      "--color-border": "oklch(89% 0.009 255)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.02 262)",
+      "--color-base-200": "oklch(24% 0.022 262)",
+      "--color-base-300": "oklch(30% 0.024 262)",
+      "--color-base-content": "oklch(96% 0.006 255)",
+      "--color-primary": "oklch(93% 0.01 255)",
+      "--color-secondary": "oklch(80% 0.02 262)",
+      "--color-accent": "oklch(77% 0.17 66)",
+      "--color-neutral": "oklch(30% 0.02 262)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.01 255)",
+      "--color-secondary-content": "oklch(15% 0.02 262)",
+      "--color-accent-content": "oklch(15% 0.02 66)",
+      "--color-neutral-content": "oklch(98% 0.01 262)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.17 66)",
+      "--color-highlight-content": "oklch(15% 0.02 66)",
+      "--color-border": "oklch(30% 0.024 262)"
+    }
+  }
+}

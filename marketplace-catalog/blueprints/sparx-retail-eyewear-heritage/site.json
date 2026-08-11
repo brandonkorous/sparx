@@ -1,0 +1,2433 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "60c76033-bd57-4a09-b94a-4f4c5a35c8f3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "4293a9e2-b056-478b-857f-24e080f87200",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "7a7d025f-d575-472d-b254-000c0a6507cc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "5eaf80a0-7bd5-4711-8450-d82b3e2eff56",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "7c663b06-38b3-4cc8-bad5-836d099f38a9",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "4b1b8260-0c37-4073-bbe6-43b2fae5b070",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "17b9430c-bb75-4e40-a400-0fdf44836ef5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "b46c73c2-2282-4f2d-8797-ad26c420e650",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "55073721-149f-4cbb-8ec3-e18c852f7d00",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "843aa863-9f9f-4e00-a896-e3d4bcf17012",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "fd11c5d9-342b-4d53-9e72-ff0ec8684ec9",
+                  "ord": "a2"
+                }
+              ],
+              "id": "7e939f7d-142b-4485-8597-792b4a831938",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "389993eb-e66a-4700-94ce-82be4944d95f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "aed86edd-e5fc-4380-9722-15634ce1f177",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "2de82f2d-52e0-4b0e-9d59-f5245e87a536",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "417bddae-a129-4775-b83b-6ae43cde31fc",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "fdfbb44f-7965-4b83-85f1-85cd23584d96",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "9e047505-add4-4c3c-bf7b-d3982008b2f5",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "a0ec2781-19f3-423c-87c3-38208a105676",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "7d2fa603-d443-4a92-9829-caebc7500f2e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "3d6d794e-dc45-412a-b11b-f4ab398b8071",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "11aeaefc-5625-4db5-ae6b-ad1c87748fa6",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "020385fc-57e7-4bf7-85a5-b41ddee1278c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ebce3e2c-7c37-49d9-b8d2-5fcd9ca225b8",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "d30f90f8-2bc8-4571-b2ff-e242e0a3897e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "520a4954-6137-494f-8b45-020183855bd3",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "4ea79c81-765d-4166-8050-b77a1331bcdb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "60d4552f-468b-43d0-a910-cbfd356e8df7",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "5d30622a-8a6c-4d05-a832-2e4e237a7888",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "36410c1e-e237-4f22-b8d3-32fb81fab75f",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "e38eb7de-4c1a-463f-a198-41c782563cdb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d7c9db31-0879-4f60-85c3-84e73136a597",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "22209929-6ffa-41e2-84cb-4767c0876b97",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "13927074-2975-45cd-b412-e11fee00695f",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "fb47b87c-ac63-4d92-8b06-fbdfc14e96b2",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "6fdcaec7-fa05-4df1-bea4-21eb23fbd4c8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "e510d408-70fb-4bec-929d-b51c3f044430",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "0df661e0-a523-4969-9707-87f1542b0425",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "bb3b14a3-170a-4db8-93f1-48fbdfc96d33",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "1f92f281-ad00-43fd-b91a-28346cd6fba9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b151e1ae-7f3b-490b-a3ed-6dd94eb4fcbc",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "96a03db9-0579-41b3-8abf-64c0cdb032fc",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d3a5b8be-afee-4070-bcbe-0f2207125564",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "3e933205-e908-4a07-8722-cca0e6059ee5",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "a219bd9c-a3b6-4d46-9630-f0b468256503",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "81322545-31ee-4a32-874b-5232e4d054b0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1ba17e37-7bc4-41a2-ad17-d95d0fdaa769",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "2f100fa7-e953-4b1b-a21b-794c8fc6a3d2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d20a60ba-0de5-48db-9968-04686af90276",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "ace2f2a6-e764-4a58-a3c9-db31457b3967",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "5770660a-38ac-41a2-9497-75ef320781eb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "03b3db0d-51af-4409-a2cc-81b218a354ec",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "e88b5800-2e89-47b9-bc16-4a3cbdb3286f",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9ddfb72b-b8a7-4345-aec1-a8f629f9f450",
+                  "ord": "a1"
+                }
+              ],
+              "id": "004ee855-bee2-4372-8b4a-53c4353d502f",
+              "ord": "a0"
+            }
+          ],
+          "id": "27956204-93ad-443f-abb2-91e17f7eea53",
+          "ord": "a2"
+        }
+      ],
+      "id": "a8c3874f-c637-4b6b-b890-19568f0ca158"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Atelier Optique — hand-finished eyewear, made since 1932",
+      "seoDescription": "Atelier Optique cuts, shapes and hand-polishes acetate eyewear the slow way, on the same benches since 1932 — optical, sun and reading frames, glazed in-house, repaired for life.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "af8a6336-b2f3-4900-ade2-bf925a13c8fc",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1503796627019-324e68809dc3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UtdXAlMjBoYW5kcyUyMGhhbmQtcG9saXNoaW5nJTIwYWNldGF0ZSUyMGZyYW1lJTIwd29ya2JlbmNofGVufDB8MHx8fDE3ODY0MTYxOTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Hands hand-polishing an acetate frame at a workbench",
+                  "loading": "lazy"
+                },
+                "id": "4f1ad7b7-5e24-4ed4-b315-22bed4e02960",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Hand-finished acetate, made the slow way."],
+                        "id": "deb91dff-b438-4737-a5fd-6cbad2a1c98d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Atelier Optique has cut, shaped and polished frames by hand since 1932. Every pair is turned from a single block of Italian acetate over five weeks and forty pairs of hands — glasses built to be worn for a lifetime, and handed on after it."
+                        ],
+                        "id": "f45ac519-b3de-4e21-85a0-d3ca5e23c7b4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the collection"],
+                            "id": "94d24b7a-0e32-41d2-85f0-74a74d43999e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/blog/the-making-of-a-frame"
+                            },
+                            "children": ["How a frame is made"],
+                            "id": "5ac85f2d-ed1b-4f18-bd7c-668e957c25a0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dcffa665-8eb2-412f-be7e-53852025aeea",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f7db6967-04e9-4916-bed4-718099106a97",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "85e2b5bd-f23a-4cdf-a542-6144fe69e1ab",
+                "ord": "a1"
+              }
+            ],
+            "id": "11467d65-2ee7-4b5d-8f3b-31ee4a39e923",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["The house, by shape"],
+                    "id": "2aa07938-b2ad-46ca-805b-f6295acd371a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1724385135035-2ef26d30e549?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMHRvcnRvaXNlJTIwYWNldGF0ZSUyMG9wdGljYWwlMjBmcmFtZXMlMjBsaW5lbiUyMGNsb3RofGVufDB8MHx8fDE3ODY0MTYxOTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Tortoise acetate optical frames on linen",
+                              "loading": "lazy"
+                            },
+                            "id": "c48f6636-2f81-46b2-bd42-a74ab642f051",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Optical"],
+                            "id": "f13f3f08-fce3-41b4-8bbd-caf6576256e9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d24031f7-838e-415f-b202-04f2c522605e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1470526446583-d0fe2363d8cb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGhhbmQtcG9saXNoZWQlMjBzdW5nbGFzc2VzJTIwd2FybSUyMGxpZ2h0fGVufDB8MHx8fDE3ODY0MTYxOTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Hand-polished sunglasses in warm light",
+                              "loading": "lazy"
+                            },
+                            "id": "a3ca6304-db38-47fd-877a-08c34a156e4a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Sun"],
+                            "id": "af28afc3-188a-4dd8-a16a-c248072f602b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b89e6a0a-51c9-4967-81ec-97b1d187c10a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1456081101716-74e616ab23d8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVhZGluZyUyMGdsYXNzZXMlMjByZXN0aW5nJTIwb3BlbiUyMGJvb2t8ZW58MHwwfHx8MTc4NjQxNjIwMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Reading glasses resting on an open book",
+                              "loading": "lazy"
+                            },
+                            "id": "9ce9e510-c55f-4ad4-9770-1624f547dc99",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Reading"],
+                            "id": "65c5f3de-6058-4504-a6e3-d784351e509d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "067bdf42-82be-49bc-8afa-890383157282",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1724927537639-a31846c7b94d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FkZGxlLWxlYXRoZXIlMjBnbGFzc2VzJTIwY2FzZSUyMGJlc2lkZSUyMHBvbGlzaGluZyUyMGNsb3RofGVufDB8MHx8fDE3ODY0MTYyMDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A leather case beside a polishing cloth",
+                              "loading": "lazy"
+                            },
+                            "id": "b620e19a-a3f7-4727-8791-2b4056deadbf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Accessories"],
+                            "id": "624aeb0f-2e5b-4c84-9102-98bfaf3475a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1dfc2338-0a1a-4759-8544-233fb70b9091",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b58d92bb-a8d4-44c4-afab-6a4238eca9f6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ddeecfe5-53a8-4bda-b3b3-7a73f8113f81",
+                "ord": "a0"
+              }
+            ],
+            "id": "f8efe5a3-04d7-48af-a818-363cbfb0918a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New off the bench"],
+                    "id": "31a28cdf-3574-44e2-8c7b-f0ecb8390df1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "aa6ab545-e2cc-4ed2-aef0-ce33b5226b00",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "62479e47-d9ec-4e71-87f0-2735fe9bade4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "44253299-ed9b-4082-9305-319ebfc989b1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "de60f14e-dad1-4b39-ba64-f3cb4b2c879d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "90c73100-1f78-4beb-9721-e1ebf5d1128e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6eff166f-7642-45a0-83db-afdcd6e9eeda",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "69433df8-ccca-429b-801a-f178dfc4f017",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "b83f54de-3b6f-49d3-a261-d93e71449b98",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "a586a56e-fa6c-4795-b7c6-6c3488cbde5c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fe50f8c9-8e72-4e1c-aa99-fb912c1a0084",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "d3e3ce8f-5ba0-42cd-8934-6976b5e9a6b9",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "71765168-4a6b-45a0-aecc-e8c7c7e851b2",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "fa328044-a99c-4d53-a3c0-570b91a6d75c",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1603578119639-798b8413d8d7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNldGF0ZSUyMGZyYW1lJTIwZnJvbnQlMjBiZWluZyUyMHNoYXBlZCUyMGZpbGVkJTIwYnl8ZW58MHwwfHx8MTc4NjQxNjIwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An acetate frame front being shaped and filed by hand",
+                  "loading": "lazy"
+                },
+                "id": "7c4cb51c-3a4f-4a1c-b3fe-3a3b49bdd710",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Cut from a single block"],
+                        "id": "1897bccb-110b-4859-9694-b3244de755a4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We don’t injection-mould or assemble from parts. Each frame front is milled from one block of Mazzucchelli acetate, then tumbled in beechwood drums for days until it comes up with the deep, living lustre only hand-polishing gives. It is slower, and it is the whole point."
+                        ],
+                        "id": "b5648637-87a3-46b7-aae9-101d11d97329",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/the-making-of-a-frame"
+                        },
+                        "children": ["The making of a frame"],
+                        "id": "0c9ed1a5-732a-4aae-888d-f04ee89a76bb",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "1d92ea43-36c9-4f8a-b97f-709f390c394c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "9874778f-0eb8-46ab-bad1-fa88cbb9b0d4",
+                "ord": "a1"
+              }
+            ],
+            "id": "ee4a9567-8f73-4678-bfe6-d82cb60b3c93",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The optical collection"],
+                    "id": "329b7ac4-f3c1-4cec-9b7f-1ac9e266b18e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "12c1324f-4c62-472a-bad1-1022dbc4f484",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "b4889539-2deb-41bb-8e92-ebf34a3cedf1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "9a09e665-92be-4e1b-87c0-d637c9a45737",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "f2b08e18-9639-44bc-9f55-80e022d7e651",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "273fc0de-79cd-45d3-9eb5-51773b1f098c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "95c87536-960c-4735-8b78-e92e8502863a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "695cf657-b143-4ca4-a6ee-347d883b579e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "70931982-b0b4-4dc2-a876-525997523209",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "2231952f-fa10-4d61-9077-50c701dde184",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a48724fd-134b-453a-91ec-7ae946aeab25",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "c4a1f1ad-b021-4758-ac1a-5cd80a4de50c",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.optical"
+                },
+                "id": "eadbf6f6-53b7-44a3-a77a-bce19590075f",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "f78249b3-4687-4df2-a80f-90b31f1c8592",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1610850760052-edbc52ef7618?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2xkJTIwd29ya3Nob3AlMjBiZW5jaCUyMHZpbnRhZ2UlMjBmcmFtZS1tYWtpbmclMjB0b29sc3xlbnwwfDB8fHwxNzg2NDE2MjExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An old workshop bench with vintage frame-making tools",
+                  "loading": "lazy"
+                },
+                "id": "15d40783-3c44-4b27-9448-4811cf02af4a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A workshop since 1932"],
+                        "id": "029d1cc3-9645-42b7-8175-3938c94b8534",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Three generations have stood at the same benches, using tools our grandfather ground himself. We still glaze every lens in-house, still fit each pair by hand, and still repair anything we’ve ever made. A frame from Atelier Optique is meant to outlast the trend that sold it."
+                        ],
+                        "id": "5a435175-abfe-4fbf-a395-cabfb3d3c72b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": ["Our story"],
+                        "id": "be9fb6e3-c1ca-4192-9543-c14a00676fbc",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "efffc4ca-1db6-44a2-9f37-ec42d1ad65a0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "abbfa376-7460-44fd-9b3f-b697920410df",
+                "ord": "a1"
+              }
+            ],
+            "id": "bdf14e24-6680-4f9a-95d6-39ea17ff1e7f",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Atelier Optique",
+      "seoDescription": "Browse everything Atelier Optique makes, with prices and options at a glance. Eyewear & optical.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "903dd016-7cca-4e91-86a1-0dd79376daf4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The collection"],
+                    "id": "0baa9273-1680-4a7d-9ddd-6470bc9888ab",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every frame the house makes — optical, sun and reading — each hand-finished in its own acetate colourways, with the lens choice built in. Filter by shape or category, or sort however you like; all of it is cut and glazed to order on our bench."
+                    ],
+                    "id": "09e2cc1a-eaa6-4e15-aad1-ee73d30ebb71",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "540f19bc-b98c-45ea-9627-612a3b0f47c1",
+                "ord": "a0"
+              }
+            ],
+            "id": "8e767f34-95cc-4988-99a8-3a7d077c4c3c",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "75f1d66e-54bb-4b20-8858-baf71ffc64ff",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Atelier Optique",
+      "seoDescription": "Explore the collections at Atelier Optique, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "94579c44-8c46-45cd-bc85-1f59e559e05d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "21943dae-6e54-4d89-b8a9-3718ba3c1b92",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The frames grouped the way people actually shop — new off the bench, the best-loved shapes, the full optical line, sun, the reading room, and the 1932 series struck in limited numbers each year."
+                    ],
+                    "id": "2c47af8b-18ef-4afd-a575-7d3c0eb21750",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4d4942f4-7633-4f76-b275-120da54d70a6",
+                "ord": "a0"
+              }
+            ],
+            "id": "d24c06ef-8e5e-481a-9857-cedaff8ac345",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "faeaecc5-056d-4249-806b-b910305bb08e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Atelier Optique",
+      "seoDescription": "Review what is in your cart and check out securely at Atelier Optique.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "08ec001e-61b6-49a3-9b9c-4cf83c038f51",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "173dd734-bc5c-4575-b624-7e71fe0509e7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Complimentary shipping and a leather case with every pair, and thirty days to be sure. Not certain of your prescription? Add it after checkout — we’ll hold your order and email a gentle reminder. Adjustments and repairs are free, for the life of the frame."
+                    ],
+                    "id": "e7e36c37-7195-441a-a74f-0784e224ccd8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bea8bfa5-cc56-44bf-8e37-a47fb3dcb046",
+                "ord": "a0"
+              }
+            ],
+            "id": "26b91110-3e24-4fb2-9c06-97976a15af4f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "46e845a7-bb40-458c-8460-0d0ae36f284b",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Atelier Optique",
+      "seoDescription": "Search Atelier Optique for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0ba64aeb-a04e-4380-920e-d1f45ecabb9e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Atelier Optique"],
+                    "id": "84a51836-773d-43a6-a824-1c38bbf4be52",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a shape, a colourway, or a note from the workshop? Search the whole house and the journal below."
+                    ],
+                    "id": "183c1253-f6e9-4822-86e9-5cda79e1bc96",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6ea5f141-25dd-4b01-a05e-c30226f00d30",
+                "ord": "a0"
+              }
+            ],
+            "id": "4435620f-c451-4c22-a769-f2f1eda4e3d7",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "cc68d885-d2f3-4f09-9023-58ecac6dcc44",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Atelier Optique",
+      "seoDescription": "Stories, guides and notes from Atelier Optique.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "732c3f7f-823f-4af7-90fd-79a22b22a4f7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The workshop journal"],
+                    "id": "95ebc6cf-da48-4f01-8338-4f60b5a689d9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the bench — how a frame is made, how to find the shape that suits you, and the ninety-year story behind the house. Plain, unhurried, and written by the people who file the acetate."
+                    ],
+                    "id": "9b657cdd-8afd-4623-982a-63223cfade9c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c220e2d5-b752-4676-9dc3-e62cbb46392c",
+                "ord": "a0"
+              }
+            ],
+            "id": "18fa7952-9d05-49fa-86cd-4eb807d65fff",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "5e221614-c6b5-4e13-aa1e-73a636e22606",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "35d8a1e2-53e8-4b1e-9af2-19d00aba38ac",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "fa3721bf-fdca-44ee-a542-18365415bb69",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "d64714e3-53e6-4b2e-bb84-cd00c1e9009c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "c2f790f5-283e-432f-a5f0-1edc3b1ab7c4",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "2edc8e29-236f-40b1-9d27-9906c86a35d2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "098b2796-f3e8-4378-8733-ecaef30cc9f5",
+                "ord": "a0"
+              }
+            ],
+            "id": "2591ecd5-2fc6-464c-98e8-0b5e20337a79",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Atelier Optique",
+      "seoDescription": "Ninety years at the same bench — how Atelier Optique mills each frame from a single block of Italian acetate, hand-polishes it, glazes it in-house, and repairs it for life.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c235aeb6-9e81-4b87-acd9-68fcc644f1dc",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Atelier Optique"],
+                    "id": "857bb495-cd87-4bad-9b60-389a8ff6e218",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "In 1932, a young frame-maker set up a bench in a narrow workshop and began cutting spectacle fronts from sheets of acetate by hand. Ninety years on, his grandchildren stand at the same benches, using some of the same tools, making frames the same unhurried way. Little has changed, because little needed to."
+                    ],
+                    "id": "0bdbb98f-775f-461c-82ba-c64ae5da4f25",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We buy our acetate from the same Italian mill our grandfather did, choosing the sheets by eye for depth and figure the way you’d choose timber. Each frame front is milled from a single block, then tumbled in beechwood drums for days and polished by hand until it takes on a lustre no machine can rush. Hinges are set with five barrels and steel rivets — the joint that lasts a lifetime, not a season."
+                    ],
+                    "id": "1b957b9c-2c94-4ec6-8b5a-2a3a6f015512",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every lens is glazed on our own bench, every pair fitted by hand, and anything we have ever made, we will always repair. A frame from this house is not meant to be replaced next year. It is meant to be worn until it’s yours, then handed on — which is the only kind of luxury we believe in."
+                    ],
+                    "id": "55659fc5-8493-4471-9dea-de240aacfd94",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "df8369b3-6697-4c5c-972d-9b19385c1a2b",
+                "ord": "a0"
+              }
+            ],
+            "id": "75ab7ec6-44f1-4b0d-8d44-b17b8518e465",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Atelier Optique",
+      "seoDescription": "Get in touch with Atelier Optique — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "eea5bf70-42d5-4aa3-8d34-d045a3cf223f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Call on the workshop"],
+                    "id": "1bc0fec4-2fce-47a9-8407-f3e6eb02b5c4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Unsure which shape suits you, need a hand reading your prescription, or want a frame repaired or refitted? Write to the bench and one of the makers — not a call centre — will write back to you personally."
+                    ],
+                    "id": "24e2cadd-ca79-4e2a-ab73-7397bf0f8a7c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:bench@atelieroptique.example"
+                    },
+                    "children": ["Write to the bench"],
+                    "id": "f4801c9a-d4d4-4020-b395-1776a0073b5e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "54505c6b-80dd-42e2-8706-076579b55cce",
+                "ord": "a0"
+              }
+            ],
+            "id": "f27620cc-a77f-4055-9838-60e122f5c53a",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Atelier Optique",
+      "seoDescription": "Product details at Atelier Optique — eyewear & optical, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "e00a668a-2c87-456e-a6d3-9feaacf306d1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Atelier Optique — since 1932"],
+                            "id": "358d08c8-2d96-4dbb-89a3-a641175096d9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "90440ff6-3118-4209-a630-d0024cb64b60",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "13155479-8de0-4cf6-b5f6-329478ddbd12",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "900107ed-86fd-46e7-9874-dc148a85af32",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "719fc0cb-483e-492e-8c15-3793ea61e667",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "63206963-9f60-4bf1-b297-b3b837a16885",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "d51fa08a-8fda-42e1-a444-b1226af83f59",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "1754fdc6-766e-4c2f-ab3c-0d7853002b7d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "038a2930-6b0e-43fe-a410-9258d4017c25",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "014076dc-ee9c-41be-afd4-9fad94e60c05",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "dcf511ac-008d-4749-ad53-9bc9491c3153",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "8d43f03d-cec2-44a4-95fa-6b8d549ee21b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d9a35b64-c04d-485d-9608-1208b0b2035b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "44f1d536-f8ff-4ddc-a53c-6d3c59dd196d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "ca2ff545-10ee-4e05-8542-263e1a1a1a47",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Hand-finished & glazed in-house"],
+                            "id": "7674fc96-d5c9-47c8-93ae-ee6370135c45",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Choose your lens at checkout — prescription, blue-light or plain — and add your prescription now or later. Every pair is hand-polished, five-barrel riveted and cut to your lenses on our own bench, then delivered in a hand-stitched leather case. Adjustments and repairs are free, for life."
+                            ],
+                            "id": "24b6afe9-8662-4a9e-8786-4b2c5ab1cc40",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8f1abf06-9870-4436-b23e-a9dbabd39ae1",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "76651994-2b88-4ade-9884-1eecea96d4b2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "91f17c85-e864-42b4-b616-ed3d091e27c6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "58d8b49f-461e-4f1f-a57b-749e99e854c1",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "20633346-c7cc-4cb6-8b45-e9b61615f1d3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "cae04277-10d3-4564-be83-49f28935aefa",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "d7b8aca5-3c1e-4e84-b68f-8354fa6ae5d7",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["From the same bench"],
+                    "id": "dd9f8fdc-d64d-4a6b-8244-7f934788188d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "7b0bba89-e6d0-4e40-9a86-7dd85a98514a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "12f4a7e5-0c1d-4445-a4db-e192b1b15df3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cbd0086a-827e-4c17-a875-7dfefb92804a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "bfee9e72-759a-41b9-b686-31417ba527c0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "54beb7bc-0156-44e4-bfa1-746ca1fc9757",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3c5664ee-4431-488d-98a2-c3b0c6a85bc6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "14788360-d959-4774-aa52-f5dc416ef732",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "feb3e5d8-6f84-440f-aaa9-04cfb6694a20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "d25b58fa-f3a0-4516-ae35-f01221c9cea6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4a32c113-eb04-4f26-87e0-8ef8d2c27078",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "426ac433-ca43-4d97-b643-9c638d4fe27d",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "059f723d-04d8-40fb-8043-ced82348fa47",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "5d64d581-314f-44ec-bf5f-f14f103c5913",
+            "ord": "a1"
+          }
+        ],
+        "id": "896f01d4-7b1c-4149-a731-ef0fde7760ae"
+      }
+    }
+  ],
+  "theme": {
+    "name": "atelier-optique",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.014 84)",
+      "--color-base-200": "oklch(93% 0.018 80)",
+      "--color-base-300": "oklch(88% 0.022 76)",
+      "--color-base-content": "oklch(23% 0.03 60)",
+      "--color-primary": "oklch(34% 0.06 156)",
+      "--color-secondary": "oklch(40% 0.04 62)",
+      "--color-accent": "oklch(46% 0.11 56)",
+      "--color-neutral": "oklch(27% 0.03 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Libre Franklin\", sans-serif",
+      "--font-head": "\"Playfair Display\", serif",
+      "--color-primary-content": "oklch(98% 0.01 156)",
+      "--color-secondary-content": "oklch(98% 0.01 62)",
+      "--color-accent-content": "oklch(98% 0.01 56)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(46% 0.11 56)",
+      "--color-highlight-content": "oklch(98% 0.01 56)",
+      "--color-border": "oklch(88% 0.022 76)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Playfair Display\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 62)",
+      "--color-base-200": "oklch(19% 0.02 62)",
+      "--color-base-300": "oklch(16% 0.02 62)",
+      "--color-base-content": "oklch(94% 0.014 84)",
+      "--color-primary": "oklch(74% 0.09 156)",
+      "--color-secondary": "oklch(79% 0.04 64)",
+      "--color-accent": "oklch(72% 0.11 58)",
+      "--color-neutral": "oklch(32% 0.02 62)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 156)",
+      "--color-secondary-content": "oklch(15% 0.02 64)",
+      "--color-accent-content": "oklch(15% 0.02 58)",
+      "--color-neutral-content": "oklch(98% 0.01 62)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.11 58)",
+      "--color-highlight-content": "oklch(15% 0.02 58)",
+      "--color-border": "oklch(16% 0.02 62)"
+    }
+  }
+}

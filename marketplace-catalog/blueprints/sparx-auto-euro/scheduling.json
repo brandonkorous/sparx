@@ -1,0 +1,368 @@
+{
+  "policies": [
+    {
+      "handle": "shop-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel. We send a reminder the day before and two hours ahead so your bay and technician are ready."
+    },
+    {
+      "handle": "diagnostic-deposit",
+      "name": "Diagnostic deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 7500,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer bookings hold a $75 deposit that comes straight off your final invoice. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "klaus",
+      "name": "Klaus Adler",
+      "kind": "staff",
+      "skillTags": ["diagnostics", "german", "performance"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "dieter",
+      "name": "Dieter Voss",
+      "kind": "staff",
+      "skillTags": ["maintenance", "brakes", "electrical"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "lena",
+      "name": "Lena Brandt",
+      "kind": "staff",
+      "skillTags": ["inspection", "engine", "transmission"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "bay-1",
+      "name": "Service bay 1",
+      "kind": "space",
+      "skillTags": ["bay"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "bay-2",
+      "name": "Service bay 2",
+      "kind": "space",
+      "skillTags": ["bay"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "pre-purchase-inspection",
+      "name": "Pre-purchase inspection",
+      "description": "Thinking of buying? We put the car on the lift and give you a documented, honest verdict before you sign.",
+      "durationMinutes": 120,
+      "priceCents": 25000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["inspection"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "diagnostic-deposit"
+    },
+    {
+      "handle": "scheduled-maintenance",
+      "name": "Scheduled maintenance",
+      "description": "Your factory service interval done to the book — fluids, filters, inspection points — with OEM-grade parts.",
+      "durationMinutes": 90,
+      "priceCents": 18000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["maintenance"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "diagnostic-scan",
+      "name": "Diagnostic scan",
+      "description": "Dealer-level fault-code read and live-data analysis on the factory interface — then a plain-English plan.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["diagnostics"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "brake-service",
+      "name": "Brake service",
+      "description": "Pads, rotors and sensors matched to your marque — measured, torqued to spec and bedded in properly.",
+      "durationMinutes": 120,
+      "priceCents": 42000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["brakes"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "diagnostic-deposit"
+    },
+    {
+      "handle": "performance-upgrade-consult",
+      "name": "Performance upgrade consult",
+      "description": "Tuning, suspension, intake or exhaust — sit down with a specialist and map a build that stays reliable. No charge.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["performance"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "oil-service",
+      "name": "Oil & filter service",
+      "description": "Full-synthetic oil to your car’s exact specification and a genuine filter — reset service light included.",
+      "durationMinutes": 45,
+      "priceCents": 14000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["maintenance"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "check-engine-diagnosis",
+      "name": "Check-engine diagnosis",
+      "description": "Light on? We scan it, trace the real cause and quote the fix — the scan itself is on us.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["diagnostics"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    }
+  ]
+}

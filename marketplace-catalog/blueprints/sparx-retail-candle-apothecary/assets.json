@@ -1,0 +1,97 @@
+[
+  {
+    "id": "ember-hero",
+    "url": "https://images.unsplash.com/photo-1595432576728-94e0e94a7663?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwbGl0JTIwY2FuZGxlJTIwZ2xvd2luZyUyMGRhcmslMjBhcG90aGVjYXJ5JTIwc2hlbGZ8ZW58MHwwfHx8MTc4NjQwMjIzNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single lit candle glowing on a dark apothecary shelf"
+  },
+  {
+    "id": "ember-tile-candles",
+    "url": "https://images.unsplash.com/photo-1560521166-99f8bed834f5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8cm93JTIwYW1iZXItZ2xhc3MlMjBjYW5kbGVzJTIwd2lja3MlMjB0cmltbWVkJTIwbG93fGVufDB8MHx8fDE3ODY0MDIyMzl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A row of amber-glass candles with wicks trimmed low"
+  },
+  {
+    "id": "ember-tile-diffusers",
+    "url": "https://images.unsplash.com/photo-1750433101196-604c1741a012?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlZCUyMGRpZmZ1c2VyJTIwc21va2VkLWdsYXNzJTIwYm90dGxlJTIwYWdhaW5zdCUyMHNoYWRvd3xlbnwwfDB8fHwxNzg2NDAyMjQzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A reed diffuser in a smoked-glass bottle against shadow"
+  },
+  {
+    "id": "ember-tile-gifts",
+    "url": "https://images.unsplash.com/photo-1668127039852-0e7c8b3a1601?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JhcHBlZCUyMGNhbmRsZSUyMGdpZnQlMjBzZXQlMjB0aWVkJTIwbGluZW4lMjByaWJib258ZW58MHwwfHx8MTc4NjQwMjI0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wrapped candle gift set tied with linen ribbon"
+  },
+  {
+    "id": "ember-tile-accessories",
+    "url": "https://images.unsplash.com/photo-1629261651616-00c3e07ca6e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJhc3MlMjB3aWNrJTIwdHJpbW1lcnxlbnwwfDB8fHwxNzg2NDAyNTU5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A brass wick trimmer resting beside a spent match"
+  },
+  {
+    "id": "ember-band-pour",
+    "url": "https://images.unsplash.com/photo-1643716991721-15b3e95660a7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9sdGVuJTIwd2F4JTIwcG91cmVkfGVufDB8MHx8fDE3ODY0MDI1NjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Molten wax being poured into an amber vessel by candlelight"
+  },
+  {
+    "id": "ember-band-gift",
+    "url": "https://images.unsplash.com/photo-1575814599842-30b19479434a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlJTIwc2V0JTIwb3BlbmVkJTIwZGFyayUyMHRhYmxlJTIwcmliYm9uJTIwbG9vc2VuZWR8ZW58MHwwfHx8MTc4NjQwMjI1M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A candle set opened on a dark table, ribbon loosened"
+  },
+  {
+    "id": "prod-cedar-smoke",
+    "url": "https://images.unsplash.com/photo-1602607203588-d6d0eda790e3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VkYXIlMjBzbW9rZSUyMGNhbmRsZSUyMGFtYmVyJTIwZ2xhc3MlMjB2ZXNzZWx8ZW58MHwwfHx8MTc4NjQwMjI1Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A Cedar & Smoke candle in an amber glass vessel"
+  },
+  {
+    "id": "prod-fig-amber",
+    "url": "https://images.unsplash.com/photo-1602607202950-a06a2a03cb9d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmlnJTIwYW1iZXIlMjBjYW5kbGUlMjBhbWJlciUyMGdsYXNzJTIwdmVzc2VsfGVufDB8MHx8fDE3ODY0MDIyNTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A Fig & Amber candle in an amber glass vessel"
+  },
+  {
+    "id": "prod-sea-salt",
+    "url": "https://images.unsplash.com/photo-1567790358542-a3e83dd9f1aa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2VhJTIwc2FsdCUyMGRyaWZ0d29vZHxlbnwwfDB8fHwxNzg2NDAyNTY1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A Sea Salt & Driftwood candle in an amber glass vessel"
+  },
+  {
+    "id": "prod-black-fir",
+    "url": "https://images.unsplash.com/photo-1602607202679-d4a5e8d2b524?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8YmxhY2slMjBmaXIlMjBhc2glMjBjYW5kbGUlMjBhbWJlciUyMGdsYXNzJTIwdmVzc2VsfGVufDB8MHx8fDE3ODY0MDIyNjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A Black Fir & Ash candle in an amber glass vessel"
+  },
+  {
+    "id": "prod-diffuser",
+    "url": "https://images.unsplash.com/photo-1641942575351-b78f37a990eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlZCUyMGRpZmZ1c2VyJTIwc21va2VkLWdsYXNzJTIwYm90dGxlfGVufDB8MHx8fDE3ODY0MDIyNjl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A reed diffuser in a smoked-glass bottle"
+  },
+  {
+    "id": "prod-room-mist",
+    "url": "https://images.unsplash.com/photo-1764395294549-686b3808320f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8cm9vbSUyMG1pc3QlMjBtYXR0ZSUyMGFtYmVyJTIwc3ByYXklMjBib3R0bGV8ZW58MHwwfHx8MTc4NjQwMjI3Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A room mist in a matte amber spray bottle"
+  },
+  {
+    "id": "prod-wax-melts",
+    "url": "https://images.unsplash.com/photo-1711207354615-5b4c454fce1b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8c295JTIwd2F4JTIwbWVsdHN8ZW58MHwwfHx8MTc4NjQwMjU2OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of soy wax melts in a kraft tray"
+  },
+  {
+    "id": "prod-wick-trimmer",
+    "url": "https://images.unsplash.com/photo-1782512948812-37d2215d956a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJhc3MlMjB3aWNrJTIwdHJpbW1lciUyMGRhcmslMjBzdXJmYWNlfGVufDB8MHx8fDE3ODY0MDIyNzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A brass wick trimmer on a dark surface"
+  },
+  {
+    "id": "prod-gift-set",
+    "url": "https://images.unsplash.com/photo-1766512442064-0ffc39ce866f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGhyZWUtY2FuZGxlJTIwZGlzY292ZXJ5JTIwZ2lmdCUyMHNldCUyMGJveGVkJTIwa3JhZnR8ZW58MHwwfHx8MTc4NjQwMjI4MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A three-candle discovery gift set boxed in kraft"
+  },
+  {
+    "id": "post-pour",
+    "url": "https://images.unsplash.com/photo-1589051079002-b140a970f568?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2F4JTIwYmVpbmclMjBoYW5kLXBvdXJlZCUyMGludG8lMjB2ZXNzZWxzJTIwd29ya3Nob3B8ZW58MHwwfHx8MTc4NjQwMjI4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Wax being hand-poured into vessels in the workshop"
+  },
+  {
+    "id": "post-scent",
+    "url": "https://images.unsplash.com/photo-1560925969-1d1fdb75ad70?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZnJhZ3JhbmNlJTIwb2lscyUyMGJsb3R0ZXJzJTIwbGFpZCUyMG91dCUyMGJlbmNofGVufDB8MHx8fDE3ODY0MDIyODZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Fragrance oils and blotters laid out on a bench"
+  },
+  {
+    "id": "post-care",
+    "url": "https://images.unsplash.com/photo-1560663784-a3bb272189bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2ljayUyMGJlaW5nJTIwdHJpbW1lZCUyMGJlZm9yZSUyMGZpcnN0JTIwYnVybnxlbnwwfDB8fHwxNzg2NDAyMjg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wick being trimmed before the first burn"
+  }
+]

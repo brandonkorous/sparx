@@ -19,10 +19,16 @@
 // list first, then whatever the database holds. Nothing here forecloses uploads;
 // it just stops sparx's own themes from riding the same pipe.
 //
-// TWO SHELVES, ONE LIST.
+// FIVE SHELVES, ONE LIST.
 //
 //   · `SPARX_THEMES` (themes.ts) — twenty looks named for the BUSINESS
 //     (`clinic`, `workshop`, `kitchen`). Picking is recognition, not taste.
+//   · `CONTENT_THEMES` (content-themes.ts) — ten bespoke publisher looks, one per
+//     reference-driven content blueprint (`dispatch`, `broadsheet`, `amp`).
+//   · `TEMPLATE_THEMES` (template-themes.ts) — ten bespoke commerce looks, one per
+//     reference-driven store blueprint (`velodrome`, `maison`, `flux`).
+//   · `PORTFOLIO_THEMES` (portfolio-themes.ts) — six bespoke personal-portfolio
+//     looks, one per persona (`casework`, `silver`, `void`).
 //   · silica's `THEME_PRESETS` — twenty named for the LOOK (`quartz`, `neon`).
 //     Shipped by the design system, so they arrive with a silicaui bump.
 //
@@ -38,6 +44,9 @@ import type { Theme } from '@wizeworks/silicaui-html';
 import { THEME_PRESETS } from '@wizeworks/silicaui-html';
 
 import { SPARX_THEMES } from './themes';
+import { CONTENT_THEMES } from './content-themes';
+import { TEMPLATE_THEMES } from './template-themes';
+import { PORTFOLIO_THEMES } from './portfolio-themes';
 
 /** A theme's marketplace face: the copy a shopper reads and the facets the
  *  browse rail is built from. `industry` / `mood` / `colorFamily` populate the
@@ -247,6 +256,273 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
       'A confident indigo with a clean, product-forward rhythm. For software, apps, devices, and subscriptions that want the site to feel as considered as the thing it sells.',
   },
 };
+
+/** The marketplace face of the ten bespoke CONTENT-template themes (content-themes.ts).
+ *
+ *  Named for the LOOK, one per reference-driven publisher blueprint. The four
+ *  neon-on-dark themes (amplitude, expanse, console, amp) are dark-ground in both
+ *  modes, so their card accent reads from `secondary` rather than a light-mode
+ *  primary that would sit too bright to read as a chip. */
+export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
+  dispatch: {
+    industry: 'Media & Publishing',
+    mood: 'Editorial',
+    colorFamily: 'Green',
+    density: 'Standard',
+    tagline: 'A cool-white newsroom carried by one saturated emerald.',
+    description:
+      'A pure, monochrome news feed where a single emerald marks every category tag, link, and subscribe button. Grotesk headlines over a neutral sans at real density — for tech blogs, news sites, and publications that run a lot of stories cleanly.',
+  },
+  broadsheet: {
+    industry: 'Media & Publishing',
+    mood: 'Editorial',
+    colorFamily: 'Red',
+    density: 'Spacious',
+    tagline: 'Warm paper and serif-across type for long-form reading.',
+    description:
+      'A warm-paper reading theme set entirely in serif — a high-contrast display over a readable text serif — with one decisive editorial red on rubrics and the subscribe call. For magazines, essays, and literary longform where the writing is the product.',
+  },
+  runway: {
+    industry: 'Fashion & Beauty',
+    mood: 'Luxe',
+    colorFamily: 'Mono',
+    density: 'Spacious',
+    tagline: 'Pure black-and-white editorial luxury, colour from the photography.',
+    description:
+      'White page, near-black ink, and a high-contrast Didone display over a clean sans — with no chromatic accent at all, so every ounce of colour comes from full-bleed imagery. For fashion, beauty, and glossy editorial where the pictures carry the page.',
+  },
+  amplitude: {
+    industry: 'Media & Publishing',
+    mood: 'Bold',
+    colorFamily: 'Crimson',
+    density: 'Standard',
+    accentRole: 'secondary',
+    tagline: 'A loud, near-black culture magazine with a voltage crimson masthead.',
+    description:
+      "The set's loudest dark magazine: near-black grounds, bright near-white type, and one electric crimson for the masthead, ranked lists, and the primary action. Heavy condensed headlines — for music, film, and culture coverage that wants to be looked at.",
+  },
+  expanse: {
+    industry: 'Travel & Nature',
+    mood: 'Editorial',
+    colorFamily: 'Amber',
+    density: 'Spacious',
+    accentRole: 'secondary',
+    tagline: 'A near-black photographic ground lit by one solar-amber line.',
+    description:
+      'A dark, cinematic canvas that makes full-bleed imagery pop, with a single solar amber used only as a thin rule, underline, or tag. Serif display over a neutral sans — for photo journalism, nature, and travel stories told mostly in pictures.',
+  },
+  podium: {
+    industry: 'Education & Ideas',
+    mood: 'Playful',
+    colorFamily: 'Coral',
+    density: 'Standard',
+    tagline: 'A warm, optimistic ideas hub carried by one bright coral.',
+    description:
+      'A clean warm-white page with a single friendly coral on the play button, talk badges, and donate call. Geometric display over a humanist sans, softly rounded — for talks, conferences, courses, and idea platforms that want to feel welcoming.',
+  },
+  console: {
+    industry: 'Gaming & Entertainment',
+    mood: 'Bold',
+    colorFamily: 'Violet',
+    density: 'Standard',
+    accentRole: 'secondary',
+    tagline: 'A true-dark brand newsroom with a scarce electric-violet signal.',
+    description:
+      'A first-party newsroom on a near-black ground where big cover art carries the colour, and one electric violet marks active nav, category chips, and the primary action. Technical grotesk over a neutral sans — for gaming, product, and brand blogs built on imagery.',
+  },
+  quad: {
+    industry: 'Education & Institutions',
+    mood: 'Professional',
+    colorFamily: 'Navy',
+    density: 'Wide',
+    tagline: 'A two-colour institutional chassis: deep navy with an academic crimson.',
+    description:
+      'An authoritative paper page with a deep navy primary and a distinct academic crimson accent, set serif-headline over a sans body. For universities, institutes, and institutional newsrooms that need to read as trustworthy and established.',
+  },
+  agency: {
+    industry: 'Government & Nonprofit',
+    mood: 'Professional',
+    colorFamily: 'Blue',
+    density: 'Wide',
+    tagline: 'An accessibility-first civic palette in deep federal blue.',
+    description:
+      'A white, high-legibility public-service page with a deep federal-blue primary that clears AAA contrast, a single flag-red reserved for alerts, and an info-blue for notices. For government, civic, and public-institution sites where clarity is the whole brief.',
+  },
+  amp: {
+    industry: 'Music & Entertainment',
+    mood: 'Bold',
+    colorFamily: 'Magenta',
+    density: 'Standard',
+    accentRole: 'secondary',
+    tagline: 'A near-black concert stage in electric magenta and cyan.',
+    description:
+      'A dark stage ground carrying a magenta-and-cyan duotone — the two-light gel look — behind key art, tour dates, and release players. Expressive poster display over a neutral sans, softly lifted. For artists, labels, and music sites that perform on the page.',
+  },
+};
+
+/** The marketplace face of the ten bespoke COMMERCE-template themes (template-themes.ts).
+ *
+ *  Named for the LOOK, one per reference-driven store blueprint. `flux` is dark-ground
+ *  in both modes, so its card accent reads from `secondary`; the mono paper themes keep
+ *  the default `primary` (their light-mode primary is a legible near-black chip). */
+export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
+  velodrome: {
+    industry: 'Sportswear & Fitness',
+    mood: 'Bold',
+    colorFamily: 'Mono',
+    density: 'Standard',
+    tagline: 'Monochrome endurance-kit chrome with one hi-vis chartreuse.',
+    description:
+      'A near-white page carried by a near-black primary that inverts to white in dark, plus a single race-visibility chartreuse held to the signals. Condensed grotesque headlines over a neutral sans — for athletic wear, gyms, and performance brands.',
+  },
+  atelier: {
+    industry: 'Apparel & Streetwear',
+    mood: 'Editorial',
+    colorFamily: 'Mono',
+    density: 'Standard',
+    tagline: 'A paper-ground editorial grid where the product is the colour.',
+    description:
+      'A warm paper mono theme carrying a high-contrast serif display, light-grey product tiles, and effectively no chrome accent — all colour lives in the imagery. For considered apparel, streetwear, and lifestyle shops built on a tight grid.',
+  },
+  'sage-oat': {
+    industry: 'Natural & Sustainable Goods',
+    mood: 'Earthy',
+    colorFamily: 'Sage',
+    density: 'Standard',
+    tagline: 'A tinted oat page with olive and sage for natural goods.',
+    description:
+      'A visibly warm oat ground — not white with a rumour of cream — with a near-black primary that flips to oat inside dark bands, plus olive and sage support. Soft serif over a geometric sans. For natural, sustainable, and wellness products sold on calm.',
+  },
+  romp: {
+    industry: 'Apparel & Basics',
+    mood: 'Playful',
+    colorFamily: 'Amber',
+    density: 'Standard',
+    tagline: 'A warm-cream page energised by a bright marigold and giveback joy.',
+    description:
+      'A cheerful cream ground whose energy comes from colour bands, with a bright marigold primary on the feel-good action, a deep navy for dark islands, and a sage accent. Heavy rounded display — for mission-driven brands, basics, and playful direct-to-consumer shops.',
+  },
+  roastery: {
+    industry: 'Food & Subscription',
+    mood: 'Earthy',
+    colorFamily: 'Terracotta',
+    density: 'Standard',
+    tagline: 'A mid-warm cream page in deep terracotta and forest green.',
+    description:
+      'A warm cream page with an espresso dark island for footer and newsletter beats, a deep terracotta primary on prices and savings, and a disciplined forest-green for headings. High-contrast serif over a humanist sans — for coffee, food boxes, and subscription commerce.',
+  },
+  maison: {
+    industry: 'Luxury Fashion',
+    mood: 'Luxe',
+    colorFamily: 'Mono',
+    density: 'Spacious',
+    tagline: 'Pure white and pure black, classical serif set across everything.',
+    description:
+      'Colder and starker than a gallery theme: a pure-white page, pure-black ink, warm stone tiles, and a classical serif used for body and headings alike. Restraint is the point — for couture, luxury fashion, and any brand that sells by holding back.',
+  },
+  flux: {
+    industry: 'Tech & Electronics',
+    mood: 'Bold',
+    colorFamily: 'Blue',
+    density: 'Standard',
+    accentRole: 'secondary',
+    tagline: 'A cinematic near-black showroom in deep electric blue.',
+    description:
+      'A genuinely dark page in both modes — a cinematic showroom where product renders pop against near-black — with a deep electric-blue primary on Buy and active nav, plus cyan and signal-blue for spec highlights. Technical grotesk, hairline structure. For hardware and premium tech.',
+  },
+  gloss: {
+    industry: 'Beauty & Cosmetics',
+    mood: 'Vibrant',
+    colorFamily: 'Magenta',
+    density: 'Standard',
+    tagline: 'Blush grounds filled with a bold, white-inked hot magenta.',
+    description:
+      'Blush-tinted grounds that fill with a bold, saturated hot magenta on the header band, buttons, prices, and stars, plus a wine secondary and warm-nude accent. Rounded and lifted — for beauty counters, cosmetics, and colour-forward retail.',
+  },
+  voltage: {
+    industry: 'Fashion & Apparel',
+    mood: 'Bold',
+    colorFamily: 'Mono',
+    density: 'Standard',
+    tagline: 'Near-black chrome and white content with one loud sale-red.',
+    description:
+      'White and grey content alternating with near-black chrome, a near-black mono primary that inverts on the dark islands, and one loud sale-red on badges, prices, and urgency. Bold grotesque caps — for high-volume fashion catalogs and value retail.',
+  },
+  bare: {
+    industry: 'Loungewear & Basics',
+    mood: 'Minimal',
+    colorFamily: 'Stone',
+    density: 'Standard',
+    tagline: 'A warm bone off-white with greige and near-black restraint.',
+    description:
+      'A warm bone page with a greige ramp and near-black ink and buttons, and deliberately no real accent — chroma comes from product imagery, never the theme. Heavy condensed all-caps display — for loungewear, intimates, and minimalist luxe basics.',
+  },
+};
+
+/** The marketplace face of the six bespoke PORTFOLIO-template themes (portfolio-themes.ts).
+ *
+ *  Named for the LOOK, one per personal-portfolio blueprint. `void` is terminal-dark in
+ *  both modes, so its card accent reads from `secondary`; the mono paper themes (silver)
+ *  keep the default `primary`. Note the theme token is `casework`, not `ledger` — `ledger`
+ *  is a SPARX trade shelf, so the portfolio designer look took its own slug. */
+export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
+  casework: {
+    industry: 'Agency & Portfolio',
+    mood: 'Minimal',
+    colorFamily: 'Blue',
+    density: 'Standard',
+    tagline: 'An almost achromatic case-study page with one electric blue.',
+    description:
+      'Judgment over decoration: a near-white, almost colourless page carried by a single electric signal-blue on the primary action, the outcome metric, and the active filter. Tight grotesk over a humanist sans — for product and UX designers whose case studies do the talking.',
+  },
+  silver: {
+    industry: 'Photography & Portfolio',
+    mood: 'Minimal',
+    colorFamily: 'Mono',
+    density: 'Spacious',
+    tagline: 'A near-white gallery wall where the photographs are the colour.',
+    description:
+      'The work is the design: a cool gallery-white ground, near-black ink and primary, and an elegant serif display over a clean sans — with no chromatic accent, so every ounce of colour comes from the images. For photographers and image-first portfolios.',
+  },
+  void: {
+    industry: 'Developer & Portfolio',
+    mood: 'Utilitarian',
+    colorFamily: 'Green',
+    density: 'Standard',
+    accentRole: 'secondary',
+    tagline: 'A terminal-black page in acid green and cyan, monospace throughout.',
+    description:
+      'The medium is the message: a near-black void in both modes with a monospace body, one acid-green primary and an electric-cyan accent — the console prompt made into a site. Surfaces separate by base-shift and border, never a glow. For developers and technical portfolios.',
+  },
+  riso: {
+    industry: 'Illustration & Art',
+    mood: 'Playful',
+    colorFamily: 'Coral',
+    density: 'Standard',
+    tagline: 'A warm riso-cream page in a loud coral-and-cobalt duotone.',
+    description:
+      'The palette is the brand: a warm riso-cream ground with an electric coral primary, a cobalt accent, and deep indigo ink. Expressive display over a rounded humanist sans — a loud, unmistakably one-maker look for illustrators, artists, and designers with a voice.',
+  },
+  manuscript: {
+    industry: 'Writing & Publishing',
+    mood: 'Editorial',
+    colorFamily: 'Oxblood',
+    density: 'Spacious',
+    tagline: 'A warm-paper reading page in serif throughout with one oxblood.',
+    description:
+      'The words are the work: a warm-paper page set entirely in serif — a high-contrast display over a readable text serif — with a single oxblood on the byline, links, and primary action. Hairline rules, zero radius. For writers, journalists, and authors whose type is the hero.',
+  },
+  atlas: {
+    industry: 'Studio & Portfolio',
+    mood: 'Professional',
+    colorFamily: 'Amber',
+    density: 'Wide',
+    tagline: 'A sober concrete-and-bone index in burnt amber and slate.',
+    description:
+      'A studio index built for range with precision: a bone-and-concrete chassis with a burnt-amber primary on the call, active category, and project year, and a cool slate accent for the facts column. Wide architectural grotesk — for design studios, architects, and multidisciplinary practices.',
+  },
+};
+
 /** The marketplace face of silica's twenty shipped presets.
  *
  *  These are named for the LOOK, so their copy sells a look — the sparx shelf
@@ -456,8 +732,9 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
  *  so what a shopper previews is literally what they get. */
 export interface FirstPartyTheme {
   slug: string;
-  /** `sparx` — the business-named shelf. `silica` — the design system's presets. */
-  shelf: 'sparx' | 'silica';
+  /** `sparx` — the business-named shelf. `content` / `template` / `portfolio` — the
+   *  three bespoke reference-driven shelves. `silica` — the design system's presets. */
+  shelf: 'sparx' | 'content' | 'template' | 'portfolio' | 'silica';
   theme: Theme;
   meta: ThemeMeta;
 }
@@ -476,6 +753,18 @@ export const FIRST_PARTY_THEMES: FirstPartyTheme[] = [
   ...SPARX_THEMES.flatMap<FirstPartyTheme>((theme) => {
     const meta = SPARX_THEME_META[theme.name];
     return meta ? [{ slug: theme.name, shelf: 'sparx', theme, meta }] : [];
+  }),
+  ...CONTENT_THEMES.flatMap<FirstPartyTheme>((theme) => {
+    const meta = CONTENT_THEME_META[theme.name];
+    return meta ? [{ slug: theme.name, shelf: 'content', theme, meta }] : [];
+  }),
+  ...TEMPLATE_THEMES.flatMap<FirstPartyTheme>((theme) => {
+    const meta = TEMPLATE_THEME_META[theme.name];
+    return meta ? [{ slug: theme.name, shelf: 'template', theme, meta }] : [];
+  }),
+  ...PORTFOLIO_THEMES.flatMap<FirstPartyTheme>((theme) => {
+    const meta = PORTFOLIO_THEME_META[theme.name];
+    return meta ? [{ slug: theme.name, shelf: 'portfolio', theme, meta }] : [];
   }),
   ...THEME_PRESETS.flatMap<FirstPartyTheme>((theme) => {
     const meta = SILICA_THEME_META[theme.name];

@@ -1,0 +1,373 @@
+{
+  "policies": [
+    {
+      "handle": "class-standard",
+      "name": "Class booking",
+      "depositType": "none",
+      "cancellationWindowHours": 8,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Class spots are capped, so cancel at least 8 hours out to free your place for someone on the waitlist. We remind you the day before and two hours ahead."
+    },
+    {
+      "handle": "pt-hold",
+      "name": "Personal-training hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "One-to-one sessions place a card hold to lock your coach’s time. Reschedule with 24 hours’ notice and nothing is charged; no-shows forfeit the hold."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Vane",
+      "kind": "staff",
+      "skillTags": ["strength", "powerlifting", "pt"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 1,
+          "startMinute": 960,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 960,
+          "endMinute": 1230
+        }
+      ]
+    },
+    {
+      "handle": "deja",
+      "name": "Déja Okafor",
+      "kind": "staff",
+      "skillTags": ["hiit", "metcon", "conditioning"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 960,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 960,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 960,
+          "endMinute": 1230
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Marsh",
+      "kind": "staff",
+      "skillTags": ["foundations", "mobility", "pt"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "rae",
+      "name": "Rae Calloway",
+      "kind": "staff",
+      "skillTags": ["strength", "conditioning", "pt"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 330,
+          "endMinute": 660
+        },
+        {
+          "dayOfWeek": 1,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 960,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "floor",
+      "name": "Training floor",
+      "kind": "space",
+      "skillTags": ["floor"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 300,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 300,
+          "endMinute": 1260
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "strength",
+      "name": "Strength",
+      "description": "Barbell strength in a capped small group — squat, press, pull, hinge. Every set coached, every load scaled to you. Come for the numbers, stay for the people chasing them with you.",
+      "bookingType": "class",
+      "capacity": 14,
+      "durationMinutes": 60,
+      "priceCents": 3000,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["strength"],
+          "count": 1
+        },
+        {
+          "role": "floor",
+          "kind": "space",
+          "skillTags": ["floor"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "hiit",
+      "name": "HIIT",
+      "description": "Forty-five loud minutes of intervals — bike, rower, bells and bodyweight, hard work and full recoveries. You pick the intensity, we hold the clock.",
+      "bookingType": "class",
+      "capacity": 16,
+      "durationMinutes": 45,
+      "priceCents": 2800,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["hiit"],
+          "count": 1
+        },
+        {
+          "role": "floor",
+          "kind": "space",
+          "skillTags": ["floor"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "metcon",
+      "name": "Metcon",
+      "description": "Mixed-modal conditioning — the classic \"workout of the day\". Lifts, carries and cardio stitched into one score you chase week over week.",
+      "bookingType": "class",
+      "capacity": 12,
+      "durationMinutes": 45,
+      "priceCents": 2800,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["metcon"],
+          "count": 1
+        },
+        {
+          "role": "floor",
+          "kind": "space",
+          "skillTags": ["floor"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "foundations",
+      "name": "Foundations",
+      "description": "New to the barbell? Start here. A small, unhurried group that drills the six core lifts until they feel like yours — no ego, no rush, no assumed experience.",
+      "bookingType": "class",
+      "capacity": 10,
+      "durationMinutes": 45,
+      "priceCents": 2500,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["foundations"],
+          "count": 1
+        },
+        {
+          "role": "floor",
+          "kind": "space",
+          "skillTags": ["floor"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "conditioning",
+      "name": "Engine",
+      "description": "A thirty-minute pure-conditioning hit — steady intervals that build the engine under everything else. Quick, brutal, done before the day starts.",
+      "bookingType": "class",
+      "capacity": 16,
+      "durationMinutes": 30,
+      "priceCents": 2500,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["conditioning"],
+          "count": 1
+        },
+        {
+          "role": "floor",
+          "kind": "space",
+          "skillTags": ["floor"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "class-standard"
+    },
+    {
+      "handle": "personal-training",
+      "name": "1:1 Personal training",
+      "description": "You and a coach, a plan built around your goals and your schedule. Pick the coach you want and the time that fits — technique, programming and someone in your corner every rep.",
+      "bookingType": "appointment",
+      "capacity": 1,
+      "durationMinutes": 60,
+      "priceCents": 8500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["pt"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-hold"
+    },
+    {
+      "handle": "intro-assessment",
+      "name": "Free intro & assessment",
+      "description": "Never trained here? Book a free session — movement screen, goal chat and a walk of the floor so your first class isn’t your first guess. We confirm it once we see it land.",
+      "bookingType": "appointment",
+      "capacity": 1,
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["pt"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-hold"
+    }
+  ]
+}

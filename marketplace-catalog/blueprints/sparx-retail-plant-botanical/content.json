@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-not-to-kill-your-first-houseplant",
+    "status": "published",
+    "body": {
+      "title": "How not to kill your first houseplant",
+      "excerpt": "Almost every houseplant death is an over-watering, not a neglect. Here’s the one habit that keeps a first plant alive.",
+      "featuredImage": {
+        "$asset": "post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you’ve killed a plant before, we’d bet money on how it went: you loved it a little too much and watered it a little too often, the roots sat wet, and they quietly rotted while the leaves yellowed from the bottom up. Over-watering, not forgetfulness, is what kills most first houseplants — which is oddly good news, because it means doing less is usually the fix."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Water the soil, not the calendar"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Throw away the idea of watering “once a week.” A plant in a bright, warm room drinks far faster than the same plant in a cool, dim one, so a fixed schedule is guaranteed to be wrong half the time. Instead, check the soil: push a finger an inch or two in. If it’s damp, wait. If it’s dry, water thoroughly until it runs out the bottom, then let it drain. That single habit prevents the great majority of plant deaths."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with a plant that forgives you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Skill comes with time, so stack the deck while you build it. A snake plant, a pothos or a ZZ plant will tolerate a missed watering, a dim corner and a beginner’s learning curve without complaint — and every one of them is on the shelf here, flagged “very easy.” Get one of those thriving first; the fussier plants are much easier once watering is second nature."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "reading-the-light-in-your-home",
+    "status": "published",
+    "body": {
+      "title": "Reading the light in your home",
+      "excerpt": "The wrong spot kills more plants than the wrong watering. Here’s how to read your light before you buy.",
+      "featuredImage": {
+        "$asset": "post-light"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Bright, indirect light” is on every plant tag and it means almost nothing until you can look at your own room and know what you’ve got. The good news: you don’t need a light meter. You need to notice which way your windows face and how sharp the shadows are."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The window test"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "South-facing windows give the brightest, longest light; north-facing the softest and dimmest; east and west sit in between, one bright in the morning and the other in the afternoon. Now the shadow test: on a sunny day, hold your hand a foot above the spot you’re eyeing. A hard, crisp shadow means bright light; a soft, fuzzy one means medium; barely a shadow at all means low. That’s the reading that matters."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Match the plant to the spot, not the other way round"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Don’t buy a sun-lover for a dim hallway and hope — hope is not a lighting plan. Every listing here states the light a plant actually wants in plain words, and our low-light collection is exactly the plants that genuinely cope with a north window or an interior corner. Pick for the spot you have, and the plant does the rest."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "when-and-how-to-repot",
+    "status": "published",
+    "body": {
+      "title": "When and how to repot a houseplant",
+      "excerpt": "Repotting isn’t a schedule — it’s a response to a plant that has outgrown its home. Here’s how to tell, and how to do it gently.",
+      "featuredImage": {
+        "$asset": "post-repot"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Plants don’t need repotting on a timetable, and doing it too often does more harm than good. You repot when a plant has genuinely outgrown its pot — and it will tell you, if you know the signs."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The signs it’s time"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Roots creeping out of the drainage holes or circling the surface, water that runs straight through without soaking in, a plant that dries out a day after watering, or growth that has simply stalled in the warm months — any of these means the roots have run out of room. Most houseplants need it every year or two, in spring or summer when they’re actively growing, never in the depths of winter."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to do it without stress"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Go up just one pot size — a jump too big leaves too much wet soil around the roots, and you’re back to rot. Water the plant the day before so it slides out easily. Loosen the root ball gently, settle it into fresh potting mix at the same depth it sat before, firm it in, and water it through. Then leave it be: a repotted plant may sulk for a week while it settles, and that’s normal, not an emergency."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

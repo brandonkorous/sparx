@@ -1,0 +1,32 @@
+[
+  {
+    "id": "lifecoach-wellness-hero",
+    "url": "https://images.unsplash.com/photo-1522075782449-e45a34f1ddfb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyc29uJTIwY2FsbSUyMG5hdHVyZSUyMHN1bnJpc2V8ZW58MHwwfHx8MTc4NjM5NTY4Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A person smiling in warm morning light, looking hopeful and at ease"
+  },
+  {
+    "id": "lifecoach-wellness-approach",
+    "url": "https://images.unsplash.com/photo-1558210834-473f430c09ac?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8am91cm5hbGluZyUyMGNvZmZlZSUyMGNhbG18ZW58MHwwfHx8MTc4NjM5NTY5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, sunlit corner with a notebook and a warm cup of tea"
+  },
+  {
+    "id": "lifecoach-wellness-about",
+    "url": "https://images.unsplash.com/photo-1612994451093-c6791c8989cd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBzbWlsaW5nJTIwb3V0ZG9vcnN8ZW58MHwwfHx8MTc4NjM5NTY5M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Two people in relaxed conversation on a bright video call"
+  },
+  {
+    "id": "lifecoach-wellness-elena",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBjb2FjaCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTU2OTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Ross, life & transitions coach"
+  },
+  {
+    "id": "lifecoach-wellness-marcus",
+    "url": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwcG9ydHJhaXQlMjBmcmllbmRseXxlbnwwfDB8fHwxNzg2Mzk1Njk5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Bell, confidence & habits coach"
+  },
+  {
+    "id": "lifecoach-wellness-priya",
+    "url": "https://images.unsplash.com/photo-1485178575877-1a13bf489dfe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHdhcm18ZW58MHwwfHx8MTc4NjM5NTcwMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, purpose & balance coach"
+  }
+]

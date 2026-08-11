@@ -1,0 +1,27 @@
+[
+  {
+    "id": "roofing-residential-hero",
+    "url": "https://images.unsplash.com/photo-1587061633437-187ac80e8e7a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG91c2UlMjByb29mJTIwc2hpbmdsZXN8ZW58MHwwfHx8MTc4NjM5MzcyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A freshly finished asphalt-shingle roof on a suburban home under a clear sky"
+  },
+  {
+    "id": "roofing-residential-story",
+    "url": "https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwd29ya2luZyUyMHJvb2Z8ZW58MHwwfHx8MTc4NjM5MzcyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A roofer nailing down new shingles along a clean roof line"
+  },
+  {
+    "id": "roofing-residential-ray",
+    "url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uc3RydWN0aW9uJTIwd29ya2VyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MzcyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ray Sullivan, owner and lead roofer"
+  },
+  {
+    "id": "roofing-residential-luis",
+    "url": "https://images.unsplash.com/photo-1507126117511-e87526de90e2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzczMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Luis Ferrara, replacement and install lead"
+  },
+  {
+    "id": "roofing-residential-dale",
+    "url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29udHJhY3RvciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTI2Mjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dale Hutchins, gutter and maintenance tech"
+  }
+]

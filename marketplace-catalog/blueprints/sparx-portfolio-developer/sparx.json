@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-portfolio-developer",
+  "name": "sparx — Developer Portfolio",
+  "version": "1.0.0",
+  "tagline": "A build-led portfolio for a creative developer.",
+  "description": "A hire-me portfolio for a creative developer / technologist: a mono terminal hero, selected builds as bordered cards that light up on hover, a “Now” band of what’s running, and case-study pages that walk what it is, the hard part, the stack and what shipped. Dressed in a near-black terminal theme with a monospace body, acid-green primary and electric-cyan accent. The site is its own proof of taste. Shipped as Kade Nakamura.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "industry": "Creative developer"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "cms", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Developer Portfolio icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Developer Portfolio — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#49de78",
+  "sortWeight": 88
+}

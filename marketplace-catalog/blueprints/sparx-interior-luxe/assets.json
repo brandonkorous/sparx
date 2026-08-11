@@ -1,0 +1,37 @@
+[
+  {
+    "id": "interior-luxe-hero",
+    "url": "https://images.unsplash.com/photo-1704040686428-7534b262d0d8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bHV4dXJ5JTIwbGl2aW5nJTIwcm9vbSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMxNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A serene living room in warm neutrals with considered furniture and soft daylight"
+  },
+  {
+    "id": "interior-luxe-process",
+    "url": "https://images.unsplash.com/photo-1664638413302-d1ca29ac885b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ24lMjBtb29kJTIwYm9hcmR8ZW58MHwwfHx8MTc4NjM5MzE3MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A designer’s table with fabric swatches, floor plans and material samples"
+  },
+  {
+    "id": "interior-luxe-about",
+    "url": "https://images.unsplash.com/photo-1558442074-3c19857bc1dc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGludGVyaW9yJTIwZGVzaWduZXJ8ZW58MHwwfHx8MTc4NjM5MzE3M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, light-filled interior with layered textures and natural materials"
+  },
+  {
+    "id": "interior-luxe-work1",
+    "url": "https://images.unsplash.com/photo-1724582586529-62622e50c0b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwbGl2aW5nJTIwcm9vbSUyMGRlc2lnbnxlbnwwfDB8fHwxNzg2MzkzMTc1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A styled sitting room with a sculptural sofa and warm brass accents"
+  },
+  {
+    "id": "interior-luxe-work2",
+    "url": "https://images.unsplash.com/photo-1559554704-0f74b35a8718?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjBraXRjaGVuJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM5MzE3OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A renovated kitchen in muted stone and timber"
+  },
+  {
+    "id": "interior-luxe-work3",
+    "url": "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGJlZHJvb20lMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2MzkzMTgxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A restful bedroom in soft greige with tailored linen"
+  },
+  {
+    "id": "interior-luxe-work4",
+    "url": "https://images.unsplash.com/photo-1658280024253-34cafdfbb002?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bHV4dXJ5JTIwZGluaW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzMTg0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dining space with a considered mix of vintage and modern pieces"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-pt-wellness",
+  "name": "sparx — Physical Therapy & Wellness",
+  "version": "1.0.0",
+  "tagline": "A gentle, restorative template for physical-therapy clinics — book evaluations online from day one.",
+  "description": "A calm, whole-person physical-therapy site — a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as \"Restore Physical Therapy & Wellness\".",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Physical therapy",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Physical Therapy & Wellness icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Physical Therapy & Wellness — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#5e8473",
+  "sortWeight": 47
+}

@@ -1,0 +1,2304 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "2e5329a9-287a-452f-bd62-34eacac7630d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "beb3093f-f047-491e-b625-ce33726d0745",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "142f1a24-0ae6-4682-bcb7-203bc7e6267f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "7ec326a3-c8d3-4acd-86f9-3efade2c1561",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "c3a64a3a-35f6-4204-b454-e84d4bad1712",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "f986f0b2-5256-4aa2-886b-3e0db3f09e8a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "d67363e5-a01d-4fba-9138-8d1893bfc8e0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "6697b4df-58ee-42bc-a3f0-b21786501f07",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "0ca24a26-7289-4da9-9cdc-12fd861c1489",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "d56489d6-52f6-4574-919d-091a063c7bd5",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "92f32aac-6130-4c29-be26-baed6e8ac865",
+                  "ord": "a2"
+                }
+              ],
+              "id": "e332dd4f-0066-4ea1-8860-44b5d84a529e",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b91b2ad1-2158-43ef-ba42-f3c7aeb5f950",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9910a5bd-477b-4b42-8dcc-043db76a5291",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "5ae13ea8-6fab-41f9-8bb8-af421bb88681",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "6b7d09df-c33e-45b1-945f-0320b504a5cc",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "486ee898-04d3-4972-a591-0f074c499feb",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "bbe1b48a-c6f9-4617-ab82-a699a2551ed7",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "848d9d73-1b2a-4499-a5df-c57449be261e",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "e6dac05f-0f65-4701-be5c-affc7157e33a",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "075ebf75-57b4-40af-abaf-dd1988fbcba6",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "64204cd5-c7f5-4b70-9f4c-f6bfbe6f7121",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "64785f1c-b251-4676-a371-c67f938985a4",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "b21ded46-20e1-4a14-ba8b-f9bfcef7bfe8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "dda8631f-490d-4a5f-9289-f9582d29baf6",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "d7d45ba3-e8ce-4a01-bd01-035362a9daf4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "90494c15-42da-47b2-b6c6-e6235579e48c",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "1981f5b1-1193-4f66-9a3a-9f679147e78b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3044e456-a488-4f92-ab78-42fda0f47b99",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "e4c52b84-8a70-4dee-8483-462dd4b1c97a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "25086dfd-b52f-4a1a-9f5a-2c75c1f1c5df",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "977fd79a-d568-4dd3-8ea6-32010fb86d12",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "63bbdb42-9f24-4e7c-b161-732bc2c19c66",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "6423a799-efff-498e-8a4c-63dc97a6cbf1",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e3ca54f7-fede-48ee-ad4c-acdf2dfec578",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "b90e5c62-59b1-4474-8fce-6e5c18f98371",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "c447c616-5847-49db-826f-d58676f20d20",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "eb1b298c-442b-4cf5-b19c-7a5e2d017efe",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9e2fddb8-2d28-4a16-85ea-445960bda20f",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "24f8456f-a023-4e2f-8c3e-5a0c11fc8774",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8b62136a-a4f1-494e-abe0-bc794c554c6b",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "aa35f22a-b662-45a8-978c-3c28f1241e7b",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "9f5496a0-fc44-405b-8238-df5a56ea951c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "33b0c372-e09e-426b-abed-0bc44247f257",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "6eb6634a-aca3-4adf-8206-6a75e3484345",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "6c9fc019-314e-439d-935c-0b9bb354a439",
+                  "ord": "a1"
+                }
+              ],
+              "id": "35f151fa-8e66-42d6-9108-4cae7fd0c43b",
+              "ord": "a0"
+            }
+          ],
+          "id": "32c4c945-e6cf-402d-9431-5058d67c91f9",
+          "ord": "a2"
+        }
+      ],
+      "id": "7002620f-fad2-4185-9e3d-188ac039a541"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Golden Hour Studio — film-inspired wedding photography",
+      "seoDescription": "Golden Hour Studio is a warm, film-inspired wedding and engagement photographer. Book a free consultation with your photographer online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d1b95780-afb1-45e6-ae31-a5023302ebc8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1566813142858-99f1e35e333a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNvdXBsZSUyMGdvbGRlbiUyMGhvdXJ8ZW58MHwwfHx8MTc4NjM5MDYxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A couple embracing in warm golden-hour light in a summer field",
+                  "loading": "eager"
+                },
+                "id": "a5df942c-23e6-49cb-b0e4-38bdd9a547af",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "c17d1770-8527-4be6-b29c-0e0c56bfb236",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Your love, in the golden hour"],
+                    "id": "af6eea11-861b-4a08-b764-849599b7e519",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Warm, film-inspired wedding and engagement photography — the quiet in-between moments, the way the day actually felt, kept for good."
+                    ],
+                    "id": "1644f3fb-4e0b-4a48-a1cf-9bde3065752c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "6dbc9303-f3f6-42c9-bb3f-2c5b141b928a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the work"],
+                        "id": "5d503b50-b9e0-47d6-9bb2-784662ef3469",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "44a38279-a6a8-4256-81bc-4fa574d7faf3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9fdb4ae4-84ce-44aa-8890-48f68c45454c",
+                "ord": "a2"
+              }
+            ],
+            "id": "619987d2-6f19-4d11-b4b0-592d81890dac",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Film and digital, together"],
+                            "id": "a52c636f-1c5a-4b3a-83ea-c79a4f232458",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We shoot both — the softness and grain of film for the moments that matter, digital for the light that won’t wait."
+                            ],
+                            "id": "c80a2a27-81c3-4053-8669-3e9fa790db61",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7c942ba7-64b3-4670-8c9e-45e44339feda",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Unhurried and candid"],
+                            "id": "3f0e2c33-9be5-493e-96c0-11ec6dfc4bd4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Very little posing. We stay close, keep quiet, and let the day unfold — so what you get back is real, not arranged."
+                            ],
+                            "id": "84431dc4-029f-41e9-990b-6017d5688811",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "303539d8-4dea-436a-9ab0-89168d5d3c70",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Full-day coverage"],
+                            "id": "ab513b1e-c6a1-43cc-9e00-89ab297328b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From the first nervous morning look to the last song, we’re there for all of it — no clock-watching, no gaps."
+                            ],
+                            "id": "dbb1373b-64a1-469a-94f8-71acd71db8b3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d6db06e-f75a-4b2d-b368-1692083a62fd",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Heirloom albums"],
+                            "id": "c4e8a2ce-30a7-4545-aeb0-9c4b5575dbd1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Your photographs deserve more than a hard drive. We design hand-bound albums made to be passed down."
+                            ],
+                            "id": "747fd626-e355-4bff-9f4b-96af79160c7f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b5bdd454-2c8e-4163-90da-43fa632f9231",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "628e4cb8-c163-471d-b344-c712c8a340e8",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "6a470fa7-3060-4d42-8e2b-0cf130d60dd7",
+                "ord": "a0"
+              }
+            ],
+            "id": "3353625f-a59a-48c7-a921-2943c345f4b8",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways to begin"],
+                        "id": "3f72b2d0-bafe-4c7a-89bd-fa343e20da06",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every couple starts with a free consultation. Choose what fits, and we’ll take it from there — live availability is on the booking page."
+                        ],
+                        "id": "263bfacd-1772-4fc5-9ea8-8f6dce99c2a2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a7dd4707-6061-456b-bd4b-135b0979a53d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Consultation"],
+                                "id": "0eafcc0d-e164-41c7-a85b-329a5d7ae507",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "dac3c901-2be6-4760-a9e7-b5163bcbac88",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5119eca7-85f9-40fa-8cef-772c63f3e16f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "93dab647-7339-4939-a983-8345f2e0c82d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A free, relaxed talk about your day and how we work."],
+                            "id": "81cd0a39-32ed-4c9b-abd6-0be00725ed31",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "119895cb-2395-4144-be79-e23a2cc9f07b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Engagement session"],
+                                "id": "40b74158-5834-4ade-889a-2f9063260a81",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$450"],
+                                "id": "188b02e2-53df-47d6-b7aa-ad79efa20bf2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "65e74787-a54c-4d96-869a-a984dbba5ec9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "35636266-b79d-4f9c-9c33-d39af73f7015",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A golden-hour shoot and a warm-up before the wedding."],
+                            "id": "15f14ea9-57d6-493e-bbc9-db8d95d87589",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "53d96227-1350-45bf-a98a-0214a7598844",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Wedding collection consult"],
+                                "id": "200c42c5-7206-4995-a729-5c97a169a7e4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "536b869e-794b-4a9d-99c5-2a1dd1c48a22",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b09cb282-bd71-47d1-8e4c-57c8cfb71c32",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "c3d7b626-4dec-4763-9aba-08959a2ecaf7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Shape a full-day collection around your plans."],
+                            "id": "88ae0db9-9cff-44f2-84a5-22fcd1b39d90",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "52f72ea6-b9db-4bcf-b326-c35ce045f07d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Elopement session"],
+                                "id": "15e460c3-3ff6-4185-a3fe-43c4e9b6a421",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$1200"],
+                                "id": "e8881aef-4507-45d0-920c-6f05c31fed77",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c900fc9f-010c-4cfc-945e-f28aa2cde237",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "d7f1ffe8-8b04-448c-a943-324fb3176d80",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Half a day of quiet coverage, just the two of you."],
+                            "id": "88ae4ee7-5bc1-49e7-9cf7-75cb3f857295",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c2b5a8a1-5c3b-455e-ac1d-535f7b4e94f2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a0cc4091-6b9f-425b-acad-052dd20c7243",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "e47d1b69-5dd6-4679-a4fe-1baaab4d5d03",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "906da3cf-9bf1-4fec-906b-1150cc2d941b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f5330035-478e-449a-b2cb-82f977e3f3fd",
+                "ord": "a0"
+              }
+            ],
+            "id": "fabe1cbd-be0b-4600-b909-af714f2a67db",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Recent weddings"],
+                    "id": "9438dd46-0758-441d-a747-f73af32b978b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1519741497674-611481863552?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZGUlMjBncm9vbSUyMHdlZGRpbmd8ZW58MHwwfHx8MTc4NjM5MDYzMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A first look at sunset",
+                          "loading": "lazy"
+                        },
+                        "id": "6f917fdc-16e9-4ffe-95e4-e8fd698bc10d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNlcmVtb255fGVufDB8MHx8fDE3ODYzOTA2MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "An intimate elopement in the hills",
+                          "loading": "lazy"
+                        },
+                        "id": "28f29078-8723-492b-81b5-6218e4945596",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1542460533-50ac46fb13d7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZW5nYWdlbWVudCUyMGNvdXBsZSUyMHN1bnNldHxlbnwwfDB8fHwxNzg2MzkwNjM4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A candid moment on the dance floor",
+                          "loading": "lazy"
+                        },
+                        "id": "b29c5493-bbae-4051-ab19-c49f98c2ab02",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1550368566-f9cc32d7392d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGRldGFpbHMlMjByaW5nc3xlbnwwfDB8fHwxNzg2MzkwNjQxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "An engagement walk through tall grass",
+                          "loading": "lazy"
+                        },
+                        "id": "951c74ef-797a-4a37-bbe7-c92a723c02ad",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHJlY2VwdGlvbiUyMGNlbGVicmF0aW9ufGVufDB8MHx8fDE3ODYzOTA2NDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Wedding details laid out in soft morning light",
+                          "loading": "lazy"
+                        },
+                        "id": "039af089-4b3b-44d8-8bf9-7937eb0ac59a",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1665960211264-5e0a7112bacd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZGUlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwNjQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "The couple beneath string lights at dusk",
+                          "loading": "lazy"
+                        },
+                        "id": "f9f3af7b-8816-4787-b529-1c864da02477",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "ba43a63a-5132-4b86-b897-2193506f5e97",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4baf2cd0-3c62-4e9a-95b7-8e1decd40ea7",
+                "ord": "a0"
+              }
+            ],
+            "id": "7867d41e-e297-4ccd-b342-07485e6b158d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1488684430052-f2d92fb178c2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHBob3RvZ3JhcGhlciUyMGNhbWVyYXxlbnwwfDB8fHwxNzg2MzkwNjIwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bride and groom laughing together, shot on film",
+                      "loading": "lazy"
+                    },
+                    "id": "29254ca2-534f-454c-a360-ce1f6dd81b90",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["We photograph the story, not just the schedule"],
+                        "id": "7b12b426-b41d-4532-ac09-fdc223ef7e62",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A wedding isn’t a shot list. It’s your grandmother’s hand on your shoulder, the look you share before the doors open, the friend who can’t stop laughing during the toast."
+                        ],
+                        "id": "d6b9fc4a-134a-43df-b7db-e4adfc3bfceb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So we work gently and stay close, following the day as it happens. You forget we’re there — and months later you open the gallery and feel it all again, exactly as it was."
+                        ],
+                        "id": "749adc90-a954-439c-a4c4-0f7cc1aab302",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "1e0c3599-3894-4834-a38a-680f3ee597e1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "ef452cc8-bf3e-45eb-b126-fcb43e35442f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b074ce08-504d-4fbc-9d41-023f07ed85f2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1aaafb8c-5fa0-4aad-b3d6-5f807c401235",
+                "ord": "a0"
+              }
+            ],
+            "id": "2bc97971-3741-4106-ab0c-41148e39a37c",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The photographers"],
+                        "id": "21abef7e-8052-4532-a8ce-0068e65e2f6f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll meet your photographer at the consultation and they’ll be with you on the day."
+                        ],
+                        "id": "37cd654a-4e82-436b-86b5-ef2f7cdd49db",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a76dcccb-e5a5-4b2f-9d32-a82b0007619b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1475274226786-e636f48a5645?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGhvdG9ncmFwaGVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MDYyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Rowan Ellis, lead wedding photographer",
+                              "loading": "lazy"
+                            },
+                            "id": "e5143d2b-7515-4a0d-b6b3-401cc55ecb1d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Rowan Ellis"],
+                                "id": "cffb5a7d-b2f6-4193-aecd-392a8d570cbe",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead photographer"],
+                                "id": "3113b7af-3a9e-4a54-a680-0b1a07d66bd7",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Founded the studio on a love of film and last light. Rowan leads full-day weddings and elopements."
+                                ],
+                                "id": "833b7c64-64d6-42d1-8388-2523e5357e39",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "231c1ae5-bf76-4753-9f85-b9d6a0a299ed",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "68007f37-778f-4552-9298-579a94671003",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1541516160071-4bb0c5af65ba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwaG90b2dyYXBoZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwNjI2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Lena Marsh, photographer",
+                              "loading": "lazy"
+                            },
+                            "id": "dd5c972a-8bfd-43c7-984f-c00f253d11b0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Lena Marsh"],
+                                "id": "286b8b22-ec18-4fcb-8a18-4b89666d8edc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Photographer"],
+                                "id": "7877529d-3fd3-40bf-a36c-55e503ce074d",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Portraits and bridal sessions, and a gift for making anyone feel at ease in front of the lens."
+                                ],
+                                "id": "7973636a-e160-4746-975c-7e7d6c9deb07",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c5564f23-21f8-4c6f-8f50-8acacbfe7c7a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2dbeba0d-3dfd-4c32-ad9d-1c8e4064db93",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1542992933-ce75d0187ec1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGhvdG9ncmFwaGVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDYyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Mateo Reyes, photographer",
+                              "loading": "lazy"
+                            },
+                            "id": "11f7b181-068f-4ca8-a3b0-151cf4181ef4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Mateo Reyes"],
+                                "id": "52069285-077b-4534-8c68-3ab1bd6b56d0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Photographer"],
+                                "id": "28db14f8-5623-4af7-a1dd-9f643a16980f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Engagement shoots and the album room — he’ll help you turn a gallery into something you hold."
+                                ],
+                                "id": "b3d867a7-8a84-4739-8164-a991994fb254",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "8df81b3d-70ab-417f-ab47-5ad769b1fd70",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a93624bf-beb8-40f6-8aae-530858b1ee8d",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e848cfb2-ecf1-4f3d-909b-2ce7e78fae96",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "173dce20-0db4-433b-ad6a-8fe83dc3f350",
+                "ord": "a0"
+              }
+            ],
+            "id": "35d95d55-0cd8-4a2b-868a-842bee73ae95",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We barely noticed the camera all day, and then the photos arrived and we both cried. It’s our whole wedding — the light, the nerves, the joy — exactly how it felt.”"
+                    ],
+                    "id": "3a0ba422-9728-42f2-bebf-57c465d2ed55",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Amara & Josh, married summer 2025"],
+                    "id": "d5ab38dc-92da-4950-8563-67b28d4f188a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "43b3c02a-a385-493c-a1eb-d7bb19273870",
+                "ord": "a0"
+              }
+            ],
+            "id": "e0b9c522-1460-40d4-9edb-98b180f8e519",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s reserve your date"],
+                    "id": "4f6496ee-d6c6-4220-af7d-7b20ead1226c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a free consultation. Tell us about your day, meet your photographer, and see live availability — it takes about a minute."
+                    ],
+                    "id": "c1b25cdd-268e-42e2-974d-f28b5c67b375",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "d54e1037-54a1-4dc0-a112-3544ce5f7efd",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "80c50f7e-22b9-4716-ad7f-44e3e56eb0c9",
+                "ord": "a0"
+              }
+            ],
+            "id": "e46693eb-737b-44b6-ad3e-54275936b192",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Golden Hour Studio",
+      "seoDescription": "See what Golden Hour Studio offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e92a3453-d0de-42b3-b1b6-34760d3bb465",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1519741497674-611481863552?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZGUlMjBncm9vbSUyMHdlZGRpbmd8ZW58MHwwfHx8MTc4NjM5MDYzMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A first look at sunset",
+                  "loading": "eager"
+                },
+                "id": "2e17b938-09e3-4fb9-ba91-aa7f25ab6e1d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "c00e87b1-0db0-407b-ba63-023afc9a25f0",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your session"],
+                    "id": "b1e2f521-77c4-4481-ad31-92237116ddca",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Every couple starts with a free consultation. Choose a session or consult below to see prices and live availability, then pick your photographer and time."
+                    ],
+                    "id": "9e2cf8fd-2d95-4c2d-b3ca-4b0d76226d61",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See sessions below"],
+                        "id": "e5ac96f2-45bf-4967-b7a2-d03e639b6b6a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "c7507074-5bbb-48fc-92a1-13066fd98d70",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "df0e9a48-9531-47c1-9eec-a3a83a77276a",
+                "ord": "a2"
+              }
+            ],
+            "id": "59f6616c-8ab1-43bf-9c51-9df0062750ce",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "da041cdb-5bc6-448e-9d29-fec9b2c452d2",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Golden Hour Studio",
+      "seoDescription": "Who Golden Hour Studio is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f8b502a9-78b5-434a-90bc-f3a72e5917ff",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1566813142858-99f1e35e333a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNvdXBsZSUyMGdvbGRlbiUyMGhvdXJ8ZW58MHwwfHx8MTc4NjM5MDYxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A couple embracing in warm golden-hour light in a summer field",
+                      "loading": "lazy"
+                    },
+                    "id": "01b36dcb-d042-46fa-9283-99e2223442d8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Golden Hour Studio"],
+                        "id": "1a41eb80-0a11-4834-a94f-1266e0dc049b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Golden Hour Studio because we believe a wedding deserves to be remembered the way it was lived — warm, a little imperfect, and full of feeling. Not stiff, not staged."
+                        ],
+                        "id": "92781191-9cf3-4624-95fe-7a31cc2c93f4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We shoot on film and digital both, work quietly, and chase the last good light of the day. What you get back isn’t a highlight reel — it’s your story, honestly told, made to outlast us all."
+                        ],
+                        "id": "6e0003fd-f537-4bff-b1d4-9bafc326943f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "88e34b87-9fdd-4da7-bf3c-a51cd729962a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "0cfffbf0-c2e4-419d-a9c0-8712402f7919",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "6081424e-5cf9-48c3-b876-7d0f994016a7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "550507fb-0e2a-4701-9d3d-ebff94db07ea",
+                "ord": "a0"
+              }
+            ],
+            "id": "b026ee34-f110-4a54-9147-2bbb4bd19817",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "66ba552c-3ea5-47dc-8746-3b63e854d084",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A consultation first"],
+                            "id": "12100deb-aef1-4e63-9bee-6b2081459650",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Always. We meet, we listen, and we make sure we’re the right fit before anyone books a thing."
+                            ],
+                            "id": "4e048164-af64-477f-a0e0-74be68aee2f1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3f1455aa-138d-4784-8c4e-dc0005126eaf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Present, not intrusive"],
+                            "id": "ca2462f4-c17d-42bc-9f4b-42b9efa6e3d2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We move with the day rather than direct it, so your photographs feel like memories, not poses."
+                            ],
+                            "id": "7b8dae87-2182-45ed-9cf7-c4ebe450c18a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e3e4fe5f-db22-48f7-b6c8-6a0fa3ca6a0f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Yours to hold"],
+                            "id": "1f693d32-f4b2-4eb5-b536-024d8676fba2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Beautifully edited galleries, print-ready files, and hand-bound albums designed with you."
+                            ],
+                            "id": "60385f9f-ae88-4ba3-b663-150d65d6d364",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4dde08d2-9582-4274-b9de-6e1cf81e4e47",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "510a5b14-f72a-4342-907d-c37673be4a1a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "29ea7841-d273-4b71-8404-f879d091d424",
+                "ord": "a0"
+              }
+            ],
+            "id": "465440a4-991c-417b-b8f1-1edb3232e42d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["A little of our work"],
+                    "id": "9b614cd2-8749-45d1-ac4f-cfa2a3d4a634",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1550368566-f9cc32d7392d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGRldGFpbHMlMjByaW5nc3xlbnwwfDB8fHwxNzg2MzkwNjQxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "An engagement walk through tall grass",
+                          "loading": "lazy"
+                        },
+                        "id": "e074bc24-194c-4af7-a757-2844edc3c15b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNlcmVtb255fGVufDB8MHx8fDE3ODYzOTA2MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "An intimate elopement in the hills",
+                          "loading": "lazy"
+                        },
+                        "id": "c48b7b67-2447-4625-842b-1dcae9788ce6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1665960211264-5e0a7112bacd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZGUlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwNjQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "The couple beneath string lights at dusk",
+                          "loading": "lazy"
+                        },
+                        "id": "12c7d89b-f838-4ce7-9ae5-bd7f0f66e161",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "44607d67-e9c8-4344-a530-5f1debe8c615",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "384da0d2-5a46-4d9a-854c-b2b8b23b61c4",
+                "ord": "a0"
+              }
+            ],
+            "id": "ee3804f5-3b9e-483d-9674-1ae88c9521c8",
+            "ord": "a2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Golden Hour Studio",
+      "seoDescription": "Where to find Golden Hour Studio, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b5bbe318-16aa-4044-9bad-6be3ad324ffd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Come by the studio"],
+                        "id": "954eddf8-10bd-4a8b-b31f-1bd6b7da4bcb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Golden Hour Studio"],
+                            "id": "313c5644-6e55-4009-b15d-c21c6e7b1f13",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["54 Marigold Lane"],
+                            "id": "9cb861d9-ddd4-4442-96c9-b05996fcf53b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio B · Asheville, NC 28801"],
+                            "id": "9c74e10b-47ee-412c-928b-af880158dba0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b5f4e429-fcad-41ef-8790-66222400c8cb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Friday"],
+                                "id": "55bc21f0-a866-4f22-a723-4350c98492ff",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 6:00"],
+                                "id": "47bf5e2b-39c9-40bb-ae89-8f6678de4793",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b51628bc-878b-4fc0-acdd-bca3f53533f9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "8afdc474-70ef-49aa-b173-f625d8a0767e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "df3f8234-7093-4254-841f-0e5e914480d9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "febadf2b-f95e-47c5-81b6-91cf3cb4feb6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "daa4469c-f9c0-4174-b2c1-c25a727f257b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "a863db2d-9b72-4917-be88-2aae29d748e1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "42c6aae2-963e-4989-aa84-0bfca06fd419",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "3bb0ff23-bb8d-4d37-9d3a-010b1384f34c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "608fa698-aa29-4015-84bf-9105c0f1c711",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f2d9d892-9beb-424b-868d-2096b2a82f2a",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "a1ec453d-6761-47e8-90b7-d0eda4692665",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f1ad3de0-5f9a-4ade-af0c-5986f2c0dbe8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "54 Marigold Lane, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "bcb166f4-0ac4-43f0-99f0-ba67c0419df5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0534e8be-cbc5-4698-bcbb-cd93c7a50c54",
+                "ord": "a0"
+              }
+            ],
+            "id": "00e9295e-1c99-4ab8-b5b5-e501dccb02bd",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "062da930-4582-4ead-a700-dce8defb0d5f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a free consultation online — pick a time that suits you and we’ll see you soon."
+                    ],
+                    "id": "dc82b449-3448-4d46-a91e-d12a1615135c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "4277e0e4-0f6c-4a2f-8a58-b62f5b96227e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "70a541b2-f349-4249-95b0-5311bba79f8e",
+                "ord": "a0"
+              }
+            ],
+            "id": "aa531f9c-6b9c-45a7-b384-39439b42ade3",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "goldenhour",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.012 85)",
+      "--color-base-200": "oklch(94% 0.016 80)",
+      "--color-base-300": "oklch(89% 0.02 75)",
+      "--color-base-content": "oklch(24% 0.014 55)",
+      "--color-primary": "oklch(68% 0.085 68)",
+      "--color-secondary": "oklch(38% 0.02 55)",
+      "--color-accent": "oklch(70% 0.05 28)",
+      "--color-neutral": "oklch(26% 0.012 55)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.75rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(15% 0.02 68)",
+      "--color-secondary-content": "oklch(98% 0.01 55)",
+      "--color-accent-content": "oklch(15% 0.02 28)",
+      "--color-neutral-content": "oklch(98% 0.01 55)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.05 28)",
+      "--color-highlight-content": "oklch(15% 0.02 28)",
+      "--color-border": "oklch(89% 0.02 75)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.012 55)",
+      "--color-base-200": "oklch(18% 0.01 55)",
+      "--color-base-300": "oklch(14% 0.008 55)",
+      "--color-base-content": "oklch(95% 0.01 85)",
+      "--color-primary": "oklch(79% 0.09 72)",
+      "--color-secondary": "oklch(76% 0.014 70)",
+      "--color-accent": "oklch(77% 0.055 30)",
+      "--color-neutral": "oklch(84% 0.012 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 72)",
+      "--color-secondary-content": "oklch(15% 0.014 70)",
+      "--color-accent-content": "oklch(15% 0.02 30)",
+      "--color-neutral-content": "oklch(15% 0.012 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.055 30)",
+      "--color-highlight-content": "oklch(15% 0.02 30)",
+      "--color-border": "oklch(14% 0.008 55)"
+    }
+  }
+}

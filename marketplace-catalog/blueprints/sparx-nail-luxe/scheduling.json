@@ -1,0 +1,329 @@
+{
+  "policies": [
+    {
+      "handle": "nail-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a gentle reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "extension-deposit",
+      "name": "Extension deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 2000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Extension appointments hold a small $20 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marchetti",
+      "kind": "staff",
+      "skillTags": ["manicure", "gel", "pedicure", "extensions", "nailart", "removal"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "sofia",
+      "name": "Sofia Reyes",
+      "kind": "staff",
+      "skillTags": ["manicure", "gel", "pedicure", "removal"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "camille",
+      "name": "Camille Laurent",
+      "kind": "staff",
+      "skillTags": ["manicure", "gel", "extensions", "nailart", "removal"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "pedi-chair-1",
+      "name": "Pedicure chair 1",
+      "kind": "space",
+      "skillTags": ["pedicure"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "pedi-chair-2",
+      "name": "Pedicure chair 2",
+      "kind": "space",
+      "skillTags": ["pedicure"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "luxury-manicure",
+      "name": "Luxury manicure",
+      "description": "A soak, a considered shape, cuticle care, a warm hand massage and a flawless polish.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["manicure"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    },
+    {
+      "handle": "gel-manicure",
+      "name": "Gel manicure",
+      "description": "A long-wearing gel finish — high-gloss, chip-free and set to last a fortnight.",
+      "durationMinutes": 60,
+      "priceCents": 7000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["gel"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    },
+    {
+      "handle": "spa-pedicure",
+      "name": "Spa pedicure",
+      "description": "A warm soak, a full smoothing, cuticle work and polish in a quiet pedicure chair.",
+      "durationMinutes": 60,
+      "priceCents": 7500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["pedicure"],
+          "count": 1
+        },
+        {
+          "role": "chair",
+          "kind": "space",
+          "skillTags": ["pedicure"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    },
+    {
+      "handle": "deluxe-spa-pedicure",
+      "name": "Deluxe spa pedicure",
+      "description": "The spa pedicure, unhurried — with an extended lower-leg and foot massage to finish.",
+      "durationMinutes": 90,
+      "priceCents": 11000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["pedicure"],
+          "count": 1
+        },
+        {
+          "role": "chair",
+          "kind": "space",
+          "skillTags": ["pedicure"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    },
+    {
+      "handle": "gel-extensions",
+      "name": "Gel extensions",
+      "description": "Hand-built gel extensions, sculpted to your length and shape for a natural, lasting finish.",
+      "durationMinutes": 120,
+      "priceCents": 12000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["extensions"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "extension-deposit"
+    },
+    {
+      "handle": "nail-art",
+      "name": "Nail art",
+      "description": "Bespoke, hand-painted detail — a quiet accent or a full set, designed with you.",
+      "durationMinutes": 45,
+      "priceCents": 4000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["nailart"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    },
+    {
+      "handle": "soak-off-removal",
+      "name": "Soak-off & removal",
+      "description": "Gentle, careful removal of gel or extensions that leaves the natural nail conditioned.",
+      "durationMinutes": 30,
+      "priceCents": 2500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["removal"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "nail-standard"
+    }
+  ]
+}

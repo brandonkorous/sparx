@@ -1,0 +1,361 @@
+{
+  "policies": [
+    {
+      "handle": "wellness-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel your session. We send a reminder the day before and two hours ahead so nothing slips."
+    },
+    {
+      "handle": "no-show",
+      "name": "Late-cancel & no-show",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full — reschedule earlier and there’s no fee."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "lena",
+      "name": "Dr. Lena Osei, L.Ac.",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "facial", "wellness"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Feld, L.Ac.",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "dry-needling", "pain"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair, L.Ac.",
+      "kind": "staff",
+      "skillTags": ["acupuncture", "stress", "sleep"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room 1",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Treatment Room 2",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "new-client-session",
+      "name": "New-client session",
+      "description": "A longer first visit: a full health intake, your goals, and a gentle first acupuncture treatment in one calm hour and a quarter.",
+      "durationMinutes": 75,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "acupuncture-session",
+      "name": "Acupuncture session",
+      "description": "A focused, evidence-informed treatment for pain, tension, digestion or general balance — the studio’s core visit.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-standard"
+    },
+    {
+      "handle": "facial-acupuncture",
+      "name": "Facial & cosmetic acupuncture",
+      "description": "A gentle, needle-based facial that supports collagen and circulation — a calm, natural alternative to injectables.",
+      "durationMinutes": 75,
+      "priceCents": 15500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "dry-needling-session",
+      "name": "Dry needling",
+      "description": "Targeted trigger-point work to release tight muscles and ease movement — ideal alongside training or recovery.",
+      "durationMinutes": 45,
+      "priceCents": 8500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["dry-needling"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-standard"
+    },
+    {
+      "handle": "stress-sleep-session",
+      "name": "Stress & sleep session",
+      "description": "A quiet, restorative treatment to calm the nervous system, ease anxiety and help you sleep more deeply.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-standard"
+    },
+    {
+      "handle": "wellness-membership-consult",
+      "name": "Wellness membership consult",
+      "description": "A complimentary 30-minute sit-down to map a plan of regular sessions and choose the membership that fits.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-standard"
+    },
+    {
+      "handle": "follow-up-session",
+      "name": "Follow-up session",
+      "description": "A shorter return visit to keep progress going once your plan is underway — booked between fuller treatments.",
+      "durationMinutes": 30,
+      "priceCents": 6500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "practitioner",
+          "kind": "staff",
+          "skillTags": ["acupuncture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-standard"
+    }
+  ]
+}

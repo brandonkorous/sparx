@@ -1,0 +1,2070 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "17400a5c-0a24-4d29-bf6e-7ec3045dacc4",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "36bcfb22-6fea-42af-bd1e-c0e3f227cba3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "9797f765-706a-4dc9-a17b-c19febd14cd6",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "036e878d-2c61-4f5e-9a88-d3c657a1ab91",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "2f023ed0-1de6-4be8-b589-ea6df9afc1d1",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "b9ac0efd-e560-4d6e-a2d5-6a3ca58383e0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "e11f71f7-3712-4e59-9550-12208cbd9673",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "6d644dcf-3a6f-4fb8-8ee0-a888d9c35b4a",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "f2370e1e-7616-439e-8a7e-50d7ff40d9bf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "01a10efd-b9a0-4996-9b51-738c91bbceb8",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "fcf74a7e-71f3-40a9-bbe3-3dc39d2839bf",
+                  "ord": "a2"
+                }
+              ],
+              "id": "b54d0a06-ab4e-4ef1-9393-10ac74bf1382",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "87646b89-06ba-45fa-b528-6c78303d037c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "fc98a53d-cb8f-471a-a76d-6fb4208c7768",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "9170e4ad-0df7-4cd4-b562-8777e2f473c1",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "83823efb-e6e2-4284-b71f-0471ce3d37ad",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "d0c3c983-e66c-4d21-b4af-9ff0c695f323",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "cbf76880-cf84-46d9-9144-7929d7caae5c",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "81e514d5-7cf7-400c-84a0-18e325019856",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6a2f0bfb-0f5a-4971-b6dd-44a4aaace651",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "3ee7b267-d9b9-4129-be7e-b3f0c3b669e3",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "b710257c-3028-4d81-9e02-d425173f4ffd",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "be825e31-61ec-4343-8797-bc54f556f1c7",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "a3d7b3ea-878c-4201-998f-75b9d02389ce",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "67586ac4-83e0-4a97-80d2-1890281078da",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "cd5edd5d-f0c2-457d-9bdf-49022344c4c6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9531cb0e-8877-4d2a-a098-3e81c2e8c58a",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "d6e73a57-98ee-4b2e-bb10-b62b76eb436f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "bc72167f-dc36-4d2d-947e-3929aa4531a2",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "38769f0f-70d6-4dcb-ad31-7f33ced0b85a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1a44dbf1-8d43-47f6-ad71-0915d7169705",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "1b9b0fa1-3010-4e4b-9db0-863a90a2dde1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f72a1a11-be21-40a7-bca4-d3640ec44806",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "b4d8298e-aa6e-402e-8027-cacc9118b2bb",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "b3e0270b-2f28-4612-8a52-881283462a71",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "a5373a11-a0f9-4792-b0ff-09cff59f8f94",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "dd8b7c37-d754-430b-833b-52ff0b73934e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "2e69cad5-1205-419c-a183-a7954ec4e675",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4c75de4e-868e-4a4a-8946-be81f9e4f768",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "9eebf995-9834-42e6-b06c-39e3b6803e9f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "9718cb97-bea6-464b-ad6c-af281e73e7e9",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "67ed21c3-31dc-4e75-930e-0360f8de9613",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "1ab4cb18-c46c-4e1e-9e71-c2d9f71e25fc",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7d682d7d-c514-4de2-aa65-a5cd31c55012",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "1069df04-627f-49ab-af0b-9d002e56d56f",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "548e3fe7-10d5-4677-86f5-653215b7bb40",
+                  "ord": "a1"
+                }
+              ],
+              "id": "e10cb12a-5f95-41ad-a0ad-36faa19e4568",
+              "ord": "a0"
+            }
+          ],
+          "id": "a052864e-a960-4ff6-bcd5-168dc24dad9d",
+          "ord": "a2"
+        }
+      ],
+      "id": "8cc0468b-c510-47c7-af40-faeee1b04387"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Dewy Skin Bar — express facials & glow bar",
+      "seoDescription": "Dewy Skin Bar is a fun, feel-good glow bar for quick express facials, LED and gua sha add-ons, and glow memberships. Book your glow online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "df0a9339-cc47-4427-920c-dabbda9bacb2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xvd2luZyUyMHNraW4lMjBmYWNpYWx8ZW58MHwwfHx8MTc4NjM5MjcwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Fresh, dewy, glowing skin in bright natural light",
+                  "loading": "eager"
+                },
+                "id": "6bdccae8-5b8c-4858-a30d-5591698dba6a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "ed1dcd92-c70b-4458-9877-9a286338ef91",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Glow on your lunch break"],
+                    "id": "ff309aa5-d980-4ce0-bc82-64565e62edc9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Quick, feel-good express facials at the glow bar — walk in dull, walk out dewy. No downtime, all glow."
+                    ],
+                    "id": "cea0ea5f-1c28-427a-b245-0dab1ea4de6d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a glow"],
+                        "id": "7e16f261-9d37-462b-ba47-67f6f98e8312",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the menu"],
+                        "id": "0874af10-cf2a-488e-ac6f-079acfd22eef",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1d975733-59a4-4aad-876f-efb5452fec42",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "cadb40a5-4fe5-4999-81b3-1122f26e993e",
+                "ord": "a2"
+              }
+            ],
+            "id": "775b1bc3-e19c-4bdf-b746-110c23b64242",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Express, walk-in-friendly facials"],
+                            "id": "5c99b962-b995-411e-91dd-28675e6ec435",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Thirty happy minutes, in and out on your break. Book ahead or pop in — a fresh glow fits any day."
+                            ],
+                            "id": "98fddbcd-a153-4287-aa3e-8ad238003b3c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "78a85ea0-44c8-4792-a28a-70884b237b65",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Glow memberships"],
+                            "id": "371bb8d9-c9b3-4be8-a525-e91a87f87532",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Make the glow a habit. Members get a monthly facial, add-on perks and friends-and-family pricing."
+                            ],
+                            "id": "df6a04ee-e835-4613-849c-18fd6889ddf2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "363feb28-5a0d-4c16-8164-0ec2074be7d8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Fun little add-ons"],
+                            "id": "2e599d44-c9e3-4f92-a3f5-10ef40d88958",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Stack an LED session or a sculpting gua sha onto any facial and float out extra dewy."
+                            ],
+                            "id": "b908cfaf-6ff3-41ff-b868-6426894f867c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "223198ed-5403-423a-8221-4c54d3695f93",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "db0838e0-b389-4336-8d5d-98b12c4f1230",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "194d4f2e-aede-4e9d-81b1-68eb1983496f",
+                "ord": "a0"
+              }
+            ],
+            "id": "0fb34f99-5933-4d27-8dab-f1a3b0ec7f53",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The glow menu"],
+                        "id": "ece60be4-c95e-48b3-ba8e-80d595936291",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Express facials and fun add-ons — pick your glow. Live times and full prices are on the booking page."
+                        ],
+                        "id": "02c307d1-8aa0-47c8-8300-d7ed2901d8cb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5907ad3e-06aa-41c3-aec7-46f4a081a71a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Express glow facial"],
+                                "id": "a41f11d9-7f0e-4b91-9bab-e70c9cf31157",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$45"],
+                                "id": "e43c4f77-4be7-4394-be85-edf93bca0ff8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d23694bd-a831-4732-9888-493b4e5ab372",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "447ec56a-9cfb-4f4f-a57c-ee527df068a3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A dewy glow on your lunch break."],
+                            "id": "2ffad769-0fa8-4a3b-abaf-c0a9a6478f9d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "31085ff6-59d2-431d-922c-3f1d7182a081",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Signature glow facial"],
+                                "id": "661340da-8bb7-4de6-9bb4-eaf1d63e68ee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$75"],
+                                "id": "f360e76f-51e8-427b-bac1-7a611194d44e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5e66e708-dcd5-4a4c-9614-50076dc2c398",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "8760099d-5b95-4405-a8df-3465e6f38c97",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The full feel-good ritual."],
+                            "id": "feba7f0e-62e7-4910-8022-3b8c925e1f16",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c061a9b6-ae80-4997-b8e3-ce88d6f06233",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Dewy hydration facial"],
+                                "id": "78b75a76-d3c9-4e50-a3a5-3609b530fd6b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$70"],
+                                "id": "7889db24-fe13-495a-a8e3-c0b27c622977",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "3f2c11d9-8db4-4593-8545-1249f911c697",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "306be8fb-8f7e-4748-9ecd-9e704a25d32c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Layers of plump, bouncy hydration."],
+                            "id": "e26b5e09-11a4-45dc-b5a4-83725147a1a3",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "001cf06e-c93b-4958-9e2b-a0e2cc02dd52",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["LED light add-on"],
+                                "id": "774ebdd1-60cc-49f5-932a-d00467f43de9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$25"],
+                                "id": "4024608d-2107-4760-ad78-9191b509b14f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e5c63058-bf30-4768-923e-4740cdd03106",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["15 min"],
+                            "id": "b3fb80d4-d2f4-48d6-936e-62a327298aed",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Ten minutes under the glow lights."],
+                            "id": "4e6063a2-18c5-4bdd-ab89-ddb1c9523227",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "744f648e-2579-4f91-abdd-8ecc146de6b8",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b771c43b-7369-474b-97bb-5f51c86284dd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "fc298b4c-02ae-40a8-baf4-5ed668827ec6",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0a96516c-7552-496d-b139-b517d7ef9b1a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "675e0869-208c-44ab-bd73-9a7ad983cfc5",
+                "ord": "a0"
+              }
+            ],
+            "id": "0edea671-28c6-4b6a-b5ae-6d14d4423b5e",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://picsum.photos/seed/dewy-studio/1600/1000",
+                      "alt": "A bright, cheerful glow bar with a comfy treatment chair",
+                      "loading": "lazy"
+                    },
+                    "id": "0a608400-60ae-4b50-a00b-4eb5e24fa13d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Glow on your schedule"],
+                        "id": "c7e725e0-a32f-44a9-a949-4cc256903d5f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The Dewy membership is the easy way to keep your glow going: one express or signature facial a month, member pricing on every add-on, and roll-over if life gets busy."
+                        ],
+                        "id": "47fc3d82-4ac3-4cd4-9785-c889a4868945",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time — it’s your glow, your call."
+                        ],
+                        "id": "987506f6-8aa8-4bc7-9018-064ea133806a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Chat memberships"],
+                            "id": "fa99e163-2fe1-420d-8e8f-856a1639357c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "72276a41-cef6-4b4c-87a3-a8ed043a0fbc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "cf7589cb-dc2d-48c3-9a3a-b7b5f2815b46",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6580f968-b639-458f-a717-bf1a215b8568",
+                "ord": "a0"
+              }
+            ],
+            "id": "9be7d9f9-3ffd-4e40-ac60-ff9f477ed787",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your glow team"],
+                        "id": "8e7ed342-10c8-444e-916a-ab50cf3dd4ab",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — a friendly esthetician who learns your skin and roots for your glow."
+                        ],
+                        "id": "b979b774-932d-4c3b-bc30-c3474f060ae4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "93e2fb38-f229-45b3-be60-616de2ba348b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1762341113869-0bfa616b4457?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBiZWF1dHklMjB0aGVyYXBpc3QlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNzQzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Mila Fox, esthetician",
+                              "loading": "lazy"
+                            },
+                            "id": "49562999-7b08-410d-b35a-6f3c01e770e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Mila Fox"],
+                                "id": "ebbb32d5-7da3-4a9c-b61b-d060214de23e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Esthetician · Express & LED"],
+                                "id": "bb44b63d-6e33-4873-b742-7b687cac18dc",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Speedy express facials and glow-light sessions. Mila runs the bar."
+                                ],
+                                "id": "d345de60-81df-4dec-b18a-e68ed6993685",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "6b36289e-9fea-4112-99f7-e29f9daf558a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0f146633-9498-459c-b056-ecddec0f5ff2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBza2luY2FyZSUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI3MTB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Anand, esthetician",
+                              "loading": "lazy"
+                            },
+                            "id": "6d121022-49d0-4e61-b5b4-6e04754eea20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Anand"],
+                                "id": "f2050cca-a580-4bd8-b27e-360d71e9847d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Esthetician · Gua sha"],
+                                "id": "49473820-f55c-4612-9986-849a7e49b5c8",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": ["Sculpting gua sha and a calming, feel-good touch."],
+                                "id": "4fb82b57-b98a-4c96-8754-b9c20457b2b7",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "d8d77ac9-0b47-4366-9aba-4ef2852dfaa3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "14a0953d-78f5-4b63-be87-7ff6f8ce533f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmVhdXRpY2lhbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI3NDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Jade Nguyen, esthetician",
+                              "loading": "lazy"
+                            },
+                            "id": "1d18b6d9-6e8b-4138-b368-4984e1babf0b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jade Nguyen"],
+                                "id": "d6767ac6-adf5-426b-a886-bfc777e732b6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Esthetician · Add-ons"],
+                                "id": "365ec5cf-938c-4a86-b652-5a220c129c43",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": ["The add-on queen — she’ll send you out extra dewy."],
+                                "id": "95694040-c1fe-4a15-8215-215e3aa4e097",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "73e8ea83-9bda-4eeb-9109-1c850b45ec56",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cdcc6f40-dc48-4609-9420-a0225aa9f030",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4539a170-74ad-4bd3-971c-26033f4593ad",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "13d9e383-f534-4aeb-86d7-eb54ecf871df",
+                "ord": "a0"
+              }
+            ],
+            "id": "6598079b-8ac0-4efe-a83a-7485204fba73",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat — fast, fun, zero fuss.”"
+                    ],
+                    "id": "02ebde88-0eca-4f0b-86d1-e5abe14cd21e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Sam, member since 2024"],
+                    "id": "0c1be9d4-6b3e-4de9-a6c6-a17a224dea9e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ddd61a90-1d41-4866-a391-7a6879e55e46",
+                "ord": "a0"
+              }
+            ],
+            "id": "89c4a470-7aa7-43a8-84fd-a0b6e1291588",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to glow?"],
+                    "id": "7c0023e7-efe9-4881-a38b-ec5410d3adfe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a facial, add a little extra, and grab a time. It takes about a minute."
+                    ],
+                    "id": "45c093e9-4768-4a3b-99a1-5f3198a9f2dc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a glow"],
+                    "id": "2665a165-ed03-498b-9ab4-7073e6b8ad0d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6f0a2c85-77ca-4cb1-8cae-5a254be7a0b5",
+                "ord": "a0"
+              }
+            ],
+            "id": "ffff2e32-f222-4917-a7b8-c62bf131bc41",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Dewy Skin Bar",
+      "seoDescription": "See what Dewy Skin Bar offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1251249e-07e3-4e39-a3cc-d1468d5f4951",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://picsum.photos/seed/dewy-studio/1600/1000",
+                  "alt": "A bright, cheerful glow bar with a comfy treatment chair",
+                  "loading": "eager"
+                },
+                "id": "3ab98092-28d5-46f4-ae6d-c55a011fb264",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "8f2c9862-81c5-4576-bf0c-a5ce5eb0d777",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a glow"],
+                    "id": "e2e52a81-121a-41d0-a933-e0422b26e2e1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a facial to see live times, add an LED or gua sha if you fancy, and pick your esthetician."
+                    ],
+                    "id": "b5e259ff-a24d-4572-89f6-b48b67fe45bd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the menu below"],
+                        "id": "083bfef5-4b43-4452-be0f-550ca61462db",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "88e6bbcb-8411-44bb-b180-bfc6301c178c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "569809f6-5298-4384-8dff-ed59b400fd16",
+                "ord": "a2"
+              }
+            ],
+            "id": "56ec280b-2673-4d92-9bf8-6f4a419e7fbd",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "a6c6021d-88b5-4c2c-a587-a6b551636c44",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Dewy Skin Bar",
+      "seoDescription": "Who Dewy Skin Bar is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "dd785968-8bf1-41d1-9206-864414a2be2c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xvd2luZyUyMHNraW4lMjBmYWNpYWx8ZW58MHwwfHx8MTc4NjM5MjcwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "Fresh, dewy, glowing skin in bright natural light",
+                      "loading": "lazy"
+                    },
+                    "id": "eabd9c72-0bdc-422d-9c17-9c90cbe41348",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Dewy Skin Bar"],
+                        "id": "f3e80d8f-20e5-4a97-a6f0-3ba59c7e0e8c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Dewy Skin Bar because good skin shouldn’t mean a two-hour appointment and a scary bill. Glowing skin should feel fun, quick and completely doable."
+                        ],
+                        "id": "aeac1136-0fa8-40a7-974b-b71b7469cd8e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going — all in a bright, easy space where nobody makes you feel bad about your pores."
+                        ],
+                        "id": "1967f3ad-8634-4991-b4b9-eeabb7f30d14",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a glow"],
+                            "id": "7b7c9fe6-a1ec-4645-b12a-0dd98967ac8e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "fc8fce94-0faf-4edb-8f1e-b78a45a92a49",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ac99f1ea-13fc-41ad-b6c0-b2a3a25a4794",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bf242f77-c732-42da-baa2-008fd184056b",
+                "ord": "a0"
+              }
+            ],
+            "id": "89779a71-d7d2-4c54-966b-9275c6d638a5",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How the glow bar works"],
+                    "id": "cb3048bb-bdf9-40dc-a545-c6d7bb1e7ee5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Quick by design"],
+                            "id": "a5846ba3-5706-412c-acca-53ea70c38565",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Express facials are built for real life — 30 dewy minutes, no downtime, back to your day."
+                            ],
+                            "id": "74d88509-0e6e-438a-b9f7-0795844f49d4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a800f832-e5b8-4bd4-96e6-27346497a9a6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Skin you’ll actually see"],
+                            "id": "806e5d41-6cc0-4825-b34b-20fa43f783b5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Gentle, feel-good treatments that leave you plump, bright and glowing — not red and raw."
+                            ],
+                            "id": "f3240e3c-a6fc-42df-8f71-78fbc632e057",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6632e090-f7e4-466b-ae8a-d0328216e568",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Keep it going"],
+                            "id": "b29015a6-b053-4e0f-b246-627046ff1fca",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Memberships and add-ons make the glow a habit, at prices that don’t need a special occasion."
+                            ],
+                            "id": "da3468a7-de0a-487b-9188-b19d5e963a7f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "12105f79-a443-460e-92d6-189a4d0d528b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5fd3148d-dfb8-45c2-8c9e-2479ae549b1c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "80b5476c-5dc7-4e1b-9b4d-d60178cab08e",
+                "ord": "a0"
+              }
+            ],
+            "id": "a6a4b77e-7a1a-42ce-9cdb-af53acc4793a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Dewy Skin Bar",
+      "seoDescription": "Where to find Dewy Skin Bar, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cae2bd39-a177-4601-b542-e114a193bbd5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the glow bar"],
+                        "id": "4eb9d86a-d915-4347-8a66-6ba4537f0e2f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Dewy Skin Bar"],
+                            "id": "72ae6665-086f-45a1-a0e7-833fbd06b921",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["54 Maple Court"],
+                            "id": "d45ca449-d259-4db5-aaf2-d919291d2f9f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Unit 3 · Austin, TX 78704"],
+                            "id": "0a7ff6cf-e17b-4b2f-b7f6-64370db5bc31",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0088b32e-a30e-4f30-a2c7-a00907690aa7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Saturday"],
+                                "id": "506009fb-c42f-4a62-aa54-430fee537fb4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 8:00"],
+                                "id": "47837c69-346d-4b0f-9b78-5327139bf065",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4f238c39-cc08-4190-a8ef-ee40c32c2e07",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "c6aa2080-cfe3-4e8b-8457-5d43c5b9d5d8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 6:00"],
+                                "id": "82c39c81-8749-4113-b53a-59b6db595abb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9c28435a-56e4-4c2e-ad9e-36dbca38013e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "0d7e7e8e-d824-4717-a96a-fa42f0731a4d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "a326261b-e3a4-4a54-a567-b3a243df1ebe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "71f2099f-3bae-4a0a-b021-b74da68363d0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c28cb815-006d-4e2b-89ba-8e9771f06057",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4ac82a57-fbec-470c-a517-0976bfe71263",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "54 Maple Court, Austin, TX 78704",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "89204948-2e2d-4020-863c-04ea31004e2c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "21754523-83ee-4e18-9d42-228621e3a480",
+                "ord": "a0"
+              }
+            ],
+            "id": "29c85e29-35cc-4c87-a3a9-7786cdb45291",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "743bf907-debd-4aec-8cee-5a4218d34603",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live times and grab your glow online — no phone tag, no hold music."
+                    ],
+                    "id": "0fd7cd31-3b45-4dfe-b8d2-d845b52d21cb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a glow"],
+                    "id": "34d8d6a6-e3aa-4552-9512-281811621de7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "fcbb83bd-c22e-4f12-8115-8b53490f0e46",
+                "ord": "a0"
+              }
+            ],
+            "id": "0c7abc04-fead-4425-9615-17166817dac7",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "dewy",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.014 70)",
+      "--color-base-200": "oklch(95% 0.022 62)",
+      "--color-base-300": "oklch(90% 0.024 58)",
+      "--color-base-content": "oklch(30% 0.03 42)",
+      "--color-primary": "oklch(73% 0.145 38)",
+      "--color-secondary": "oklch(38% 0.03 42)",
+      "--color-accent": "oklch(80% 0.105 195)",
+      "--color-neutral": "oklch(32% 0.022 45)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.875rem",
+      "--radius-field": "0.875rem",
+      "--radius-box": "1.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Quicksand\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 38)",
+      "--color-secondary-content": "oklch(98% 0.01 42)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(98% 0.01 45)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(80% 0.105 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(90% 0.024 58)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Quicksand\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(26% 0.022 40)",
+      "--color-base-200": "oklch(22% 0.018 40)",
+      "--color-base-300": "oklch(18% 0.014 40)",
+      "--color-base-content": "oklch(96% 0.014 70)",
+      "--color-primary": "oklch(79% 0.14 40)",
+      "--color-secondary": "oklch(82% 0.02 72)",
+      "--color-accent": "oklch(83% 0.1 195)",
+      "--color-neutral": "oklch(85% 0.016 72)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 40)",
+      "--color-secondary-content": "oklch(15% 0.02 72)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(15% 0.016 72)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(83% 0.1 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(18% 0.014 40)"
+    }
+  }
+}

@@ -1,0 +1,810 @@
+{
+  "categories": [
+    {
+      "handle": "walk",
+      "name": "Walk",
+      "description": "Collars, leads, harnesses and travel gear for every outing.",
+      "featured": true
+    },
+    {
+      "handle": "rest",
+      "name": "Rest",
+      "description": "Orthopedic beds and cosy spots for a proper sleep.",
+      "featured": true
+    },
+    {
+      "handle": "play",
+      "name": "Play",
+      "description": "Tough, tooth-friendly toys for a good game.",
+      "featured": true
+    },
+    {
+      "handle": "eat",
+      "name": "Eat",
+      "description": "Bowls, natural treats and food your dog deserves.",
+      "featured": true
+    },
+    {
+      "handle": "grooming",
+      "name": "Grooming",
+      "description": "Brushes and coat care for a healthy, shiny dog.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New in",
+      "description": "The latest gear to land at Barkwell.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "heritage-leather-collar",
+        "adventure-harness",
+        "orthopedic-dog-bed",
+        "slow-roasted-treats",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The things dogs (and their people) come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "heritage-leather-collar",
+        "heritage-leather-lead",
+        "orthopedic-dog-bed",
+        "slow-roasted-treats",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "the-daily-walk",
+      "name": "The daily walk",
+      "description": "Everything for getting out the door — collars, leads, harnesses and water.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "heritage-leather-collar",
+        "heritage-leather-lead",
+        "adventure-harness",
+        "travel-water-bottle"
+      ]
+    },
+    {
+      "handle": "rest-easy",
+      "name": "Rest easy",
+      "description": "Beds and bowls for a calm, well-fed home.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["orthopedic-dog-bed", "everyday-ceramic-bowl"]
+    },
+    {
+      "handle": "playtime",
+      "name": "Playtime",
+      "description": "Toys built for real play and real teeth.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["cotton-rope-tug-toy"]
+    },
+    {
+      "handle": "gifting",
+      "name": "Gift-ready",
+      "description": "Easy to give, better to keep — for the dog who has (almost) everything.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "everyday-ceramic-bowl",
+        "slow-roasted-treats",
+        "cotton-rope-tug-toy",
+        "bamboo-grooming-brush",
+        "travel-water-bottle"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "heritage-leather-collar",
+      "title": "Heritage Leather Collar",
+      "description": "A collar cut from a single strip of full-grain leather and stitched by a real saddler, with a solid brass buckle and D-ring that won’t bend or rust. It softens as it wears and picks up the character of every walk — the one collar you buy once and never think about again. Measure your dog’s neck and pick the size below.",
+      "status": "active",
+      "productType": "Collar",
+      "vendor": "Barkwell",
+      "tags": ["collar", "leather", "walk"],
+      "categoryHandles": ["walk"],
+      "collectionHandles": ["new-arrivals", "the-daily-walk", "best-sellers"],
+      "seoTitle": "Heritage Leather Dog Collar — full-grain, brass hardware | Barkwell",
+      "seoDescription": "A hand-stitched full-grain leather collar with solid brass hardware, in three sizes and three colours. Buy once, wear it for years.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        },
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tan"
+            },
+            {
+              "value": "Chestnut"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-COL-LEATHER-SMA-TAN",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Tan"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-SMA-CHE",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Chestnut"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-SMA-BLA",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Black"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-MED-TAN",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Tan"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-MED-CHE",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Chestnut"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-MED-BLA",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Black"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-LAR-TAN",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Tan"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-LAR-CHE",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Chestnut"
+          }
+        },
+        {
+          "sku": "BARK-COL-LEATHER-LAR-BLA",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Black"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-collar",
+          "isPrimary": true,
+          "alt": "Heritage Leather Collar"
+        }
+      ]
+    },
+    {
+      "handle": "heritage-leather-lead",
+      "title": "Heritage Leather Lead",
+      "description": "The lead made to match the collar — the same full-grain leather and solid brass trigger clip, in a comfortable five-foot length that sits soft in the hand from the first walk. No plastic, no fraying nylon; just a lead that ages beautifully and outlasts the dog’s puppyhood many times over.",
+      "status": "active",
+      "productType": "Lead",
+      "vendor": "Barkwell",
+      "tags": ["lead", "leash", "leather", "walk"],
+      "categoryHandles": ["walk"],
+      "collectionHandles": ["the-daily-walk", "best-sellers"],
+      "seoTitle": "Heritage Leather Dog Lead — full-grain, 5ft | Barkwell",
+      "seoDescription": "A five-foot full-grain leather lead with a solid brass trigger clip, made to match the Heritage collar. Soft in the hand, built to last.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tan"
+            },
+            {
+              "value": "Chestnut"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-LEAD-LEATHER-TAN",
+          "priceCents": 4400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tan"
+          }
+        },
+        {
+          "sku": "BARK-LEAD-LEATHER-CHE",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Chestnut"
+          }
+        },
+        {
+          "sku": "BARK-LEAD-LEATHER-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-lead",
+          "isPrimary": true,
+          "alt": "Heritage Leather Lead"
+        }
+      ]
+    },
+    {
+      "handle": "adventure-harness",
+      "title": "Adventure Harness",
+      "description": "A padded, no-pull harness for dogs who treat every walk like an expedition — breathable mesh, a chest ring to ease pulling, a back handle for helping over stiles, and reflective trim for dark mornings. Four points of adjustment mean it actually fits, and the whole thing wipes clean after the muddiest field.",
+      "status": "active",
+      "productType": "Harness",
+      "vendor": "Barkwell",
+      "tags": ["harness", "no-pull", "walk"],
+      "categoryHandles": ["walk"],
+      "collectionHandles": ["new-arrivals", "the-daily-walk"],
+      "seoTitle": "Adventure No-Pull Dog Harness — padded, reflective | Barkwell",
+      "seoDescription": "A padded no-pull harness with a chest ring, back handle and reflective trim, in three sizes and three colours. Built for real walks.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        },
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Forest"
+            },
+            {
+              "value": "Slate"
+            },
+            {
+              "value": "Coral"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-HARN-ADV-SMA-FOR",
+          "priceCents": 5200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Forest"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-SMA-SLA",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Slate"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-SMA-COR",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Coral"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-MED-FOR",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Forest"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-MED-SLA",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Slate"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-MED-COR",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Coral"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-LAR-FOR",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Forest"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-LAR-SLA",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Slate"
+          }
+        },
+        {
+          "sku": "BARK-HARN-ADV-LAR-COR",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Coral"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-harness",
+          "isPrimary": true,
+          "alt": "Adventure Harness"
+        }
+      ]
+    },
+    {
+      "handle": "orthopedic-dog-bed",
+      "title": "Orthopedic Dog Bed",
+      "description": "A proper bed for a proper sleep — a solid slab of orthopedic memory foam, not shredded off-cuts, topped with a bolster edge for chin-resting and a cover that unzips and machine-washes in one go. It supports ageing joints, holds its shape for years, and gives even a young dog the deep rest they need. Pick the size for your dog below.",
+      "status": "active",
+      "productType": "Bed",
+      "vendor": "Barkwell",
+      "tags": ["bed", "orthopedic", "rest", "sleep"],
+      "categoryHandles": ["rest"],
+      "collectionHandles": ["new-arrivals", "rest-easy", "best-sellers"],
+      "seoTitle": "Orthopedic Memory-Foam Dog Bed — washable | Barkwell",
+      "seoDescription": "A solid orthopedic memory-foam dog bed with a bolster edge and a fully machine-washable cover, in three sizes. Real support for real sleep.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-BED-ORTHO-SMA",
+          "priceCents": 8900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small"
+          }
+        },
+        {
+          "sku": "BARK-BED-ORTHO-MED",
+          "priceCents": 12900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium"
+          }
+        },
+        {
+          "sku": "BARK-BED-ORTHO-LAR",
+          "priceCents": 16900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bed",
+          "isPrimary": true,
+          "alt": "Orthopedic Dog Bed"
+        }
+      ]
+    },
+    {
+      "handle": "everyday-ceramic-bowl",
+      "title": "Everyday Ceramic Bowl",
+      "description": "A hand-glazed stoneware bowl with real heft, a non-slip base and a food-safe finish that won’t harbour the bacteria plastic and steel bowls trap in their scratches. Weighted enough that an enthusiastic eater can’t skate it across the kitchen, dishwasher-safe, and handsome enough to leave out. Sold singly — pair one for water, one for food.",
+      "status": "active",
+      "productType": "Bowl",
+      "vendor": "Barkwell",
+      "tags": ["bowl", "ceramic", "eat", "feeding"],
+      "categoryHandles": ["eat"],
+      "collectionHandles": ["rest-easy", "gifting"],
+      "seoTitle": "Hand-Glazed Ceramic Dog Bowl — non-slip, food-safe | Barkwell",
+      "seoDescription": "A weighted hand-glazed stoneware dog bowl with a non-slip base and a food-safe finish, in three colours. Dishwasher-safe and built to stay put.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Speckled Cream"
+            },
+            {
+              "value": "Sage"
+            },
+            {
+              "value": "Clay"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-BOWL-CERAMIC-SPE",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Speckled Cream"
+          }
+        },
+        {
+          "sku": "BARK-BOWL-CERAMIC-SAG",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        },
+        {
+          "sku": "BARK-BOWL-CERAMIC-CLA",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Clay"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bowl",
+          "isPrimary": true,
+          "alt": "Everyday Ceramic Bowl"
+        }
+      ]
+    },
+    {
+      "handle": "slow-roasted-treats",
+      "title": "Slow-Roasted Natural Treats",
+      "description": "Single-ingredient treats slow-roasted from one clean protein — nothing else in the bag. No grain filler, no glycerine, no unpronounceable preservatives; just real meat your dog can smell from the next room and a label you can actually read. Resealable pouch, and gentle enough on the stomach to use for everyday training, not just a rare reward.",
+      "status": "active",
+      "productType": "Treats",
+      "vendor": "Barkwell",
+      "tags": ["treats", "natural", "grain-free", "eat"],
+      "categoryHandles": ["eat"],
+      "collectionHandles": ["new-arrivals", "gifting", "best-sellers"],
+      "seoTitle": "Slow-Roasted Single-Ingredient Dog Treats — grain-free | Barkwell",
+      "seoDescription": "Single-ingredient, slow-roasted natural dog treats with no filler or preservatives, in three flavours. Gentle enough for everyday training.",
+      "options": [
+        {
+          "name": "Flavour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Free-Range Chicken"
+            },
+            {
+              "value": "Grass-Fed Beef"
+            },
+            {
+              "value": "Wild Salmon"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-TREAT-ROAST-FRE",
+          "priceCents": 1400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Free-Range Chicken"
+          }
+        },
+        {
+          "sku": "BARK-TREAT-ROAST-GRA",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Grass-Fed Beef"
+          }
+        },
+        {
+          "sku": "BARK-TREAT-ROAST-WIL",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Wild Salmon"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-treats",
+          "isPrimary": true,
+          "alt": "Slow-Roasted Natural Treats"
+        }
+      ]
+    },
+    {
+      "handle": "cotton-rope-tug-toy",
+      "title": "Cotton Rope Tug Toy",
+      "description": "A chunky tug toy hand-knotted from undyed natural cotton — tough enough for a serious game of tug, soft enough to be kind on teeth and gums, and just abrasive enough to help floss away plaque as they chew. Machine-washable, and it floats, so it’s as good in the water as on the living-room floor.",
+      "status": "active",
+      "productType": "Toy",
+      "vendor": "Barkwell",
+      "tags": ["toy", "rope", "play", "chew"],
+      "categoryHandles": ["play"],
+      "collectionHandles": ["playtime", "gifting"],
+      "seoTitle": "Cotton Rope Tug Toy — natural, tooth-friendly | Barkwell",
+      "seoDescription": "A hand-knotted natural-cotton rope tug toy that’s tough on play and kind on teeth, in three colours. Machine-washable and it floats.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Natural"
+            },
+            {
+              "value": "Ocean"
+            },
+            {
+              "value": "Berry"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-TOY-ROPE-NAT",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Natural"
+          }
+        },
+        {
+          "sku": "BARK-TOY-ROPE-OCE",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ocean"
+          }
+        },
+        {
+          "sku": "BARK-TOY-ROPE-BER",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Berry"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-toy",
+          "isPrimary": true,
+          "alt": "Cotton Rope Tug Toy"
+        }
+      ]
+    },
+    {
+      "handle": "travel-water-bottle",
+      "title": "Stainless Travel Water Bottle",
+      "description": "The end of cupped hands at the park water fountain — a leak-proof stainless steel bottle with a fold-out silicone bowl built into the lid, so a drink is one thumb-press away on any walk. Holds a proper 500ml, keeps water cool, and any your dog doesn’t finish pours neatly back in rather than down your leg.",
+      "status": "active",
+      "productType": "Travel",
+      "vendor": "Barkwell",
+      "tags": ["travel", "water", "bottle", "walk"],
+      "categoryHandles": ["walk", "eat"],
+      "collectionHandles": ["the-daily-walk", "gifting"],
+      "seoTitle": "Stainless Travel Dog Water Bottle — leak-proof, 500ml | Barkwell",
+      "seoDescription": "A leak-proof 500ml stainless steel travel water bottle with a fold-out bowl in the lid. One-handed hydration on every walk.",
+      "variants": [
+        {
+          "sku": "BARK-BOTTLE-TRAVEL",
+          "priceCents": 2900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bottle",
+          "isPrimary": true,
+          "alt": "Stainless Travel Water Bottle"
+        }
+      ]
+    },
+    {
+      "handle": "bamboo-grooming-brush",
+      "title": "Bamboo Grooming Brush",
+      "description": "A double-sided brush with a warm bamboo handle — fine bent pins to work through tangles and undercoat on one side, a soft bristle to bring up shine and spread natural oils on the other. Five minutes a week keeps a coat healthy, cuts the shedding on your sofa, and — most dogs quickly decide — feels rather good.",
+      "status": "active",
+      "productType": "Grooming",
+      "vendor": "Barkwell",
+      "tags": ["grooming", "brush", "coat", "care"],
+      "categoryHandles": ["grooming"],
+      "collectionHandles": ["gifting"],
+      "seoTitle": "Bamboo Double-Sided Dog Grooming Brush | Barkwell",
+      "seoDescription": "A double-sided bamboo grooming brush — bent pins for tangles, soft bristle for shine. Five minutes a week for a healthy coat.",
+      "variants": [
+        {
+          "sku": "BARK-BRUSH-BAMBOO",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-brush",
+          "isPrimary": true,
+          "alt": "Bamboo Grooming Brush"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Companion Subscription Box",
+      "description": "The box that turns up before you run out — a freshly packed selection of treats, a new toy and the everyday consumables (poop bags, dental chews) matched to your dog, on the schedule you choose. Skip, swap or cancel any time, and every box works out cheaper than buying the same things one at a time. The easiest way to keep a happy dog stocked.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Barkwell",
+      "tags": ["subscription", "box", "gift"],
+      "categoryHandles": ["eat"],
+      "collectionHandles": ["new-arrivals", "best-sellers"],
+      "seoTitle": "Companion Subscription Box — treats, toys & essentials | Barkwell",
+      "seoDescription": "A flexible monthly box of treats, a toy and everyday essentials matched to your dog. Skip, swap or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small dog"
+            },
+            {
+              "value": "Large dog"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "BARK-SUB-SMA",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Small dog"
+          }
+        },
+        {
+          "sku": "BARK-SUB-LAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Large dog"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "Companion Subscription Box"
+        }
+      ]
+    }
+  ]
+}

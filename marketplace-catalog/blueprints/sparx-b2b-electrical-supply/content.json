@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "sizing-cable-and-breakers",
+    "status": "published",
+    "body": {
+      "title": "Sizing cable and breakers without second-guessing",
+      "excerpt": "The cable and the breaker have to protect each other. Here is the plain-English version of how the two are matched, so the board is safe and the run does not overheat.",
+      "featuredImage": {
+        "$asset": "post-consumer-unit"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every circuit is a partnership between the cable and the protective device in front of it. The cable can only carry so much current before it heats up; the breaker is there to trip before the cable ever gets there. Get the pairing wrong — an oversized breaker on an undersized cable — and the protection is protecting nothing. Get it right and the circuit runs cool and trips clean for the life of the install."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Match the breaker to the cable, not the load"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The common trap is sizing the breaker to the appliance and forgetting the cable. Work the other way: pick the cable for the load and the run, then choose a breaker whose rating the cable can safely carry even under fault. A 2.5 mm² twin-and-earth on a ring final sits behind a 32 A breaker; a 1.5 mm² lighting circuit behind a 6 A. When in doubt, the cable is the thing you cannot change once it is buried in a wall, so spec it generously."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Do not forget the derating"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The number on the cable is a best-case rating. Bunch several cables together, run them through insulation, or push a long distance, and the safe current drops — sometimes a lot. Volt-drop bites on the long runs too. The regs give you the correction factors; the habit worth building is to assume a cable in a real wall carries less than the datasheet says, and to size up rather than sail close to the limit."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "spec-a-consumer-unit",
+    "status": "published",
+    "body": {
+      "title": "How to spec a consumer unit for a domestic job",
+      "excerpt": "A board is more than a row of breakers. Here is how to pick the enclosure, the RCD arrangement and the way count so the install passes and leaves room to grow.",
+      "featuredImage": {
+        "$asset": "post-downlights"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The consumer unit is the heart of a domestic install, and the one part a customer never sees until something trips at 11pm. Spec it well and it is a five-minute reset and a clear label; spec it badly and it is a nuisance-tripping headache that takes out the whole house every time the kettle and the shower run together. The choices are simple once you break them down."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Metal enclosure, to the current regs"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Domestic boards are steel-enclosure now, for the fire rating, and they come to the latest amendment as standard. Do not fit a stripped-out board and populate it from a mixed drawer of old breakers — a populated unit from one maker keeps the device curves matched and the warranty intact. It also drops in faster, which is the difference between finishing the job today and coming back tomorrow."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "RCD arrangement and way count"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Split the load so a single fault does not black out the house: dual-RCD or, better, RCBOs per circuit so only the faulty circuit drops. Then count the circuits — lighting up and down, ring finals, cooker, shower, outside — add a couple of spare ways for the extension nobody has mentioned yet, and pick the board a size up. Spare ways cost pennies now and save a board swap later."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "stock-your-van",
+    "status": "published",
+    "body": {
+      "title": "Stock your van so you never lose a day to a missing part",
+      "excerpt": "The most expensive part on any job is the one you have to drive back for. Here is a simple van-stock system that keeps the fast movers on board and topped up.",
+      "featuredImage": {
+        "$asset": "post-van-stock"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ask any electrician where the day goes and a good chunk of it is the drive back to the merchant for a line they should have had on the van. A missing box of clips or the wrong breaker turns a half-day job into a full one. A stocked van is not about carrying everything — it is about never running out of the handful of lines you use on every single job."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Rack the fast movers, and only the fast movers"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Twin-and-earth in the common sizes, a box of sockets and switches, a tub of clips, a spread of MCBs, back boxes, connectors and a reel of flex. That short list covers the bulk of what a first and second fix consumes. Rack it so you can see at a glance when a bin is low — an open van bin that shows empty is worth more than a neat closed drawer you never check."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Top up on a schedule, not a panic"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The failure mode is topping up only when you hit zero on site, which is exactly when you cannot. Set a reorder point for each van line — half a box, a quarter tub — and top up on a standing order with your wholesaler so the stock is waiting on the counter before you run dry. Reserve online, collect on the way to the job, and the drive-back day disappears."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

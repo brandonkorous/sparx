@@ -1,0 +1,358 @@
+{
+  "policies": [
+    {
+      "handle": "glow-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Life happens — just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
+    },
+    {
+      "handle": "glow-noshow",
+      "name": "No-show policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service — a heads-up text keeps you in the clear."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "mila",
+      "name": "Mila Fox",
+      "kind": "staff",
+      "skillTags": ["facial", "express", "led"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["facial", "guasha", "express"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "jade",
+      "name": "Jade Nguyen",
+      "kind": "staff",
+      "skillTags": ["facial", "express", "addons"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Glow Room 1",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Glow Room 2",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "express-glow-facial",
+      "name": "Express glow facial",
+      "description": "Cleanse, exfoliate, mask and a dewy finish — a proper glow on your lunch break.",
+      "durationMinutes": 30,
+      "priceCents": 4500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-noshow"
+    },
+    {
+      "handle": "signature-glow-facial",
+      "name": "Signature glow facial",
+      "description": "The full feel-good ritual — deep cleanse, custom mask, massage and glow serum.",
+      "durationMinutes": 45,
+      "priceCents": 7500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-noshow"
+    },
+    {
+      "handle": "hydrating-facial",
+      "name": "Dewy hydration facial",
+      "description": "Thirsty skin, meet its match — layers of hydration for a plump, bouncy glow.",
+      "durationMinutes": 45,
+      "priceCents": 7000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-noshow"
+    },
+    {
+      "handle": "brightening-facial",
+      "name": "Bright-eyed brightening facial",
+      "description": "Even, wake-up-your-face radiance with a vitamin-C boost and a cool finish.",
+      "durationMinutes": 45,
+      "priceCents": 8000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-noshow"
+    },
+    {
+      "handle": "led-add-on",
+      "name": "LED light add-on",
+      "description": "Ten minutes under the glow lights — calming, brightening, extra dewy.",
+      "durationMinutes": 15,
+      "priceCents": 2500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-standard"
+    },
+    {
+      "handle": "gua-sha-add-on",
+      "name": "Gua sha add-on",
+      "description": "A sculpting, de-puffing gua sha massage to send you out extra snatched.",
+      "durationMinutes": 15,
+      "priceCents": 2000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-standard"
+    },
+    {
+      "handle": "dewy-membership-consult",
+      "name": "Glow membership chat",
+      "description": "A free, no-pressure sit-down to build the membership that fits your skin and budget.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "esthetician",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "glow-standard"
+    }
+  ]
+}

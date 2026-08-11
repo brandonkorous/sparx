@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-plumbing-modern",
+  "name": "sparx — Plumbing (Modern)",
+  "version": "1.0.0",
+  "tagline": "A bright, modern template for on-demand plumbers — book online from day one.",
+  "description": "A modern, on-demand plumbing site — a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a \"how it works\" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as \"Rivet Plumbing Co.\".",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Plumbing",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Plumbing (Modern) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Plumbing (Modern) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#009baa",
+  "sortWeight": 77
+}

@@ -1,0 +1,2616 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "8185d0b5-0615-445f-908f-4613e51d51e4",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "1e82c0fa-9adc-4408-bb8f-a3a0b226de5a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "9e8f366f-82a3-4814-9f31-550913f40e82",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "7c754e97-beea-42c8-bd7d-8109fe48286f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "7d29f681-adbf-40e3-8576-57c810ffbc64",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "699299c1-adfd-4657-9953-8b3c44f69c1a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "a46aca20-1fa9-43f3-9452-6dc5979fb1d5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "17dbbea1-6e14-49fa-a8e1-aaf5601d36f3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Open a trade account",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "b7067cba-b0c8-433c-999d-5c0e951e9054",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "13ef9dda-afe0-4841-acef-0d6be2fb12ae",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "689e439a-7745-4120-b9db-9f5312c75978",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7ee2e294-3326-41bc-adb5-e23de6f4ffad",
+                  "ord": "a2"
+                }
+              ],
+              "id": "c0ce0109-0781-45b5-bc7c-6f7f2dee2bb6",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "825716c6-4c86-4845-877e-15e39771a072",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "c1340480-6819-4bbb-9855-7c02ea1af87e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c1df0009-8303-4ad4-998e-9c92684f1e90",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "e73135a0-29e9-4abd-b9bf-20a92440669c",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "fe24123c-6bbd-40ca-82e0-f7b36ea47d49",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Open a trade account",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "e554ca72-8674-446a-b61e-dfd652088cfd",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "64c3c300-15ad-404b-9630-1f86a9ca7076",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "914fab0f-c3c7-4381-b305-6e32967af669",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "feb3fd2e-3766-47db-93c6-fb542b083241",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "db8ebac6-f8a8-4bcf-86a5-05a828a0c1e8",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "bf677555-0455-4997-ad84-5ac37feedd1c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "79a82279-f477-4fad-80e4-865b3b40c5b3",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "237c0795-ac85-4a28-8fa9-53aa7ad079d7",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ee3dc63c-7ffe-4836-ab81-b0ca2cffd1ae",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "1d651a19-a99d-4ea6-812c-94de005878f2",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c2bf7672-6501-4c07-908f-cf6322857137",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "4a8df3e2-d37d-4fcf-afb7-2a0bc5c83367",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f9862e30-aa47-4289-9422-cf35c6c5f0dd",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "22f93243-096a-415c-a1eb-58222d6faebe",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "adda9454-071e-44d9-bf0f-6d7a63b077ed",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "5fee7372-c28f-4a5f-b876-ab7aa6fc44ba",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d1555f4d-4a41-43f5-914f-755c0a37c042",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "d5615357-ca2e-432e-b595-957af0f11555",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f3212e79-9dd6-4aa9-8ff0-04da6b102003",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "50ba8d12-5f74-4a15-a7df-e957e3551fb8",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "7a0579f2-03c6-4fa9-86a0-4fa4c860835d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "18d167a8-05e6-4bd1-ac55-54659fdea84f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "3344a64f-5db2-48aa-9280-a447f77f7d58",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c35c04f7-8624-41e0-94ea-ab22516060e6",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "65ae0eaa-d5d7-46a8-bc99-73055d2893cf",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1a252e8c-a04d-4cf7-8577-3a6fcb8cfa3f",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "026b5642-00d4-47e9-bec7-5de1866b3a11",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "96258170-3876-4658-be62-d2ba1abe388c",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "d5bf9163-9d40-47ed-813c-200710b7efec",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "b0245e02-5184-4ace-9ff0-82b04d8974c5",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "59d15f78-e9d5-4260-93a1-3e2dc9374198",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2ef8edf8-a6fd-4a69-9ccf-6052184cf157",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "74c3ab1e-a24a-46cb-a24b-770ee7f7537a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "293777ca-45d0-446b-b4c8-636e4cc30e45",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e0554aaa-543b-472b-9539-be3376dd76ff",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "191ce3d9-f807-447b-aa02-368d0aed9d2d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d73f56e5-33f1-4343-979a-16b2bbab0605",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "1fa60f8d-ef6d-482a-894f-03af4f84869b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "a46f6d71-c7f2-4cb9-b7f1-e0384905c756",
+                  "ord": "a1"
+                }
+              ],
+              "id": "c461850b-0314-4771-9abc-8fac240ecc61",
+              "ord": "a0"
+            }
+          ],
+          "id": "e116e619-613e-4baf-b650-4cf35bcf676c",
+          "ord": "a2"
+        }
+      ],
+      "id": "e6dd6330-56f7-4e5b-86d1-f1d1b324fe45"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Livewire Trade — electrical wholesaler for the trade",
+      "seoDescription": "Livewire is an electrical wholesaler — cable, consumer units, accessories, lighting and protection sold by the reel and the box at trade prices, with net-30 terms, same-day counter collection and next-day delivery. Open a trade account.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5d996a3d-499e-40a6-9c3c-31ff419d438f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1608574839637-2f7d0290d01d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93cyUyMGVsZWN0cmljYWwlMjB3aG9sZXNhbGUlMjB0cmFkZS1jb3VudGVyJTIwc2hlbHZpbmclMjBzdG9ja2VkJTIwY2FibGV8ZW58MHwwfHx8MTc4NjQyMjE0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An electrical wholesale trade counter stocked to the roof",
+                  "loading": "lazy"
+                },
+                "id": "1294da31-b64f-49bf-b57c-a94a97c32b15",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": [
+                          "The parts to finish the job, in stock and priced for the trade."
+                        ],
+                        "id": "091e27f3-583b-4043-9dd1-a26a66f411a2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Livewire is an electrical wholesaler for electricians and contractors. We carry the cable, consumer units, accessories, lighting and protection a first or second fix needs — sold by the reel and the box, at trade prices, ready on the counter or on the van next morning."
+                        ],
+                        "id": "36fb8702-6c40-4673-8c8e-c0ab090b0ab3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the catalog"],
+                            "id": "b047427d-0499-4a9a-ac62-cf1f2470a69c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Open a trade account"],
+                            "id": "963d3b57-e941-4eb7-9fa1-bf21edb2920e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0b85e22f-6b63-40a5-821f-7cc5a68bed9a",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "73c51cc0-2045-493d-bc8b-5c307bb3e62a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8d357c21-361d-4c8b-9e65-c0d7a1c59466",
+                "ord": "a1"
+              }
+            ],
+            "id": "bb3f389b-b478-4871-addc-76b6ebd262e0",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold uppercase tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Shop by trade"],
+                    "id": "915ad76a-2051-412d-922b-9904486521e9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1607631755187-298a3f9a640a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlbHMlMjB0d2luJTIwZWFydGglMjBjYWJsZSUyMHdob2xlc2FsZXIlMjByYWNrfGVufDB8MHx8fDE3ODY0MjIxNTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Reels of twin and earth cable",
+                              "loading": "lazy"
+                            },
+                            "id": "935200b4-d66d-4b3f-9faf-5b20b5bd8bee",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Cable & wiring"],
+                            "id": "10ddd258-ba54-4a21-b681-3e9fbdd450cc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4ae39ef5-2bf9-45ab-880a-14356709c534",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1707570349880-745e000a6d97?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94ZXMlMjB3aGl0ZSUyMHNvY2tldHN8ZW58MHwwfHx8MTc4NjQyMjM1OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Boxes of sockets and switches",
+                              "loading": "lazy"
+                            },
+                            "id": "52abc3b4-61e8-4b10-a8bd-89ffc91bb7dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Wiring accessories"],
+                            "id": "d63b7cfb-b7f3-4c44-8cb1-65d3f6071bcf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5eb8135f-ebdd-4b1f-bdf3-fa17371ceb10",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1526116638181-d787e552d669?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJheSUyMGxlZCUyMGRvd25saWdodHMlMjByZWFkeSUyMGZpdHxlbnwwfDB8fHwxNzg2NDIyMTU4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A tray of LED downlights",
+                              "loading": "lazy"
+                            },
+                            "id": "2aa9c2bb-44c8-4d4a-b3c2-146ba9e6c77b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Lighting"],
+                            "id": "24e3e631-3d01-4005-a7d9-944f2a6a694a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2cf640a9-cfb5-42a5-b877-2914dd2d4de9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1777894162454-35cff9998a25?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y29uc3VtZXIlMjB1bml0JTIwcm93cyUyMGNpcmN1aXQlMjBicmVha2Vyc3xlbnwwfDB8fHwxNzg2NDIyMTYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A consumer unit with circuit breakers",
+                              "loading": "lazy"
+                            },
+                            "id": "a0eeef08-12ce-4346-a74b-68371b46afaa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Protection"],
+                            "id": "f170a10f-8c8a-4ad4-9819-02364561631b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "46b030e2-c814-415e-a9e9-3385e196bfae",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5c1e2f8f-834c-4233-bdee-3dc4983fa1bc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d00bea5-4f54-4d77-9ee0-2a4b43b6e940",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f1c1049-8b04-4535-ad93-f0511c01f83c",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Off the shelf, on every job"],
+                    "id": "18482960-2e0b-48ee-a27a-1ffe75dfe29c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "4bfbd6f5-0b84-42f9-baca-44b9dbf1c15d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f3fb5266-d466-4724-95a4-ba925d7cc0b9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cf1f72c6-4408-43b4-8b0c-5b5c16eab15d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "4d98b970-0fe8-4a97-8f32-a8c9063d35ea",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9476e6e7-6bd6-48f4-a629-3bde615d950c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "46d617e1-26e7-4e37-9d8e-bd5188c7e08e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "7e1b0e7a-1880-4e6a-9c3f-a7c030fea9c0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "6838f2b3-8de8-4fb5-9e74-b23a6e62468f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "a5c94232-1c2e-4e50-b1be-559ecc4dea26",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "57d43736-2f1e-47ce-bb09-8d6c57d14844",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "fcf06111-e9b0-4029-a8b4-b5e445a52f3b",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "b7ab01dd-ba71-4f25-8b6c-16ee3a09ed4e",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "39d677fc-ea36-45b8-8c74-2d74ac325e51",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-2xl flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Built for the way sparkies buy"],
+                        "id": "9617c94a-8c73-467f-b5bc-f36212056797",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Open a trade account and you buy the way a contractor should — by the reel and the box, at wholesale rates, on terms. No consumer markups, no queueing behind a retail till."
+                        ],
+                        "id": "35493813-06be-4765-8f69-f8bee73897e7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f5c8d3d1-dad9-4293-bf3f-7848a9f302c6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold uppercase tracking-wide text-base-content",
+                            "children": ["Trade prices"],
+                            "id": "385a957e-7008-4aee-9288-363dd1f3836e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Per-unit wholesale rates with volume breaks that deepen by the reel, the box and the pallet. The bigger the job, the less each metre and each unit costs."
+                            ],
+                            "id": "caa24e8f-351e-4e3e-b374-00ab3f350397",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0692bbd1-5763-47ab-8d16-58c9a430e373",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold uppercase tracking-wide text-base-content",
+                            "children": ["Net-30 terms"],
+                            "id": "15ceae47-4300-49af-a82b-585c13b9101c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Approved accounts buy now and settle later on net-30. Kit out the whole job without tying up cash flow before the customer has even paid you."
+                            ],
+                            "id": "9a95bf12-762f-4f58-9e30-9b4f9b026d08",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ad7f4520-1975-4468-a37f-345031153cf2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold uppercase tracking-wide text-base-content",
+                            "children": ["Counter & next-day"],
+                            "id": "f54f0cc9-3d21-473d-9e57-c9db3046ff07",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Reserve online and collect same-day from the trade counter, or take next-day delivery to site or the yard. The stock is here, not on back-order."
+                            ],
+                            "id": "8328aa2f-1fbc-457b-9ba8-2fca4f37187f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6abf043d-9237-40b3-9ffa-eb2d08031c2e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold uppercase tracking-wide text-base-content",
+                            "children": ["Your account manager"],
+                            "id": "7f92f0bb-c9b4-4464-ae7f-6fd536e66817",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A direct line to a real person who knows your firm, your standing lines and the jobs you run — not a call centre and a ticket number."
+                            ],
+                            "id": "2408aaa6-1746-486d-b704-7f30f62a4ca8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "52f172aa-acf3-4831-8974-01e5d8fa40dc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "6b6cabc8-ee5e-45ad-a1b4-27c374316511",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg w-fit",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Open a trade account"],
+                    "id": "1909c0a8-c138-496f-a26f-755515916f0d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "2d691cd7-6617-4b5b-a71b-964b54f852c9",
+                "ord": "a0"
+              }
+            ],
+            "id": "eb14030f-ae9b-44f8-a7d0-88eacb74baf0",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Cable & wiring, by the reel"],
+                    "id": "224875a6-cf39-4629-a2dc-8a1869b42167",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "59c23ada-eac0-4a87-a1b1-bbfc6b458e48",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "956e9a31-cd25-46a9-98f2-2ad14a3a7a96",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "1ce88f3e-5ac0-4b1a-8c87-7b4d1336035b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "e0f61448-d357-4e0a-9172-84053883f7eb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9bd7d298-a9fc-4c2f-924d-9a49177a1454",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "51cd122e-a678-471a-ad54-27aeca3f99b9",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "915c6ad1-7f3d-42f4-829a-1acfb3290281",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "b85938c1-9c50-4f94-9c8c-a6549103249d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "37fc218a-f9da-4919-95c6-71b9cae04877",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "61e076e2-1553-4f1e-b0b8-8c92e33a4e63",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "3c39ab67-3362-48a4-8326-b596bc00cdf7",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.cable-wiring"
+                },
+                "id": "4e441ad6-818f-44e4-8ade-ad662741e047",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "2b946521-e5ff-4233-8582-14af33ade855",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNpYW4lMjBjb2xsZWN0aW5nJTIwb3JkZXJ8ZW58MHwwfHx8MTc4NjQyMjM2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An electrician collecting an order at a trade counter",
+                  "loading": "lazy"
+                },
+                "id": "11c5978b-ff27-4b29-abbc-9849570ba676",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["One wholesaler, one invoice, one account manager"],
+                        "id": "ce41d101-9761-4518-a631-8ad4f60fabf7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Stop chasing four merchants for a single fix. Put the cable, the board, the accessories and the lighting on one trade account — one catalog to price a job from, one statement to reconcile, and one number to call when a line is short."
+                        ],
+                        "id": "e93b6714-75d1-4d90-81a2-0125e2b1870a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": ["Open a trade account"],
+                        "id": "fd31e133-4b9c-4a23-afbf-8e509c5c3f32",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4eb0dd5f-e531-4aa7-bf63-de1e87b59eaa",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "25a1785b-4a66-49bc-9bc4-8128344b8ed2",
+                "ord": "a1"
+              }
+            ],
+            "id": "9e41e875-d802-4618-aa00-13c362ca8ab6",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Livewire Trade",
+      "seoDescription": "Browse everything Livewire Trade makes, with prices and options at a glance. Electrical wholesale.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "11a8afca-69a0-4376-9111-5825a82909b0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The catalog"],
+                    "id": "d7ff9a23-781d-4cbc-8f0b-8d462f9ddd38",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every line we stock — cable and wiring, wiring accessories, lighting and circuit protection, sold by the reel, the box and the pack. Filter by trade or sort by price; trade accounts see their contract pricing at checkout."
+                    ],
+                    "id": "135a666f-9701-4350-a3c4-1a60d3eaa6cc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "60aea5c2-5a48-450d-bb3e-ca4776a356b5",
+                "ord": "a0"
+              }
+            ],
+            "id": "6e6db134-e466-4e8b-a144-f9e632fd7055",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "65ed01ba-e07a-42d1-9940-8d88fbb0813c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Livewire Trade",
+      "seoDescription": "Explore the collections at Livewire Trade, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2885e8f4-77c7-4f4e-9b76-b5253ecca4a9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "9ad68a70-b26f-4b88-b78e-0ec4772c0eb7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The catalog grouped the way a spark actually buys — best sellers, new lines just in, the first-fix essentials, lighting for the fit-out, and the circuit protection every board needs."
+                    ],
+                    "id": "65e967a3-38c4-4779-a378-a4860b994f1c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6c17c71a-39c4-4352-8012-b90e50114a56",
+                "ord": "a0"
+              }
+            ],
+            "id": "714f6b15-559a-42e1-995e-a74b5593c1d0",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "f9154c4c-0e89-4bae-8aff-b2c064e96748",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Livewire Trade",
+      "seoDescription": "Review what is in your cart and check out securely at Livewire Trade.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "29e403c3-0d3e-49f4-990b-6805f285d405",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your order"],
+                    "id": "814d87e4-a870-466b-8540-c06d8956edbc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Review the reels, boxes and packs in your order before you check out. Trade accounts see contract pricing and net-30 terms applied here; everyone gets same-day counter collection or next-day delivery on in-stock lines. Need a formal quote to price a job? Your account manager can turn one around."
+                    ],
+                    "id": "70ce5415-2091-4a53-9d27-bc9edf174acb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0e6b5724-a887-4bf3-ad91-99f02dc767b2",
+                "ord": "a0"
+              }
+            ],
+            "id": "74d8ea6d-2ec6-47f8-831a-8dacf37aa6c2",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "ae568299-1450-46a7-bac7-cbb511ecc293",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Livewire Trade",
+      "seoDescription": "Search Livewire Trade for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7bd5a511-c10e-4f39-bc11-8308b6c21c46",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search the catalog"],
+                    "id": "9dfdab29-d044-448c-b49a-26365b51082d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Know the part number, the cable size, or the breaker rating you need? Search the whole catalog and the wiring notes below."
+                    ],
+                    "id": "a412c1e4-7d06-4662-a326-f8f3e48087c0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "255b1ae2-8fa3-4885-9c68-4318b9f481d8",
+                "ord": "a0"
+              }
+            ],
+            "id": "a07d27ce-847b-4e9b-9a03-3309ee234597",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "bb817072-0418-4199-a5c0-d9d5d22c84d7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Livewire Trade",
+      "seoDescription": "Stories, guides and notes from Livewire Trade.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "28c68c85-b39f-4a7d-b8ca-949f7d22d4f5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Wiring notes"],
+                    "id": "6e02a8bf-db31-4c13-bde8-2a04b7c367cd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Practical guidance from the trade counter — sizing cable and breakers, spec-ing a consumer unit, and stocking a van so you never lose a day to a missing part. Written for the people on the tools, not for a catalog."
+                    ],
+                    "id": "e00c045f-44bd-4eec-b854-facbf63ba529",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "294b7473-db82-45f4-afbb-e765bced45e7",
+                "ord": "a0"
+              }
+            ],
+            "id": "a13b8803-6b41-466d-a254-2afd8ac06dc6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "6c6f206e-91e3-4594-b277-564017ade80e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "24604a79-1005-47e3-9f64-f88ea3765263",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "fcd4dc0d-7c5d-46c8-841e-5f06dd05390f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "beb783ec-5565-4501-8a93-7824b542da1e",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "04b15879-8bcf-4929-961e-d93d6b8e9ac9",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "f7bb3cfd-669d-4d35-af30-c2161a2123d9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "17303f3d-92c2-4d1f-8878-685199cf82df",
+                "ord": "a0"
+              }
+            ],
+            "id": "c1a62085-409f-40c1-a441-82ca69df451d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Livewire Trade",
+      "seoDescription": "How Livewire stocks, prices and ships — one catalog, one account, one invoice, wholesale by the reel and the box, and stock that is actually on the shelf when you order it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1d88059f-81be-42b4-8f66-77b9f9d5e93e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Livewire"],
+                    "id": "916ddf64-789b-4046-a5dc-63ea81be28ed",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Livewire Trade is an electrical wholesaler. We stock the cable, consumer units, accessories, lighting and protection that a domestic rewire, a commercial fit-out or a maintenance call runs on — and we sell them to the trade by the reel and the box, at wholesale, on terms."
+                    ],
+                    "id": "afc81c6b-cf88-4d22-92fe-45f59a0eb2a2",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We built the business around one idea: a working electrician should not have to drive between four merchants, eat retail markups, or find the one line they need is on back-order. One catalog, one account, one invoice, and stock that is actually on the shelf when you order it."
+                    ],
+                    "id": "dbfa88e1-9c94-40be-b453-cdce13dc3034",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that jumps because you asked twice. Just the parts, to spec and priced fairly, ready on the counter or on the van — the boring reliability a job is built on."
+                    ],
+                    "id": "1ed4f15c-2cfe-421a-b881-138bfdc5ab1e",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "ee8da468-3635-49b1-80b1-8d56dae317d5",
+                "ord": "a0"
+              }
+            ],
+            "id": "a05bd96c-34fd-4608-90d3-89abe2018db4",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Open a trade account — Livewire Trade",
+      "seoDescription": "Set up a trade account with Livewire: wholesale per-unit pricing, volume breaks, net-30 terms, counter collection and next-day delivery, and a dedicated account manager. Wholesale enquiries and bulk quotes start here.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "10ea9086-0a53-4192-b457-113e4d69bd49",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Open a trade account"],
+                    "id": "3aa06c0f-45e0-41e4-ab6f-bb602a8769a4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Tell us what your firm gets through and we will price your regular lines, set you up on net-30 terms, and put a name and a number to your account. Wholesale enquiries, standing orders and bulk quotes to price a job all start here."
+                    ],
+                    "id": "9b8d088c-7406-4a07-abe7-3a320c87987b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:trade@livewiretrade.example"
+                    },
+                    "children": ["Email the trade desk"],
+                    "id": "d33d9f34-3c84-4ccb-91ad-c41f6bbea05c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c7e56606-42bc-4f84-aa80-628d22c56d09",
+                "ord": "a0"
+              }
+            ],
+            "id": "afa3f189-409b-4137-87f4-32216bd325e0",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Livewire Trade",
+      "seoDescription": "Product details at Livewire Trade — electrical wholesale, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "3ac6e3ab-e04c-4b53-bd45-0281e4de2c18",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Livewire Trade"],
+                            "id": "5a8a8244-2a44-4a1c-a85f-eaf9e1f86302",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e23fb80e-6e10-41aa-8886-c8e0ac86f125",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "455fdafc-664f-4d99-aa6b-89574a448ac4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "e53d5130-9de5-4a46-ac76-6f952d736eaf",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "7c8db688-f844-4d10-afe0-bf087f717d0c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2a19884c-e177-49d5-827b-cc6e6347aa77",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "482fdd3c-928c-47a9-b1bb-726b9d0482ed",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "7e222068-17ab-4d33-b8f7-445e80b29763",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "4449051e-f3fb-4b82-808d-aae21608fc80",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "79d02bde-5511-4f97-881d-ecc2c797bd64",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "c8d7b11b-c5f6-4b6b-a285-151ea1c56f50",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "6d69eac0-3712-4d8c-bcc0-af665446f377",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c5c30379-66af-4048-9674-0f8809394137",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "7a78c88a-8a0d-4f66-81b9-e0f2a96ef1ae",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "0f8afa62-8f49-4326-9214-45618f4d1785",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Trade pricing & terms"],
+                            "id": "d1a7ba96-f633-46ba-905c-c8af0fbdec31",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The price shown is the per-unit list rate. Trade accounts unlock volume breaks — deeper pricing by the reel, the box or a standing order — set for your account in your dashboard."
+                            ],
+                            "id": "5fdbb514-f1c9-4304-aa2d-6e9af6fce8b5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Approved accounts buy on net-30, collect same-day from the counter, or take next-day delivery to site. Not set up yet? Open a trade account and we will price your regular lines and get you on terms."
+                            ],
+                            "id": "c3eacd14-7c6c-48c6-9e95-b833b7c7fc1c",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Open a trade account"],
+                            "id": "24f93c8e-bf4e-456a-a339-ed2391c15196",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "9209e247-9e78-4882-a5e7-ea204a1adb06",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "46d7d9b5-b21e-4d71-a068-bf2a20173235",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "98ef0166-0d00-4d5a-b95f-3e34d04bb731",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "705a91a1-89cf-498b-9da8-3903723dc035",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "8a59b976-a7ea-4687-94b5-a756bfdca548",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "03b8cc31-96b5-4471-a0b1-fe526063e715",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "778c86fd-cc9e-4e32-ab81-40be8160c7cf",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Wired together"],
+                    "id": "e1cb0b77-9163-4ff2-814d-4d27081ecd90",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "88f9627d-cf2f-4619-a07b-984688e4a644",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "4472eda9-1c9f-4e55-aaae-88991f19471b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "c68eebe5-b8c6-4d7e-ae28-8b3a764439e9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "766ee386-549b-4e4b-baa9-d6a84609a6f9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "3bd60548-0536-480b-b158-aef7657bad97",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a28eef57-5496-4e5f-8a6f-c5b704f9658d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "4d61e09d-b1d8-404b-99a5-3dff18b01e11",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "13d437aa-142f-4b46-b91d-ba2eee598e68",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "41ad3bdf-760f-44c0-b021-31ddaefe4b71",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4636a1a0-3a1b-4374-b581-5b943d47a5d1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "de0c2a91-c038-44b8-99be-06f7c1ec452b",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "bdd28358-e363-462b-acee-91b3d7c97584",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "f43ed4e8-7bb7-4770-917c-fe98fb6035ef",
+            "ord": "a1"
+          }
+        ],
+        "id": "78aac1a4-5ca2-47da-aa5f-cf92d11a1da1"
+      }
+    }
+  ],
+  "theme": {
+    "name": "livewire-trade",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.006 240)",
+      "--color-base-200": "oklch(94% 0.009 242)",
+      "--color-base-300": "oklch(89% 0.013 244)",
+      "--color-base-content": "oklch(22% 0.03 250)",
+      "--color-primary": "oklch(45% 0.15 250)",
+      "--color-secondary": "oklch(42% 0.03 250)",
+      "--color-accent": "oklch(50% 0.14 65)",
+      "--color-neutral": "oklch(26% 0.02 250)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 250)",
+      "--color-secondary-content": "oklch(98% 0.01 250)",
+      "--color-accent-content": "oklch(98% 0.01 65)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.14 65)",
+      "--color-highlight-content": "oklch(98% 0.01 65)",
+      "--color-border": "oklch(89% 0.013 244)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(21% 0.025 250)",
+      "--color-base-200": "oklch(17% 0.022 250)",
+      "--color-base-300": "oklch(14% 0.02 250)",
+      "--color-base-content": "oklch(95% 0.007 240)",
+      "--color-primary": "oklch(72% 0.13 248)",
+      "--color-secondary": "oklch(77% 0.03 248)",
+      "--color-accent": "oklch(76% 0.14 70)",
+      "--color-neutral": "oklch(31% 0.02 250)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 248)",
+      "--color-secondary-content": "oklch(15% 0.02 248)",
+      "--color-accent-content": "oklch(15% 0.02 70)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.14 70)",
+      "--color-highlight-content": "oklch(15% 0.02 70)",
+      "--color-border": "oklch(14% 0.02 250)"
+    }
+  }
+}

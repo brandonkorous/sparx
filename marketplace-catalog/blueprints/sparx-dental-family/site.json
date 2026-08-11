@@ -1,0 +1,2234 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "b4308cd1-b0f4-4e09-9f9d-e038e79c1e44",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "f39749a9-bc22-4fdf-93c4-a84e22237189",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "0ac8148e-64ae-49df-b025-8bdf4085d161",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "245e94f8-e409-46c0-ad62-3f1a182b853d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "af7eb283-933d-4138-95df-8a543ea35c19",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "a79ea542-9448-43c3-8637-0002a355b69e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "ca936f1d-e928-489d-80b8-24ef5b0372cd",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "ee57faad-fd3c-40c5-909c-dec86056f519",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "770a6cd3-3c0d-499b-b3b6-b2a75edecd34",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "0d8ed83a-092f-40ff-8e25-0a5c0a1cb1e3",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e8aa7d91-d930-4338-8f1c-ede4cd482777",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8226205f-856d-44d2-bb32-c1f055472780",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "fe60f18c-64f5-438e-b6f7-5c9c297849ab",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "05dade2a-0f13-4e7d-9f4f-179ecd918c2e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "d7a51f75-42b7-4068-99c6-f43917deee03",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "367e7c6e-7e03-4309-ad7a-d6617001530b",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "05eeb79f-4340-44cc-a841-4517666c1630",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "f319424f-2ab2-448c-be42-c5abc950084b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "048c87de-6dd4-4c1e-b210-95f5c5c5cce6",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "3dbeaf5e-978e-4a1b-8257-c18ff205faa2",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "cdbb4bb7-3210-4e0d-962f-58c7523072e3",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "db17e6d6-44d2-413d-9dbf-f1aa16fd697b",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "1bd309e2-1f4d-4f17-921a-922d43d3468b",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "4f17738d-c635-48e1-8227-e82afb15dd6e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "21eda4e5-206f-49d4-b0e3-de8313f4ee85",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "f05742f7-7ff1-4172-ba73-dceae0d15fae",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "52edff1e-86f9-4978-8277-794565c2546c",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "865a2791-92d0-43c3-bb26-101ada0978a4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "eee6ccda-3948-4d88-800b-88551acc12ad",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "23c663b9-ecc2-4d99-90c1-3e8fc7515aa3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "77c8d32d-60fb-41fd-8cd1-ced4ec8b2db3",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "66537dca-6c07-41d3-a708-ae4dc5cb3fe4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "705ad0d3-97e7-43de-9f20-57c6f91508e5",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "73352bc9-fa80-4b31-bb56-29f6942e8326",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "21b6382c-fc59-457e-ac83-91f25474e996",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "24e89e4f-76b5-4534-a56d-1ca0ecd30069",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "11aa020c-9067-4c0e-ba04-eb0f08844b19",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "3676663d-9ba5-487e-a29b-c72d49b4fe71",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "21d025a9-a52c-4dab-bbab-b3d082a93453",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "71402e81-e59d-47ce-81da-5df3d6f147c2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "fb730ba0-0726-4cdc-8892-1844183af638",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b5e6697a-9e99-4546-8da1-c6b1f5598f61",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "c4e9246f-9ec2-485f-a01e-d160463a4e4a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6209277c-4fc6-4a71-ab6a-169ca4d21a17",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "cc1352f1-8a6a-4143-b6c6-4fd8cd62c633",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "39b3379c-6aa6-4cf5-a003-9d0f912c0f51",
+                  "ord": "a1"
+                }
+              ],
+              "id": "72236cb9-c37c-4c7f-b9bf-0bba887360d9",
+              "ord": "a0"
+            }
+          ],
+          "id": "c77cf49a-0987-4c69-bd27-4b45b041bef1",
+          "ord": "a2"
+        }
+      ],
+      "id": "650d1cc5-15da-456e-8cf3-22de63c4a146"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Maple Grove Dental — a friendly family dentist",
+      "seoDescription": "Maple Grove Dental is a warm, gentle family practice for checkups, cleanings, kids’ dentistry, whitening, fillings and same-day emergencies. New patients welcome — book online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "910eb404-00ed-40f1-ae90-a1f8341ed203",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwb2ZmaWNlJTIwYnJpZ2h0fGVufDB8MHx8fDE3ODYzODkyODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, friendly dental office with big windows and warm daylight",
+                  "loading": "eager"
+                },
+                "id": "3c0671d8-793c-448b-86af-8809980b6b37",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "6e4b3451-dc49-4ee5-aa8b-c355a23c3d4c",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A dentist the whole family looks forward to"],
+                    "id": "f99d68b6-33a6-4cfe-8ed9-0cc19a4cc358",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Gentle, unhurried care for every age — checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome."
+                    ],
+                    "id": "cc0f70af-f138-4a97-8393-730d7c7b5e9b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a checkup"],
+                        "id": "4ddad676-c8ee-4833-ab68-b6bec6163824",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See appointments"],
+                        "id": "820668b6-f563-4b38-bcbf-86d4c975c97e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "84fc7f00-fd84-4744-b127-619f1e12b603",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "5ca57c4b-61bc-424b-aea4-fe96ac34d5a2",
+                "ord": "a2"
+              }
+            ],
+            "id": "b9b6f539-1480-4415-8e24-877ef2b3387f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Gentle & anxiety-friendly"],
+                            "id": "a6513de5-dbdf-44c5-9fee-4e15a2d053a2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush — a lot of people tell us they’ve stopped dreading it."
+                            ],
+                            "id": "bb3f30a9-224e-4b67-848e-ffb76a5fd289",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bbd3664e-4734-4840-8b8d-0845d8327f8c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Most insurance accepted"],
+                            "id": "f8753809-e483-47fe-8649-907a53e3f636",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We work with most major plans and file the claim for you, so there are no surprises. No insurance? Ask about our simple in-house membership."
+                            ],
+                            "id": "584338a8-68ba-47f1-aca9-53a38567cef6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f00ddf3c-5d5e-4d67-b514-cbc7d501cbde",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Same-day emergencies"],
+                            "id": "7694f77b-6f08-48e0-af99-5ea2d65b1d38",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A toothache can’t wait for next week. We keep time open every day, so if you’re in pain we can usually see you the same day."
+                            ],
+                            "id": "d8915fff-ed81-4609-a84a-f52cbdcfcbc5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0cd29d7e-6e43-4da9-b673-f6cb60481be1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Kids genuinely welcome"],
+                            "id": "04f48899-69f4-4b05-9c52-7b9a3a50905f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From first tooth to teenager, we make visits fun and easy — gentle hygienists, no scary words, and plenty of high-fives on the way out."
+                            ],
+                            "id": "f497835b-2c8d-4a64-a83f-5a9fde67b333",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bac650f2-99e9-4ac8-bd55-939bff636c29",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c228a70b-ef53-4c8a-9d11-8e987cde33e7",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d3b89e08-8a72-4739-87df-65fb3731adae",
+                "ord": "a0"
+              }
+            ],
+            "id": "39da2fd9-8659-426c-ba4d-c53ff9a4e37d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Appointments"],
+                        "id": "79313a26-3410-4bf6-8e28-d26f5d7109fc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the visits we see most. Full prices and live availability are on the booking page — and consults are always free."
+                        ],
+                        "id": "446f496c-e728-4cad-b9c2-59aa0ee757d1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "52f526a1-47a9-4761-9d61-f118f61e8bde",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["New patient exam"],
+                                "id": "91433eb2-b856-499b-98df-d08ef8f3106d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$89"],
+                                "id": "e6ba9abb-ae34-4f29-9446-f84265de0bab",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7d30bab4-4666-45e2-bac6-8155f4be9b07",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "17379dcc-de39-4bf4-a268-76da1de8684a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A full check, gentle X-rays and a plan built around you."
+                            ],
+                            "id": "0dfcd6f4-4dc6-48e6-afd5-bce2f4438954",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "12c194e4-8563-417f-ac49-86cd7aff8e78",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Cleaning & checkup"],
+                                "id": "df89ad62-f74f-4e41-8ec3-4719fe06c962",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$119"],
+                                "id": "9b82af7b-9fa2-4b94-8962-e67240ecb068",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "07482072-103e-48da-b150-2997807e5e50",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "74fb4e12-7248-47bf-9874-0c2785e644c3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Your gentle six-month clean, polish and check."],
+                            "id": "44b3a394-3d23-469c-a6f7-97016bbcfc85",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ea8adc60-5091-43de-80d3-53c3767ad33b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Kids’ checkup"],
+                                "id": "4da22e40-a6d4-416f-a34c-3c1df60004bf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$79"],
+                                "id": "36ed0d42-5680-4446-8114-b63b3abcde13",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0d92e362-10f1-4c10-b355-c866344a3c20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "a25b8047-c2ca-419d-b1ff-31e29e5d8b43",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A friendly, unhurried visit made just for little ones."],
+                            "id": "95fa55e1-d5a2-496f-a58f-41dced8098ab",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8442ac39-0ee2-4f49-9bb6-3201aefebd4b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Filling"],
+                                "id": "7b4a58a2-f1ef-4bc0-ae4d-179df482feb6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$185"],
+                                "id": "15fea632-ef6c-468c-82dd-b749034345be",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d4d9593f-fc56-46aa-bfad-c49e88248390",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "3f0ff383-dd58-4993-83f0-5bbaefb2d3ef",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A comfortable, tooth-coloured fix for a small cavity."],
+                            "id": "07263f14-c430-4429-a2a7-a7dd9772881d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2c759fba-a960-4760-8ebb-d7335e525bf6",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Emergency visit"],
+                                "id": "94110257-f93c-4b1a-a5f8-476a409fcc23",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "562d954f-f118-4f1d-9544-ae5835406cc0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4a2b6567-c934-41be-9f07-003d7bb2535a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "f8fc389d-2e61-486a-b969-4db48b14e624",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["In pain today? Request a same-day appointment."],
+                            "id": "226307b9-b7cb-45a2-b76d-fc80510be437",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ff4f8feb-a50c-48f5-8a6f-45354aaab9ff",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Teeth-whitening consult"],
+                                "id": "6979f0d1-925d-4c1c-a864-243b560dbc04",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "4a414e88-d45a-46d9-a601-05b842d37f44",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5fd6c2d7-b467-4a05-b2a4-bd69e8c5d5b9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "3b6be69c-5c7c-4eb8-b334-334fadc8323a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A free, no-pressure chat about a brighter smile."],
+                            "id": "badba8fc-e1c7-4d5a-9e11-88e0438ccac0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4d466aa1-722e-49dc-837a-5d65473f2625",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "187aa36c-92da-41fd-b335-60c03465ef5e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "acb6843d-f762-4ded-94a4-7c4bcd8d5fa7",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "e5dde2bf-ada5-4a62-81d1-23072108ed22",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ec804086-9f9a-448b-bba2-109be9510436",
+                "ord": "a0"
+              }
+            ],
+            "id": "20cc3e32-12ce-4e75-8d28-9a5c7ffc48d8",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1704455306251-b4634215d98f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwY2xpbmljJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM4OTI4N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm, welcoming reception area with soft seating and plants",
+                      "loading": "lazy"
+                    },
+                    "id": "1f777c88-27fb-4ed7-aa35-0c6868331df8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Family dentistry, the warm way"],
+                        "id": "0ce8368d-dc2c-4503-b634-ca704e108d5f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Maple Grove is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged."
+                        ],
+                        "id": "98da0a8b-4c51-4595-918f-225a330102da",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are — anxious, overdue, or just here for a clean — and leave feeling looked after."
+                        ],
+                        "id": "246e5b75-db43-4a76-9ecc-afc8badea449",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your visit"],
+                            "id": "62ab355e-4309-45e3-a10c-d52c1b463a6f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "c25f8820-c1d3-4a24-a1f5-9276da0bd02e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c6765b2e-2ade-4960-b368-fb449027d013",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "39daa6ef-a5b5-4f89-95a2-f4c54045a43d",
+                "ord": "a0"
+              }
+            ],
+            "id": "c902954f-080b-485a-ba5b-f4242b3c5aa9",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet the team"],
+                        "id": "7b6c20db-1d31-45be-b8c2-e6a69a76320e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll see friendly, familiar faces every visit."
+                        ],
+                        "id": "262e38f4-574f-4af2-983a-712089e25fb1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1884cdbf-5c03-44e2-967a-876486350833",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZW50aXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Amara Osei, family dentist, smiling",
+                              "loading": "lazy"
+                            },
+                            "id": "8710d979-caf9-45d4-82f6-0cecee4d8df6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Amara Osei"],
+                                "id": "5cf8dac2-4536-4914-b5e5-d0198d1e1987",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Family dentist"],
+                                "id": "841562b1-31dd-4322-885b-976689f7d5ca",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Gentle, all-ages dentistry with a soft spot for nervous patients. Amara founded the practice."
+                                ],
+                                "id": "58927160-2027-4f96-816f-02fccdabbe40",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "08046b21-44cf-4b3d-9904-964267c13f00",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "19de3d8a-6154-4e93-90fb-1928af3b1047",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwaHlnaWVuaXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Nora Bishop, dental hygienist",
+                              "loading": "lazy"
+                            },
+                            "id": "254ab55c-ae11-465b-97e1-105725370765",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Nora Bishop"],
+                                "id": "f3b0cbed-edd2-42c1-b368-f4f423d23863",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Dental hygienist"],
+                                "id": "6df4b9f2-674f-427b-a625-d546f63c4e36",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Thorough, easy-going cleanings and checkups — and the calmest hands in the building."
+                                ],
+                                "id": "5907ef8f-340d-434b-81bb-7424e9a0324d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f45cffc5-bf5b-4b29-8b30-852c6198667f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "46d3e2e4-b393-4cc8-891a-ede7802b33e2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBoZWFsdGhjYXJlJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Anand, dental hygienist",
+                              "loading": "lazy"
+                            },
+                            "id": "2c3b85c4-a20f-4814-8dd8-f465d1bc4ba6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Anand"],
+                                "id": "75db2042-91f0-4122-873f-4e8515872ac4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Hygienist · kids’ specialist"],
+                                "id": "4faa14de-da5e-4da3-91b6-5e81e3d39bfd",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A favourite with the little ones — Priya makes first visits fun and fear-free."
+                                ],
+                                "id": "5e49eb75-8487-46aa-b354-43ca6982b678",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "55e719d9-677e-401a-a004-75aef444e9fb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c8e34678-2644-4a6f-92cf-6de4f421c1fa",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e5df62dd-662d-401c-8cd7-18dacc1053a4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "99770d41-6c13-423f-8832-2fd9b8dc4c2a",
+                "ord": "a0"
+              }
+            ],
+            "id": "f1ae84ec-79b2-41a0-a585-c834bd3030c2",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“My kids actually ask when their next dentist visit is — I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.”"
+                    ],
+                    "id": "7da49504-883f-461f-870f-4bbde076d7ee",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Bianca, mum of two & patient since 2022"],
+                    "id": "678ad8a1-bd34-49ff-b05d-bf193e6b3e4c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "babb9d6b-05ba-4286-bce2-fff360ca10cf",
+                "ord": "a0"
+              }
+            ],
+            "id": "293a4940-da00-4af4-a03d-3b773dde47bb",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["New patients always welcome"],
+                    "id": "57cb44b1-7403-45ce-be0a-6316cf7bf429",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a visit, choose your provider and see live times. It takes about a minute — and we’ll take it from there."
+                    ],
+                    "id": "a193feb9-0603-4922-89be-329a73edc152",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a checkup"],
+                    "id": "738c4404-4ff3-4dc4-af9a-519bbaa41b52",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4fc91705-c028-4a3b-9ef8-d9ee6c794466",
+                "ord": "a0"
+              }
+            ],
+            "id": "92d6a560-3169-47e7-b06a-7f3a12750af6",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Maple Grove Dental",
+      "seoDescription": "See what Maple Grove Dental offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "276e1053-fd11-45ca-a4d1-f206f0e457b2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1552873816-636e43209957?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBzbWlsaW5nJTIwZGVudGlzdHxlbnwwfDB8fHwxNzg2Mzg5Mjk5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A young child smiling in the dental chair, relaxed and happy",
+                  "loading": "eager"
+                },
+                "id": "a9698637-0689-4c30-97cd-0bed28ecf06e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "b0077d16-c17f-4f58-b014-25cb6fa326c5",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your appointment"],
+                    "id": "c89d922d-70f9-4a6f-8db0-48f2510cb4f3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a visit to see prices and live availability, then pick your dentist or hygienist and a time that suits the family."
+                    ],
+                    "id": "d7254217-d0e1-41d1-ba7b-a53f2e354b11",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See appointments below"],
+                        "id": "78b967d2-ee51-4047-8d03-7b39d6394ed1",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "fa75144b-ff30-4a49-b207-3516508eaaaa",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "535aeb0c-bf3c-4cfa-b509-da6bd0a9578c",
+                "ord": "a2"
+              }
+            ],
+            "id": "9677ab16-578d-4d9b-a168-12f3862dfe98",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "ae1d4928-d1ce-4366-9b94-f867525eb448",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Maple Grove Dental",
+      "seoDescription": "Who Maple Grove Dental is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5d2ad169-69f2-4811-b450-13622d152c03",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwb2ZmaWNlJTIwYnJpZ2h0fGVufDB8MHx8fDE3ODYzODkyODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, friendly dental office with big windows and warm daylight",
+                      "loading": "lazy"
+                    },
+                    "id": "a1aae3bf-6b5e-458a-81ff-a5001942ee7b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Maple Grove Dental"],
+                        "id": "5b4ffcd4-fdf5-4ad4-a57a-692759f6360f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Maple Grove to be the kind of dentist we’d want for our own families — warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup."
+                        ],
+                        "id": "5fdd471d-8c40-46d1-89ce-625a862cc9e2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No upselling, no lectures, no scary surprises. Just clear explanations, gentle care and a friendly team that treats you like a neighbour, because you probably are one."
+                        ],
+                        "id": "46f0871e-000f-456b-8763-87f6de69bdd0",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "68d5d2b9-c3f3-4430-a68a-ed5f7e162067",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "dbf1efca-f1a3-446c-aec4-e55d0f0a5285",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9d105a6b-c84a-421d-8b89-62620c5ec063",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e8e8e86f-e193-44f3-b763-532ec3f8f2fc",
+                "ord": "a0"
+              }
+            ],
+            "id": "87ab73ca-5c76-4052-b670-70443275412e",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we care for you"],
+                    "id": "90b5e17d-e442-44d9-9982-59579d761ac4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We listen first"],
+                            "id": "18af96bb-24bb-49e9-895e-5cb73f23f72f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every visit starts with a real conversation about your teeth, your worries and your budget — so the plan fits your life, not a sales target."
+                            ],
+                            "id": "96714e43-cf4b-45bb-8ed2-446f4d558be3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c2a2cfbd-e7e0-4d0a-b027-fe938bc9670b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Honest, clear pricing"],
+                            "id": "7d2b0e60-04c5-458a-81a0-e8cb923459ce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We’ll always tell you the cost before we start, file your insurance for you, and never push treatment you don’t need."
+                            ],
+                            "id": "66ef52e2-9dc7-46b9-931b-cd87d0b017a2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a2d29152-5956-4fa7-95b0-1c14429c6d9f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Gentle for every age"],
+                            "id": "fcdfe84a-0031-4478-bc2b-ef113bb8545c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Nervous adults, wriggly toddlers, busy teens — we know how to make each one comfortable, calm and glad they came."
+                            ],
+                            "id": "5415873c-1ec8-418f-bc47-505f4291a380",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6fd9caf5-d610-48ae-af82-0748e29b3c6b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f34f0865-f1b2-4e3b-bb1e-6be205918670",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "467f4285-170e-4589-995b-a1f833c7d172",
+                "ord": "a0"
+              }
+            ],
+            "id": "e6701f7b-130b-4f5a-8dc1-1ee7e3eaeef3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Maple Grove Dental",
+      "seoDescription": "Where to find Maple Grove Dental, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "55734e43-7e0e-42f6-85d4-27daa5019413",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the practice"],
+                        "id": "fee27aff-67f9-49df-a6ec-3b39e10f49cc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Maple Grove Dental"],
+                            "id": "4a6f64a1-55b3-4a8e-a30b-1668614c4592",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["215 Maple Grove Avenue"],
+                            "id": "204a91c1-9cc8-4719-879f-89a9ad36b275",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Portland, OR 97213"],
+                            "id": "42dfd756-4d14-40f0-8dfb-e93437b96402",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9c5c1255-207f-406e-b34c-aa47aa8db33f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Thursday"],
+                                "id": "6a391038-b20e-4080-a60c-b96a3e1ed7e4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 5:00"],
+                                "id": "2d4aef33-a8bc-4656-82c7-480eb4249070",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d0e1981d-14a3-4fa4-91df-fcef3f97e11d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday"],
+                                "id": "a65a5ddc-15a3-4b8c-9464-b26ae10b6a50",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "9a64a6a4-e03a-424a-bfd4-787d8470f2d2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a6b4cc8c-60f8-42f5-85ed-4311336cb8ae",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "cef14272-e979-448d-9da3-4cf772227be6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 2:00"],
+                                "id": "932c49f9-837e-4a2f-bc81-c3d2b000d942",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e70fc607-c643-494b-ba2d-74d2e31db720",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "624d39c2-4132-4135-846a-3c2aa30d6e6a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "ef566a75-a9c3-4519-b4c8-586d3ba6804a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a3c7991a-cadf-484f-aeb0-0b239817a773",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "fc19d455-8f8e-459c-87fd-88bdb66f3e2f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f6221f7b-1b38-4985-a81e-cc55414da67e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "215 Maple Grove Avenue, Portland, OR 97213",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "1268242c-3c8d-43e7-a7b9-2e47e66151fc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d37e0ea1-7aa8-49dc-9e29-53d72ca0a306",
+                "ord": "a0"
+              }
+            ],
+            "id": "56c3bd46-003f-4726-98d6-39d13a61e952",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "e7924647-c0c8-46c1-a1f3-a752aea97b83",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
+                    ],
+                    "id": "f1d12c6e-8d54-4a8f-8c3d-cb12ffd0b3e4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "3e6916d7-500e-4507-866f-8599112a31b7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "da166238-0d07-4551-ba5a-e4861346b74e",
+                "ord": "a0"
+              }
+            ],
+            "id": "80183a99-d693-4355-8e47-c471fbf3913c",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "maplegrove",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.008 210)",
+      "--color-base-200": "oklch(95% 0.014 210)",
+      "--color-base-300": "oklch(90% 0.02 215)",
+      "--color-base-content": "oklch(28% 0.03 240)",
+      "--color-primary": "oklch(58% 0.12 225)",
+      "--color-secondary": "oklch(38% 0.03 240)",
+      "--color-accent": "oklch(72% 0.13 40)",
+      "--color-neutral": "oklch(30% 0.02 240)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 225)",
+      "--color-secondary-content": "oklch(98% 0.01 240)",
+      "--color-accent-content": "oklch(15% 0.02 40)",
+      "--color-neutral-content": "oklch(98% 0.01 240)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(72% 0.13 40)",
+      "--color-highlight-content": "oklch(15% 0.02 40)",
+      "--color-border": "oklch(90% 0.02 215)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.02 240)",
+      "--color-base-200": "oklch(20% 0.018 240)",
+      "--color-base-300": "oklch(16% 0.015 240)",
+      "--color-base-content": "oklch(95% 0.008 210)",
+      "--color-primary": "oklch(72% 0.11 225)",
+      "--color-secondary": "oklch(80% 0.02 220)",
+      "--color-accent": "oklch(76% 0.12 40)",
+      "--color-neutral": "oklch(82% 0.015 220)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 225)",
+      "--color-secondary-content": "oklch(15% 0.02 220)",
+      "--color-accent-content": "oklch(15% 0.02 40)",
+      "--color-neutral-content": "oklch(15% 0.015 220)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.12 40)",
+      "--color-highlight-content": "oklch(15% 0.02 40)",
+      "--color-border": "oklch(16% 0.015 240)"
+    }
+  }
+}

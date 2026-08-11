@@ -1,0 +1,97 @@
+[
+  {
+    "id": "kw-hero",
+    "url": "https://images.unsplash.com/photo-1692313532975-513a383c48f7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29vayUyMHNlYXJpbmclMjB3ZWxsLXNlYXNvbmVkJTIwY2FyYm9uLXN0ZWVsJTIwc2tpbGxldCUyMGZsYW1lfGVufDB8MHx8fDE3ODY0MDUwNzh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cook searing in a well-seasoned carbon-steel skillet over a flame"
+  },
+  {
+    "id": "kw-tile-cookware",
+    "url": "https://images.unsplash.com/photo-1637739699971-7d4d5194e75c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Y2FyYm9uLXN0ZWVsJTIwc2tpbGxldCUyMGNhc3QtaXJvbnxlbnwwfDB8fHwxNzg2NDA1MjAzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A carbon-steel skillet and a cast-iron Dutch oven on a stovetop"
+  },
+  {
+    "id": "kw-tile-knives",
+    "url": "https://images.unsplash.com/photo-1604543248368-da42b20dce5b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9yZ2VkJTIwY2hlZiUyMHMlMjBrbmlmZSUyMG1pZC1zbGljZSUyMHdvb2RlbiUyMGJvYXJkfGVufDB8MHx8fDE3ODY0MDUwODN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A forged chef’s knife mid-slice on a wooden board"
+  },
+  {
+    "id": "kw-tile-tools",
+    "url": "https://images.unsplash.com/photo-1580151820172-ae6491498c54?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29vZGVuJTIwc3Bvb25zJTIwcGVwcGVyfGVufDB8MHx8fDE3ODY0MDUyMDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Wooden spoons and a pepper mill on a kitchen counter"
+  },
+  {
+    "id": "kw-tile-sets",
+    "url": "https://images.unsplash.com/photo-1556910602-38f53e68e15d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWF0Y2hlZCUyMHNldCUyMHBhbnMlMjBzdGFja2VkJTIwb3BlbiUyMHNoZWxmfGVufDB8MHx8fDE3ODY0MDUwODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A matched set of pans stacked on an open shelf"
+  },
+  {
+    "id": "kw-band-forge",
+    "url": "https://images.unsplash.com/photo-1596299085622-4f96269e5bc7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8a25pZmUlMjBibGFkZSUyMGZvcmdlZHxlbnwwfDB8fHwxNzg2NDA1MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A knife blade being forged and ground in a workshop"
+  },
+  {
+    "id": "kw-band-care",
+    "url": "https://images.unsplash.com/photo-1592156328757-ae2941276b2c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2lsaW5nJTIwc2Vhc29uaW5nJTIwY2FyYm9uLXN0ZWVsJTIwcGFuJTIwYnklMjBoYW5kfGVufDB8MHx8fDE3ODY0MDUwOTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Oiling and seasoning a carbon-steel pan by hand"
+  },
+  {
+    "id": "kw-prod-skillet",
+    "url": "https://images.unsplash.com/photo-1569875770758-f17664dfe4f8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmxhY2slMjBjYXJib24tc3RlZWwlMjBza2lsbGV0fGVufDB8MHx8fDE3ODY0MDUyMTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A black carbon-steel skillet with a forged handle"
+  },
+  {
+    "id": "kw-prod-dutch-oven",
+    "url": "https://images.unsplash.com/photo-1595440431225-1c25fd023f71?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZW5hbWVsbGVkJTIwY2FzdC1pcm9uJTIwZHV0Y2glMjBvdmVuJTIwbGlkJTIwb2ZmfGVufDB8MHx8fDE3ODY0MDUwOTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An enamelled cast-iron Dutch oven with the lid off"
+  },
+  {
+    "id": "kw-prod-chef-knife",
+    "url": "https://images.unsplash.com/photo-1778233770164-2c318e80aac8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9yZ2VkJTIwY2FyYm9uLXN0ZWVsJTIwY2hlZnxlbnwwfDB8fHwxNzg2NDA1MjE0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A forged carbon-steel chef’s knife on a board"
+  },
+  {
+    "id": "kw-prod-paring-knife",
+    "url": "https://images.unsplash.com/photo-1604543648342-6a500ad7b5c7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGwlMjBmb3JnZWQlMjBwYXJpbmclMjBrbmlmZSUyMGJlc2lkZSUyMGN1dCUyMGhlcmJzfGVufDB8MHx8fDE3ODY0MDUxMDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small forged paring knife beside cut herbs"
+  },
+  {
+    "id": "kw-prod-spoon-set",
+    "url": "https://images.unsplash.com/photo-1634082983865-1ba172ff1dc5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwb2xpdmUtd29vZCUyMGNvb2tpbmclMjBzcG9vbnMlMjBzcGF0dWxhfGVufDB8MHx8fDE3ODY0MDUxMDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of olive-wood cooking spoons and a spatula"
+  },
+  {
+    "id": "kw-prod-saucepan",
+    "url": "https://images.unsplash.com/photo-1698939586566-8c093b721cb7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJpLXBseSUyMHN0YWlubGVzcyUyMHNhdWNlcGFuJTIwbG9uZyUyMGhhbmRsZXxlbnwwfDB8fHwxNzg2NDA1MTExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tri-ply stainless saucepan with a long handle"
+  },
+  {
+    "id": "kw-prod-bowl-set",
+    "url": "https://images.unsplash.com/photo-1576521528008-684613730cd3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmVzdGluZyUyMHN0YWlubGVzcyUyMG1peGluZ3xlbnwwfDB8fHwxNzg2NDA1MjE4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A nesting set of stainless mixing bowls"
+  },
+  {
+    "id": "kw-prod-pepper-mill",
+    "url": "https://images.unsplash.com/photo-1546010362-041d579ad7e0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMHR1cm5lZC13YWxudXQlMjBwZXBwZXIlMjBtaWxsfGVufDB8MHx8fDE3ODY0MDUxMTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tall turned-walnut pepper mill"
+  },
+  {
+    "id": "kw-prod-starter-set",
+    "url": "https://images.unsplash.com/photo-1695088224596-11649459b191?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhcnRlciUyMGNvb2t3YXJlJTIwc2V0JTIwc2tpbGxldCUyMHNhdWNlcGFuJTIwZHV0Y2glMjBvdmVufGVufDB8MHx8fDE3ODY0MDUxMjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A starter cookware set — skillet, saucepan and Dutch oven"
+  },
+  {
+    "id": "kw-post-season",
+    "url": "https://images.unsplash.com/photo-1624031000828-dba1b7a3e4ce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyYm9uLXN0ZWVsJTIwcGFuJTIwYnVpbGRpbmclMjBkYXJrJTIwZ2xvc3N5JTIwc2Vhc29uaW5nfGVufDB8MHx8fDE3ODY0MDUxMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A carbon-steel pan building a dark, glossy seasoning"
+  },
+  {
+    "id": "kw-post-knife",
+    "url": "https://images.unsplash.com/photo-1574906328425-c7a4cb49bfa8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG9uaW5nJTIwa25pZmUlMjBlZGdlJTIwd2hldHN0b25lfGVufDB8MHx8fDE3ODY0MDUxMjZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Honing a knife edge on a whetstone"
+  },
+  {
+    "id": "kw-post-cookware",
+    "url": "https://images.unsplash.com/photo-1584990347449-fd98bc063110?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGhyZWUlMjBwYW5zJTIwY2FyYm9uJTIwc3RlZWwlMjBjYXN0JTIwaXJvbiUyMHN0YWlubGVzc3xlbnwwfDB8fHwxNzg2NDA1MTMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Three pans — carbon steel, cast iron and stainless — side by side"
+  }
+]

@@ -1,0 +1,2486 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "550a5181-8283-44c9-955c-ed85b8376a7f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "00de1b3c-dd8b-4d2b-bbcf-e8b076e2b22a",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "f9223790-cb5b-465b-81a0-18ea7e8e5331",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "4e906ec3-8d17-4ede-bcbb-4415259eff5b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "de5c3e7b-7033-4e28-ba09-a291748618cc",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "0b24e734-9102-49c2-9c1a-13fa4c67a482",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "22188dda-1b26-41d7-9036-6428a267477a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "266e30b0-2261-427c-bc74-1624b68f5f16",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "d57aa6db-5bb4-4ed8-90b5-bad95a71bae1",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "d730088d-d61c-4fc3-9b5b-d8b9c014296a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "233a068a-58e2-4d15-aef5-432e49f3405f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "0bf5ce47-1be3-4189-a947-6beaa3f8126d",
+                  "ord": "a2"
+                }
+              ],
+              "id": "2b059a5a-8602-4e17-9206-cebba28b2c32",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b281067d-f689-44cb-9c98-10a7cb082c25",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "1398caba-9e5d-4ebb-a4da-f9550fcee1b3",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "068676b2-5ce0-46b7-9ad4-99f69952e93f",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "e5aabd87-3d86-495b-932f-c1d151d9af75",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "896ec653-45b8-4268-b38f-ca6e65aa18b1",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "505cc665-84ce-454f-9d16-724b7d46cc6d",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "0501c575-06b0-41aa-823b-69504177778d",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "d82ade4e-3be9-42c7-a069-0c42cf1e94f7",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "d72e35ff-2589-472c-8155-4f2566f63e77",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "e2637ff6-94c4-4334-a1a3-c20a1f8138ce",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "ff8fa43b-a495-4663-9f3f-65a7a652a3ec",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "d5ef81e9-a88e-4821-9691-d391bf6f0186",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "9df1d0c1-647c-49bb-84cb-d1e063bb3644",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "0637883f-ea8f-410e-b38b-4c783e862c11",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "44c93847-1068-4477-a6d8-2c8ac385d915",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "83e2b124-d0a7-4c4f-8ee8-634924e20073",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "97a1f74e-d151-40df-b65e-e86c5ab9bd70",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "d5aa6366-856a-4afd-abf8-68dd463f2bfd",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "c89a948b-a9b6-4b63-b239-9e3e4ff42ab6",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6fbcdb77-095d-4b3a-aeb6-21b2c5f1e90f",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "550cd85b-3d29-4d9a-8e5b-f4e74ec96659",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "9e5adf9c-c206-452a-8419-25f36270230b",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "e9d55b66-e49b-476c-a069-875f2e15a1d5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "2ae6c690-d6fb-49ae-8766-b3cccb244551",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "f8fb0424-48d8-4255-879b-b6d3164d868e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "67144c3b-2a7d-4db0-bf2c-48884be460a0",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "7efb23bd-b51e-48a5-a864-ddff541f38e4",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "fb7d3284-2009-4ce5-97ee-e0e1aa268f72",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "8cb5e155-beb2-4bb9-8e0d-35c56f9a1adb",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "8ed3c479-4451-45ad-893c-16f52a55ba4e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "ddc24d0d-44e8-4b97-a33e-776dc63903c7",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "6439ee36-9d79-46a4-aad2-75efb4ff9b47",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "9057adfa-de0b-4c23-bd30-1060f1a134eb",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "7b319dfa-97ae-49ec-b573-299acdeffc13",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "22236223-1f26-4603-ad5b-551d9e757fb2",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "7bf3526b-0fea-4cc2-8c46-472eb1f9a79d",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "e3a8219c-30c1-41bb-a259-c6c7b4c02d30",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0a687a01-d0f0-4901-b27d-c1a1068f0f72",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9081440a-dedc-4653-bf41-9d79b565917f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "a32cd546-0958-4869-a689-7b3aac56c3e7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8ae317b7-2989-4df2-87d0-ee14f9722a75",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "3021a3ab-4773-4f88-a923-a85871ebb3e0",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "a931bbd9-f6f6-4716-8f29-89d2731a10d3",
+                  "ord": "a1"
+                }
+              ],
+              "id": "69238a5b-d66c-403b-8b73-a0ffb897a5ff",
+              "ord": "a0"
+            }
+          ],
+          "id": "3412f98d-9a04-4919-9a8f-ba49ab96edb4",
+          "ord": "a2"
+        }
+      ],
+      "id": "6303ce5f-76bf-42a8-9182-2829af1fe65b"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Edge — beautifully engineered tools for the modern kitchen",
+      "seoDescription": "Edge is a modern kitchen-design studio — ceramic nonstick cookware, a precision kettle and a clean knife set, all designed as one range and built to be kept.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d7b803dd-4722-4e0f-872e-8048a075797c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1518291344630-4857135fb581?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMG5vbnN0aWNrJTIwcGFuJTIwbW9kZXJuJTIwdG9vbHMlMjBsYWlkJTIwb3V0fGVufDB8MHx8fDE3ODY0MDc4ODd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Ceramic nonstick cookware and modern tools on a bright counter",
+                  "loading": "lazy"
+                },
+                "id": "8166a300-de6d-4d98-b5a7-424430f4e45a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Beautifully engineered tools for the modern kitchen."],
+                        "id": "20b89f02-0d11-4c05-98dc-f2afb77b411b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Edge designs a short, considered range of kitchen tools — ceramic nonstick cookware, a precision kettle, a clean knife set — where every detail earns its place. Nothing fussy, nothing loud. Just the pieces you reach for, made to look as good on the counter as they perform on the stove."
+                        ],
+                        "id": "2047d3a7-bb70-4bf5-9949-d5de85fe4323",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the range"],
+                            "id": "858c8564-9dc9-4e24-b7de-4a7206fc7e61",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Start with the essentials"],
+                            "id": "34bc6562-8e79-4a49-a46c-ce05a1221325",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "acad016a-21b6-4c66-8de9-555933cd1d11",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b9e429b2-f75e-41b7-a335-e448c2114dba",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "0ecafeef-85e3-4c73-b1b0-a687b7b7f0b5",
+                "ord": "a1"
+              }
+            ],
+            "id": "2ad447db-cf5f-43b3-a96c-3114cde64496",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Shop by kind"],
+                    "id": "be7bdeae-cdf0-48c8-976a-d2ba4494ec0d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1584990347193-6bebebfeaeee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWF0Y2hlZCUyMGNlcmFtaWMlMjBub25zdGlja3xlbnwwfDB8fHwxNzg2NDA5MDUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A matched set of ceramic nonstick pans",
+                              "loading": "lazy"
+                            },
+                            "id": "3c1ee111-cbee-45c6-ad38-5d4e7966f00e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Cookware"],
+                            "id": "f7f22409-2b0e-479e-aafe-d2bf5ab7d48e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d7a2d2fc-4d96-44cf-a7a2-bd6e573f1e22",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1690983321709-0eccbcb20d00?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGhyZWUtcGllY2UlMjBtb2Rlcm4lMjBrbmlmZSUyMHNldCUyMGxpZ2h0JTIwYm9hcmR8ZW58MHwwfHx8MTc4NjQwNzkwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A modern three-piece knife set",
+                              "loading": "lazy"
+                            },
+                            "id": "c54aa9a0-b014-46d0-906b-9d3f35f76ac0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Tools"],
+                            "id": "287a16a4-fbfd-4875-9f62-f2579bc69d36",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "92064f5e-6f02-402d-9ee0-671cb0b8d997",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1762922425155-d03e6997e33e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmVzdGluZyUyMHNldCUyMHByZXAlMjBib3dscyUyMG11dGVkJTIwdG9uZXN8ZW58MHwwfHx8MTc4NjQwNzkwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A nesting set of prep bowls",
+                              "loading": "lazy"
+                            },
+                            "id": "9fd3234a-e450-49e8-8eee-4c4d30bdf5d3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Prep"],
+                            "id": "2ffd5503-470f-4840-a8f4-278a196ddfde",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bbc45d7e-6a98-44b3-9589-5c7c11e0e2d7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1616459042391-e28c324a7952?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwbW9kdWxhciUyMGdsYXNzJTIwc3RvcmFnZSUyMGNvbnRhaW5lcnMlMjBsaWRzfGVufDB8MHx8fDE3ODY0MDc5MjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A set of modular storage containers",
+                              "loading": "lazy"
+                            },
+                            "id": "adf49a2b-28a9-4fee-a861-691dec80a725",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Sets"],
+                            "id": "1be4496d-7611-4a89-bdd1-6a51efcd6842",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ccff78b9-d38f-4e86-b724-92f06a3c0a95",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4e11c05b-a372-4d07-be42-6342c9355d8f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "af0c9009-d970-425c-b390-112ca99bcd2b",
+                "ord": "a0"
+              }
+            ],
+            "id": "14d00006-6412-4eeb-b1d0-b978a2f29b42",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New this season"],
+                    "id": "7c7402ce-9976-4b2d-9eaf-1bd154942f09",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0e886e82-7434-4650-8811-f230c5189d2e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "4b79991c-aaea-484d-b79e-5a3c33c3caf1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "8aa90590-3b59-4106-a007-33b68441e96c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "c1f4a49d-b5c3-4a58-9072-f8d8ceb90700",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "21f02d71-1f41-4847-815d-b6dc53333600",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "617ae36d-5b2b-41f4-84f4-2481bb49543c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2659f73c-6f4e-49be-b3bd-d6db4c1a1639",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "94835cc2-e6c2-4f99-a03a-ac930c409f7b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "06bc38d5-28b8-4c66-a59c-58cb93ed3453",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "12cfc891-3004-4979-b088-51f01dbd901a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "90c0c156-3646-41fc-9627-5f45fdb9e31f",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "5aa98018-d682-4422-89ab-45aa4d0af966",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "dc64d879-80af-4168-a4b9-ed6d8cf6b1f7",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1586868538513-51335a0c5337?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjBzdHVkeWluZyUyMGtpdGNoZW4lMjB0b29sJTIwcHJvdG90eXBlJTIwd2hpdGUlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA3ODkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A designer studying a kitchen tool prototype",
+                  "loading": "lazy"
+                },
+                "id": "f734cc04-14c4-48ec-8317-f51a9b1281a6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Designed, not decorated"],
+                        "id": "ebfb6a97-faa1-44eb-8a92-a7769212fdc6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We start every piece with the way you actually use it — the angle of a handle, the weight in the hand, the way a lid sits. Then we take everything else away. What’s left is a tool that feels obvious the first time you pick it up, and right for years after."
+                        ],
+                        "id": "5916c228-d75f-45e2-83f3-e2737b673712",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/design-for-the-counter"
+                        },
+                        "children": ["How we design"],
+                        "id": "41cbba9f-d101-48e1-a7dd-dba22a05507b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "025d2b76-8366-4a9a-a802-2691fc98c09e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "46fac196-132c-4a4f-a474-07fc430855be",
+                "ord": "a1"
+              }
+            ],
+            "id": "a0a7cb58-5a7d-40dd-9d62-6b91ca555424",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Cookware"],
+                    "id": "d2bb2759-632d-4e9c-b17a-956565e50b3b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "8a2ba09b-a8f9-4b3e-b66f-e9affe96596c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "15dc4b6c-9aca-472b-b96e-1940d5534b53",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "85a89cc6-c898-45a7-bbc8-78d282d09c33",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "5f181944-ae72-4110-8914-3331b531d564",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "90bb409c-8a44-42f3-81b0-3e3eca07bed2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ea2a4bdb-0c19-4d9f-a1cb-f450d1ed5e95",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "684348ef-bb79-4e70-8a30-3a505f0ffe51",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "b11a0a65-0fb1-4a65-9e04-2304db88aa48",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "4cf86d7b-c01d-4993-a95d-b7dcbf925afd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b273023d-c02d-4d54-ae4a-51ddf3d498e4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "e70bb037-d364-4722-a67f-c818e623ed09",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.cookware"
+                },
+                "id": "1d29658b-3787-4ec8-90e5-a850d255ecd8",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "40ceb57a-8a6e-4902-a112-cbfb9db24aef",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1650940925927-f4a30c930a4d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z29vc2VuZWNrJTIwa2V0dGxlJTIwcG91cmluZyUyMHByZWNpc2UlMjBzdHJlYW0lMjB3YXRlcnxlbnwwfDB8fHwxNzg2NDA3ODkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A gooseneck kettle pouring a precise stream of water",
+                  "loading": "lazy"
+                },
+                "id": "f1ad2195-578f-49c6-9738-9509d8dc718a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Precision, quietly"],
+                        "id": "a1f13021-3ae8-4af5-ad3d-b98d86ea1096",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Even heat across the whole base. A kettle you can set to the exact degree. A scale that reads to the gram. The clever engineering is on the inside — the outside stays calm, so it disappears into your kitchen instead of shouting over it."
+                        ],
+                        "id": "7b046305-3718-4ebb-967b-81510a449e72",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/small-kitchen-edit"
+                        },
+                        "children": ["What’s inside the range"],
+                        "id": "843c079e-e12d-421a-9f58-64b04707a523",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "33e44f52-50fb-493f-9559-055d8bdf1fe0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5bd128ec-9911-48e7-8026-4aa511e4f47c",
+                "ord": "a1"
+              }
+            ],
+            "id": "b3db5709-c261-480a-ab17-502fb26017d1",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Edge",
+      "seoDescription": "Browse everything Edge makes, with prices and options at a glance. Kitchenware & small appliances.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "93e80bd0-6d69-46f4-b998-9b60bf22cfb0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Shop the range"],
+                    "id": "336e5b04-8fd0-4e8f-9334-fdb1c5064c60",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The whole Edge range in one place — ceramic nonstick cookware, a precision kettle, a modern knife set, prep and storage. Filter by kind or material, or sort however you like; every piece is designed to work together and built to be used every day."
+                    ],
+                    "id": "f180d70a-f02e-43b9-9d67-f27fa54c979e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4b86d427-c5d5-4dae-953f-d9444ac048b0",
+                "ord": "a0"
+              }
+            ],
+            "id": "96e83d41-f15d-4252-bab7-9ffb83a77e0f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "64956a34-e970-488e-a924-401bd3945d13",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Edge",
+      "seoDescription": "Explore the collections at Edge, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3473024f-87f9-462d-9960-1d73f4f19d38",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "6347434c-2f3e-4563-9f48-191862cdf975",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The range grouped the way people actually build a kitchen — what’s new, the pieces everyone starts with, the cookware and prep edits, and sets that fit together from day one."
+                    ],
+                    "id": "c92c9141-56b8-477f-ab41-2e4f82e77e4c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4c444bf1-816f-4732-b680-2b7b02e36bc0",
+                "ord": "a0"
+              }
+            ],
+            "id": "acdb7c7d-3154-43dd-83ac-cd1df2066b9d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "6848211f-48d1-4bcd-858e-89a5e225abdd",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Edge",
+      "seoDescription": "Review what is in your cart and check out securely at Edge.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1a48fd56-3ba9-4d55-a1c6-e1b32f1c8e84",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "3859704d-7a96-488e-a0a7-02509eff224a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping on orders over $75, and every piece carries a ten-year guarantee. Not the right fit for your kitchen? Send it back within 60 days — we’d rather you have the tool you’ll actually use."
+                    ],
+                    "id": "9ff14dce-09cf-438f-8956-1c7be01aa747",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "41d11a34-6285-4ca7-ba3b-c09a45107bee",
+                "ord": "a0"
+              }
+            ],
+            "id": "ebad5a80-7a1d-4972-949a-f3fd78d2606d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "2c302265-b927-48c2-b590-e7f5b3ba77ff",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Edge",
+      "seoDescription": "Search Edge for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "969a26af-7578-403b-bfa1-255d197e72f5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Edge"],
+                    "id": "87383c00-040e-454a-8587-f0afc612647a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a pan, a kettle, or a care guide? Search the whole range and the journal below."
+                    ],
+                    "id": "8a78f52f-91c0-477f-aead-01afb6e836b6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "931e9b24-e391-4576-94e3-cbdccfb2aaa6",
+                "ord": "a0"
+              }
+            ],
+            "id": "1b258a75-5d1d-490e-b8d7-3c4533b45757",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "fa98483b-1ec5-49d2-a678-1ee8c38b5788",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Edge",
+      "seoDescription": "Stories, guides and notes from Edge.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "95d41129-543d-4936-a35e-45113698fe58",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Field notes"],
+                    "id": "b7084a71-a67b-48db-b0b6-097496b43224",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the studio — how our nonstick actually works, the short list of tools that replaces a cluttered drawer, and why we design for the counter you live with. Plain, useful, no jargon."
+                    ],
+                    "id": "5c9a6eff-9663-4d21-9a02-eb995237cf3b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8b77f434-72de-4cf8-91cb-1d67c62eb6fb",
+                "ord": "a0"
+              }
+            ],
+            "id": "dff375db-4e55-4e04-97ed-e91c3883c91b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "217a7466-4ec2-4ba0-952f-5808f4a5f4a7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "a0b69e08-550b-4db2-9ff2-56b39821ea5c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ce949068-baa8-48c5-b528-42d4a0eb6139",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "21d5fc7c-2272-47a2-8733-e9cb377bc4f5",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "f33c83d8-72e8-4a7f-b78f-b1c24b75a262",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "b11d45a6-ac38-442a-ad9c-dc850defd035",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3dd5cfe7-5fd3-4dd1-924e-774cb55c75da",
+                "ord": "a0"
+              }
+            ],
+            "id": "496384f1-6cd8-496b-8952-8c1068dda4c2",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Edge",
+      "seoDescription": "Why Edge makes fewer, better kitchen tools — a short considered range, calm design, clever engineering on the inside, and a ten-year guarantee on every piece.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c721ba44-fb90-48fa-af1d-c54e52bd3547",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Edge"],
+                    "id": "3bb7e65e-7260-4365-9289-8f13ccb2f2f4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Edge began with a simple frustration: kitchen shops are full of things designed to be bought, not used. Fifteen-piece sets you never open, gadgets that live in a drawer, finishes that look tired in a year. We wanted the opposite — a short, considered range where every piece is thought through and nothing is filler."
+                    ],
+                    "id": "c0e98711-c4b9-4244-a510-43725cc61d23",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We’re a small studio of designers and cooks. We prototype in our own kitchens, test until the awkward details are gone, and only ship a piece when it feels obvious to use. The clever engineering — even-heat bases, precise temperature control, a ceramic nonstick with nothing nasty in it — sits on the inside; the outside stays calm and quiet."
+                    ],
+                    "id": "be6de700-48a1-4ca7-9484-fda73ea0c04b",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The whole range is built to fit together and to last. A ten-year guarantee, replaceable parts, and a look that doesn’t date — so the first thing you buy still belongs beside the tenth. Fewer, better, designed to be kept."
+                    ],
+                    "id": "ab4f1fb9-66fb-4cc8-8e82-25332830a0e4",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "c0b1412a-c8e5-429e-9e67-feb3b29a1657",
+                "ord": "a0"
+              }
+            ],
+            "id": "6bca8a7f-b39c-4894-aaca-6c59935efc60",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Edge",
+      "seoDescription": "Get in touch with Edge — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0962e3b6-e297-4216-a4cc-3a73ef5a1e59",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "b0b6473e-89d0-4626-aa25-c9e7424e76bb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a piece, help choosing where to start, or a wedding-registry order? Tell us what you’re cooking toward and a real person at the studio will point you to the right tool — not the most expensive one."
+                    ],
+                    "id": "5c7cf772-1c80-47d9-aa1d-31941efb08e9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@edgekitchen.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "30a65bb3-b7a1-4786-8ac6-8b6ffc1e2ffa",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "883c49f0-6ec0-40f9-9327-88ec64942d2e",
+                "ord": "a0"
+              }
+            ],
+            "id": "dcb27d32-279b-4f44-8caa-bd1e9cebff00",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Edge",
+      "seoDescription": "Product details at Edge — kitchenware & small appliances, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "237a933e-9fda-4dcc-9846-858e717decfc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Edge"],
+                            "id": "fb7d8056-4726-4e6f-8058-1381d1f7c8fc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "3ec4631e-8f2a-4191-92a7-91499b864051",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "733748c0-29b2-4e7e-89ca-40bd83561fbe",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "499d2fe6-7d06-47a0-ad42-5b2db34c334c",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "fd666ece-41ff-4cca-a646-9d518a43feff",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1ab83c3e-11df-4a8c-b32c-1c6f4eed7e68",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "6d077830-946f-4437-aaa3-db3223cbe8ed",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "ce71b617-eee1-4666-9dfd-d82d867185f4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "ffd8ddb4-25ed-482a-9d15-2291127be845",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "b3e9297e-7a71-496d-803b-5b46331c45d4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "45b5ddd9-bb6d-4d23-81a9-06836d9b32eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "20dcf4ee-38bb-4304-a2d4-26b2c7fd0b4e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "49dd7f6e-f5bd-46ae-9ad8-093c5820b1bb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "d883745b-82f5-41cc-838c-58b3f85379cf",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "d2834403-11d0-48af-946d-2feadea3d0b2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Designed to be kept"],
+                            "id": "ee4e2987-eca8-47f3-bf13-cd9f935db520",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every Edge piece is engineered for daily use and backed by a ten-year guarantee. Parts you can replace, finishes that don’t date, and a range that fits together — buy one thing now and it still matches the next thing you add."
+                            ],
+                            "id": "e370b01e-8ef4-401b-82d8-9c31ff5e08c1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "32d00d42-cd62-47de-86a8-60479781530a",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "f3b3d98f-1aca-41ce-828f-9f36cdd412f9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "19f6dc39-db71-4f45-90bc-cc41015051ec",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "13b9812a-1e58-422c-9abd-3f6c2c8337da",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "e6983ba1-229c-42a7-be5b-2ee0e55fd481",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a77c405a-4997-4c7c-a49a-180acd771a4f",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "da5517e8-ac53-4ae9-b361-7e3e259965e4",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Goes with"],
+                    "id": "75a54288-9cb5-4d80-942f-9e52ba9698ac",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "7f3fd8c4-9552-4fff-a332-e9afbb91b3e0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f7e36c8b-1e39-4bb5-843e-a8a2d6c5dd03",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "f19e106c-ad79-44a0-b28a-1b68f83a2bac",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "6b08fd82-23ae-433e-95d9-cd3a4fe5b575",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "519f6659-0ad0-4911-9b63-880d47170045",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "02646741-3a00-4b00-a994-c376abcfeaae",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "09745804-e2d6-4b8a-a1c6-6431ff633ee4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "45c1bd70-b06f-433b-95f6-c8e66d938076",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "28550ed1-424f-4abc-b210-536a14f0b994",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d3920a67-ee62-46a1-93fc-d44124524265",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "20861391-acf9-4c60-b456-b7c66dfe6f6f",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "3cf0ac18-ef2b-4234-93a5-d025d64b134e",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "d04def22-55f9-4acc-bbe4-84b4457e8d8c",
+            "ord": "a1"
+          }
+        ],
+        "id": "6b55d134-0b37-4652-ab0b-118efea811fa"
+      }
+    }
+  ],
+  "theme": {
+    "name": "edge-modern",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 260)",
+      "--color-base-200": "oklch(96% 0.006 260)",
+      "--color-base-300": "oklch(92% 0.008 260)",
+      "--color-base-content": "oklch(20% 0.02 260)",
+      "--color-primary": "oklch(24% 0.02 260)",
+      "--color-secondary": "oklch(44% 0.02 260)",
+      "--color-accent": "oklch(50% 0.19 262)",
+      "--color-neutral": "oklch(26% 0.015 260)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 260)",
+      "--color-secondary-content": "oklch(98% 0.01 260)",
+      "--color-accent-content": "oklch(98% 0.01 262)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.19 262)",
+      "--color-highlight-content": "oklch(98% 0.01 262)",
+      "--color-border": "oklch(92% 0.008 260)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.012 260)",
+      "--color-base-200": "oklch(18% 0.012 260)",
+      "--color-base-300": "oklch(15% 0.012 260)",
+      "--color-base-content": "oklch(97% 0.004 260)",
+      "--color-primary": "oklch(93% 0.008 260)",
+      "--color-secondary": "oklch(74% 0.02 260)",
+      "--color-accent": "oklch(72% 0.15 262)",
+      "--color-neutral": "oklch(30% 0.012 260)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.008 260)",
+      "--color-secondary-content": "oklch(15% 0.02 260)",
+      "--color-accent-content": "oklch(15% 0.02 262)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.15 262)",
+      "--color-highlight-content": "oklch(15% 0.02 262)",
+      "--color-border": "oklch(15% 0.012 260)"
+    }
+  }
+}

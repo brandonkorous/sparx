@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-tattoo-fineline",
+  "name": "sparx — Tattoo (Fine Line)",
+  "version": "1.0.0",
+  "tagline": "A bright, editorial template for fine-line tattoo studios — book online from day one.",
+  "description": "A bright, minimal fine-line tattoo-studio site — a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as \"Faint\", a light, considered studio — the calm opposite of the dark tattoo shop.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Tattoo studio",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Tattoo (Fine Line) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Tattoo (Fine Line) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#bda884",
+  "sortWeight": 85
+}

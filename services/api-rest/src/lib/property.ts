@@ -9,7 +9,6 @@
 // is application-tier scoping, not a security boundary (docs/49 §2).
 
 import { withTenant } from '@sparx/db';
-import type { Prisma } from '@prisma/client';
 import type { AuthContext } from '@sparx/api-core/auth';
 import { forbidden, notFound } from '@sparx/api-core/errors';
 import { memberCanReachProperty } from '@sparx/auth';
@@ -76,56 +75,23 @@ function canReach(actor: SiteActor, propertyId: string): boolean {
 const propertyIdCache = createTtlCache<string>({ hitTtlMs: 60_000 });
 
 // ── Model B per-site scoping (docs/49 §3) ──────────────────────────────────
-// A product / content entry is visible on a site if it has NO scope rows
-// (global — the default) OR a scope row for that site. Returned as an `AND`
-// fragment so it composes with any existing top-level `OR` (e.g. text search)
-// without key-colliding; spread into the storefront read's `where`. The
-// storefront resolves `propertyId` for EVERY public read (primary included), so
-// the primary site shows only global + primary-scoped items, never another
-// site's exclusive items. Single-site tenants have no scope rows → matches all.
-
-/** Product visibility `where` fragment for the active site. */
-export function productSiteVisibilityWhere(propertyId: string): Prisma.ProductWhereInput {
-  return {
-    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
-  };
-}
-
-/** Content-entry visibility `where` fragment for the active site. */
-export function contentSiteVisibilityWhere(propertyId: string): Prisma.ContentEntryWhereInput {
-  return {
-    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
-  };
-}
-
-/** Media-library visibility `where` fragment for the active site (docs/49). Media
- *  carries a DIRECT nullable `property_id` (like SocialConnection), not the
- *  many-to-many propertyLinks products/content use — an asset belongs to ONE site or
- *  is shared tenant-wide. So visibility is "this site OR shared (NULL)": a site sees
- *  its own uploads plus every shared asset, never another site's exclusive media.
- *  Wrapped in `AND` (like contentSiteVisibilityWhere) so its `OR` never collides
- *  with a search `OR` at the same object level in the list `where`. */
-export function mediaSiteVisibilityWhere(propertyId: string): Prisma.MediaAssetWhereInput {
-  return { AND: [{ OR: [{ propertyId }, { propertyId: null }] }] };
-}
-
-/** Collection visibility `where` fragment for the active site (docs/49 Model B) —
- *  the same "empty = all, pinned = only those" rule products use, so a collection
- *  scoped to specific sites never surfaces on the others. */
-export function collectionSiteVisibilityWhere(
-  propertyId: string
-): Prisma.ProductCollectionWhereInput {
-  return {
-    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
-  };
-}
-
-/** Category visibility `where` fragment for the active site (docs/49 Model B). */
-export function categorySiteVisibilityWhere(propertyId: string): Prisma.ProductCategoryWhereInput {
-  return {
-    AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
-  };
-}
+// A product / content entry / media asset is visible on a site if it has NO scope
+// rows (global — the default) OR a scope row for that site. The storefront resolves
+// `propertyId` for EVERY public read (primary included), so the primary site shows
+// only global + primary-scoped items, never another site's exclusive items.
+// Single-site tenants have no scope rows → everything matches.
+//
+// The fragments themselves MOVED to `@sparx/db` (`src/site-scope.ts`) once the builder
+// needed the same question answered when resolving a record page's preview target —
+// a visibility filter with two spellings is one drift away from leaking another site's
+// rows. Re-exported here so every existing `lib/property.js` import is untouched.
+export {
+  productSiteVisibilityWhere,
+  contentSiteVisibilityWhere,
+  collectionSiteVisibilityWhere,
+  categorySiteVisibilityWhere,
+  mediaSiteVisibilityWhere,
+} from '@sparx/db';
 
 /** Model B (docs/49 §3): default a NEW catalog item (product / collection / category)
  *  to the ACTIVE site, so "different catalogs per site" is the default the moment a

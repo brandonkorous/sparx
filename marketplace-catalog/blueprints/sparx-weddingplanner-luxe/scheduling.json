@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to reschedule or cancel a consultation. We’ll send a reminder two days before, the day before, and two hours ahead."
+    },
+    {
+      "handle": "booking-deposit",
+      "name": "Booking deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 1440, 120],
+      "policyText": "Longer planning consultations hold a $50 deposit that comes off your first invoice when you book us. Reschedule with 72 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "eleanor",
+      "name": "Eleanor Vance",
+      "kind": "staff",
+      "skillTags": ["wedding", "design", "full-planning", "styling"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["wedding", "coordination", "day-of", "partial-planning"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marco",
+      "name": "Marco Reyes",
+      "kind": "staff",
+      "skillTags": ["wedding", "destination", "design", "styling"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A relaxed 30-minute call to hear your vision, your date and your budget — and see if we’re the right fit. No cost, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "full-planning-consult",
+      "name": "Full planning consultation",
+      "description": "A deep-dive session for couples who want us start to finish — venue, vendors, design, timeline and the day itself.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "booking-deposit"
+    },
+    {
+      "handle": "partial-planning-consult",
+      "name": "Partial planning consultation",
+      "description": "You’ve made a start — we come in to shape the vendors, design and logistics, and carry it over the line.",
+      "durationMinutes": 45,
+      "priceCents": 10000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "booking-deposit"
+    },
+    {
+      "handle": "day-of-coordination-consult",
+      "name": "Day-of coordination consultation",
+      "description": "You’ve planned it beautifully — we step in for the final weeks to run the timeline, the vendors and the day so you can be present.",
+      "durationMinutes": 45,
+      "priceCents": 8000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "design-styling-consult",
+      "name": "Design & styling consultation",
+      "description": "A creative session on the look and feel — palette, florals, tablescapes, lighting and the details that tie your day together.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "booking-deposit"
+    },
+    {
+      "handle": "destination-wedding-consult",
+      "name": "Destination wedding consultation",
+      "description": "Marrying somewhere further afield? We plan the travel, the local vendors and the multi-day celebration end to end.",
+      "durationMinutes": 60,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "booking-deposit"
+    },
+    {
+      "handle": "venue-tour-consult",
+      "name": "Venue tour walkthrough",
+      "description": "Meet us at a shortlisted venue and we’ll walk it with you — flow, capacity, backup plans and how your design will sit in the space.",
+      "durationMinutes": 60,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "planner",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    }
+  ]
+}

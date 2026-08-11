@@ -1,0 +1,378 @@
+{
+  "policies": [
+    {
+      "handle": "wag-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to change or cancel your dog’s spot. We text a reminder the day before and two hours ahead so nobody forgets bath day."
+    },
+    {
+      "handle": "groom-deposit",
+      "name": "Full-groom deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 1500,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over — it only keeps a no-show from taking a groomer’s whole afternoon."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rosa",
+      "name": "Rosa Delgado",
+      "kind": "staff",
+      "skillTags": ["bath", "full-groom", "hand-strip"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Park",
+      "kind": "staff",
+      "skillTags": ["bath", "full-groom", "de-shed"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "bea",
+      "name": "Bea Nguyen",
+      "kind": "staff",
+      "skillTags": ["bath", "nails", "puppy"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 570,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 570,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 570,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 570,
+          "endMinute": 990
+        }
+      ]
+    },
+    {
+      "handle": "bath-bay",
+      "name": "Bath bay",
+      "kind": "table",
+      "skillTags": ["station"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "table-a",
+      "name": "Grooming table A",
+      "kind": "table",
+      "skillTags": ["station"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "table-b",
+      "name": "Grooming table B",
+      "kind": "table",
+      "skillTags": ["station"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "bath-brush-small",
+      "name": "Bath & brush — small dog",
+      "description": "A warm bath, a gentle towel-and-cage-free blow dry, a brush-out, ears and a spritz. For dogs up to about 25 lb.",
+      "durationMinutes": 45,
+      "priceCents": 4000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["bath"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wag-standard"
+    },
+    {
+      "handle": "bath-brush-large",
+      "name": "Bath & brush — large dog",
+      "description": "The same gentle bath, brush-out and cage-free dry, sized for the big kids — dogs over about 50 lb.",
+      "durationMinutes": 75,
+      "priceCents": 6500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["bath"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wag-standard"
+    },
+    {
+      "handle": "full-groom-small",
+      "name": "Full groom — small dog",
+      "description": "Bath, full haircut to the style you like, nails, ears, paw tidy and a bandana. For dogs up to about 25 lb.",
+      "durationMinutes": 90,
+      "priceCents": 7500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["full-groom"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "groom-deposit"
+    },
+    {
+      "handle": "full-groom-large",
+      "name": "Full groom — large dog",
+      "description": "The whole works — bath, breed or freestyle cut, nails, ears and paws — for the big dogs over about 50 lb. Never rushed.",
+      "durationMinutes": 120,
+      "priceCents": 11500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["full-groom"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "groom-deposit"
+    },
+    {
+      "handle": "puppy-intro",
+      "name": "Puppy’s first groom",
+      "description": "A short, gentle, all-treats introduction to baths, brushes and the dryer, so your puppy learns grooming is a good day. Under 6 months.",
+      "durationMinutes": 45,
+      "priceCents": 3500,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["puppy"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wag-standard"
+    },
+    {
+      "handle": "deshed-treatment",
+      "name": "De-shed treatment",
+      "description": "A deep bath, a shed-loosening conditioner and a thorough undercoat brush-out — the fix for tumbleweeds of fur at home.",
+      "durationMinutes": 90,
+      "priceCents": 8000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["de-shed"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wag-standard"
+    },
+    {
+      "handle": "nail-trim",
+      "name": "Nail trim & tidy",
+      "description": "A quick, calm nail trim with a file-smooth finish — add a teeth-brushing on the day if you like. No appointment marathon.",
+      "durationMinutes": 45,
+      "priceCents": 2000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "groomer",
+          "kind": "staff",
+          "skillTags": ["nails"],
+          "count": 1
+        },
+        {
+          "role": "station",
+          "kind": "table",
+          "skillTags": ["station"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wag-standard"
+    }
+  ]
+}

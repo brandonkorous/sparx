@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-pt-ortho",
+  "name": "sparx — Physical Therapy (Ortho & Sports)",
+  "version": "1.0.0",
+  "tagline": "An athletic template for ortho & sports physical therapy — book evaluations online from day one.",
+  "description": "An active, results-driven orthopedic & sports physical therapy site — a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as \"Momentum Physical Therapy\", an ortho & sports rehab clinic that books evaluations online from day one.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Physical therapy",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Physical Therapy (Ortho & Sports) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Physical Therapy (Ortho & Sports) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#008e95",
+  "sortWeight": 48
+}

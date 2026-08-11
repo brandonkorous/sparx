@@ -1,0 +1,2060 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "61f0a6c6-1916-4d4a-b808-588bf3443b22",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "6d4d0047-0bca-45b4-b048-abb54f870b74",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "ce5822f5-84a5-4057-84bf-77eb3a5793e3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "6c45c873-7f60-4841-b9d0-b1720f51a84e",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "5d509d21-a2a6-4cb6-a05b-78e30502e5f7",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "679f003d-b754-487d-8759-a2d3996cb2d1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "615c6a29-c43d-48ab-98d9-7820dc873885",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "0ec8e8d0-40c4-4050-9a40-a55f9215ba3f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "f728c963-4d74-4a68-8741-26b6ca375617",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "dbda0136-3e1f-439e-a158-fffd4804a200",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "4b50ca07-5a3a-41a9-9c54-ac2fdd7d04d2",
+                  "ord": "a2"
+                }
+              ],
+              "id": "01351c29-7f12-493a-952a-63b516ae2787",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f81130a0-b2a0-4e79-ab8c-196ac7da3c34",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "6e98a877-df25-4ff2-8e7d-ec5f541d066f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "5e11ed9c-4ddb-4e12-b633-87ac84c380fd",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "04076694-eb29-48b8-9ea0-cf01075ade50",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "ca883473-c57f-4c86-8d9c-35d3023a4d9a",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "d065886e-76af-4414-b1f6-f94c020c35c9",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "4f34d2c7-a28a-4691-a9c1-43bdd2da8979",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6507e3d4-388c-4b29-b09c-e9f650732c0e",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "8685a0a2-d194-42b6-95d6-141af2bb9764",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0611d521-dd84-413a-ab86-9dad46d477aa",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "70117ab3-b97e-41ad-a076-89340cbc0104",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "882b2da2-c2e9-4abf-83a4-9a09f01c642b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0e1c7e77-36e6-400d-8258-bc18f1a44c4f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "61a66eb6-4e3b-4736-b70f-aa6761629934",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6379bfbe-bb02-4e04-b28d-675b91ef975e",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "d791bd1a-3c8e-410e-8a60-1c2475f887e5",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "808e5cb3-14e4-4a2c-9d81-5712bf0e71da",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "96eb6b5a-0be8-4eca-bf5d-fda63f16d3c4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "150ec511-88e8-451f-946e-7f8562379718",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "85861703-3072-4904-aacf-835e17796d0f",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "c5df2a2d-11b5-4b20-804b-ab967f64b349",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "e12db0eb-45e7-46df-803d-b4d7d0947d5f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e59f5d25-339f-4b3f-81ed-b45770a9006e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "98a5cbcf-89c6-455f-a6b5-aeb46eb8e7e4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9b466a2a-ce50-42a2-8c6b-8cc7ec21951a",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "039612e2-c7ff-4439-b5e6-83a03a042f62",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "1aa99ef9-5765-48ce-96a3-1a86488cb035",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "127c3e54-8f6e-4a82-afeb-31cdc6bc0d43",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "70fac6c9-8877-45e2-a92a-083ef15bf0c1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "83a7e15d-b882-4681-9050-f910f729de8b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "ef05974f-9a09-4e39-9e04-cafee7e692f8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "6ffbdb65-2b1e-464d-9650-f6b303630ca1",
+                  "ord": "a1"
+                }
+              ],
+              "id": "73e890e0-592c-4915-861f-011aac42243f",
+              "ord": "a0"
+            }
+          ],
+          "id": "e9fa97da-42d0-4ba5-bd0c-d8b5dbc510ba",
+          "ord": "a2"
+        }
+      ],
+      "id": "1143b212-a358-4c2b-882d-d54add9ea9bf"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Sasha Rourke — product & UX designer",
+      "seoDescription": "Sasha Rourke is an independent product designer working across fintech and healthcare — selected work, case studies, and how to start a project.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d9cc2a39-e99b-4440-aaa9-0661bd4bd2b9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-16 @3xl:pt-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "max-w-4xl text-5xl font-bold leading-none tracking-tight text-base-content @2xl:text-7xl @3xl:text-8xl",
+                        "children": ["Product designer who ships."],
+                        "id": "830e4375-e31c-40b8-b4a4-aba497ab9d0f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": [
+                          "I’m Sasha Rourke — I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end."
+                        ],
+                        "id": "44a8d42a-a16d-4920-abcb-9cbe73973d6d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c612313b-ed35-48a0-8de6-e5c288804bc0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See selected work"],
+                        "id": "1c6f3cd0-42cd-42bd-a520-d34fc02c54b8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": ["About me"],
+                        "id": "d6f51d75-5f6a-4c24-947b-6f17a8e9f115",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "596ed667-e224-4061-a1cd-4e5f8ff30189",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-4 flex flex-col gap-3 border-t border-base-300 pt-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                        "children": ["Selected clients"],
+                        "id": "530fd572-b3a2-4256-a460-63d2c8ee49b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap gap-x-8 gap-y-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Atlas Financial"],
+                            "id": "720d8ad1-1107-4a40-a1b3-072ff6953458",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Northwind Health"],
+                            "id": "c50d528c-9cba-4a96-9a18-f7bb0b6e58ca",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Kiln"],
+                            "id": "96693b3d-c02e-4562-a6c2-b0acef2ca80b",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Fathom"],
+                            "id": "ff527dc6-e7a9-40a9-87e3-d43296c75e5a",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Meridian"],
+                            "id": "05d76647-8464-44f9-88f1-69eade16e46a",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "fc3c0eb1-3708-4837-97d4-e5ac0a8c5ae9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "238fde91-cf4d-4a8e-904e-37cd81bd2226",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "5c6d18b4-037e-4300-9e36-50af4aeac359",
+                "ord": "a0"
+              }
+            ],
+            "id": "7a1cb39c-0cd3-4354-a825-835c3fa7b077",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-14",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Selected work"],
+                        "id": "3365e7cf-ef72-4c34-8716-c595f7154bc6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Three recent projects, each with the problem it solved and the result it moved. The rest are on the work page."
+                        ],
+                        "id": "5654ff8a-e391-439e-ac80-d353b3e1338a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "bfd778a5-d1ed-40b0-85e1-1337cf362f9d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @3xl:grid-cols-2 @3xl:items-stretch",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block overflow-hidden rounded-box border border-base-300",
+                        "attrs": {
+                          "href": "/blog/atlas-trading-dashboard"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGF0YSUyMGRhc2hib2FyZCUyMGFuYWx5dGljcyUyMHNjcmVlbnxlbnwwfDB8fHwxNzg2Mzk5NzQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A financial dashboard redesign shown across desktop and mobile",
+                              "loading": "lazy"
+                            },
+                            "id": "0986e523-279f-4c07-bee7-991b04e58e01",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "7ccacc08-57bd-4d54-bc6b-1398bb2ae3f6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col justify-center gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Product design · Design systems · 2026"],
+                            "id": "f8935f41-8b9c-474b-bdb5-f8c7bdce9562",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
+                            "children": ["Rebuilding the Atlas trading dashboard"],
+                            "id": "729e83d6-b52e-4bbb-bb85-c6bf693ca900",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "A dense pro-trader dashboard rebuilt from the information architecture up, then codified into a component library the whole product now runs on."
+                            ],
+                            "id": "fd700136-d34d-4f64-ade6-57f9c20a40f4",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
+                                "children": ["−38%"],
+                                "id": "953fbb5d-fc1b-4d3c-9db1-08c2111691f5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["support tickets in the first quarter"],
+                                "id": "7e4447fd-29e8-453d-a069-15f482518411",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "17f94a0e-2190-4664-a8d6-d3939a96377d",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                            "attrs": {
+                              "href": "/blog/atlas-trading-dashboard"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the case study"],
+                                "id": "21b9fd11-0b6f-4507-b11d-668b7700e8b8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "543d20f5-1908-4fa7-aa9a-4a8662f1ed04",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "95601d38-0639-49be-99da-894075716b83",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "f18e211e-0a28-4774-8f38-bd7d6daf034a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1295708c-594b-4ccf-a780-2f14c44cf5b6",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @3xl:grid-cols-2 @3xl:items-stretch",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col justify-center gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["UX · Service design · 2025"],
+                            "id": "1ab01e2b-a269-4907-a6b1-308b38be8f2f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
+                            "children": ["A booking flow patients actually finish"],
+                            "id": "bd6ab04e-f18c-4952-9fd5-422c2674e7be",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Northwind’s appointment booking was losing people at every step. We cut it to three, wrote it in plain language, and tested it with real patients."
+                            ],
+                            "id": "eb9147fc-3048-4c64-ab69-e4c80c3f534d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
+                                "children": ["+61%"],
+                                "id": "5611d1be-cca6-4c92-a3c8-e7aef8b39a03",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["booking completion rate"],
+                                "id": "6eaca6e1-2905-4aad-8349-77a033c9759d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9cc12a61-48ba-47cf-af23-ddd980d019bd",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                            "attrs": {
+                              "href": "/blog/northwind-booking-flow"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the case study"],
+                                "id": "cdf55689-de3f-483a-9118-4eb245a3cb09",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "6c5bf884-f0fc-4d75-b898-0128877a3666",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ad08d970-21c9-48ba-a8a1-363e5ad70e87",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "3f25471f-ef9e-466e-9aa6-b4c3ec416bc2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block overflow-hidden rounded-box border border-base-300",
+                        "attrs": {
+                          "href": "/blog/northwind-booking-flow"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9iaWxlJTIwYXBwJTIwaW50ZXJmYWNlJTIwcGhvbmV8ZW58MHwwfHx8MTc4NjM5OTc0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A healthcare booking flow, a sequence of clean mobile screens",
+                              "loading": "lazy"
+                            },
+                            "id": "e2660a9b-2aec-4c2f-a92e-4487b5e54c0c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "1414ec9e-7440-4ba1-aed8-f694cbae715f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "37ca6682-9477-4e90-ac4a-c6ac5e7ff98d",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @3xl:grid-cols-2 @3xl:items-stretch",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "block overflow-hidden rounded-box border border-base-300",
+                        "attrs": {
+                          "href": "/blog/kiln-design-system"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1602576666092-bf6447a729fc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dWklMjBkZXNpZ24lMjBzeXN0ZW0lMjBzY3JlZW58ZW58MHwwfHx8MTc4NjM5OTc0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A design-system component library laid out as a swatch grid",
+                              "loading": "lazy"
+                            },
+                            "id": "f7379499-f773-42bd-b28c-75e5123030bd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "0a33f827-d88d-4ccf-8cab-e56304a8a9ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col justify-center gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Design systems · 2025"],
+                            "id": "5faa3110-32fa-4411-a384-8de1ed9b58de",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-3xl font-bold leading-tight tracking-tight text-base-content @2xl:text-4xl",
+                            "children": ["One system, five product teams"],
+                            "id": "a7bb7d85-6658-4491-983d-54e4c5d64a78",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": [
+                              "Kiln’s five squads were each rebuilding the same buttons. I built the shared system — tokens, components, and the docs that made teams actually adopt it."
+                            ],
+                            "id": "80d9697d-cf8a-44fc-a4de-fd7f2be793c7",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-5xl font-bold leading-none tracking-tight text-primary @2xl:text-6xl",
+                                "children": ["4×"],
+                                "id": "aa6e1662-24bc-4af8-a341-0342ddb1f1dd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["faster to ship a new screen"],
+                                "id": "fe93aaa8-08b3-4765-a853-bf210f388f93",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b5b678a1-da04-41b7-937a-3ff446e403d9",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                            "attrs": {
+                              "href": "/blog/kiln-design-system"
+                            },
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the case study"],
+                                "id": "909fa8fe-7846-4752-ab72-16d83f858680",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "5028582a-3820-4237-9967-a8d16ac49134",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2a65972e-f33d-43cb-82ec-14b84c032f73",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "065b76a1-2c82-4fea-b9af-4bad3d316a5e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1ba7022b-c504-4e43-b845-7b44715b2183",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "f6de9963-6a4a-41b9-933b-1b48f4659bf8",
+                "ord": "a0"
+              }
+            ],
+            "id": "440e28bf-a847-4ff6-88b8-b0261ebab123",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "max-w-3xl text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["I design the product and the system it’s built on."],
+                    "id": "1cae8795-b270-48a5-836a-c62f6b4947a3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Product design"],
+                            "id": "fce57e44-6d51-4be2-a171-0efa0ce14b8b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "End-to-end interface design — flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written."
+                            ],
+                            "id": "dce2be8a-00d0-4a11-af00-b7a4aef6d641",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c872c3f0-0919-43da-8399-0a04dba1d774",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Design systems"],
+                            "id": "e0edb70c-2995-4a31-a2c4-ffeab51e749e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Tokens, components and documentation that let a whole team move fast without the product drifting apart. Built to be adopted, not admired."
+                            ],
+                            "id": "518b93ca-1048-4439-b49d-52bae5940561",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b88df523-3b3c-438d-b114-4bdfd5a2c0ca",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Research & testing"],
+                            "id": "c8a6dc05-b64c-4861-8a38-21ba6398e7cc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "I test with real users early and often — usability sessions, quick prototypes, and honest readouts that change what we build next."
+                            ],
+                            "id": "e5ed406d-3ac8-4dd6-b5b6-63b935cd68f4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "77793441-2665-44b2-9ecf-84e79f06365e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "7b3c8a75-431f-412e-965b-0b62b05cd1a9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "db87cb25-511b-423f-9507-b58d131e47c6",
+                "ord": "a0"
+              }
+            ],
+            "id": "23177d9e-38e4-4172-ae18-9e3aafdf7600",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-primary-content @3xl:text-4xl",
+                    "children": ["Have a project in mind?"],
+                    "id": "1b24c05d-8967-4ef1-9215-dba972572a19",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-primary-content",
+                    "children": [
+                      "I take on a few projects at a time and I’m choosy about fit. If yours sounds like a good one, tell me about it."
+                    ],
+                    "id": "7f3e9d88-d3eb-4f31-acbb-ec7dac57a817",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-lg mt-2 bg-base-100 text-base-content",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Start a conversation"],
+                    "id": "1a4254f3-c8b4-4ca3-a15e-7faa81811ac7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "faeeb261-4176-4c90-a626-1966016a43fe",
+                "ord": "a0"
+              }
+            ],
+            "id": "df3bdab0-35bf-4e4d-bfac-6c8b527da27d",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Sasha Rourke",
+      "seoDescription": "Selected projects and case studies by Sasha Rourke — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "daef3044-4b7f-4c7a-b153-1fff0fd8e02c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Selected work"],
+                    "id": "600001a5-4881-4c1c-babf-aff08a2dde97",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Case studies from the last few years — fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed."
+                    ],
+                    "id": "7ae5f60c-72c9-4123-90b5-da77eefe61cf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6efb1dba-9126-409e-9fa0-66d50523aca0",
+                "ord": "a0"
+              }
+            ],
+            "id": "6f961e23-af0a-4ee6-82f3-138ce4bdf9d8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "cae5596a-4ea2-48ab-85e5-e197f9223e55",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "372785b4-823b-4453-8e77-467cdddcd5b2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "1c1945dc-aff8-420a-a71a-df4b8f8eb0fe",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "93f56e4a-3fbf-4394-9885-70d04be9e0a2",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "e4686b5d-9924-4281-9bf6-3df6d4752b23",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "fbc33102-9849-4526-9ca2-31eb5e324c9a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "954dbc9d-41d4-43c5-a037-98cbb89afbbb",
+                "ord": "a0"
+              }
+            ],
+            "id": "0a1d0f94-962e-467e-ab80-93810abbb4ea",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Sasha Rourke — product designer",
+      "seoDescription": "Twelve years shipping product in fintech and healthcare, end to end: research, interface design, and the design systems that keep a team consistent.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "269a22b6-5c6e-4239-a8d7-efaed81d7209",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["About Sasha"],
+                        "id": "86d3f664-c076-4810-8df2-fd45a6a12a98",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m a product designer with twelve years of shipping real software — most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen."
+                        ],
+                        "id": "97228e88-9da8-47fb-899f-997cc0aba59b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well — the empty states, the error messages, the second-time-through experience."
+                        ],
+                        "id": "651aa2dd-8735-4f58-98d9-55c36947be38",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Before going independent I led design at two venture-backed products and one very large bank. Now I take on a handful of projects a year, usually as the senior designer a team is missing."
+                        ],
+                        "id": "383a2625-049c-4ec0-9a6a-84956bf4b3a9",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c5c5342b-d3c5-40df-82e6-73ee4b3238c8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full rounded-box border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwcG9ydHJhaXQlMjBwZXJzb24lMjBzdHVkaW98ZW58MHwwfHx8MTc4NjM5OTc1MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Sasha Rourke, product designer",
+                          "loading": "lazy"
+                        },
+                        "id": "d1f6ac59-711c-4564-9152-b4e5b9ab471f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Tools"],
+                            "id": "431dafb5-7ceb-4dfa-a2e6-51755230d11a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Figma, prototyping, design tokens, and just enough front-end (React, CSS) to hand off work that survives the build."
+                            ],
+                            "id": "e6bab02f-85c3-458c-be4f-4c3806528a05",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1e442cb3-3bc0-48db-976a-edda0e97be2a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0533fbda-eaca-489b-b490-0eeebde8f5e4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0015363a-808a-4c2d-976d-eee48c9d940d",
+                "ord": "a0"
+              }
+            ],
+            "id": "516ad60f-d34d-4885-b77b-eb842d4d9ea1",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Sasha Rourke",
+      "seoDescription": "Start a project with Sasha Rourke — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7e9f0868-0276-4522-a7d1-1022e683338d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Let’s work together"],
+                    "id": "61675b13-d829-4b72-a8ce-190fc954ce83",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it — but a rough idea is a fine place to start too."
+                    ],
+                    "id": "15dd4fe7-7323-4c00-ab83-af1cc0785d3d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:hello@sasharourke.example"
+                        },
+                        "children": ["Email me"],
+                        "id": "43c515ef-8a32-46a1-b417-1d6a9079ff1e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the work first"],
+                        "id": "59c6d098-5ca2-438e-9b09-9f122cd67074",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4baea409-ff55-46c7-bd32-70b599041198",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c8280331-bc56-44c3-b9f6-d2277971bf97",
+                "ord": "a0"
+              }
+            ],
+            "id": "36b204c2-e565-49bc-8cc4-4d0f8909cf1c",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Sasha Rourke",
+      "seoDescription": "A project by Sasha Rourke — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "69f77ebe-b47c-4f0e-95ae-fd452690311f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All work"],
+                            "id": "ba91d257-ba77-4bd9-b76b-bcf811a746d3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "170e0cc4-184f-4563-be04-872d848837dc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "70ddc2cd-b76e-44f3-b9c4-832765f9aa10",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "204f90ea-c820-4055-921d-967e3192b46c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "2affd52a-0539-4223-9bd4-cdf0829784f8",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "d689ff5f-11ba-4726-9376-889a4d7a71fe",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "6d0dd0b7-a858-462c-9aba-073b05a73e05",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "245acb11-4e66-454e-beaf-a2de318a9d26",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b43565b0-70f2-4d19-9465-005942e4f341",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "34317e1b-318b-4183-bd46-5d6b4cf587cd",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "c2b19bdd-578d-4677-86d3-7599508039ba",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3894fb94-2e14-48ee-9d26-e16f91c2bc59",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-5xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "5c3fb946-677f-425f-8e4c-13d87ca4b68d",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "07d0e06a-c189-45da-b548-9df3e3d046b4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d9361dd7-1f74-442c-a59e-3b9a65d7bed7",
+                "ord": "a1"
+              }
+            ],
+            "id": "bcae5c6f-35fb-49b3-a66e-b72b91df94f2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "7eefeedd-3c7d-4dc7-ba03-bd452bad6cd1",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "373804ed-f872-46e7-ba27-e173caad4575",
+                "ord": "a0"
+              }
+            ],
+            "id": "aeffd42d-f783-417e-873a-d3d820fcf8a5",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "ed278a07-016e-444b-b6e5-4e7b6b09253e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "6c86f274-9bf1-4fbe-b45c-2ad8bcfd785d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "932ccc85-4634-4c1b-bf87-ae4e1dfa12b9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1648956d-21b4-4931-acb4-daf80815f36a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "fad62ec1-2aba-4d54-96c1-e70dcdab5eb6",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d9405c9c-4a34-4494-915c-82905c4b173a",
+                "ord": "a0"
+              }
+            ],
+            "id": "25f2561c-4724-480f-bf2e-bc60aaf42c7b",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "e3e09a04-8cd8-4b34-b2d1-2bcaaf030701",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "ca512a52-c199-418b-a679-7f8b2408aeee",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "3b01b6c9-af5f-4460-8e21-1c37f909db50",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4423344b-dae4-494d-8f71-983652b37cd3",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d5e1cf89-431d-4ef3-9cef-92132eab043f",
+                "ord": "a0"
+              }
+            ],
+            "id": "a01d4725-71a7-44e2-b48f-4ad1c10244a4",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "6cec4101-12cf-4a1d-ad58-bb6a91c11815"
+      }
+    }
+  ],
+  "theme": {
+    "name": "casework",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(99% 0.002 250)",
+      "--color-base-200": "oklch(96% 0.004 255)",
+      "--color-base-300": "oklch(92% 0.006 258)",
+      "--color-base-content": "oklch(19% 0.01 260)",
+      "--color-primary": "oklch(50% 0.2 258)",
+      "--color-secondary": "oklch(42% 0.03 260)",
+      "--color-accent": "oklch(50% 0.2 258)",
+      "--color-neutral": "oklch(24% 0.01 260)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.375rem",
+      "--radius-box": "0.5rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 258)",
+      "--color-secondary-content": "oklch(98% 0.01 260)",
+      "--color-accent-content": "oklch(98% 0.01 258)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.2 258)",
+      "--color-highlight-content": "oklch(98% 0.01 258)",
+      "--color-border": "oklch(92% 0.006 258)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(16% 0.008 260)",
+      "--color-base-200": "oklch(13% 0.008 260)",
+      "--color-base-300": "oklch(10% 0.008 260)",
+      "--color-base-content": "oklch(96% 0.004 255)",
+      "--color-primary": "oklch(64% 0.18 258)",
+      "--color-secondary": "oklch(74% 0.03 260)",
+      "--color-accent": "oklch(64% 0.18 258)",
+      "--color-neutral": "oklch(30% 0.008 260)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 258)",
+      "--color-secondary-content": "oklch(15% 0.02 260)",
+      "--color-accent-content": "oklch(15% 0.02 258)",
+      "--color-neutral-content": "oklch(98% 0.008 260)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(64% 0.18 258)",
+      "--color-highlight-content": "oklch(15% 0.02 258)",
+      "--color-border": "oklch(10% 0.008 260)"
+    }
+  }
+}

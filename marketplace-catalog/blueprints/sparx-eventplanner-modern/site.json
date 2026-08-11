@@ -1,0 +1,2278 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "2dd843c5-50ed-4adc-9b8d-8d66cf1b964c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "8a7bb5cd-9875-4429-b6e3-21caffce4f1b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "cb6c721d-f467-4ea1-b6ba-fdb0b8a3d8a8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "46cb7e48-cdd5-414e-b128-6d7fb62c424e",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "f710a24a-4435-4d99-ab40-526ccc69b06d",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "3d1373c6-f63d-4861-af91-7235defc1417",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "766f1c43-a8ea-4003-9b61-75c1ce6c3116",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "1fce6abf-0ec9-4692-9d64-7758792ac20a",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "82c4c3df-98ea-4323-8bc3-aec1056d80c3",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "d8b970ed-c67e-433c-be02-05270b0a021f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5da215f1-cd7c-4896-a8ec-6ae7bf8fec9f",
+                  "ord": "a2"
+                }
+              ],
+              "id": "2cdf1f4b-5f1d-4f64-a694-2d9538d9a4e6",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "866e52b9-3847-44f1-b77c-6f67d4d459ce",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "b7d79250-81a7-4078-9854-5bd0cc841416",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "414e0663-b054-4b05-a716-0ab23f65bc72",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "d9534696-90bf-480e-a76e-b53e8ede6b98",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "a61d0645-e000-4951-a183-f534f1f1da09",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "c6b7d225-4a99-4d1d-9d5f-5f33bd419a41",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "708f08cf-c751-4ed4-8434-8f4612697b27",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6b13b75d-f947-486c-81e4-6b994586e189",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "a654e106-df61-4d8e-a723-c6ad740e08d5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "748e57df-5ec9-4a8d-804a-500411172637",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "41d21731-f055-46c8-b0ca-416356b540df",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ec999ea5-cb47-4aed-8d4c-30817f68c177",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "8f9ff064-36f7-4401-a526-8f73380469f3",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "50b06679-11a3-45e8-91d8-187d7f70ab99",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "dcd3b2d4-8e5a-414b-a594-e20bd0cb4eef",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "657b5deb-33ab-46f2-b247-6b978651e5d6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "96d8fa8f-1316-420b-93df-57e5106ecd66",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "2450273c-8644-4fe4-a38a-5676cc2e303b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5b810679-b586-4fd1-b55c-67a7786c857c",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "244247b2-435f-4f7c-9588-01f00e8182c5",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8d4e4c84-e735-45d9-a47b-1d77c47df20f",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "207d64d9-b3fd-45f0-bc3b-ad158c783b34",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "85b4129a-380f-47e0-8c4b-89bbe54ba5ea",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "61d331f2-36ee-4896-b37e-c10c408c5f0c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "320afa5d-90bf-46f6-aa2d-700591916455",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "fc534e74-de94-455e-a55b-301ef14670c8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6bb6c290-490d-45a3-9244-947fd0b3b53e",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "4e2c37ac-abc6-41e1-b344-1b25f29e4df8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "33db1b19-3fe8-452b-87a4-6ca9c08019a1",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b77e499b-2105-40a3-9576-d03dd1a3aec4",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "919c816d-02ea-4108-bab1-a3cbc30f6fcf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6596b438-9506-4b6a-bc43-a6ba8cdd7190",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "9d21ea79-c69e-4a0e-88aa-76cac0685654",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "3da794da-5406-42ed-a9ac-abcacfbfccdc",
+                  "ord": "a1"
+                }
+              ],
+              "id": "594adf20-53d8-4f19-b7d1-3c7d2935ffdd",
+              "ord": "a0"
+            }
+          ],
+          "id": "6c6e3a2a-c292-4fa0-8e10-28efc943d08b",
+          "ord": "a2"
+        }
+      ],
+      "id": "0e1e71f9-0685-4bfb-a9e6-f26241dad1a9"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Assembly Events — corporate & social event production",
+      "seoDescription": "Assembly Events plans and produces conferences, product launches, galas and brand activations end to end. Book a consultation with a producer online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "43812668-ef84-4fca-a0b6-9f86890f616d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1783979384797-7a5d2ad23fc8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29ycG9yYXRlJTIwZXZlbnQlMjBzdGFnZXxlbnwwfDB8fHwxNzg2MzkyNjY2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A packed conference stage under bold event lighting",
+                  "loading": "eager"
+                },
+                "id": "50b97fca-242a-449f-b80c-b63d5ed01060",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "6f8870cd-b55a-402c-b0e1-ed2ae2a5cfe4",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Events that mean business"],
+                    "id": "b5fab0b6-a759-4c35-b941-7cb885e9f092",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "We plan and produce corporate and social events end to end — conferences, launches, galas and activations that hit every mark, on time and on budget."
+                    ],
+                    "id": "dde18aa6-5b88-4902-a43c-82be7dcf6dfa",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "c80bf0b9-a2a6-452b-b6cf-e9fdc14ae3b8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we do"],
+                        "id": "97146a26-6548-42db-89a8-430a50352208",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "7ccd3c28-8905-4464-8e6d-cb8789b9d4e3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "62f51fd5-5196-424e-95aa-4bc5d806f4c0",
+                "ord": "a2"
+              }
+            ],
+            "id": "a266445c-315f-4095-b469-629ac772b556",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Full production & logistics"],
+                            "id": "772f7b9f-3d10-48e7-a860-bff00d7bd6bd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Venue, staging, AV, catering, run-of-show and the hundred details in between — one team owning all of it, so nothing falls through the gaps."
+                            ],
+                            "id": "7dfdc852-5e94-42ff-b8bb-1069710271ee",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e14e0a20-6115-43dc-a60d-87f324e52c10",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["On-brand experiences"],
+                            "id": "d46baa95-1a06-4bbc-a53e-b29a1e729842",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you — not a template with your logo dropped on top."
+                            ],
+                            "id": "b35e3c1c-851e-409c-b63e-53787352d5ff",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d1510638-c4aa-41dd-a63c-f3cfaa1dab9c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A trusted vendor network"],
+                            "id": "10d05840-cd1e-4083-9e6c-e5d87e0ad00b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Years of vetted partners — AV crews, caterers, entertainers, fabricators — booked at the right price and held to our standard, not just theirs."
+                            ],
+                            "id": "86f96a9e-1876-4b9b-8d0b-f99d89f2f718",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "93fcc08b-b60c-4d1f-8269-7ee0268d54e4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["On time, on budget"],
+                            "id": "bbfc4bf3-e5d7-4560-b1bf-f4f21b8228a8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A clear plan, a live budget you can see, and a producer who sweats the timeline so the day runs to the minute and the numbers hold."
+                            ],
+                            "id": "66ccc8f3-c88d-40e4-9bc3-b198d0b884a2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0febafdf-20d4-4737-b9a1-fa359405ad68",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a163ddb3-b167-4161-8c36-098534784a98",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "1da6886e-4545-4421-9773-887403e94046",
+                "ord": "a0"
+              }
+            ],
+            "id": "538df0e7-974d-46ea-aff6-ee567694256f",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways we work with you"],
+                        "id": "28310ebf-4e4b-454e-836f-35ca4f25946b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time — the discovery call is free."
+                        ],
+                        "id": "6198097d-6a51-4a1b-a914-0ebc27b6db90",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e5cb2900-f0de-4ca4-b5fe-4f359f93fcb7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Discovery call"],
+                                "id": "0a96e21f-ab5b-45eb-bba0-a2d1c05d4edc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "22b9a54a-7e29-4b79-926f-b566528c0728",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e4f9d6ca-42e7-4d85-b5a2-726d8fbf57a8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "05889ed5-89d8-4102-b66d-5d693e9fe883",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A free intro call to talk through your event."],
+                            "id": "8839c30a-06df-4b6e-87da-5e4ca2e849c0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "da773269-0bc1-42a6-bc58-251713523e69",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Corporate event consultation"],
+                                "id": "43a45d27-064c-4429-a5bc-be5838d5619e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$75"],
+                                "id": "2ada6079-272a-44bf-888d-c173640fddf2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bcaca9bb-973f-4432-a10c-54f7570ac13e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "ee4eaa5e-44b4-4992-a21c-ed8090304c6f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Offsites, summits and client nights."],
+                            "id": "8bd52663-7f67-4b3d-987d-394ebf7f578e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bf0e7b36-da92-4581-9f01-cbaba8427a5f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Conference production consultation"],
+                                "id": "8af6a65e-e315-405c-b48d-ba22e9a878fb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "ce850119-c395-4c06-9b0c-d2d072fd3eed",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4af034f4-384b-45f5-b85b-8692b5b7fe19",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "bbd207b8-e142-4b15-b814-0967c5065ccb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Stage, run-of-show, AV and logistics."],
+                            "id": "6fd2fb8b-e2d9-47d7-b0d9-022f40f1a5f6",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "cf4d65c4-3aea-4ac2-b706-9d8a8f99854e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Product launch consultation"],
+                                "id": "4fc56816-fc0b-49ce-a41f-d4af2f5522d9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "1a6f9ec5-96b0-4be6-b944-48a55efadd96",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0d8d0993-14ae-456f-92ec-fdc4194c28e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "1fc728f6-9dd0-4713-91a4-10052de8cd99",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The reveal, the room and the press moment."],
+                            "id": "bfea7418-4d39-472c-91cb-06fce9bc1781",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "28b0ec3f-c959-42f0-84ce-14b32478a308",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Gala & fundraiser consultation"],
+                                "id": "30389f95-0cdd-431e-b190-3886c7e9a77a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "e79462ad-c186-4a07-aab0-f3ab95b6be60",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "dbaf4c14-53a2-4289-aee2-e54b28d11479",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "a275a16d-33e4-4594-a823-95afe9e7006b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Black-tie programs that raise the room."],
+                            "id": "7839af20-c972-476d-a048-018157085494",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4b38e191-bd2e-44cc-94e0-9d37ad707cae",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Brand activation consultation"],
+                                "id": "3a494aeb-fc46-46aa-bae6-1d1d2fcdd0b3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "d9043548-6aac-4228-aa94-91e4228bab52",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "013008fb-ef8f-4295-93dd-11a74ebcbdc0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "253c8e04-bd3c-49e1-a52f-48e2ab3915c6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Pop-ups and experiential that get talked about."],
+                            "id": "59dc2b1a-8dc4-4138-bdf7-366398b9a00c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c5c81767-cf3d-4932-b996-9f5c1bdbe7d8",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "fb2de787-7055-4478-a71e-8bfe08074f7c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "66496dca-518e-4ac7-80b9-d3182755ef39",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "6ba1ed97-79e3-448c-82dd-d02af7c8f04a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "333c6e71-7aa5-4d9e-bb14-1329f90bce74",
+                "ord": "a0"
+              }
+            ],
+            "id": "2390c840-0e10-49fc-bc9d-c73bea2e442f",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Recent events"],
+                    "id": "2c04f2d4-a836-4776-92fd-a47912c5e9ec",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uZmVyZW5jZSUyMGV2ZW50fGVufDB8MHx8fDE3ODYzOTI2ODJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A product launch reveal moment on a bright stage",
+                          "loading": "lazy"
+                        },
+                        "id": "82d2f7e9-2d83-43d0-8934-b822bba10381",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1653821355736-0c2598d0a63e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FsYSUyMGV2ZW50JTIwbGlnaHRpbmd8ZW58MHwwfHx8MTc4NjM5MjY4NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A black-tie gala dinner in a grand ballroom",
+                          "loading": "lazy"
+                        },
+                        "id": "ca709193-ed5d-43e9-a4c4-6b17d6bab276",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZHVjdCUyMGxhdW5jaCUyMGV2ZW50fGVufDB8MHx8fDE3ODYzOTI2ODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A branded pop-up activation buzzing with guests",
+                          "loading": "lazy"
+                        },
+                        "id": "4091c5b2-a560-4352-91e9-f959a2db8cf3",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c8334e58-40cc-49fc-95f0-c94a7b225aa2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4b23303f-9938-44c2-a33b-ae0a92d6d342",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f61b1af-d21b-4baf-8ef3-5960a0073140",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXZlbnQlMjBwbGFubmluZyUyMG1lZXRpbmd8ZW58MHwwfHx8MTc4NjM5MjY3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A production team reviewing a floor plan on set",
+                      "loading": "lazy"
+                    },
+                    "id": "de36e45b-c692-4843-b474-db6f87835d11",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["One team, from brief to load-out"],
+                        "id": "8dfd9bd2-a542-43d4-a206-32014071111a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Assembly Events runs on a single principle: the people who plan your event are the people who run it. No handoffs, no lost context, no “that’s not our department.”"
+                        ],
+                        "id": "2c49585c-806d-4b3a-92f7-1912f7ea664f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We build the concept, lock the budget, manage every vendor and stand at the back of the room on show day making the timeline happen. You get one producer, one plan, and one number to call."
+                        ],
+                        "id": "529ee4e5-d01c-410c-9f31-968f5e6b61a3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start with a consultation"],
+                            "id": "c5cd7694-9868-40a1-98c4-6a563e4c76f7",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "33bf6357-3e8f-4fb5-8488-ff65f2af216b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "e2bbcfd9-e116-49b5-9095-64cc4761b200",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7506f8d9-77f7-4dde-a5b7-09aeef1bb9f3",
+                "ord": "a0"
+              }
+            ],
+            "id": "8d36d313-40e6-4fba-b3c0-4e2b3e309582",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The producers you’ll work with"],
+                        "id": "c6917679-2f27-46ce-8a19-6fd4f81cacde",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — the producer you meet in the consultation is the one who runs your event."
+                        ],
+                        "id": "9d3c3fd4-60f9-4a8e-b8dd-373ea3540d7c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f2dbc8af-c0dc-4924-ad69-32bdad65ffa1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1566753323558-f4e0952af115?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXZlbnQlMjBwcm9kdWNlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI2NzR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Jordan Reyes, executive producer",
+                              "loading": "lazy"
+                            },
+                            "id": "adec7156-4d04-48d4-bfe5-f4ca3e95ef27",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jordan Reyes"],
+                                "id": "85c75a89-b82e-4f31-8ef2-7cc3715b490d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Executive producer"],
+                                "id": "9ed14ee3-d5f6-46c7-8251-08bd77819aad",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fifteen years of conferences and corporate summits. Jordan owns the run-of-show and the budget."
+                                ],
+                                "id": "e4862637-c61b-4e8a-982c-a216f1f4c54c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "cc8618ac-e0c7-4e77-9e26-3a89965de360",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "af22dc27-c1e6-4c73-abab-90f82110ae1f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBldmVudCUyMHBsYW5uZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNjc3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Sana Okafor, experience producer",
+                              "loading": "lazy"
+                            },
+                            "id": "369241d6-4b69-4821-a75b-4727a62fbf70",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Sana Okafor"],
+                                "id": "2a34c952-da03-407e-97f4-ccc7e6905747",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Experience producer"],
+                                "id": "06cf6f4f-832e-40db-a0bb-d7815eb3f8ef",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Design-led social events and galas — the room, the flow and the moments people remember."
+                                ],
+                                "id": "06307259-d9b5-4bee-b22e-292d8cbfca19",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c3998f66-6948-4664-a214-8f8343f6632b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ed58a248-d58f-4282-994c-2a5d51432b98",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1562788869-4ed32648eb72?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3MlMjBtYW4lMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNjc5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Vale, brand activation producer",
+                              "loading": "lazy"
+                            },
+                            "id": "a9825595-1442-490b-9ffd-52bcbb4eb40a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Vale"],
+                                "id": "d56ffba6-c54c-4e93-857e-3d3cc9f80605",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Brand activation producer"],
+                                "id": "fa2b7ea0-af75-476d-8371-38f3e2670393",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Launches, pop-ups and experiential builds that turn a brand brief into a crowd."
+                                ],
+                                "id": "7479e0ae-0145-416c-8d61-411601da543e",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "9a386563-bcf9-49ff-9561-2f571d2cdcc4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3cb2f2a7-19ca-4d0b-a936-0952b0b00b66",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "71e14692-84a2-49c6-b848-8e668a2571e2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bfe0c492-52c1-4e59-ad9a-d03ba5969504",
+                "ord": "a0"
+              }
+            ],
+            "id": "6f2a26b3-06d2-4016-914f-f87a9dfe84fc",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises — and it came in under budget.”"
+                    ],
+                    "id": "2563ba3e-11f8-4b3c-ad9c-2886a2859c4e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Dana Whitfield, VP Marketing, Northwind Software"],
+                    "id": "e40e4e6f-2a5b-42e1-a490-fbace5c9fee3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "506a9d25-55dd-4192-8238-23ca9595ce4d",
+                "ord": "a0"
+              }
+            ],
+            "id": "e90f7743-4c36-4599-a777-af363b0c8fb6",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s build your next event"],
+                    "id": "77ff415e-72ec-41a7-90c5-88e4c81f0b7d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free discovery call or a deeper planning session. Pick a producer, see live times, and we’ll take it from there."
+                    ],
+                    "id": "b3c26dff-7c4e-4de9-ac34-52f60e0844f3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "b7f29a86-8b23-48d3-8b8a-7fefc71010ff",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "2652bd0d-071c-416f-adf6-fe23474b2491",
+                "ord": "a0"
+              }
+            ],
+            "id": "af21cd85-3299-4b61-a63e-b71700def9a8",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Assembly Events",
+      "seoDescription": "See what Assembly Events offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6224b8e8-a9d6-4501-9a2b-ba2f49116e75",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXZlbnQlMjBwbGFubmluZyUyMG1lZXRpbmd8ZW58MHwwfHx8MTc4NjM5MjY3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A production team reviewing a floor plan on set",
+                  "loading": "eager"
+                },
+                "id": "8237afb0-ac5c-4241-a3a2-0cbdbe39b2ff",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "52fb9e36-17d4-413e-9e31-685b214b5004",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a consultation"],
+                    "id": "e93485fd-f593-4f94-ab37-eee17e80c3d2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a consultation to see what it covers and how long it runs, then pick your producer and a time that works."
+                    ],
+                    "id": "74ce4dfb-0f95-4fb7-b3ab-1c719db229a1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See consultations below"],
+                        "id": "5568eded-2313-462f-8b62-0b93c7553592",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "30026dbb-d83d-4a98-9ac7-b9692105edf2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7270e3a0-2680-43fb-ac0a-e923e5296fe8",
+                "ord": "a2"
+              }
+            ],
+            "id": "0fe3658b-601d-4f87-8d66-99ffb65babd4",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "f0ccaa6f-73aa-4bfd-863d-a3fd3a595d87",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Assembly Events",
+      "seoDescription": "Who Assembly Events is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "73f8694c-5df5-43db-bde2-260859702faf",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1783979384797-7a5d2ad23fc8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29ycG9yYXRlJTIwZXZlbnQlMjBzdGFnZXxlbnwwfDB8fHwxNzg2MzkyNjY2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A packed conference stage under bold event lighting",
+                      "loading": "lazy"
+                    },
+                    "id": "93379ad0-dbe4-4d36-b0d8-e0324cc1a659",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Assembly Events"],
+                        "id": "67d4397e-8951-4d4e-be6f-1a5aa0970e1c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Assembly Events because too many events are planned by one company and produced by another — and the seams always show. We do both, so they don’t."
+                        ],
+                        "id": "8f73cdcb-40af-4a16-8b8f-ca04eeacb1a2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "From a 20-person leadership offsite to a 2,000-guest product launch, we bring the same thing: a sharp creative concept, ruthless logistics, and a producer who treats your budget and your reputation like their own."
+                        ],
+                        "id": "c4e820d5-c322-4c29-b673-108e90bde59f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "fbc7360b-09a4-4d43-b6fe-8c2a5b4073d8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "7be3865b-0781-41a4-9e93-573b5d5fc127",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "d0d0bb51-7bb0-485b-a9d5-8261b30b0fa1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "75bf32eb-2dda-433d-a2e1-f2d259128f66",
+                "ord": "a0"
+              }
+            ],
+            "id": "2bf6a81f-0dc8-415b-9224-c7f06ead9768",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we run an event"],
+                    "id": "dd4e5170-4f6e-49dd-817a-cf94f666c884",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Discovery & concept"],
+                            "id": "3851f6db-50e0-401a-a3c1-f72c0ffc7417",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We start with your goals — not a package — then shape a concept, a budget and a timeline you can actually stand behind."
+                            ],
+                            "id": "6bf59b98-0ba3-4ba8-9e8b-05c0cb1dbbf4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "06844d4a-7536-4123-adf6-9a1c008e4601",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Production & vendors"],
+                            "id": "bc4818a7-bf1e-4317-b334-7c8db7134bce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We book and manage every partner, build the run-of-show, and keep a live budget so there are no surprises the week of."
+                            ],
+                            "id": "75f0996e-0d7c-48ec-abba-16edd9ac2cdc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0a2b7843-34db-4805-bd95-e56e1b901a09",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Show day & wrap"],
+                            "id": "7bc9719c-b3d7-4fab-834a-7ed8d4ccc628",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A producer runs the room to the minute, handles the load-out, and delivers a wrap report — what worked, what it cost, what’s next."
+                            ],
+                            "id": "2c5f0d58-d006-41d3-b648-ba09a956ab8d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0f66e4ad-99aa-404a-869a-3c85b560e43f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "27454a41-bcac-45cc-984a-2424ea705b84",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "278469b9-8f12-4fc0-869e-fc3202fd179a",
+                "ord": "a0"
+              }
+            ],
+            "id": "331cd083-9fc2-42ba-bf20-2fc3060222fc",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Assembly Events",
+      "seoDescription": "Where to find Assembly Events, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2838d1ad-d729-42e2-b1c1-af2a2cc03459",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the studio"],
+                        "id": "8cbacd64-6a23-49b9-b2d1-5d2151148b75",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Assembly Events"],
+                            "id": "9767a4ef-f01a-457c-ba78-210a8fc61776",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["410 Market Street"],
+                            "id": "ed4861cb-aaf6-4630-9879-994fea29961f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio 5 · Austin, TX 78701"],
+                            "id": "a23d83fa-1af1-4c9b-a144-289b680a77a7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "58cb9e2f-d39c-4462-88d0-0cfedf094071",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "8bba1b31-2534-469a-8a28-3acda84babe3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "6cb96034-682d-47ad-9ae7-22114602a89e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d8bf8174-08d5-4154-a1ff-54b12f8e67d7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "2d52922c-75ee-46e4-b1d6-b6aab2b2dd1c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "3fb560d0-a1e8-41ec-9e32-9d2a93707aa2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "21a487e9-f481-4c73-972f-ebcf6b2e722f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "445de3a0-b99d-49fb-8969-827eed6ad6bc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "8f09bc7d-4279-4057-8c16-aa4068edc6ce",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "01e97067-2037-443a-a3b8-7c5f70483b00",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "79a6fd96-568b-4643-bf22-d0e1423290d2",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9e9689f9-fb98-48f0-8741-b2a751ae0a5b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "410 Market Street, Austin, TX 78701",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "540b9280-53c7-45ae-9fda-10a9346dc377",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0c99acdc-d81c-4cc6-82d1-95866bb4cec8",
+                "ord": "a0"
+              }
+            ],
+            "id": "cd006038-28a4-45de-930f-2e7789eb44f8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "4b574c1d-268a-412e-b26a-73a28baa8ea6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve a consultation online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "2ab1b8a4-34bf-4888-8db5-8a6d485d2f90",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "cb189c87-a4e0-4510-9bb7-442cebb03775",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "273e33b6-516f-4246-9afd-0b75906fa86f",
+                "ord": "a0"
+              }
+            ],
+            "id": "2b8407fd-9316-4959-bd3c-c851be09c174",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "assembly",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(95% 0.006 250)",
+      "--color-base-300": "oklch(90% 0.01 250)",
+      "--color-base-content": "oklch(22% 0.02 262)",
+      "--color-primary": "oklch(45% 0.13 258)",
+      "--color-secondary": "oklch(38% 0.02 262)",
+      "--color-accent": "oklch(70% 0.17 32)",
+      "--color-neutral": "oklch(25% 0.015 262)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 258)",
+      "--color-secondary-content": "oklch(98% 0.01 262)",
+      "--color-accent-content": "oklch(15% 0.02 32)",
+      "--color-neutral-content": "oklch(98% 0.01 262)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.17 32)",
+      "--color-highlight-content": "oklch(15% 0.02 32)",
+      "--color-border": "oklch(90% 0.01 250)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.02 262)",
+      "--color-base-200": "oklch(16% 0.015 262)",
+      "--color-base-300": "oklch(13% 0.012 262)",
+      "--color-base-content": "oklch(96% 0.004 250)",
+      "--color-primary": "oklch(70% 0.13 258)",
+      "--color-secondary": "oklch(80% 0.02 262)",
+      "--color-accent": "oklch(76% 0.16 32)",
+      "--color-neutral": "oklch(86% 0.015 262)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 258)",
+      "--color-secondary-content": "oklch(15% 0.02 262)",
+      "--color-accent-content": "oklch(15% 0.02 32)",
+      "--color-neutral-content": "oklch(15% 0.015 262)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.16 32)",
+      "--color-highlight-content": "oklch(15% 0.02 32)",
+      "--color-border": "oklch(13% 0.012 262)"
+    }
+  }
+}

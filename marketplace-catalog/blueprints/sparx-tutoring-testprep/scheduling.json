@@ -1,0 +1,234 @@
+{
+  "policies": [
+    {
+      "handle": "apex-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel a session. We send a reminder the day before and two hours ahead so nothing slips."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jordan",
+      "name": "Jordan Ellis",
+      "kind": "staff",
+      "skillTags": ["sat", "math", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["act", "english", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bright",
+      "kind": "staff",
+      "skillTags": ["admissions", "essays", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 960
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-diagnostic",
+      "name": "Free diagnostic & strategy session",
+      "description": "A no-cost first meeting: a short diagnostic to find your real starting score, then a straight-talk plan for hitting your target.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "sat-prep-session",
+      "name": "SAT prep session",
+      "description": "One-on-one SAT coaching — targeted drilling on the sections costing you points, with real test tactics and pacing.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["sat"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "act-prep-session",
+      "name": "ACT prep session",
+      "description": "Focused ACT coaching built around the clock — the science section, the math grind and the reading speed that wins the test.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["act"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "ap-subject-session",
+      "name": "AP subject session",
+      "description": "Exam-focused coaching for an AP subject — the frameworks, the free-response structure and the content gaps that hold the score down.",
+      "durationMinutes": 60,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "admissions-essay-session",
+      "name": "Admissions essay session",
+      "description": "Work through your personal statement and supplements with an admissions coach — from a blank page to a draft that sounds like you.",
+      "durationMinutes": 60,
+      "priceCents": 11000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["admissions"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "strategy-consultation",
+      "name": "College strategy consultation",
+      "description": "A planning session for the whole road ahead — test timeline, target schools, and where to put the effort for the biggest return.",
+      "durationMinutes": 45,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    },
+    {
+      "handle": "practice-test-review",
+      "name": "Practice test review",
+      "description": "Bring a full-length practice test and we’ll break it down question by question — the misses, the patterns, and the fastest points to reclaim.",
+      "durationMinutes": 90,
+      "priceCents": 13500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "apex-standard"
+    }
+  ]
+}

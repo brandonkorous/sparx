@@ -1,0 +1,2126 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "537ac8ec-d5b6-4bce-b2ca-1b23688a5564",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "8de7bb0d-3596-48e9-85aa-6ad3ddde0f6c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "57db7c20-a253-48ea-9759-81c0bca89bdb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "909feb69-49aa-4f1d-a631-b48aeee65ad4",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "3c119240-4f0a-476f-a902-b0e7ce9ceed0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "6b946578-0f2d-481b-9ef2-ee02435cfda7",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "10a3f64a-d4da-4455-ae9b-3fb67085e07e",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "b9c05221-23c2-4efb-9aa6-fa9032c0b570",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "4d5d3171-422d-4bee-b463-02d551f7b900",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "98df104c-906e-4fb0-9b4a-9c45451bec35",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "019de59a-40d6-4c31-a000-f8302ac32c21",
+                  "ord": "a2"
+                }
+              ],
+              "id": "36fcd8fa-8f82-4cf4-ae3f-a9014ec2d1d4",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "84cf2881-fcbd-4227-a60c-df7fc05ac768",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "00c84161-6838-4a1b-8e4a-eca5c8fae446",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "ff4eb96a-2191-491f-987b-eb400964ecfa",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "4cbedfd2-befb-495f-8306-4f5dd95c0339",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "5b948e9f-763f-4401-8ae3-096cb432ae44",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "66f382cf-4d5e-42b3-8787-39e72d2deaa0",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "0daad03e-14d5-4095-8372-5d52039b4544",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "fd81355f-671c-4d8f-9f66-6b3aaa041435",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "c11e73a7-2af5-4101-8147-e6098eedcb80",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "f7af81a9-12aa-4ee0-b480-1729feebb336",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "bcbb185d-5587-4fb3-82be-6a3af30a6289",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "d42de4b5-ab7a-4efd-a9a6-82d89f508fe5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "b5aa7e6b-b3c2-497e-9880-de2fae436ab0",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "d805921b-64e2-4c5e-a740-a02fcdc4e0ba",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "578e0bcc-882e-44ec-972b-62c28d7eced1",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "8aade269-2f0c-40af-8fa9-540963ae0d21",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2402e169-4020-49a6-9778-dc3644db2f1b",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "47e50315-c3d0-4f86-b5bf-3b6cf84102d4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "06f1520d-7aed-4f67-969a-e1f4cffda750",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "6bd028e4-cf41-4057-934d-83839e59cb7f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5965be15-7165-45cf-9d07-6388092b5d7a",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "1ab6b882-3889-4ff3-9430-04e7c692b0c9",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "04c05b62-2001-4080-9b7b-f6df9c93672d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "5801be9e-f9ce-41d3-ab81-74dc6e7d1aa7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ea807941-2788-4379-ba63-5bb4209f3eca",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "9cf08248-cd98-4040-b77e-9a9787601c6c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4cd028e0-e0b7-43b8-a1b5-f477401d85a4",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "c5571eee-05fc-45d9-8a6e-9272b0c4b6dc",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "bdfa3009-032c-42b9-8ccc-663973548b62",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "331fff89-2bd0-4608-b6cc-30c6d364f54c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "586d01e2-fd8d-41d7-b0c5-717b3be992c5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "bfc29548-f9d4-4830-b5d0-6d21def7778c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "6e62d5eb-f735-4492-9893-4a0af90271a0",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "8e62ed8f-c07c-4462-83e8-04edf3c642eb",
+                  "ord": "a1"
+                }
+              ],
+              "id": "45bf51a0-d508-41ae-896b-6d7cf43c9e6f",
+              "ord": "a0"
+            }
+          ],
+          "id": "1d71c1f2-e84c-422c-8436-292482ae9848",
+          "ord": "a2"
+        }
+      ],
+      "id": "ee77cb5c-abac-40d5-852c-de2fd6b642c1"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Evenair Heating & Cooling — friendly year-round comfort",
+      "seoDescription": "Evenair Heating & Cooling keeps your home comfortable all year — furnace and AC tune-ups, free install estimates, and honest, licensed techs. Book a visit online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4b9a0e9a-efa0-4678-92f1-f77338e348f5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1642749776312-aa42ce20c9f5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWlyJTIwY29uZGl0aW9uZXIlMjB0ZWNobmljaWFufGVufDB8MHx8fDE3ODYzODgyNDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A comfortable, sunlit family living room on a mild afternoon",
+                  "loading": "eager"
+                },
+                "id": "78939480-cf1c-439b-96df-5e5746fdd37b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "32d3fecd-8d83-42d0-810b-bc55eca5fe17",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Never too hot, never too cold"],
+                    "id": "d44a8452-479c-4cd4-b3fd-9c114f4e4fe5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Friendly, year-round comfort for your home — heating in winter, cooling in summer, and honest people who show up when they say they will."
+                    ],
+                    "id": "4fe28d72-7cfa-4e22-8b9c-3e5c9c86fb18",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a visit"],
+                        "id": "43d23a4c-5a46-41d3-9c67-b9a3a46813e6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we do"],
+                        "id": "4ff09678-d8e8-4381-9d57-1a70d8bd1c0b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "026908a4-371c-438e-98b7-b4c9aa0e4c98",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "57b40e0a-122c-499b-87a6-33f556e1920e",
+                "ord": "a2"
+              }
+            ],
+            "id": "69d4d876-716b-4cf8-958c-c7a629fefffe",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed & NATE-certified"],
+                            "id": "e00731ff-8547-4825-bd61-66b6820af77c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every tech is licensed, background-checked and NATE-certified — trained on today’s furnaces, air conditioners and heat pumps."
+                            ],
+                            "id": "3acd2d21-2539-4417-823e-915f809be3b3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ba2b72cf-f61f-4c0f-82b1-c1bc82fab0a7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Upfront, written quotes"],
+                            "id": "9e6aa5f2-4726-47ae-bafe-ada592ff7ed3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You see the price before we start, in plain language. No surprises on the invoice, no pressure to buy more than you need."
+                            ],
+                            "id": "e8142443-5e7c-496f-97b7-cd47e9de75da",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "92570333-11fc-4eaf-b086-abfcb632db76",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Seasonal tune-up plans"],
+                            "id": "676f4d98-15c5-43a3-9b74-b4854760e1cd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A simple membership keeps your system checked spring and fall, with priority scheduling and a discount on repairs."
+                            ],
+                            "id": "4ced4f22-8880-4cbd-aa63-711371be0480",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9b4555b7-4bc8-45a3-ba02-37a6a85699ce",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Financing on new systems"],
+                            "id": "51166332-5522-4d9c-b25c-e544d4a99d12",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A new furnace or AC shouldn’t wait for the perfect month — flexible financing lets you spread it out and stay comfortable now."
+                            ],
+                            "id": "f0e4a0c5-e571-4232-88a7-da188210fa4d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a90fc398-4aff-469f-8c27-ad3c11f4d398",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "08ee2fa1-4acf-4413-adb5-a2a4c20bd384",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "21e946bb-fbae-44e1-a76b-3b23086ca3f6",
+                "ord": "a0"
+              }
+            ],
+            "id": "c194ad14-aff3-46d2-b6be-5747878185d3",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Book a visit"],
+                        "id": "bbf09f36-b342-4d57-82ce-7c83fd77ffd8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The visits we’re asked for most. Pick one to see live openings and choose a time that works for you."
+                        ],
+                        "id": "180d89c2-62df-4961-b4fb-c159058b5880",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "35b1c0ed-0586-48f3-9642-c83a5d262ebd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free install estimate"],
+                                "id": "fc9462de-b1de-43f4-a76f-c1f97f59baea",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "71fc9bd5-7401-4812-b9c6-8c446ddeee99",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6a1210e4-6c8e-4702-8e43-700e7e4f3272",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "4e21906a-73a7-4866-9425-c81e96b79e49",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An honest, written quote for a new system — free."],
+                            "id": "3456956a-d5b1-45ea-9ef7-f9997f758b4e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "afa0e310-17c7-41a1-9be7-aa5f3472df28",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["AC tune-up"],
+                                "id": "754aa257-2455-481c-b981-e293554fa3b9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$89"],
+                                "id": "b960b51a-9452-4df6-a8f3-b979c8e2c8d0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "dba293b4-c874-4920-801b-24637a709530",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "d792721d-e41b-4e05-874a-9b77fff31bbd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A spring check-up so summer stays cool."],
+                            "id": "1ef9f9c3-fa07-4501-b7bc-e9cdf4569a45",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "41d2cf1a-9b15-415b-8bcb-46702f5efe1a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Furnace tune-up"],
+                                "id": "bb15098f-f678-4a93-a3eb-7841aa629fcb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$99"],
+                                "id": "38ad8578-6b99-4491-9c7b-47fbd8c734fd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c1803e06-38da-4658-94a1-3e56f301b2bd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "3fcce25c-4470-426e-b499-6376378137ba",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A fall safety check so winter starts warm."],
+                            "id": "f159f783-b8a0-4ace-b2bb-630c3bd9bd16",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bef38d21-9e87-4995-90d3-8cae3bb2101a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["System diagnostic"],
+                                "id": "203e6cf2-6325-48b7-b17f-4306a92d4988",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$129"],
+                                "id": "50acfd27-7278-4582-b94c-07f2458c13fe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e58a0b40-257d-449f-9774-74bc168fcfcb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "c7a9bc4f-4332-4494-b103-db266392a546",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["We find the cause and explain your options."],
+                            "id": "9413be24-1583-4b42-8b42-44beef72cdc0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5c05232a-e0d9-493c-b079-4d0dea476b62",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a7842440-3b9d-4acc-8d33-6b74911a7ddc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See every visit & book"],
+                        "id": "23dacc0b-4c0a-43f4-adfe-4cc91f4f8ec0",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "1e51d82b-e1ef-4c72-965d-baeb06741993",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "12ff2107-3fff-4d8f-8a88-7d9ec7aadd58",
+                "ord": "a0"
+              }
+            ],
+            "id": "2da3ea43-5adc-4c80-9ad1-66e9a55686f9",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1757219525975-03b5984bc6e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aHZhYyUyMGluc3RhbGxhdGlvbiUyMHdvcmt8ZW58MHwwfHx8MTc4NjM4ODI0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A technician checking a home heating and cooling system",
+                      "loading": "lazy"
+                    },
+                    "id": "631754ae-f63d-4085-9ff7-8356df0903c7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["A tune-up now beats a breakdown later"],
+                        "id": "4035fb2d-a0de-4879-be5c-2fc379c8003d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most no-heat calls in January and no-cool calls in July trace back to something a seasonal check-up would have caught. A tuned system runs quieter, lasts longer and costs less to run."
+                        ],
+                        "id": "415f1be6-5271-462f-b117-464511c31b1d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Our Comfort Plan members get a spring and a fall visit, priority scheduling when the weather turns, and a standing discount on any repair — so your home stays comfortable without you having to think about it."
+                        ],
+                        "id": "16cfbfe8-1869-48f8-9b70-0779b47af8ca",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start with a tune-up"],
+                            "id": "e5fdd438-98ec-4402-9648-e78d7a83f605",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "397535d8-1628-4237-90a8-d0f9c17bfe8b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7bfc85f5-1368-44e2-b097-67d8fc76e660",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2a24fcdd-1573-4056-bac7-15840fed8978",
+                "ord": "a0"
+              }
+            ],
+            "id": "3ea38f7e-18c3-46ee-8a4c-5937de0c9d31",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The people who’ll come to your door"],
+                        "id": "9c7c4478-2243-4d3c-a818-5b52f6b2032f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Real techs from right here — friendly, tidy, and happy to explain what they find."
+                        ],
+                        "id": "f921e2af-6631-484c-95ad-4e940fede21e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1fcfa50a-3473-40e1-a2ef-51fcb018b725",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Reyes, comfort technician",
+                              "loading": "lazy"
+                            },
+                            "id": "57224ba0-d696-477f-b88e-3aa248d426c9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Reyes"],
+                                "id": "b3b73423-847b-42c0-8fc7-bcc1d33b87a5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Comfort technician"],
+                                "id": "bb4f35bb-3254-4c9a-9e20-43bff57caf2f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fifteen years on furnaces and AC. Marcus is the one who leaves your utility room cleaner than he found it."
+                                ],
+                                "id": "a552d51d-94e4-45ad-a462-5b9798d0ccdc",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3c98552c-a53b-4c02-9222-18af5cc114d6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0e80a472-d15d-4585-87a1-ef3f8cc88296",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1581091224003-01e7c2e69f6f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWNobmljaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dana Okonkwo, install lead",
+                              "loading": "lazy"
+                            },
+                            "id": "c370c6a4-18eb-4d16-a701-93b2d422c17e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dana Okonkwo"],
+                                "id": "6f6dc935-7d34-4725-a46c-922e051b4cac",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Install lead"],
+                                "id": "65cb11cb-9cba-4e2b-9c32-f8cfd232f98a",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Plans new systems and cleaner-air upgrades, and sizes them right so you’re never over-sold."
+                                ],
+                                "id": "30702b23-e50a-4936-a79d-0870328884dd",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "4858b2e2-569d-4978-b23b-1c77e255979d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0cbabe73-6cab-4af7-8283-bbfcecdd19fa",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODgyMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Luis Ferraro, service technician",
+                              "loading": "lazy"
+                            },
+                            "id": "7ef50a81-670b-47bd-a922-ff10d65d0efd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Luis Ferraro"],
+                                "id": "1cf1657f-08a2-41b2-adf5-7d0168525aa1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Service technician"],
+                                "id": "0519e316-a89c-42ca-aa05-ea35f476404a",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The diagnostics whisperer — and the one you want on an emergency call when the heat’s out."
+                                ],
+                                "id": "7fb740a1-5223-455c-bfb4-23c4104bb2c5",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f7b0fb96-8f67-4f5b-98d4-079d5e6e7346",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9c52738c-5889-4bd2-bad8-8d7899ccf8e8",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "92d2a9ed-c20a-4156-9c4e-0a7fd9afc724",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c7544ee4-91e9-4d63-a4fa-d234ad478f4c",
+                "ord": "a0"
+              }
+            ],
+            "id": "f36e5259-8ef2-4609-a914-35c6ebc4754b",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Our AC quit during the worst week of summer. Evenair had someone out the same day, fixed it fast, and told us exactly what it’d cost first. We’re on their plan now and never worry about it.”"
+                    ],
+                    "id": "ce961c08-f4b9-4bc9-a13a-202e55300e0a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Alvarez family, customers since 2022"],
+                    "id": "fb028536-530f-4ff1-afaa-3816dfeebba7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "09175544-cf08-4ccb-a096-5bbb26bc9ee5",
+                "ord": "a0"
+              }
+            ],
+            "id": "a9815d5b-76c3-4b0c-bc79-e13928d58014",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s get your home comfortable"],
+                    "id": "733e8070-91ec-4d23-b714-5f260f269491",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Choose a visit, pick a time that fits your day, and we’ll take it from there. It takes about a minute."
+                    ],
+                    "id": "4f53762c-775e-4bbd-a9cd-68de22a23a49",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "09cb5159-8fc0-45ae-bb1c-37d3a2d44e75",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a625d8cb-a708-468b-8cea-ae192de96d51",
+                "ord": "a0"
+              }
+            ],
+            "id": "6109cc71-30da-494e-914c-168a8970f21b",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Evenair Heating & Cooling",
+      "seoDescription": "See what Evenair Heating & Cooling offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "fad9e184-91ff-4884-9010-83ae324ab2ea",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1757219525975-03b5984bc6e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aHZhYyUyMGluc3RhbGxhdGlvbiUyMHdvcmt8ZW58MHwwfHx8MTc4NjM4ODI0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A technician checking a home heating and cooling system",
+                  "loading": "eager"
+                },
+                "id": "932b5ead-0b6c-49a3-b8ba-bb384cd456ed",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "16e24521-5945-4424-8708-8adc87943a36",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your visit"],
+                    "id": "136ae54a-5040-48b7-850e-fa9eb0e8e362",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a visit to see prices and live openings, then pick a time that works — you’ll get a confirmation and a reminder before we arrive."
+                    ],
+                    "id": "8d478c95-7642-4a73-bb67-8c23fe5e8fc5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See visits below"],
+                        "id": "abffc551-0eed-4bd2-a216-2e00d8fb34f5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "2fd2764d-6b0c-47e1-91f4-bb39c29ea87a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1c015510-1cec-41c9-b5f0-1e92f2883ff3",
+                "ord": "a2"
+              }
+            ],
+            "id": "2c56ea45-89bb-4c5f-8aa4-b4e75f1dd0fe",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "cf42293a-6528-4553-9ecb-8014daca5391",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Evenair Heating & Cooling",
+      "seoDescription": "Who Evenair Heating & Cooling is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "816019a3-dd9f-40eb-bcc2-dc90bbbf7d8a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1642749776312-aa42ce20c9f5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWlyJTIwY29uZGl0aW9uZXIlMjB0ZWNobmljaWFufGVufDB8MHx8fDE3ODYzODgyNDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A comfortable, sunlit family living room on a mild afternoon",
+                      "loading": "lazy"
+                    },
+                    "id": "6d663b55-8b90-4e53-9daf-746b334ec097",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Evenair Heating & Cooling"],
+                        "id": "c1ef4f8a-fb3b-4080-9433-2f805ece5c60",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Evenair because comfort at home shouldn’t come with a hard sell or a mystery invoice. Heating and cooling is what keeps a house livable — and it should be handled by people who treat your home the way they’d treat their own."
+                        ],
+                        "id": "3ba65fbc-e163-4ca6-9330-3a99718d5121",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So that’s how we run it: licensed techs, upfront prices, tidy work, and honest advice about what your system actually needs. Warm in winter, cool in summer, and no drama in between."
+                        ],
+                        "id": "50194c3c-9a9e-492d-9df6-be7f3c098867",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "a55a113a-01be-4685-b332-cc70297eaa1f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f1d44397-e6eb-4582-ae9f-a9b8117b638f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "90a289b0-7b9a-4b6b-9af0-9c7d087b7a86",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "853ed333-5eed-4ba6-85bb-83993d6109a7",
+                "ord": "a0"
+              }
+            ],
+            "id": "db8a0054-3f3d-4a15-b973-496c2f7c38c8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "9772acc3-d4c7-428e-b419-4f188c31ed40",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We size it right"],
+                            "id": "fa8ae765-501b-454e-b809-03e9c9ae38fc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "An oversized system short-cycles and an undersized one never keeps up. We measure your home and match the equipment to it — comfort you can feel, bills you’ll notice."
+                            ],
+                            "id": "fd4dbc4f-0b13-4e47-917e-b56ad7e42fd2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "975618da-2dc6-47ae-a5e4-a67e75376f8c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We explain before we fix"],
+                            "id": "d3dea694-85c6-4075-9315-5b192c4e3d93",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll always know what’s wrong, what your options are, and what each one costs before any work starts. The choice is yours, every time."
+                            ],
+                            "id": "740a8916-ecb6-47f2-8815-fc8e55f06014",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3168a297-9c6f-4f7d-912c-eb150d255e73",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We stand behind it"],
+                            "id": "bb39318b-dea4-4174-915b-ec452d4085d4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Workmanship guaranteed, parts warranties honored, and a real person answers the phone when you call. If something’s not right, we make it right."
+                            ],
+                            "id": "c72569f6-d718-4276-8271-b0765f1c91f6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0ca33f92-f5c8-44e4-a0db-ff9ad0475ef1",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8fa931db-3f25-4956-99b8-b74d3ed7b965",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7ce670d7-328e-43d2-8b50-bd2b88e2f134",
+                "ord": "a0"
+              }
+            ],
+            "id": "948ee742-0bf4-414f-b030-a7ce78c42449",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Evenair Heating & Cooling",
+      "seoDescription": "Where to find Evenair Heating & Cooling, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "135e3ee9-a908-410d-8f05-939b08298bf2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Reach the Evenair team"],
+                        "id": "032dec81-0ebb-416d-aa19-0eebb62dbe6b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Evenair Heating & Cooling"],
+                            "id": "bb855ca0-584d-4bd5-b785-5cb25085e9e2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["415 Maplewood Avenue"],
+                            "id": "3100efe7-522f-4ba5-a20a-2c6d7acddb29",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Riverton, KS 66101"],
+                            "id": "cea5f09d-0279-410a-92b7-733be721008a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "207e27a3-a85d-4277-be0b-9c257d11df4e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "27a5629b-610a-45c7-aecf-dda9339785d2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:30 – 5:30"],
+                                "id": "c7d5c25a-1db9-4cd7-a90c-d48c6bf14a2f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "dc98658e-213b-4288-910c-7ad64aaf90ed",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "e5207384-1ad9-4598-9cc7-e25bca091cb4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 2:00 (service calls)"],
+                                "id": "ae2866d9-6404-4c1d-a779-8f405732cee8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d41ab820-7ee4-47ef-a339-82dc7548461a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "ae00f662-b23e-41ee-8668-863a75f89cc6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Emergency only"],
+                                "id": "00a5d80c-81fa-415b-b7da-9420eae1ba69",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c64a180e-6e74-4afc-9374-84d15f3e7828",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["After hours"],
+                                "id": "167c08d4-8bc3-4e6e-87d7-cc58e0fdc3ca",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["No-heat / no-cool line open"],
+                                "id": "b934223e-269e-4eac-b153-47e863ed9e58",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9ac29219-ea5b-4d6d-b5f9-df270f49a95d",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "9867a8e4-1db7-48bf-ad0a-c2958eae9c64",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "04f4728a-56af-4716-9e56-06338fe34263",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "415 Maplewood Avenue, Riverton, KS 66101",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "781a6630-b15b-415c-b286-7206e548c43d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9d833717-cf78-4257-b8ff-f792c47ffccb",
+                "ord": "a0"
+              }
+            ],
+            "id": "8ea55860-a5e6-4eed-a011-eb5e57ac09e2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "25a8fdb7-391a-4a98-9f38-7dc55693fe07",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live openings and reserve your visit online — pick a time, get a confirmation, done."
+                    ],
+                    "id": "82aae4a4-a483-4dcf-9e25-f1a96ab80bbb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "d0184f61-cc22-4c67-962f-0673b3f47eac",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "25bbc150-3e6e-44da-99e4-676d39e07b0e",
+                "ord": "a0"
+              }
+            ],
+            "id": "3939e2f6-6bfd-4081-89eb-3a94484d25af",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "evenair",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.008 75)",
+      "--color-base-200": "oklch(95% 0.012 72)",
+      "--color-base-300": "oklch(90% 0.015 68)",
+      "--color-base-content": "oklch(27% 0.03 250)",
+      "--color-primary": "oklch(70% 0.145 55)",
+      "--color-secondary": "oklch(38% 0.035 250)",
+      "--color-accent": "oklch(68% 0.11 232)",
+      "--color-neutral": "oklch(30% 0.025 250)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.625rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "0.875rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 55)",
+      "--color-secondary-content": "oklch(98% 0.01 250)",
+      "--color-accent-content": "oklch(15% 0.02 232)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(68% 0.11 232)",
+      "--color-highlight-content": "oklch(15% 0.02 232)",
+      "--color-border": "oklch(90% 0.015 68)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.02 250)",
+      "--color-base-200": "oklch(20% 0.018 250)",
+      "--color-base-300": "oklch(16% 0.015 250)",
+      "--color-base-content": "oklch(95% 0.01 75)",
+      "--color-primary": "oklch(78% 0.14 58)",
+      "--color-secondary": "oklch(80% 0.03 245)",
+      "--color-accent": "oklch(76% 0.11 232)",
+      "--color-neutral": "oklch(82% 0.02 245)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 58)",
+      "--color-secondary-content": "oklch(15% 0.02 245)",
+      "--color-accent-content": "oklch(15% 0.02 232)",
+      "--color-neutral-content": "oklch(15% 0.02 245)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.11 232)",
+      "--color-highlight-content": "oklch(15% 0.02 232)",
+      "--color-border": "oklch(16% 0.015 250)"
+    }
+  }
+}

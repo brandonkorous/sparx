@@ -1,0 +1,2128 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "30f5f9a5-bd7b-41ab-a2b6-395e18ee9dbe",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "9b76c192-a946-442f-a9da-0ba3df7afeda",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "e155d135-306a-433d-a5f6-83f31af0be23",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "5bad35e7-c978-4e65-b7cc-2540972ed304",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "a29e0ce0-5b55-4ccb-9267-e9c65492648e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "17f14e91-c93e-4c2e-b79a-736768f5f977",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "54658e7b-e632-4573-8d35-3f70bf462f24",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "ef510a7a-00b4-4eb9-9dff-553452048b07",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "bbcf91d7-6513-4559-84e5-e4401ae46895",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "558a0bdd-de3c-49dd-89aa-80741e2f1a5e",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e1989735-e4f1-4843-8b68-814e1a42f578",
+                  "ord": "a2"
+                }
+              ],
+              "id": "db80a52c-3a62-4c0f-a8c1-719f5a6027c3",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "47eef960-604e-4194-911c-14f72fdd2e16",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9fc42a0c-4b95-4956-af03-fc720ac463e7",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "9212c176-54bc-4d33-84a5-de1395fab5eb",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "f99567ed-a12b-4f19-9a0c-d9ed0b08f006",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "c315b407-1529-4b36-9550-27d6892cb9de",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "941489df-27d6-44ea-804d-e0d31dc5dd98",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "6df29293-8407-41bb-bd33-c006f785e9fd",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "46a7746a-e396-42af-817c-a861fd214d16",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "3e623495-107f-4ed5-aac1-e54709699b5f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "6dc63f65-bee3-4f0c-ac7f-bbcceba1fe0c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "85cd4b99-eb6f-4728-b7ee-ac10e76c9634",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "b2b203e7-4996-4a72-9ec8-b90dd7727443",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "941ef57c-4799-40c0-bdc9-fb5bba4aab75",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "8a32a36d-8268-4d5b-b914-a5c942dde78e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b2d30ff7-164f-4e24-9f0a-d2a514749bd0",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "7a18e70a-415d-4645-a5d2-b721ea145ef4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "78c44b0e-8400-4f32-9f52-61e04a985e0a",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "a4afae92-3c3a-4553-bb3a-2f1460f96e8f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9867cc19-41eb-4863-a6ee-61ca8af3e511",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "7d2cefa8-8f38-41f6-a894-4aa7fa143646",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ff12ca74-da2f-4b96-adfe-46e54b75832c",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "ee3d8a29-9ca9-4ce2-8221-46ed9cd7d5fd",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0c146698-4edd-4d82-ab02-ee74cd96714f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "355d418d-d9e4-47be-b950-407592b0597a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d1e6b6be-558d-49cb-93c5-0131130ff254",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "796d3f80-92a8-4ef7-9b66-095cc93a410b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2473b7f9-f610-479e-a376-369016d717d3",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "a10379d9-b0ab-452b-87fd-45d52c0ea749",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "5f2e7e82-93a0-4b85-b325-3ed49b7c8d18",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "de4b90b9-9dd5-4d5c-8bdb-c61d81051e73",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "45d23135-39bc-4ceb-a072-4d97b9b967a5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d56ef59e-679a-4024-b6c2-e10053d5a56d",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "7ec8210f-03a6-4797-b771-637ee0a39b24",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9f5c169e-f063-4408-bb3a-6234bef8e7ad",
+                  "ord": "a1"
+                }
+              ],
+              "id": "483df72a-8855-49a1-a4cf-ff491c3b842b",
+              "ord": "a0"
+            }
+          ],
+          "id": "aae362ce-4cea-4b02-9df8-73689c8cd81c",
+          "ord": "a2"
+        }
+      ],
+      "id": "bf8a0ccd-dce2-4519-8f19-08a386a62eff"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "ShieldGuard Pest Control — reliable, guaranteed protection",
+      "seoDescription": "ShieldGuard Pest Control keeps your home pest-free all year — free inspections, general, rodent and termite treatments, and recurring protection plans from licensed local techs. Book online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9a4a4f58-739a-403d-ac40-aef9be9cdfe6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1709787627975-9cb37bbeca60?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFwcHklMjBmYW1pbHklMjBob21lJTIwZXh0ZXJpb3J8ZW58MHwwfHx8MTc4NjM5Mzc1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A tidy, sunlit family home with a well-kept front yard",
+                  "loading": "eager"
+                },
+                "id": "77cbc5be-a681-4799-b2a5-b4faabdc6b70",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "380b62ef-6551-44fb-b819-fb9bb37c004d",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Your home, pest-free — guaranteed"],
+                    "id": "312e3cd0-f0d4-4a46-903b-302e286029e0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Reliable, friendly pest control for the whole year — general pests, ants, roaches, rodents and termites, handled by licensed local technicians who show up when they say they will."
+                    ],
+                    "id": "a4483469-f409-4d68-a6f8-73fa9e5280eb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a free inspection"],
+                        "id": "fe6eecf5-b6f2-4a64-9165-ad0f2ea84c74",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we do"],
+                        "id": "30601216-3812-45a5-9c61-78c36b7868f7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "7aff2618-10e1-4a8b-964e-4873d2535c6c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a0f3a01b-bae4-4a1c-a56c-915361a9efe4",
+                "ord": "a2"
+              }
+            ],
+            "id": "48fbba6f-0865-474f-895e-3691e7c9260c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed local technicians"],
+                            "id": "5b1916fd-4349-40c7-80e0-73753ac6c96c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every technician is state-licensed, background-checked and trained on today’s pests and treatments — and tidy, friendly and respectful of your home."
+                            ],
+                            "id": "fe54d22b-385c-4782-a635-2854b78e94a3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0b1b6b5b-18f6-4eeb-ae67-94eb227169fe",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Satisfaction guaranteed"],
+                            "id": "81b786aa-5803-459d-b2f8-7023c7b5c45f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "If pests come back between visits, so do we — at no charge. That’s the whole point of a plan, and it’s in writing."
+                            ],
+                            "id": "fdb0f30a-4c99-4f49-bc99-3c54a4349685",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d991c29-bdc1-4ec6-a631-6eb1d415ac89",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Recurring protection plans"],
+                            "id": "f096e140-bccc-495e-811c-a7bb0b4c1630",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A simple year-round plan keeps your home protected season after season, with scheduled visits and priority service whenever you need it."
+                            ],
+                            "id": "faa8a098-d004-4261-9dd8-bc7ada76f731",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4bf5e582-5c1f-4a33-9eb5-12d1b75c7eba",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Safe & effective"],
+                            "id": "c90b345d-b8ad-4dd5-b879-968f939bceb0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Family- and pet-conscious products applied by people who know exactly where and how much — real results without dousing your home."
+                            ],
+                            "id": "36667a42-bcfa-4c1b-ae58-216534e17368",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e5286d29-a4c6-4b9b-86ce-2680cf597f05",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5cae15e1-98c8-4f35-8b1c-efc3379f93b9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "7db37a1f-910f-4d39-9f5d-a514d1ff4c0a",
+                "ord": "a0"
+              }
+            ],
+            "id": "dd69a061-673d-4d54-995d-7571ba7858b6",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Book a visit"],
+                        "id": "54597b9a-bcaa-46d7-b7db-80a91c784370",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The visits we’re asked for most. Pick one to see live openings and choose a time that works for you."
+                        ],
+                        "id": "0a9e78c5-1339-466c-a982-4d0b7371c924",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a8ac7961-6303-48b9-8e0a-a0fefae9c881",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free inspection"],
+                                "id": "ea88bf85-966d-4017-833e-9fda4f6cc699",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "efd8004e-f3e2-4345-b620-3d0fa31cde09",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "09b26f6c-9476-4edc-b4a2-74b50984d582",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "97049e28-37a6-4260-89be-ebaa641ec6ac",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["We find the problem and give you an honest plan — free."],
+                            "id": "5d3207d3-7ab9-412d-9092-1d9f533aad4f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "168d4a42-4efc-41ea-bdfb-aed15139a34b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["General pest treatment"],
+                                "id": "4322a6d8-f7aa-4485-969c-7e36659cb6e5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$129"],
+                                "id": "3879a052-14ee-4524-8131-ecb904434643",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b437118b-5c0f-4722-a7cf-3094e3c9860a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "044668e2-dba6-463d-84e8-3aa6bda594fc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Interior and exterior, with a barrier that keeps working."
+                            ],
+                            "id": "f14721fc-8b42-4e46-a7b9-f051e7c1fcb8",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a294ce60-16a6-42d3-80ff-dbef44ba0abb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Rodent control visit"],
+                                "id": "25329d33-4670-4d3b-9753-8b7ef0f293d4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$189"],
+                                "id": "57fd5a2a-b1e1-486e-95ac-b01e2ff1ff28",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0ef086d0-7716-4117-81db-cb0c0901c2e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "ebae6285-88f0-45af-865e-7e8d087e71e0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Seal the entry points and end the problem for good."],
+                            "id": "363982a3-9636-447e-850a-e9867aa045c1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "779f27dd-1f56-4118-afb2-cd8f6d202116",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Termite inspection"],
+                                "id": "b7a5da1d-5bd0-45e5-96e6-116113e351cc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "86a903f6-7e3e-4b30-b325-f18dbafff6f7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4735c576-999d-408d-ac56-59d5d51e369b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "492c8146-e918-43bb-a16d-a2ee83789489",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A detailed check with photos and an honest assessment."],
+                            "id": "31d054a7-950e-4139-b763-adaf35e3f751",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6043ab53-d6b1-40f2-bcd3-e5bcf0bd7be0",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "f496d39e-ba2f-48ba-a62c-f4b943821b54",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See every visit & book"],
+                        "id": "940741a6-0987-4bba-bf47-ef5bb1bb509b",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "f0a22766-5a09-407d-a95b-53fd52f9b651",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "19c5747b-dcb6-4e6b-9443-0aedc5dc229c",
+                "ord": "a0"
+              }
+            ],
+            "id": "58b8b25d-5694-4e36-bf7a-7a8cad32f1de",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1581578017093-cd30fce4eeb7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVzdCUyMGNvbnRyb2wlMjB0ZWNobmljaWFufGVufDB8MHx8fDE3ODYzOTM3NTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A uniformed technician treating the exterior foundation of a home",
+                      "loading": "lazy"
+                    },
+                    "id": "bf2e0f08-fa01-4c93-a862-7e9f193fa055",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Protection that never takes a season off"],
+                        "id": "e5944ea3-23ec-443e-a177-1102eb145249",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Pests don’t show up on a schedule, and a one-time spray only buys a few weeks. Ants come back in spring, mosquitoes in summer, rodents when it turns cold — a home stays protected only when someone’s watching it all year."
+                        ],
+                        "id": "c3bda8c0-19d4-458e-b7f1-c2b0ca6788de",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Our Shield Plan members get scheduled seasonal visits, priority service the moment something turns up between them, and our re-treat-free guarantee — so your home stays protected without you having to think about it."
+                        ],
+                        "id": "c8ea4fce-5397-42cc-bc54-535106c26361",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start a protection plan"],
+                            "id": "c6e19a10-070a-483c-9f02-187fc0429f30",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "3a0e4201-e519-4adf-bd0b-ed47d4181805",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9dec755c-672c-49e5-a623-ce8523aeea5b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "10319f00-a96d-4f5b-846a-39dc651c45db",
+                "ord": "a0"
+              }
+            ],
+            "id": "dadbb4d0-03c0-405d-be7a-5804a1998ec7",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The people who’ll come to your door"],
+                        "id": "f5806629-50bc-47be-9b2d-dbe6cf941e83",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Real technicians from right here — friendly, tidy, and happy to explain exactly what they find."
+                        ],
+                        "id": "9962b90e-a283-4a84-8036-cdc659438e2c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ff383b0b-180b-4eeb-844c-6885f8a7db85",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Reyes, lead pest technician",
+                              "loading": "lazy"
+                            },
+                            "id": "0f7a772d-fd8c-4a63-b06d-1a1c0282740a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Reyes"],
+                                "id": "13e3a05e-dd82-4a84-9bb3-ff8e2c0dcc89",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead pest technician"],
+                                "id": "2637e1d2-bd16-4b54-9fdd-1ecdb8577372",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twelve years on ants, roaches and rodents. Marcus is the one who finds the entry point everyone else missed."
+                                ],
+                                "id": "482a427b-6dc1-4d47-acf7-c93defed5346",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "b3cda9be-6485-4099-9903-cd88beb6c814",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2cf7e942-683c-45d9-bdc1-886c5fb953d4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg4MjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Nair, termite & inspection specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "b16e2699-e427-47bc-bf87-cb6e955d8ad2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Nair"],
+                                "id": "25aa60b6-c170-46c7-8c7f-c067145aa4eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Termite & inspection specialist"],
+                                "id": "6d049f7e-8c38-4df3-8ea4-e223d01d3615",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Handles termite and wood-destroying-pest inspections, and will only ever recommend treatment you actually need."
+                                ],
+                                "id": "3d84a995-9649-4eda-8907-1a12c2928431",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "37b1fd97-6832-4be8-94f0-17afd5cfaf6c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9fe17af6-09f4-41b4-8d36-8afeeb2fc69b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Devon Clarke, recurring-service technician",
+                              "loading": "lazy"
+                            },
+                            "id": "faf45e9b-93e1-4f59-abfc-f54de6866ae0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Devon Clarke"],
+                                "id": "65107eea-59d6-4faf-be0d-94857565fd94",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Recurring-service technician"],
+                                "id": "eea51fee-2fbb-402d-ba16-23038965dc88",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The friendly face on your seasonal visits — knows every home on his route and what keeps each one protected."
+                                ],
+                                "id": "060c748c-6a16-4b2c-b2bd-427880e0ab3a",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e386e40a-417a-49a8-8549-1c7466b659ee",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "edc6146d-b4af-4155-963a-737bb0893990",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f03df2a7-c60e-4a00-9ae9-bef280c474dc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "defebd15-703d-4ab9-8b8a-02dad1e010b6",
+                "ord": "a0"
+              }
+            ],
+            "id": "dbfbafe5-fd49-4a83-a7f4-f60d6412ea61",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We had ants marching across the kitchen every spring. ShieldGuard came out, found where they were getting in, and put us on a plan. Two years pest-free now, and the same tech every visit. Worth every penny.”"
+                    ],
+                    "id": "ed796bac-4ef7-4525-85d1-7da75435b233",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Delgado family, plan members since 2023"],
+                    "id": "71bcab10-0334-4ac3-a7c6-062bd8c20c52",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ad669f29-cd40-4d2c-a65d-018f2307aeaf",
+                "ord": "a0"
+              }
+            ],
+            "id": "c0c75ff5-11da-4650-8d06-43f32a62d0ed",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s get your home protected"],
+                    "id": "25945562-40b5-4a18-9793-4e0d65253a30",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a free inspection, pick a time that fits your day, and we’ll take it from there. It takes about a minute."
+                    ],
+                    "id": "159ab088-ad07-4f91-8859-f95b1a7f557a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free inspection"],
+                    "id": "cd2b7e00-8152-4844-ad7a-2ab527310aeb",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "15d4643e-798f-435d-a3e2-083de1f784a9",
+                "ord": "a0"
+              }
+            ],
+            "id": "c057d74a-8de0-4d18-943e-238300ab42ef",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — ShieldGuard Pest Control",
+      "seoDescription": "See what ShieldGuard Pest Control offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b63a6af6-dd88-4342-8ea2-db9511d11968",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1581578017093-cd30fce4eeb7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVzdCUyMGNvbnRyb2wlMjB0ZWNobmljaWFufGVufDB8MHx8fDE3ODYzOTM3NTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A uniformed technician treating the exterior foundation of a home",
+                  "loading": "eager"
+                },
+                "id": "05fb2ac8-560f-4ec2-9847-6b8401e6bbac",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "1d02d4b1-be83-40ae-a65d-4e4b74c1ced6",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your visit"],
+                    "id": "bf144c03-f5e1-41d8-a0b3-dd7658bb12ef",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a visit to see prices and live openings, then pick a time that works — you’ll get a confirmation and a reminder before we arrive."
+                    ],
+                    "id": "04073061-b7f0-4525-9817-f2e32c208976",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See visits below"],
+                        "id": "dff4eb0d-1527-4293-8ea9-19085db0acbb",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "c5e92d47-d644-4a41-8534-288649f4b2c6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1661a1f4-4900-48ca-9c60-85c346bbbce5",
+                "ord": "a2"
+              }
+            ],
+            "id": "cf689044-3cc0-4c2f-a466-773a46edeef5",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "551eaae6-e72a-4812-b451-c7b17fa1df26",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — ShieldGuard Pest Control",
+      "seoDescription": "Who ShieldGuard Pest Control is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3d86b4cf-a06d-4054-9e08-9cd4da1c0b0c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1709787627975-9cb37bbeca60?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFwcHklMjBmYW1pbHklMjBob21lJTIwZXh0ZXJpb3J8ZW58MHwwfHx8MTc4NjM5Mzc1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A tidy, sunlit family home with a well-kept front yard",
+                      "loading": "lazy"
+                    },
+                    "id": "557f260a-fae5-4f19-a028-18e910f2da4a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About ShieldGuard Pest Control"],
+                        "id": "173cb632-7ffd-45ce-b1a5-6bde2d8f4de6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started ShieldGuard because keeping pests out of your home shouldn’t come with a hard sell, a mystery invoice, or a stranger you never see again. A pest-free home is a basic kind of peace of mind — and it should be handled by people who treat your home the way they’d treat their own."
+                        ],
+                        "id": "fbaebd39-759a-410c-9c18-949c6a012073",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So that’s how we run it: licensed technicians, upfront prices, tidy work, and an honest read on what your home actually needs. Your home, pest-free, guaranteed — and the same friendly face on every visit."
+                        ],
+                        "id": "61504564-eafc-46e6-a2fb-85e52fd1e15c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free inspection"],
+                            "id": "763e9e92-925d-4394-9808-cc0b41bd6d06",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "55261751-a839-439d-8931-52611093f1ff",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "cfb906f2-05fb-4d70-b53a-ae8d58f647ef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f30307b6-ae22-426a-8a27-231ce7ca5f2f",
+                "ord": "a0"
+              }
+            ],
+            "id": "52ca76e4-d9e3-4fd0-8a8c-9375a80d6962",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "4d891c38-0b0e-418c-bc90-93be2d218b40",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We inspect first"],
+                            "id": "deb67706-135a-40e1-afe2-9a8f0d2bc46c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every job starts with a real look inside and out to find where pests are getting in — because treating the symptom without the source just moves the problem around."
+                            ],
+                            "id": "c83167f2-0fa2-4164-9e7d-40a7b77780c2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "905a6208-ad73-4729-ac77-98a8c237ced0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We explain before we treat"],
+                            "id": "0b4e4bea-422a-466b-8116-359914ff3ff9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll always know what we found, what your options are, and what each one costs before any work starts. No pressure, no upsell — just an honest recommendation."
+                            ],
+                            "id": "96bade6f-e6a4-4329-b9c4-cf493a4e8e63",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "391d9f12-b574-4fc3-a519-5d1cf656c3ec",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We stand behind it"],
+                            "id": "286d408c-2718-4cae-ab32-d1c0bc7486f9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Our plans are backed by a re-treat-free guarantee, and a real person answers the phone when you call. If pests come back, so do we — at no charge."
+                            ],
+                            "id": "cf3fb022-e889-4279-b739-72a22b733856",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "66e14c84-2170-4e03-9db8-67a872e5a918",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "af767016-c025-491e-ac83-b06ad428b7a7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "051b204e-7b2a-4495-8be8-88f686dc6658",
+                "ord": "a0"
+              }
+            ],
+            "id": "5f5b24d3-707a-4b3e-954d-5f3fdf605d17",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — ShieldGuard Pest Control",
+      "seoDescription": "Where to find ShieldGuard Pest Control, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ab41fa56-71c2-40e3-ac86-5fd3f3a403e4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Reach the ShieldGuard team"],
+                        "id": "8017952f-760f-4211-a582-29d89f6d5a26",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["ShieldGuard Pest Control"],
+                            "id": "b379367d-4967-4033-b62b-9ed7535ab2ef",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["2200 Cypress Hollow Road"],
+                            "id": "d90a2f46-9a1a-4002-bf9e-c1a84173c5f1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Cedar Falls, TX 75104"],
+                            "id": "7fb17c11-c991-43d9-8dca-789758e03a2d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "64687ade-e5db-4ef5-9234-fede4b784872",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "4461807f-892f-48ae-96fc-1fb3764ec5ec",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:30 – 5:30"],
+                                "id": "2d9af5d6-537f-496e-bd7a-f4b5cc5cb9f2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fb6a0e57-695a-43f2-a5b9-123ec0ffefd9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "38ea7ce6-2c28-46ae-b8b5-ed142f3822d1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 2:00 (service visits)"],
+                                "id": "99c6bfeb-9f5e-4d08-9f52-5a37b53b9163",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "827488ae-9aca-42ac-89c0-7a297d8a44b2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "f34c7bb4-28de-4428-8c55-9dacecdd4c77",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "dadf68d7-727a-4367-be21-b647fd93bce3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c33e00c3-00ed-49c4-a0f9-52edae2b0f72",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Plan members"],
+                                "id": "7f65e1d0-2265-4120-8365-9e1d57e2d432",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Priority scheduling anytime"],
+                                "id": "eae1328d-d28b-45f6-aad4-077e1edf696e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "10794d09-e6bc-4bb0-87b6-d60a0d9cae1c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "3472b559-7799-428d-a30b-b1e394715d7c",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "0d51a6fb-3ad3-47eb-9cd8-cc1bf656d380",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "2200 Cypress Hollow Road, Cedar Falls, TX 75104",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "d962011e-0fdb-4c27-b284-32900dfad1be",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8a0f069b-2662-40eb-95a4-acf772af9aec",
+                "ord": "a0"
+              }
+            ],
+            "id": "5c09504e-1cf4-41cd-9923-06e601192aa6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "19315ec8-6184-49d4-bf4c-8a076d8c9ad4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live openings and reserve your free inspection online — pick a time, get a confirmation, done."
+                    ],
+                    "id": "151b3f35-1372-44c2-a3c7-54da3cabed8e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free inspection"],
+                    "id": "13211d53-9165-471f-a325-6ef14c1f2c2b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "351042e3-6a6d-4ef0-bf67-d34de9d95a21",
+                "ord": "a0"
+              }
+            ],
+            "id": "36d3cbb1-7988-45f3-86ea-61a7cb49613f",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "shieldguard",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.006 210)",
+      "--color-base-200": "oklch(95% 0.01 205)",
+      "--color-base-300": "oklch(90% 0.014 200)",
+      "--color-base-content": "oklch(26% 0.03 235)",
+      "--color-primary": "oklch(58% 0.10 210)",
+      "--color-secondary": "oklch(35% 0.03 235)",
+      "--color-accent": "oklch(64% 0.14 150)",
+      "--color-neutral": "oklch(30% 0.025 235)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 210)",
+      "--color-secondary-content": "oklch(98% 0.01 235)",
+      "--color-accent-content": "oklch(15% 0.02 150)",
+      "--color-neutral-content": "oklch(98% 0.01 235)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(64% 0.14 150)",
+      "--color-highlight-content": "oklch(15% 0.02 150)",
+      "--color-border": "oklch(90% 0.014 200)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(23% 0.02 235)",
+      "--color-base-200": "oklch(19% 0.018 235)",
+      "--color-base-300": "oklch(15% 0.015 235)",
+      "--color-base-content": "oklch(95% 0.008 210)",
+      "--color-primary": "oklch(72% 0.11 205)",
+      "--color-secondary": "oklch(80% 0.02 225)",
+      "--color-accent": "oklch(74% 0.13 150)",
+      "--color-neutral": "oklch(82% 0.02 225)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 205)",
+      "--color-secondary-content": "oklch(15% 0.02 225)",
+      "--color-accent-content": "oklch(15% 0.02 150)",
+      "--color-neutral-content": "oklch(15% 0.02 225)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.13 150)",
+      "--color-highlight-content": "oklch(15% 0.02 150)",
+      "--color-border": "oklch(15% 0.015 235)"
+    }
+  }
+}

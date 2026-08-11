@@ -1,0 +1,1962 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "0627d903-221f-4f82-99b2-da7c0f3c5158",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "c509d1c5-c4db-4e66-97ec-0da07b41a4fb",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "ed99c344-d6fb-41b4-b623-45a0ea70f12b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "5a432c7b-df0a-4598-a6a8-9e8a27deb0c9",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "aa0226cd-44d4-4e25-a0c7-6396d3d6c6fc",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e95e41a1-1650-4d5e-bea8-92e6d741fd99",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "8c7c85c3-d9e3-442e-bcd9-7332022be2a3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "a662daa9-43b9-46e3-8b35-5cacfdac97db",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "037d6854-b435-40a9-ac96-44f73ebe7f70",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "db9e0c44-011f-43ce-af8b-559e6990e15f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "3e6bc880-4d0a-4245-bf8a-ea5edf4cf7cc",
+                  "ord": "a2"
+                }
+              ],
+              "id": "1362dabc-f208-4992-b2e5-6e347020bc01",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "ef281cb8-4a80-4085-b326-c06ab13d3efc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "281e640f-01c3-481c-b39b-54f13ec8d790",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "be963da7-e79b-4fdb-827b-53b00acc0f15",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "f6862c53-e30f-47c3-9043-97ad93601ea6",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "20f127d8-f3d3-469d-94e3-acd78d809ee4",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "c192dc83-ba2c-487c-aed6-7722ced633ee",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "cf26af5f-7332-4e3c-9d23-e1606c2b767e",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "e327f55f-af9f-487e-82d2-c60884cf35dd",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "d462943f-e05f-470c-8d24-55ec50f0bce9",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "073d82a2-9441-423b-9531-903ede0a89d1",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "0c6091ed-10d6-4cca-9e1c-4a158e71853a",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ac7422c8-3254-402c-9a85-6e64ef7e9527",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "64666aa9-8478-468a-a63a-6d16ebb8752a",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "f1a4092d-44e2-42cd-9be4-0a940a397d5b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b2262277-ef40-41cb-82ea-364cbdc62e32",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "96ba7683-c455-44b5-b826-baf8894b9fe9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "962b3b83-74c1-4019-8042-2e656b69c6a6",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "2724f68a-c31a-4f42-bf2a-06bd8f22830e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4e9a4ea5-cb47-4860-89ef-14eacdc23556",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "5633039d-a9ab-4e5a-9413-75f2ade76ba3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "bd5ca688-cd76-4c08-a76d-da86301be287",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "115f4ed1-613a-4453-99f0-167d867e7513",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "9800d6c0-6e07-4ae7-a90d-1b17a32c5e49",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "be9bb08d-8928-4e16-a979-4ba99681f665",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "da39e8a3-7f06-4d0f-a332-7da68108625a",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "2957f9ba-407b-486c-9dad-4e5ff436ffcb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a17719a2-0703-4aa9-9889-ee93b7db8e3f",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "48d8cdac-a8ef-4a04-9ffd-826441c41ce5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "10bbbb83-9ebe-4641-8ff8-c4a30153044f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "51823c03-8703-44d3-bef3-bbd2f7339f28",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "f55f4f15-b5d8-4ec0-a540-af318eef7275",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "c8e66d7e-d1ac-45e3-884e-c140c2483990",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "4567788d-fabb-4952-b377-566dd78cd767",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "014b214e-8041-4e36-8843-a514db83f452",
+                  "ord": "a1"
+                }
+              ],
+              "id": "b2bc935f-9f5f-4e49-876f-6bb04f99da81",
+              "ord": "a0"
+            }
+          ],
+          "id": "03343653-edf8-4711-8cb0-e48686d220db",
+          "ord": "a2"
+        }
+      ],
+      "id": "e883a860-16d0-44b7-8175-e0a6e770a135"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Smoke & Barrel BBQ Catering — real smoke, big spreads",
+      "seoDescription": "Smoke & Barrel caters low-and-slow BBQ, taco bars and game-day feasts for backyard parties and corporate lunches. Book a free consult or a tasting online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cead14fb-1f47-45be-9cf1-5e3c385d23b1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFyYmVjdWUlMjBzbW9rZWQlMjBtZWF0fGVufDB8MHx8fDE3ODYzOTA2OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A loaded backyard BBQ spread of smoked brisket, ribs and sides",
+                  "loading": "eager"
+                },
+                "id": "6b5006c0-5414-4cda-81fe-c19fad7ad18b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "220af885-c786-4eec-9ebb-1fc789266e2a",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Real smoke. Big spreads. Zero fuss."],
+                    "id": "4e471b2e-7f8f-41e2-a6a9-e536306135a1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Low-and-slow BBQ, taco bars and game-day feasts for backyard parties and corporate lunches — catered by folks who actually run the pit."
+                    ],
+                    "id": "d2302a42-f091-40fa-b92c-a56b90bb7bbe",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a tasting"],
+                        "id": "b9028e4f-5493-4d3e-851b-d0cd70f97e84",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the spreads"],
+                        "id": "f3a7a299-32b0-47ff-96c8-4094d6c56f55",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5d94dbcb-274e-400d-9ee4-de9854ace1dd",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "3d1efbc9-4d67-45b2-b8a1-c5db684f7937",
+                "ord": "a2"
+              }
+            ],
+            "id": "f800edaa-c50b-4bf2-9d0f-b233146dd7ec",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Smoked low and slow, in-house"],
+                            "id": "da17df79-d2dd-42fc-8b51-685b61cd47d2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Brisket, pork and ribs over real wood for twelve-plus hours — never a warming tray of somebody else’s food. You taste the difference."
+                            ],
+                            "id": "ea3b1c3f-d1c1-48e8-a9b7-bcd5c813de68",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "96ea820f-efed-41a0-b8bd-eba4ce7f1ce0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Feeds any crowd"],
+                            "id": "6327843a-374f-4cd2-a09c-02fa741997b5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A backyard of fifteen or a company picnic of five hundred — we scale the spread and bring enough that nobody leaves hungry."
+                            ],
+                            "id": "94009d59-ee4c-4446-96a5-405167e4789b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8f3f5a44-10d0-4fcc-9ebd-0b66871df763",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Drop-off or full-service"],
+                            "id": "870cc1cc-8c80-49b8-ad1c-2d8feb1b4b1c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Want it dropped hot and ready? Done. Want us to set up, serve and clean up? Also done. You pick how hands-off you want to be."
+                            ],
+                            "id": "9b9ceb31-06ef-4a62-9816-986b90b72ead",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1e91d8b2-cf4f-4dea-ad8d-c4475e7e5375",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Easy flat per-head pricing"],
+                            "id": "0e43efdc-a0b4-472a-a464-06d7c449994b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One clear price per guest, sides included. No surprise line items, no math the morning of — just a spread that shows up ready."
+                            ],
+                            "id": "8c4d6ff8-ada5-49d6-9600-c605f2ea247c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2e4877a9-1f3c-47d2-904d-aa6fac108053",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b37f21c7-80bc-422c-9d78-f49076ad87a4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b6415d22-0839-405e-ab14-1cae34368575",
+                "ord": "a0"
+              }
+            ],
+            "id": "60c9db2a-2ce2-4f81-a7de-e6fa4fc5ab5a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Book a tasting or a consult"],
+                        "id": "357802b9-8d8a-4763-9077-da0106a85964",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Start with a free consult, or come taste the spread. Live availability and the full menu are on the booking page."
+                        ],
+                        "id": "31604ff1-d34a-4f3b-af43-6d4cea7e7f1c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "87ac2fdc-d469-486f-94c3-c8fcbf317015",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Event consultation"],
+                                "id": "57c44904-6274-4a2f-a1b3-6c952e8dbf66",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "8a8ef5b3-943a-487e-bd64-15011b977680",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6de23cef-58af-4a2c-9a7d-6b46a4024cb2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "1cb6c7e0-da7c-4db7-88d9-0bc5fddc7987",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Free call — headcount, budget, menu, logistics."],
+                            "id": "c4227069-7a96-4735-9607-cf9d87c29a93",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "704a8894-6c2e-4703-a348-131d471966ef",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Signature BBQ tasting"],
+                                "id": "07eaaddb-5751-46a8-9556-894f0f192e65",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$40"],
+                                "id": "603c4bbd-5d91-41a0-b7dd-faa4d1213bdd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2f74a8c6-4c05-49ea-ade4-845e4538049d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "b2b65d10-3a57-4953-b6b9-090444d75822",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Brisket, pork, ribs, chicken and the sides."],
+                            "id": "31130173-478a-4389-acae-84bf1496b6af",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2cab93c7-d2a1-4e1a-a0bd-fe5d6f9c7e9a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Taco bar tasting"],
+                                "id": "694b51e5-bd2f-486b-89e1-618e3509c6e8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$40"],
+                                "id": "89264969-4c22-43d1-baa1-0f753c67055e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0a86bb93-2118-4998-a89f-9c7d8833bd9d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "b63160ac-9765-4b7b-b02a-9c56415d15ac",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Build-your-own smoked-meat taco bar."],
+                            "id": "dfbb1b3b-62a5-421c-ab71-ec7cfdc36263",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1b3b6d0b-c967-4f36-9952-64242e4a6acc",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Corporate lunch consult"],
+                                "id": "d99a9414-e263-40f7-b27c-69e865a7d0c3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "6dd5ed3e-045a-4f11-94d6-e23eb467792a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8b70dd8d-befc-4c17-bc20-8c096e9ddc05",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "14f4a59e-1b0b-4bcf-b9fc-517af8488806",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Drop-off or full-service office spreads."],
+                            "id": "7a08619b-29bd-4c4b-bbaf-428315468ce0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "476e8e86-a6c5-4ce2-82f2-61305734f8b6",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "80c707ec-72c7-40aa-8774-2e3a8b33d336",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "073bcc22-8971-4fb5-af22-3546b61f9dbd",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "3cae7015-8eb7-4c71-93ca-e3ae022fbe1e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "07085c16-7fc3-4d3a-b779-ef09ff51731c",
+                "ord": "a0"
+              }
+            ],
+            "id": "d335520a-5f9b-479e-9dc5-12f12fb61768",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Straight off the pit"],
+                    "id": "d1abd99f-497e-4547-b7fb-7acaaa944363",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1558030137-d464dd688b00?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpc2tldCUyMGJicXxlbnwwfDB8fHwxNzg2MzkwNzA0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Sliced smoked brisket with a deep bark and smoke ring",
+                          "loading": "lazy"
+                        },
+                        "id": "6c0b0844-ce71-4154-9925-110c179a5354",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFjb3MlMjBmb29kfGVufDB8MHx8fDE3ODYzOTA3MDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A build-your-own taco bar with smoked meats and toppings",
+                          "loading": "lazy"
+                        },
+                        "id": "5f0b67d6-3eab-46b9-beed-e2c7a61c8360",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1679711246825-1f2bd51b16d0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwcmlic3xlbnwwfDB8fHwxNzg2MzkwNzEwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A rack of glazed pork ribs fresh off the smoker",
+                          "loading": "lazy"
+                        },
+                        "id": "b31d5585-ec4a-4f76-ac8d-0f2458879f3d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1709433420624-832e2264c346?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwc2lkZSUyMGRpc2hlc3xlbnwwfDB8fHwxNzg2MzkwNzEzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Trays of mac and cheese, slaw, beans and cornbread",
+                          "loading": "lazy"
+                        },
+                        "id": "2e8cb3c8-e8df-4668-a262-423693b3be1e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5ccef3c1-322c-4d06-919f-26383c43a698",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f934508c-d536-4566-b554-ca4d00daff77",
+                "ord": "a0"
+              }
+            ],
+            "id": "972d10d0-e348-49f4-a4d4-9995de0d3b11",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1605494708467-59cc8ebbe337?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwc21va2VyJTIwZ3JpbGx8ZW58MHwwfHx8MTc4NjM5MDcwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "The pitmaster tending a smoker at first light",
+                      "loading": "lazy"
+                    },
+                    "id": "6e1c15e5-ddae-4455-8b59-a6a8fbc1316c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["One pit, up before sunrise"],
+                        "id": "ba8489ec-8f59-4af9-b807-52b5201fb44a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Smoke & Barrel started with a backyard offset smoker, a stack of oak and way too much food for one family reunion. Word got around fast."
+                        ],
+                        "id": "ef566a07-1712-4ab5-ae96-649dd0a01ad6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "These days we run a mobile pit and cater the whole region — but the rule hasn’t changed: everything’s smoked fresh the day of your event, by the same crew that started it."
+                        ],
+                        "id": "84e3746d-f248-4bd1-b822-cdcd907b23d0",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a tasting"],
+                            "id": "eea25e67-0728-4c4c-bbaf-cd9f225f60df",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "9adb8683-7c72-429e-aa0b-96e9d2f6d58c",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "899b366f-670f-4916-8e51-810c324e9828",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "69588592-07be-40bd-a117-e706d849ee09",
+                "ord": "a0"
+              }
+            ],
+            "id": "f913478d-d6e1-4ecc-b794-515a12beb619",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“We booked them for a 200-person company picnic and people are STILL talking about the brisket. Showed up early, served everyone, cleaned up. Easiest caterer we’ve ever hired.”"
+                    ],
+                    "id": "7d2d0d1f-68f6-4e63-a88a-d1e6d0b13c79",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Renée O., office manager"],
+                    "id": "6ec87a06-0cee-47b3-90ba-9cb43895ab21",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1b0150b9-5323-47ac-9d84-30c507d7fff1",
+                "ord": "a0"
+              }
+            ],
+            "id": "9ec8aa78-2171-4b4f-9c01-243c36b60ef2",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Get your event on the calendar"],
+                    "id": "166cb941-c12e-4fec-a030-3a93e96d1270",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Grab a free consult or book a tasting — pick a time that works and we’ll take it from there. Takes about a minute."
+                    ],
+                    "id": "9a1599f0-5022-47bc-ae1b-2f452cdd393b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a tasting"],
+                    "id": "c3ec1138-41ad-48f7-bc11-240a8699321e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e980f879-db6d-4e08-aef9-ee1a6c85795b",
+                "ord": "a0"
+              }
+            ],
+            "id": "9030c139-4fb1-4004-b85a-cfff277d62cd",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Smoke & Barrel BBQ Catering",
+      "seoDescription": "See what Smoke & Barrel BBQ Catering offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "dbd1d4b6-635d-4e29-944c-1f07a23ee282",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFjb3MlMjBmb29kfGVufDB8MHx8fDE3ODYzOTA3MDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A build-your-own taco bar with smoked meats and toppings",
+                  "loading": "eager"
+                },
+                "id": "daa64081-9881-42e1-9d01-0f3632ce8f0b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "51619abe-2139-44ea-9a9f-fbec84af45bd",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your tasting or consult"],
+                    "id": "57e65d28-276b-4ce4-bc13-27e44b138c74",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Pick a service to see how long it takes and grab a live time — start free with a consult, or come taste the spread."
+                    ],
+                    "id": "99b76049-53cf-4a04-b877-e19d3391ca50",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "a4ad4bf3-4720-46a2-8df6-2dc2c6d92105",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "1407dc73-c9b4-4557-bca2-eb9ca7c5aab3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f691633f-4b04-4666-bc7d-5fab04a0437d",
+                "ord": "a2"
+              }
+            ],
+            "id": "4676ccad-f65c-48b0-98da-05246bd5a26d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "64f5d274-4f23-4a0c-a098-b3e76c0ee8cf",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Smoke & Barrel BBQ Catering",
+      "seoDescription": "Who Smoke & Barrel BBQ Catering is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d48d32b8-9db1-46ce-8b22-0683646d091f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFyYmVjdWUlMjBzbW9rZWQlMjBtZWF0fGVufDB8MHx8fDE3ODYzOTA2OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A loaded backyard BBQ spread of smoked brisket, ribs and sides",
+                      "loading": "lazy"
+                    },
+                    "id": "04597abb-b223-4314-af5d-bef6b20dbc88",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Smoke & Barrel"],
+                        "id": "548dd0e3-a09f-4562-b3c7-0aa26ab7cad7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a small crew that takes BBQ seriously and takes ourselves not at all. We smoke everything ourselves, over real wood, the day of your event — no shortcuts, no reheated trays."
+                        ],
+                        "id": "2438b75d-15ac-4ed1-a504-38ab9be837be",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Backyard party, office lunch, tailgate or a wedding for three hundred — we bring a generous, hearty spread and the kind of easygoing service that makes hosting feel easy."
+                        ],
+                        "id": "430a2492-7c13-432a-8f86-eb1eefb2e10c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a tasting"],
+                            "id": "43e06664-32ef-4f79-8951-be49f12eaade",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8afc6e24-cf27-4099-9086-c3a6279fee3a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "cd9530ad-2fd4-454d-8ddc-207391270063",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "edf5d260-ffd2-4057-9545-1e2b851fa9ac",
+                "ord": "a0"
+              }
+            ],
+            "id": "77a30bc6-6a7f-4cd3-8412-0294cb6636b2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we cater"],
+                    "id": "42a6c662-11db-482e-b8a7-b818e7b00392",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Tell us the plan"],
+                            "id": "28f96362-6d59-4dac-92b0-ddba4a9d1b85",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Headcount, date, vibe and budget on a quick free consult. We’ll tell you honestly what feeds your crowd best."
+                            ],
+                            "id": "df6bda3e-0691-4074-9d82-fc33f169ade9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1b6a0f43-f4e4-48d1-813d-b1a372a73653",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Taste it first"],
+                            "id": "ce063bae-c9af-4f3a-a3aa-ac46eca816b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Come to a tasting and try the spread before you commit. Tweak the menu until it’s exactly what you want."
+                            ],
+                            "id": "39fa7876-36fa-4a5e-a37a-215585991726",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "87df7150-4669-499f-9862-0a0e0f487439",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We show up ready"],
+                            "id": "4a864aed-ccd5-4375-b2fc-188fdfabb85a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Everything smoked fresh, delivered hot and on time — drop-off or full-service, set up and cleaned up."
+                            ],
+                            "id": "efbd7e29-404a-4f68-84ae-9b514f0ece2c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9b5525d7-f3d2-4545-9796-43328fa8bc86",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "1b7e3cf4-ca56-4c07-aa39-191871a4dcb9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5cdc86b3-4bf9-475d-8715-da3c8797fa45",
+                "ord": "a0"
+              }
+            ],
+            "id": "c73ee73a-efdc-4572-aea2-7c6d1ad9261c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Smoke & Barrel BBQ Catering",
+      "seoDescription": "Where to find Smoke & Barrel BBQ Catering, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e3480107-3d2c-4895-b301-5be930b2f45c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the pit"],
+                        "id": "b91280e5-2c50-4239-8b11-3c14452600b8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Smoke & Barrel BBQ Catering"],
+                            "id": "aaace233-5e36-4663-b023-10b6bb430e84",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Ironworks Road"],
+                            "id": "e464dfe6-5d54-4bef-b872-2a863d7311cf",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Kansas City, MO 64108"],
+                            "id": "47582e8d-7bf7-498a-900d-192730d8ba46",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "53ab5a09-5f49-43f8-836c-b8f450d52ba0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "1ecd6926-2ed2-44c1-a8d2-daa9b82d0f54",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "ecd3a0fe-31ea-4f16-bda9-eb5dd8bf7748",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "eb595a89-4cd8-4200-b1e0-c15f4041a1ca",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "6de1ce88-2819-4def-b12e-2de2bdc98b6f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 4:00"],
+                                "id": "3b98b161-72d3-45a7-8559-8316cd5129fa",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "625e0b15-b835-4d3d-9e1b-40c412818903",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "cc4c604f-cc3f-4588-be9e-46ba0b383217",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Events only"],
+                                "id": "01a1ca06-4e91-45fe-8de3-f25a81e95300",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4af2686b-1666-4a09-a548-d005afd09eb0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9da1af16-8b36-481d-9b38-03984eff80f2",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "a6cd805b-ee74-47ab-9140-7e2868776658",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Ironworks Road, Kansas City, MO 64108",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "25b8a41b-73b6-4a4a-9a48-0ad4929c51a4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0a3f83c2-0b1b-4540-b53c-6ff7ec22dcd0",
+                "ord": "a0"
+              }
+            ],
+            "id": "da7620d4-6892-4c2f-9000-dd3b6dadaf80",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "5cdfc1e2-e839-46a0-a2c0-57050480c93b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Grab a free consult or a tasting online — see live times and lock in a slot without the phone tag."
+                    ],
+                    "id": "b332eebd-7d79-4057-a53e-b10a3bd200f8",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a tasting"],
+                    "id": "391a5189-c03b-48c7-8369-77152673cb5e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4957000d-9c25-4cfa-9f18-68cc086871c6",
+                "ord": "a0"
+              }
+            ],
+            "id": "0e2ea89e-71ce-4cf7-a03e-4d252c106ec2",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "smoke",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.018 74)",
+      "--color-base-200": "oklch(92% 0.028 70)",
+      "--color-base-300": "oklch(86% 0.034 66)",
+      "--color-base-content": "oklch(24% 0.02 42)",
+      "--color-primary": "oklch(48% 0.152 32)",
+      "--color-secondary": "oklch(32% 0.022 45)",
+      "--color-accent": "oklch(72% 0.162 62)",
+      "--color-neutral": "oklch(26% 0.018 44)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 32)",
+      "--color-secondary-content": "oklch(98% 0.01 45)",
+      "--color-accent-content": "oklch(15% 0.02 62)",
+      "--color-neutral-content": "oklch(98% 0.01 44)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(72% 0.162 62)",
+      "--color-highlight-content": "oklch(15% 0.02 62)",
+      "--color-border": "oklch(86% 0.034 66)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.016 40)",
+      "--color-base-200": "oklch(18% 0.013 40)",
+      "--color-base-300": "oklch(14% 0.01 40)",
+      "--color-base-content": "oklch(93% 0.016 78)",
+      "--color-primary": "oklch(63% 0.16 34)",
+      "--color-secondary": "oklch(82% 0.02 72)",
+      "--color-accent": "oklch(77% 0.15 64)",
+      "--color-neutral": "oklch(82% 0.016 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 34)",
+      "--color-secondary-content": "oklch(15% 0.02 72)",
+      "--color-accent-content": "oklch(15% 0.02 64)",
+      "--color-neutral-content": "oklch(15% 0.016 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.15 64)",
+      "--color-highlight-content": "oklch(15% 0.02 64)",
+      "--color-border": "oklch(14% 0.01 40)"
+    }
+  }
+}

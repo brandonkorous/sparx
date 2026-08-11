@@ -1,0 +1,242 @@
+{
+  "policies": [
+    {
+      "handle": "salon-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Life happens — just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead."
+    },
+    {
+      "handle": "colour-deposit",
+      "name": "Colour deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 3000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Colour and balayage hold a $30 deposit that comes straight off your total. Move your appointment with 48 hours’ notice and it carries right over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rowan",
+      "name": "Rowan Ellis",
+      "kind": "staff",
+      "skillTags": ["cut", "curly", "styling", "treatment", "kids"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "juniper",
+      "name": "Juniper Vale",
+      "kind": "staff",
+      "skillTags": ["cut", "colour", "balayage", "gloss", "treatment"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marisol",
+      "name": "Marisol Reyes",
+      "kind": "staff",
+      "skillTags": ["cut", "curly", "colour", "styling", "kids"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "cut-style",
+      "name": "Cut & style",
+      "description": "A proper consult, a cut shaped to how your hair actually grows, and a styled finish.",
+      "durationMinutes": 60,
+      "priceCents": 7000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["cut"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "salon-standard"
+    },
+    {
+      "handle": "curly-cut",
+      "name": "Curly & textured cut",
+      "description": "A dry, curl-by-curl cut for coils, curls and waves — shaped to your pattern, styled to last.",
+      "durationMinutes": 75,
+      "priceCents": 8500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "curl specialist",
+          "kind": "staff",
+          "skillTags": ["curly"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "salon-standard"
+    },
+    {
+      "handle": "colour",
+      "name": "Colour",
+      "description": "Single-process colour, root to tip, finished with a gloss so it leaves shiny and even.",
+      "durationMinutes": 120,
+      "priceCents": 14000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "colourist",
+          "kind": "staff",
+          "skillTags": ["colour"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "colour-deposit"
+    },
+    {
+      "handle": "balayage",
+      "name": "Balayage & highlights",
+      "description": "Hand-painted, sun-kissed lightness with a soft grow-out — the low-maintenance kind.",
+      "durationMinutes": 180,
+      "priceCents": 21000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "colourist",
+          "kind": "staff",
+          "skillTags": ["balayage"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "colour-deposit"
+    },
+    {
+      "handle": "gloss-toner",
+      "name": "Gloss & toner",
+      "description": "A quick shine-and-tone refresh to keep your colour looking new between visits.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "colourist",
+          "kind": "staff",
+          "skillTags": ["gloss"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "salon-standard"
+    },
+    {
+      "handle": "treatment",
+      "name": "Deep-conditioning treatment",
+      "description": "A rich, restorative mask and scalp massage that leaves hair softer, stronger and easier to style.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["treatment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "salon-standard"
+    },
+    {
+      "handle": "kids-cut",
+      "name": "Kids’ cut",
+      "description": "An easy, patient cut for little ones (12 and under) — no rush, no fuss.",
+      "durationMinutes": 30,
+      "priceCents": 3500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "stylist",
+          "kind": "staff",
+          "skillTags": ["kids"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "salon-standard"
+    }
+  ]
+}

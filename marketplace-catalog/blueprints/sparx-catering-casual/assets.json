@@ -1,0 +1,32 @@
+[
+  {
+    "id": "catering-casual-hero",
+    "url": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFyYmVjdWUlMjBzbW9rZWQlMjBtZWF0fGVufDB8MHx8fDE3ODYzOTA2OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A loaded backyard BBQ spread of smoked brisket, ribs and sides"
+  },
+  {
+    "id": "catering-casual-pit",
+    "url": "https://images.unsplash.com/photo-1605494708467-59cc8ebbe337?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwc21va2VyJTIwZ3JpbGx8ZW58MHwwfHx8MTc4NjM5MDcwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The pitmaster tending a smoker at first light"
+  },
+  {
+    "id": "catering-casual-spread1",
+    "url": "https://images.unsplash.com/photo-1558030137-d464dd688b00?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpc2tldCUyMGJicXxlbnwwfDB8fHwxNzg2MzkwNzA0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sliced smoked brisket with a deep bark and smoke ring"
+  },
+  {
+    "id": "catering-casual-spread2",
+    "url": "https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFjb3MlMjBmb29kfGVufDB8MHx8fDE3ODYzOTA3MDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A build-your-own taco bar with smoked meats and toppings"
+  },
+  {
+    "id": "catering-casual-spread3",
+    "url": "https://images.unsplash.com/photo-1679711246825-1f2bd51b16d0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwcmlic3xlbnwwfDB8fHwxNzg2MzkwNzEwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A rack of glazed pork ribs fresh off the smoker"
+  },
+  {
+    "id": "catering-casual-spread4",
+    "url": "https://images.unsplash.com/photo-1709433420624-832e2264c346?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmJxJTIwc2lkZSUyMGRpc2hlc3xlbnwwfDB8fHwxNzg2MzkwNzEzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Trays of mac and cheese, slaw, beans and cornbread"
+  }
+]

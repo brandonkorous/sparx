@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-catering-events",
+  "name": "sparx — Catering (Events & Weddings)",
+  "version": "1.0.0",
+  "tagline": "A refined, seasonal template for events caterers — book tastings online from day one.",
+  "description": "An elegant events-and-wedding catering site — a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as \"Saffron & Sage Catering\", a from-scratch seasonal kitchen for weddings and events.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Catering",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Catering (Events & Weddings) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Catering (Events & Weddings) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#c77618",
+  "sortWeight": 58
+}

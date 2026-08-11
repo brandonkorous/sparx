@@ -1,0 +1,248 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-a-piece-is-made",
+    "status": "published",
+    "body": {
+      "title": "How a piece is made, from clay to kiln",
+      "excerpt": "A mug looks simple sitting on your shelf. Here’s everything that happened to the clay before it got there.",
+      "featuredImage": {
+        "$asset": "kiln-post-making"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People are often surprised how long a single mug takes. Not the throwing — that’s a few minutes on the wheel — but everything around it. A piece passes through the studio over the better part of two weeks, and most of that time it’s just sitting, drying at the right speed so it doesn’t crack. Here’s the whole journey."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Throwing and trimming"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It starts as a ball of wedged clay, centred on the wheel and opened into a wall with wet hands. Once it’s thrown, it rests overnight until it’s leather-hard — firm but still damp — and goes back on the wheel upside down to have its foot trimmed. That’s where the weight and balance are decided: too heavy and it’s a brick, too light and it tips."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The first firing"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When it’s bone dry, it’s loaded into the kiln for a bisque firing — a slow climb to around 1000°C that turns fragile clay into hard, porous ceramic that can be handled and glazed. Everything is stacked carefully; a kiln is expensive to run, so we fire it full."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Glaze and the second firing"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Bisque ware is dipped or poured with glaze — a liquid coat of minerals that will melt into glass in the heat. Then it’s fired again, hotter, to around 1250°C. That final firing is the one you can’t take back: the glaze runs and pools, the clay vitrifies and becomes waterproof, and the piece comes out of the kiln as the thing you’ll actually use. Only then do we know if it worked."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-word-on-glazes",
+    "status": "published",
+    "body": {
+      "title": "A word on our glazes, and why they vary",
+      "excerpt": "Oatmeal, Ash and Slate aren’t paint colours — they’re chemistry that meets fire. Here’s what to expect.",
+      "featuredImage": {
+        "$asset": "kiln-post-glazes"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We mix our three glazes from raw materials in the studio, by weight, from recipes we’ve tested over dozens of firings. But a glaze isn’t a paint you pick from a swatch — it’s a coat of minerals that only becomes its final colour in the heat of the kiln, and small things change how it lands."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The three glazes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Oatmeal is our warm, creamy neutral — the studio default, and the most forgiving on the table. Ash is a soft matte grey-green that breaks lighter over edges and rims, where the coat is thinner. Slate is the deepest of the three, a stony blue-grey that pools dark in the wells of bowls and plates. All three are food-safe and dishwasher-safe."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why yours won’t match the photo exactly"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Where a glaze pools thicker it fires darker; where it thins over a rim it breaks toward the clay beneath. Its exact tone shifts with the thickness of the coat, the spot it sat in the kiln, and the weather the day it was mixed. We photograph a representative piece, but yours will be its own — a little lighter here, a little deeper there. That variation isn’t a fault to apologise for; it’s the whole reason to buy something made by a person."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "caring-for-handmade-ceramics",
+    "status": "published",
+    "body": {
+      "title": "Caring for handmade ceramics",
+      "excerpt": "Handmade doesn’t mean fragile or fussy. A few simple habits and these pieces will outlast the fashion for them.",
+      "featuredImage": {
+        "$asset": "kiln-post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best thing you can do with a handmade piece is use it. Our stoneware is fired hot and fully vitrified, which makes it tough and genuinely everyday — not a shelf ornament you’re afraid to touch. A few small habits keep it looking its best for years."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Everyday use"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "All of our glazed ware is dishwasher-safe and microwave-safe. If you hand-wash, a soft sponge is plenty — skip the scouring pad, which can dull a glaze over time. The one thing to watch is thermal shock: don’t take a piece straight from the freezer to a hot oven, and let a cold mug warm a moment before you fill it with boiling water."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The bare foot"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We leave the foot of each piece unglazed, so you can see and feel the clay. On very rare occasions a bare foot can leave a faint grey mark on a soft surface — a quick pass with fine sandpaper smooths it, and we do this before anything ships. If yours ever needs it, a light sand and it’s done."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "If something chips"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Even tough ceramics can chip if they’re knocked hard against a tap or a stone counter. A small chip on a rim is usually still safe and sound to use, and many people grow fond of the mark. If a piece ever fails in a way that isn’t fair wear, tell us — we stand behind what leaves the studio."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

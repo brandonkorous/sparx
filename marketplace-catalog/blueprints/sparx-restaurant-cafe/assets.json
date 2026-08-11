@@ -1,0 +1,42 @@
+[
+  {
+    "id": "kettle-hero",
+    "url": "https://images.unsplash.com/photo-1710171680107-65bc3170c6cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwcGxhbnQtZmlsbGVkJTIwY2FmJTIwbW9ybmluZyUyMGxpZ2h0JTIwdGFibGVzJTIwYnl8ZW58MHwwfHx8MTc4NjQxNTMwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, plant-filled café in morning light, tables by tall windows"
+  },
+  {
+    "id": "kettle-brunch",
+    "url": "https://images.unsplash.com/photo-1773915950207-2d485a8e2aa2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJ1bmNoJTIwc3ByZWFkJTIwZWdncyUyMGdyZWVucyUyMHRvYXN0JTIwc3VubnklMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDE1MzAzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A brunch spread — eggs, greens and toast on a sunny table"
+  },
+  {
+    "id": "kettle-coffee",
+    "url": "https://images.unsplash.com/photo-1579265898841-79c7890d69cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmxhdCUyMHdoaXRlJTIwbGF0dGUlMjBhcnQlMjB3YXJtJTIwd29vZGVuJTIwY291bnRlcnxlbnwwfDB8fHwxNzg2NDE1MzA2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A flat white with latte art on a warm wooden counter"
+  },
+  {
+    "id": "kettle-toast",
+    "url": "https://images.unsplash.com/photo-1585768425229-d3a88ff63ebb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG9hZGVkJTIwdG9hc3QlMjBwbGF0ZSUyMHRvcHBlZCUyMGF2b2NhZG8lMjBjaGlsbGklMjBzb2Z0fGVufDB8MHx8fDE3ODY0MTUzMDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A loaded toast plate topped with avocado, chilli and a soft egg"
+  },
+  {
+    "id": "kettle-pastry",
+    "url": "https://images.unsplash.com/photo-1515686954815-8667163e4edb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJheSUyMGZyZXNoJTIwcGFzdHJpZXMlMjBzbGljZSUyMGNpdHJ1cyUyMGNha2V8ZW58MHwwfHx8MTc4NjQxNTMxM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tray of fresh pastries and a slice of citrus cake"
+  },
+  {
+    "id": "kettle-room",
+    "url": "https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FmJTIwcm9vbSUyMGxpZ2h0fGVufDB8MHx8fDE3ODY0MTU1MDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The café room — light wood, hanging plants, mismatched chairs"
+  },
+  {
+    "id": "kettle-counter",
+    "url": "https://images.unsplash.com/photo-1595928642581-f50f4f3453a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFyaXN0YSUyMHB1bGxpbmclMjBzaG90JTIwZXNwcmVzc28lMjBjb3VudGVyfGVufDB8MHx8fDE3ODY0MTUzMTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A barista pulling a shot at the espresso counter"
+  },
+  {
+    "id": "kettle-window",
+    "url": "https://images.unsplash.com/photo-1692411735819-3b35dda81385?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cXVpZXQlMjB3aW5kb3clMjBzZWF0JTIwY29mZmVlJTIwYm9vayUyMHN1bnxlbnwwfDB8fHwxNzg2NDE1MzIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet window seat with a coffee and a book in the sun"
+  }
+]

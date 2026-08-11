@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-wine-modern",
+  "name": "sparx — Modern Wine Shop",
+  "version": "1.2.0",
+  "tagline": "A bright, fun storefront for a modern wine club and bottle shop.",
+  "description": "A complete, working shop for a bright, modern wine club and bottle shop: a real catalogue of approachable bottles — a house red, a bold dinner red, a crisp white, a rosé, a pét-nat, a non-alc fizz, a flexible wine club, a mixed six and a gift set — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Bright pale-blush theme — a punchy berry primary, a coral accent and a modern display face. Shipped as Coupe.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Wine shop"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Modern Wine Shop icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Modern Wine Shop — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#cd285e",
+  "sortWeight": 85
+}

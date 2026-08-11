@@ -1,0 +1,269 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "bean-to-bar",
+    "status": "published",
+    "body": {
+      "title": "Bean to bar: what actually happens between the pod and the wrapper",
+      "excerpt": "Most chocolate is melted, not made. Here’s every step we do ourselves, and why each one changes how the bar tastes.",
+      "featuredImage": {
+        "$asset": "post-beantobar"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Bean to bar” means exactly what it says: we start with fermented, dried cacao beans and do everything from there ourselves, rather than melting couverture someone else already made. It is slower and fussier, and it is the only way the flavour of a particular farm survives all the way into the bar. Here is the whole chain."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Roast, crack, winnow"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We roast the beans in small batches — lower and slower than coffee — to develop flavour without burning off the fruit. Then we crack them and winnow away the papery husk, leaving the nibs: pure cacao, and already smelling of the bar to come. Roast is the first fork in the road; the same bean roasted two ways is two different chocolates."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Grind and conch"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The nibs go into a stone melanger and grind for two to three days. The friction melts the cocoa butter, the sugar goes in, and the grit slowly disappears until the chocolate is smooth on the tongue. That long, warm grind is also the conch — it drives off the last harsh, volatile notes and rounds everything into something you want to eat. Skip it and the bar is sandy and sharp."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Temper and mould"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Finally we temper: heating and cooling the chocolate through precise temperatures so the cocoa butter sets in the one crystal form that snaps, shines and melts at body heat. Untempered chocolate is dull, soft and streaky. Tempered, it clicks when you break it and dissolves clean — the difference you can feel before you taste anything. Then it’s moulded, set, and wrapped by hand."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-taste-chocolate",
+    "status": "published",
+    "body": {
+      "title": "How to taste chocolate (properly, in five minutes)",
+      "excerpt": "You already know how to do this — it’s the same attention you’d give a glass of wine. A quick, unfussy method.",
+      "featuredImage": {
+        "$asset": "post-tasting"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Tasting chocolate isn’t a performance, and it doesn’t need vocabulary you’d be embarrassed to say out loud. It just needs you to slow down for a couple of minutes and pay attention to what’s actually happening. Here’s the version we teach at the stall."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Look, listen, smell"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with a clean palate — a sip of water, nothing minty. Look at the bar: good chocolate is glossy, not dull or grey. Snap a piece off; a well-tempered dark bar cracks with a clean click. Then smell it before you eat it. Most of what you’ll “taste” is really smell, so give it a second — you’ll often catch the fruit or the nuts before it’s even in your mouth."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Let it melt, don’t chew"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Put a square on your tongue and let it melt rather than biting through it. Chewing rushes past everything. As it melts, the flavour moves: a bright origin like our Madagascar opens with tart fruit up front, then the deeper cocoa arrives, then a finish that lingers after it’s gone. Notice the order, and notice the texture — smooth, or a little coarse; fast-melting, or waxy and slow."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Compare, and trust yourself"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The fastest way to learn your own palate is to taste two bars side by side — that’s the whole idea behind the Tasting Library. Next to the Peru, the Madagascar’s fruit is obvious; next to the Madagascar, the Peru’s caramel is. And whatever you notice is right. If it tastes of raisins to you, it tastes of raisins — the notes on our sleeves are a starting point, not a test."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "where-our-cacao-grows",
+    "status": "published",
+    "body": {
+      "title": "Where our cacao actually grows, and why we pay more for it",
+      "excerpt": "A bar with an origin on it should mean something. Here’s what we know about the farms behind ours, and what fermentation has to do with flavour.",
+      "featuredImage": {
+        "$asset": "post-origins"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most cacao is sold as a commodity — bulk-bought, blended, and priced with no reference to who grew it or how it tastes. We buy the other way: specific lots from farms and co-operatives we can name, through importers who’ve built long relationships with the growers. It costs more, and here’s why it’s worth it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Fermentation is half the flavour"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Cacao doesn’t taste of chocolate when it comes out of the pod — it tastes of sharp white fruit pulp. The chocolate flavour is developed by fermentation: the wet beans are heaped up for days, and the heat and microbes that build in the pile create the compounds we later roast into flavour. Done well, you get fruit and depth; done carelessly, you get mould and mustiness that no roasting can fix. So a great bar is really a great ferment, and that happens at origin, not in our workshop."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why we pay above the market"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Careful fermentation and selective harvesting take labour, and the commodity price doesn’t reward either. If we want growers to keep doing the fiddly, flavour-making work — and to keep improving it season on season — they have to earn a proper living from it. Paying above the market isn’t charity; it’s the only way the good cacao keeps being made."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What the origin buys you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Traceability, first: when you can name the farm, you can taste what a region and a process actually do — the Sambirano’s red fruit, Piura’s caramel — year after year. And consistency: the same growers, treated fairly, return with the same distinctive lots. The origin on the wrapper is a promise that someone, somewhere, was paid properly to grow something worth making into chocolate."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

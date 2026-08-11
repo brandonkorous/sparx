@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-b2b-electrical-supply",
+  "name": "sparx — Electrical Supply (B2B / Wholesale)",
+  "version": "1.2.0",
+  "tagline": "A wholesale storefront built for electricians and contractors.",
+  "description": "A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack — twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester — with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme — slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "b2b",
+    "industry": "Electrical wholesale"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Electrical Supply (B2B / Wholesale) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Electrical Supply (B2B / Wholesale) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#0056a4",
+  "sortWeight": 85
+}

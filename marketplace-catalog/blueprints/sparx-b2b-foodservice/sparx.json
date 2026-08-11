@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-b2b-foodservice",
+  "name": "sparx — Foodservice Wholesale",
+  "version": "1.2.0",
+  "tagline": "A working trade counter for a foodservice wholesaler.",
+  "description": "A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton — bulk pantry, oils and staples, packaging and disposables — with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme — cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "b2b",
+    "industry": "Foodservice wholesale"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Foodservice Wholesale icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Foodservice Wholesale — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#205431",
+  "sortWeight": 86
+}

@@ -1,0 +1,393 @@
+{
+  "policies": [
+    {
+      "handle": "table-standard",
+      "name": "Table reservation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 180],
+      "policyText": "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead."
+    },
+    {
+      "handle": "large-party",
+      "name": "Large party hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 180],
+      "policyText": "Parties of six place a card hold to secure the table — nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "t2-a",
+      "name": "Two-top · window",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "t2-b",
+      "name": "Two-top · nook",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "t2-c",
+      "name": "Two-top · bar rail",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "t4-a",
+      "name": "Four-top · middle",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "t4-b",
+      "name": "Four-top · banquette",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "t6-a",
+      "name": "Six-top · corner",
+      "kind": "table",
+      "skillTags": ["six-top"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1050,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 960
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "table-for-two",
+      "name": "Table for two",
+      "description": "A table for two, for lunch or dinner. Ninety minutes at the weekend, longer midweek — we won’t rush you.",
+      "bookingType": "reservation",
+      "durationMinutes": 90,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["two-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    },
+    {
+      "handle": "table-for-four",
+      "name": "Table for four",
+      "description": "A table for three or four. Bring the family, or make it a double date.",
+      "bookingType": "reservation",
+      "durationMinutes": 105,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["four-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "table-standard"
+    },
+    {
+      "handle": "table-for-six",
+      "name": "Table for six",
+      "description": "The big corner table, for five or six. A card hold secures it; for seven or more, email us and we’ll sort it.",
+      "bookingType": "reservation",
+      "durationMinutes": 120,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["six-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "large-party"
+    }
+  ]
+}

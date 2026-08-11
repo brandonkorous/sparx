@@ -1,0 +1,37 @@
+[
+  {
+    "id": "nori-hero",
+    "url": "https://picsum.photos/seed/nori-hero/1600/1000",
+    "alt": "A hinoki-wood sushi counter, the chef at work behind it under low light"
+  },
+  {
+    "id": "nori-nigiri",
+    "url": "https://images.unsplash.com/photo-1562158074-d49fbeffcc91?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwcGllY2UlMjBuaWdpcmklMjBmaXNoJTIwd2FybSUyMHJpY2UlMjBicnVzaGVkfGVufDB8MHx8fDE3ODY0MTUzNTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single piece of nigiri, fish over warm rice, brushed with soy"
+  },
+  {
+    "id": "nori-sashimi",
+    "url": "https://images.unsplash.com/photo-1705948729112-3139fdf1a443?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMHBsYXRlJTIwc2xpY2VkJTIwc2FzaGltaSUyMGFycmFuZ2VkJTIwcGFsZSUyMGNlcmFtaWN8ZW58MHwwfHx8MTc4NjQxNTM1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A minimal plate of sliced sashimi arranged on pale ceramic"
+  },
+  {
+    "id": "nori-chef",
+    "url": "https://images.unsplash.com/photo-1574906328425-c7a4cb49bfa8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8aXRhbWFlJTIwc2xpY2luZyUyMGxvaW4lMjBmaXNoJTIwbG9uZyUyMHlhbmFnaWJhJTIwa25pZmV8ZW58MHwwfHx8MTc4NjQxNTM1OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The itamae slicing a loin of fish with a long yanagiba knife"
+  },
+  {
+    "id": "nori-counter",
+    "url": "https://images.unsplash.com/photo-1696449241254-11cf7f18ce32?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93JTIwZW1wdHklMjBjb3VudGVyJTIwc2VhdHMlMjBzZXQlMjBiZWZvcmUlMjBzdXNoaXxlbnwwfDB8fHwxNzg2NDE1MzYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A row of empty counter seats set before the sushi bar"
+  },
+  {
+    "id": "nori-room",
+    "url": "https://images.unsplash.com/photo-1611596188718-840151555242?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGluaW5nJTIwcm9vbSUyMHBhbGV8ZW58MHwwfHx8MTc4NjQxNTUxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The dining room — pale wood, clean lines, a single hanging light"
+  },
+  {
+    "id": "nori-sake",
+    "url": "https://images.unsplash.com/photo-1664711414381-b0768d979223?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyYWZlJTIwdHdvJTIwc21hbGwlMjBjdXBzJTIwc2FrZSUyMHBvdXJlZCUyMGNvdW50ZXJ8ZW58MHwwfHx8MTc4NjQxNTM2Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A carafe and two small cups of sake poured at the counter"
+  }
+]

@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "dogtraining-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel a session. We send a reminder the day before and two hours ahead so it never sneaks up on you."
+    },
+    {
+      "handle": "program-deposit",
+      "name": "Board-and-train deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 20000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Board-and-train places are limited, so a $200 deposit reserves your dog’s spot and comes off the program tuition. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dana",
+      "name": "Dana Cole",
+      "kind": "staff",
+      "skillTags": ["behavior", "private", "board-train"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Reyes",
+      "kind": "staff",
+      "skillTags": ["reactivity", "aggression", "private"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Shah",
+      "kind": "staff",
+      "skillTags": ["obedience", "private", "board-train"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "behavior-assessment",
+      "name": "Behavior assessment",
+      "description": "Where every dog starts. A specialist meets you and your dog, watches the behavior first-hand, and leaves you with a written plan and a clear next step. No obligation to book anything more.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["private"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    },
+    {
+      "handle": "private-session",
+      "name": "Private session",
+      "description": "One-on-one coaching for you and your dog, built on the plan from your assessment. We train the behavior AND the handler, so the results hold long after we leave.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["private"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    },
+    {
+      "handle": "puppy-foundations-consult",
+      "name": "Puppy foundations consult",
+      "description": "Start right and skip the hard re-training later. We set up confident socialization, house habits, name recognition and impulse control before problems have a chance to form.",
+      "durationMinutes": 45,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["private"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    },
+    {
+      "handle": "reactivity-consult",
+      "name": "Reactivity consult",
+      "description": "For the dog who lunges, barks or spirals on leash. A reactivity specialist reads the triggers and thresholds, then builds a step-by-step plan to bring the intensity down and the calm up.",
+      "durationMinutes": 75,
+      "priceCents": 14000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["reactivity"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    },
+    {
+      "handle": "board-and-train-consult",
+      "name": "Board-and-train consult",
+      "description": "Immersive training where your dog lives and learns with a specialist, then comes home with the skills transferred to you. This consult scopes the program and reserves the place; the deposit applies to tuition.",
+      "durationMinutes": 45,
+      "priceCents": 20000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["board-train"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "program-deposit"
+    },
+    {
+      "handle": "aggression-consult",
+      "name": "Aggression consult",
+      "description": "Serious behavior handled seriously. An aggression specialist assesses the history and the risk in person, then lays out a realistic, humane plan to keep everyone safe while the behavior changes.",
+      "durationMinutes": 90,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["aggression"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    },
+    {
+      "handle": "follow-up-session",
+      "name": "Follow-up session",
+      "description": "A shorter check-in between programs to sharpen what’s working, troubleshoot what isn’t, and keep the progress moving. Best once you’ve completed an assessment or program with us.",
+      "durationMinutes": 30,
+      "priceCents": 7000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "trainer",
+          "kind": "staff",
+          "skillTags": ["private"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dogtraining-standard"
+    }
+  ]
+}

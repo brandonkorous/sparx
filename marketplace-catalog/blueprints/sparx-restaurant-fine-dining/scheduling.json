@@ -1,0 +1,311 @@
+{
+  "policies": [
+    {
+      "handle": "dinner-reservation",
+      "name": "Dinner reservation",
+      "depositType": "deposit",
+      "depositAmountCents": 2500,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 180],
+      "policyText": "A £25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
+    },
+    {
+      "handle": "chefs-counter",
+      "name": "Chef’s counter",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 1440, 180],
+      "policyText": "The six counter seats take a £50 per-guest deposit, redeemed against your bill on the night. Cancel or move by 72 hours before for a full refund. It keeps the best seats in the house fair to everyone hoping for them."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "t2-a",
+      "name": "Two-top · window",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "t2-b",
+      "name": "Two-top · corner",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "t2-c",
+      "name": "Two-top · banquette",
+      "kind": "table",
+      "skillTags": ["two-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "t4-a",
+      "name": "Four-top · centre",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "t4-b",
+      "name": "Four-top · alcove",
+      "kind": "table",
+      "skillTags": ["four-top"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "counter-a",
+      "name": "Chef’s counter · seat",
+      "kind": "table",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    },
+    {
+      "handle": "counter-b",
+      "name": "Chef’s counter · seat",
+      "kind": "table",
+      "skillTags": ["counter"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1080,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 1080,
+          "endMinute": 1320
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "table-for-two",
+      "name": "Table for two",
+      "description": "A table for two in the dining room, for the full tasting menu. Two hours, unhurried — the evening is yours.",
+      "bookingType": "reservation",
+      "durationMinutes": 120,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["two-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dinner-reservation"
+    },
+    {
+      "handle": "table-for-four",
+      "name": "Table for four",
+      "description": "A table for three or four in the dining room. Make a night of it — a birthday, an anniversary, or no reason at all.",
+      "bookingType": "reservation",
+      "durationMinutes": 120,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "table",
+          "kind": "table",
+          "skillTags": ["four-top"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "dinner-reservation"
+    },
+    {
+      "handle": "chefs-counter",
+      "name": "The chef’s counter",
+      "description": "A seat at the pass, looking into the kitchen, for the full tasting menu told course by course by the hands that made it. Two and a half hours; a £50 per-guest deposit secures it.",
+      "bookingType": "reservation",
+      "durationMinutes": 150,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "seat",
+          "kind": "table",
+          "skillTags": ["counter"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "chefs-counter"
+    }
+  ]
+}

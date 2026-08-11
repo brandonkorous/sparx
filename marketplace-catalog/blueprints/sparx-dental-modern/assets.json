@@ -1,0 +1,27 @@
+[
+  {
+    "id": "dental-modern-hero",
+    "url": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwZGVudGFsJTIwY2xpbmljfGVufDB8MHx8fDE3ODYzODkzMDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, minimal dental studio with clean lines and soft daylight"
+  },
+  {
+    "id": "dental-modern-chairside",
+    "url": "https://images.unsplash.com/photo-1598256989800-fe5f95da9787?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGlzdCUyMHBhdGllbnQlMjBjaGFpcnxlbnwwfDB8fHwxNzg2Mzg5MzA2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm treatment suite with a modern chair and a large window"
+  },
+  {
+    "id": "dental-modern-elise",
+    "url": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZW50aXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Elise Marchetti, cosmetic & general dentist"
+  },
+  {
+    "id": "dental-modern-priya",
+    "url": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwcHJvZmVzc2lvbmFsJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTMwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Priya Anand, orthodontist & aligner lead"
+  },
+  {
+    "id": "dental-modern-renae",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg5MzExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Renae Ford, registered dental hygienist"
+  }
+]

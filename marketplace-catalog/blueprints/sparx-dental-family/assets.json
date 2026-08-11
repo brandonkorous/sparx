@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dental-family-hero",
+    "url": "https://images.unsplash.com/photo-1629909613654-28e377c37b09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwb2ZmaWNlJTIwYnJpZ2h0fGVufDB8MHx8fDE3ODYzODkyODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, friendly dental office with big windows and warm daylight"
+  },
+  {
+    "id": "dental-family-office",
+    "url": "https://images.unsplash.com/photo-1704455306251-b4634215d98f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwY2xpbmljJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM4OTI4N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, welcoming reception area with soft seating and plants"
+  },
+  {
+    "id": "dental-family-amara",
+    "url": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZW50aXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Amara Osei, family dentist, smiling"
+  },
+  {
+    "id": "dental-family-nora",
+    "url": "https://images.unsplash.com/photo-1681939282781-341ac4f61996?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVudGFsJTIwaHlnaWVuaXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Nora Bishop, dental hygienist"
+  },
+  {
+    "id": "dental-family-priya",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBoZWFsdGhjYXJlJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, dental hygienist"
+  },
+  {
+    "id": "dental-family-kids",
+    "url": "https://images.unsplash.com/photo-1552873816-636e43209957?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBzbWlsaW5nJTIwZGVudGlzdHxlbnwwfDB8fHwxNzg2Mzg5Mjk5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A young child smiling in the dental chair, relaxed and happy"
+  }
+]

@@ -1,0 +1,2217 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "0a089ebe-77b2-4397-ab1f-511b4ad7f8b7",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "9b40b40e-ea65-44d2-ade5-cdc90076297c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "81b09f19-26bf-4005-92ad-8910100290d0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "c9566c29-0585-4cdf-b9e2-1775e215a5c5",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "b8d5041e-5d51-4453-9ff6-86b579393aa8",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "28f06edd-c68a-4550-95f3-8d8f2f6a8884",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "b44392fd-57ff-484f-bc69-2b639ee195a7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "84dda562-e620-4184-b747-0b15046f1a9e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "0e0fc3c5-b10f-466d-b6e0-40abc0d6c89b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "730ce4ee-e48f-4984-9e0f-8030dafac724",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c1d85ffa-376d-43ec-9941-67f7d0625241",
+                  "ord": "a2"
+                }
+              ],
+              "id": "aaf45dc0-65e4-4856-bde0-60ab8d8d41eb",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "47c06abe-9fdd-456f-94e5-c9d7ebcd76a0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "799ab287-e445-4cca-8adf-173d17d1bf9b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "cd93fdb9-c403-4c81-913b-a0c38bd1eb28",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "c05c9cb7-02a5-4257-a275-e18fd915e7bb",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "962c4969-b98e-4d73-aadd-2339ce41b2d0",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "27cf93b9-1410-4a84-8bff-3b9a2cfb4738",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "8ae60d2d-8ae6-4726-a4db-1f3fa6cf2207",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6d4d54cd-fd49-4f60-8b62-6266c8d294a9",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "0ac430a2-81d1-4fe4-ae83-b7e9efdd17a5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9d48548b-bdda-42b4-a8a7-25508eb6870c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "2f366e5d-771b-4858-b156-7dfa6a9f89ed",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "0339af04-0807-437f-ab73-0ee91c7cbf0a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0fc56787-0388-4f1a-ad82-c5df8656cfce",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "745bf6c1-ddc0-4137-8d3b-55c8f847ed68",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8450c59f-5575-4a83-b338-33b3c0403782",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "1baf2a09-027c-4ae5-b47f-cbc03ad01c8e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0ad7b91f-b6d1-4eb3-8284-8433f0184f38",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "743e7599-ba8e-47fb-84dd-82f4b4bc74dd",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2d2af4c8-ac10-4215-aed6-9009a029cafd",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "5ffd32ac-882b-456e-9177-a49d720cec94",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8ec15b91-c765-4504-a28d-a2a667b8f797",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "92c8c3ee-c83c-4f22-95fb-368e2e8e0bc2",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "44f564be-b9c4-45bb-bfbf-df2eee18dcc9",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "4cf8cfee-bc38-4cbb-9f81-e1d067f6d060",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b6f904d1-e85a-44c2-8a3c-15000dbc3eba",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "91110af6-be48-46cc-8375-55a951b2d072",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d296f578-50f5-48fb-8496-fa90653e5ce2",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "1512b33c-743b-4348-b8a6-2e181bb961e1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b1a17ade-6020-48c6-b223-c1a73c4f9bde",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bf0a333e-9f09-4132-8278-366d491054f5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "17a45324-17e6-4550-8f45-522d2da3d62e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "3b2b4c0d-ae1b-4e9b-ac29-12b1905408a5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "2f0aa724-b3c1-4029-bcd4-ff64c17b6eb2",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0a556f6a-a981-4e23-a72a-b7012eb35252",
+                  "ord": "a1"
+                }
+              ],
+              "id": "4ef9736f-bafb-4daf-84c5-339a871983c5",
+              "ord": "a0"
+            }
+          ],
+          "id": "598abfde-bb92-42a2-a592-78a1704ec21e",
+          "ord": "a2"
+        }
+      ],
+      "id": "40402ed8-66c5-4005-9770-dfa4082ca00e"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "BlueWave Pool Care — weekly pool cleaning & maintenance",
+      "seoDescription": "BlueWave Pool Care keeps your pool sparkling with weekly cleaning, chemical balancing, openings, closings and filter care on an automatic schedule. Licensed, insured, and easy to book online — get a free quote.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "358634f0-6018-4408-bb78-4aa2dedb26c8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1558617320-e695f0d420de?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBzd2ltbWluZyUyMHBvb2x8ZW58MHwwfHx8MTc4NjM5NDIwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A sparkling clean backyard swimming pool with crystal-clear blue water",
+                  "loading": "eager"
+                },
+                "id": "4dc06884-508c-4803-90f6-5ffc4bf889f8",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "387e5917-5231-4993-91c7-a1ed61d87831",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A sparkling pool, handled every week"],
+                    "id": "7f2e83cc-f3ff-4712-a731-dca5fcd70909",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Weekly cleaning, chemical balancing and everything your pool needs — on a schedule you never have to think about. Licensed, insured, and easy to book online."
+                    ],
+                    "id": "f28892e0-0b9f-4b13-9f75-e549398f8c29",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get a free quote"],
+                        "id": "39fbff7b-aa73-4230-9936-438d9b0efb81",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our plans"],
+                        "id": "4595b99a-f24d-4270-8098-cde3b539a1d6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9c1a6008-a40d-4218-88ea-b6a4b997cfea",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "3d209ffe-5dcf-488c-989d-2fd7373afa59",
+                "ord": "a2"
+              }
+            ],
+            "id": "595a9a65-fded-45ef-a024-ad0480f4b743",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Weekly service, set and forget"],
+                            "id": "d2554e6b-b714-4651-a6e3-a97a7fe33f09",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We show up on the same day every week, service the pool, and text you when it’s done. You never have to be home, remember, or lift a net."
+                            ],
+                            "id": "1a03a6e6-4d49-4fac-b91c-7410de1d9740",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6578e963-e8a7-4cc4-b542-a7d395e6e4fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed & fully insured"],
+                            "id": "8029b0f0-285b-461b-8c30-0600b75da4a6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A real, insured local company caring for your pool — not a truck that shows up once and disappears when the water turns green."
+                            ],
+                            "id": "fb423a6f-ce79-4f33-96ab-a76880562e25",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9922ec5e-4b52-431a-b4cd-100ac6977f03",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One transparent flat price"],
+                            "id": "a9ee7421-d5b8-40e1-adac-cec3490e611f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A clear weekly rate with no surprise add-ons and no haggling. You always know exactly what your pool costs each month."
+                            ],
+                            "id": "28ae67f2-4ec4-42c4-90ee-63ae20617e95",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ab547677-5871-4b7b-9991-5613894b3fa4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Always-balanced water"],
+                            "id": "d656f34f-105e-472d-b248-fb555aa34a94",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every visit we test and adjust chlorine, pH and more — so the water stays clear, gentle on skin and eyes, and safe to swim in."
+                            ],
+                            "id": "bd473599-7782-418a-bf31-6c1856c90e11",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "90ce6493-93f0-4f37-8977-2d98722cd931",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ae26619a-a206-47d5-8611-273d7171426a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e7b33f3a-2a02-4aef-882f-cbf908aef6db",
+                "ord": "a0"
+              }
+            ],
+            "id": "07473e2b-8cc1-4d27-ae4a-a07a16ee75a4",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we do"],
+                        "id": "930b6500-dfb4-44db-9507-799fbba4a00f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Pick a service to see how long it takes and start booking. A free quote is always the easiest first step."
+                        ],
+                        "id": "3b4061a7-a38c-495c-be67-16c1a513a94c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1a857a00-f3e3-4cd2-a90a-35294ed7a6fe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free pool quote"],
+                                "id": "3ea1a83f-fb50-4401-bb98-b292e21fbfa6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "9c40b2b6-d91f-4406-b86e-5982d106544e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fe9fb775-c987-4c45-a37d-262c3e5f6f0c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "899dd0c0-e7d5-4ffa-acd1-91323beaf3c2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We look at your pool and send a flat-rate weekly price — no obligation."
+                            ],
+                            "id": "362445e0-be6c-430c-b091-e4a068abac3c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "44af47de-8447-4043-8a9e-6fdb16b30668",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Weekly pool service"],
+                                "id": "dbcbddb1-ff8c-4043-94dd-81baec9eb0a3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$65"],
+                                "id": "dfa11655-b0e7-4081-b6b1-a607ea3318b6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ce62f0c2-0d1c-42fb-acbd-740317c1c169",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "e3077610-d4e9-40c0-86d9-3c2c2ca5d429",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Skim, brush, vacuum, empty baskets and balance — kept on schedule."
+                            ],
+                            "id": "1c1c48f2-1090-48b7-bd82-2dcd5cfad17e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b305efe7-a6f6-4618-827f-9e8043219267",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["One-time cleaning"],
+                                "id": "5985a911-7d62-47d9-8b6a-c189ccf01a7c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "af02fdfd-5085-47d1-8671-bc2a5507e6e2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "008798ed-86cf-42ba-8d78-b58431d3452a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "13a426cf-8bc2-4709-ba1a-019174f665c3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A full single-visit clean and balance before a party or as a trial."
+                            ],
+                            "id": "cea455bd-0fc1-4bb6-8144-7ea11ab6dc61",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4f9410c2-80ba-42f7-82ca-26d10ff7fd2c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Pool opening"],
+                                "id": "566a9699-8a80-4d92-8b8e-62974e8ad889",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$280"],
+                                "id": "cc07dd20-b9e3-4884-b224-e62cd8401ef2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6f0145e0-2d46-42b5-9b3a-e922ba263c28",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "3ba8a4ac-6af4-4da3-84bf-2978db233a2f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The spring reset — cover off, equipment on, water clear."
+                            ],
+                            "id": "e5fb6e14-8b37-41da-ad3b-1da75bf46600",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6ba27b75-b689-457b-9aec-90fc921dcb9e",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Filter clean & service"],
+                                "id": "97875217-912f-490f-b989-4b032e3c0beb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$140"],
+                                "id": "be40c661-589c-425c-b544-0e9a2b787279",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9c86b81b-f4d9-4688-99d8-c1f70bff0e49",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "d13a0458-815d-4538-9e6d-a15a7543fb4d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A deep filter clean so water flows and your pump breathes easy."
+                            ],
+                            "id": "c8eb386d-0c6e-4cd5-83ae-2514d193ec16",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1c09668d-c536-4384-8d2b-bdcc666804c1",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Green-to-clean treatment"],
+                                "id": "50edc7ec-a281-48ae-be96-198a7d3f9d06",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$320"],
+                                "id": "bbe81678-a713-4720-a0a4-aa932c66c588",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c50a3004-aeab-4ac3-ab69-1a20f9b31384",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "89493e5f-44a5-4be2-a011-f210542d88c8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A green, cloudy pool brought all the way back to blue."],
+                            "id": "0db51759-5c40-4d17-9d3f-00ee1a529a31",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "79cde9b1-dc0c-403b-a9a6-e46b69d73b42",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "9e6ff2a2-0996-45f2-950d-4f6f2f610d14",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get your free quote"],
+                        "id": "61a5d8ac-8719-4861-8ad2-8df48e8453c5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "9befbb91-cbdd-4d62-aab4-dabef3133c1c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4c43db10-17c4-4bee-8c08-a2eb9677931c",
+                "ord": "a0"
+              }
+            ],
+            "id": "86d38cb3-d134-44a5-822a-7e1873bc7944",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1542029401157-d21e500b1385?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMGNsZWFuaW5nJTIwc2tpbW1lcnxlbnwwfDB8fHwxNzg2Mzk0MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A pristine pool skimmed and balanced, ready to swim on a sunny afternoon",
+                      "loading": "lazy"
+                    },
+                    "id": "6da22f39-f11d-4ff4-b467-edd719e5703d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Set it and forget it, and just swim"],
+                        "id": "3880a319-f23a-4e56-bab5-06499f9925ee",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Sign up once and your pool takes care of itself. We arrive on the same day each week, clean it, balance the water, and text you a quick recap — you never have to call, remember, or chase anyone down."
+                        ],
+                        "id": "f2fc6c07-1dc5-408e-a0ca-30d0e4fd85b4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your backyard has ever been — clear water waiting every weekend."
+                        ],
+                        "id": "21d9e3bf-0399-4562-b37c-0bb42bd8fe59",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start weekly service"],
+                            "id": "72dadb27-242d-4cf7-ae64-8a6b96139698",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "abacd834-6e0c-4e91-b6a2-b2ccd5c1cc46",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7c208d6e-39f3-4f3f-a6b1-e094860dac30",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b475f147-7ab6-444f-9c25-b91b310c549f",
+                "ord": "a0"
+              }
+            ],
+            "id": "03b1c77f-ef32-4074-9360-6fdaac3fd9a7",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your techs"],
+                        "id": "019be3f8-9276-44e0-a065-b3d60c560b69",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The same friendly, trained faces at your pool each week — people who take real pride in clear water."
+                        ],
+                        "id": "e756a352-82fb-41ab-bbe6-c4ace4a00df0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8b1dde45-3c4c-4106-92d9-680e5267b0fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1530983822321-fcac2d3c0f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMHRlY2huaWNpYW4lMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2Mzk0MjE1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Carlos Mendez, lead pool technician",
+                              "loading": "lazy"
+                            },
+                            "id": "24d14584-c12b-46a3-a339-d94332f0c46e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Carlos Mendez"],
+                                "id": "1b8733eb-0306-453b-b20d-1b8b23e7b8f3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead pool technician"],
+                                "id": "f8fd1c11-4749-4436-a479-9f2f74ff0500",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twelve years on residential pools. Carlos runs a tidy, reliable weekly route."
+                                ],
+                                "id": "02a655be-aa33-497b-ae11-f7a7e05cf5e6",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "7382fe03-edd0-41c1-aa53-191a25ad3c0a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "191cec01-5625-4662-9476-8055685fb767",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Jasmine Park, water-care specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "adc147de-3583-4f1d-ad90-df581a45cfa5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jasmine Park"],
+                                "id": "bc01d3ff-c524-4218-8546-f5a4dd7f9577",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Water-care specialist"],
+                                "id": "ce6c0a49-821e-4123-9d30-9ee41da6229e",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Openings, closings and chemistry — the know-how behind safe, balanced water."
+                                ],
+                                "id": "53a951f9-9e6f-4414-afb9-0df73857c779",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c3b9e33d-6dbc-4930-aad8-4024073cc6fe",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "226cc432-fff9-42ca-b284-af131999793d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Tyler Brooks, service technician",
+                              "loading": "lazy"
+                            },
+                            "id": "1dcb5827-d398-464b-896f-f0a388924e76",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Tyler Brooks"],
+                                "id": "22865f44-ae14-4995-88bc-b23765b5a6e8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Service technician"],
+                                "id": "d446342e-2751-4f16-8ed4-5adb0c12a4ec",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Filters, cleanings and green-to-clean rescues, with an eye for the details."
+                                ],
+                                "id": "edbf441a-9ac6-4e02-a753-7f4bfa9fe459",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "adb81449-34f0-4299-8014-892366d86a3e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "08cc364e-bab2-4cd4-b502-68081e754f1e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b6fefd17-49b5-48e7-9ce2-3b4f71ce93a5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "36be097e-459b-4744-a03e-b8bc95496a97",
+                "ord": "a0"
+              }
+            ],
+            "id": "d9d9ea31-2ab1-4dff-8906-4737aa666114",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Signed up for the weekly plan and I don’t think about the pool anymore — it’s just clear and ready every Saturday. The techs are friendly and I always get a text when they’re done.”"
+                    ],
+                    "id": "347e42e9-8538-4ae0-a1b6-bb31d14ca36d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Denise R., customer since 2024"],
+                    "id": "efb6df6d-998d-4e3d-8262-e695afdc36c1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ebf81a8b-92cf-4d70-8fed-40f50a729294",
+                "ord": "a0"
+              }
+            ],
+            "id": "20ea498f-a2d5-4cf2-a9e8-7c6feb2b76ff",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready for a pool you don’t have to think about?"],
+                    "id": "97643a2f-b9cd-458f-9a8c-fe368206c30d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Get a free, no-pressure quote in about a minute. Pick a day and we’ll take it from there."
+                    ],
+                    "id": "ab07d5c4-82ec-448b-9692-c95b5d56c2c9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Get a free quote"],
+                    "id": "469efdfa-14a8-44cd-92b5-ecd9a7851246",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c428a070-f1e6-4773-a168-23a2c5c254a7",
+                "ord": "a0"
+              }
+            ],
+            "id": "cd77627a-5005-4a68-b5c9-25a28093fce5",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — BlueWave Pool Care",
+      "seoDescription": "See what BlueWave Pool Care offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2f8a08f4-83a7-4e22-9975-2caa7e1f38fe",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1542029401157-d21e500b1385?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9vbCUyMGNsZWFuaW5nJTIwc2tpbW1lcnxlbnwwfDB8fHwxNzg2Mzk0MjA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A pristine pool skimmed and balanced, ready to swim on a sunny afternoon",
+                  "loading": "eager"
+                },
+                "id": "e49740a1-af0a-4dcc-b5c7-f2cf4244e985",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "e961b555-8501-4c87-9d88-50c8079b29f3",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Get a free quote or book service"],
+                    "id": "492c2256-eba2-402b-aec6-f04ef15ac793",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose an option below to see how long it takes and pick a day. A free quote is always the easiest place to start."
+                    ],
+                    "id": "bab94d01-5694-4051-ac7a-24ba29fe1216",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See options below"],
+                        "id": "ede2338b-0451-48fd-a73f-f3d42da5c18f",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "136356d4-680b-4f06-b72d-1e4a9d4bf5ce",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8da21498-0478-40f7-a702-9a658918eb14",
+                "ord": "a2"
+              }
+            ],
+            "id": "75b74a7e-c076-4e64-9532-62c04c0f1e8d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "190dc4a1-efac-490c-bda6-1d0f56eea097",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — BlueWave Pool Care",
+      "seoDescription": "Who BlueWave Pool Care is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "458c4a83-e78e-4ba5-b078-df119957e09a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1657383543368-7d929944be6a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFja3lhcmQlMjBwb29sJTIwd2F0ZXJ8ZW58MHwwfHx8MTc4NjM5NDIxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A BlueWave technician skimming and servicing a residential pool",
+                      "loading": "lazy"
+                    },
+                    "id": "4f81defb-6751-47d7-aba6-bfa3278844a2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About BlueWave Pool Care"],
+                        "id": "0c75b20c-efa7-40e8-bd7c-9a1c1844519d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "BlueWave started with a simple idea: owning a pool should be all fun and no chore. No skimming after work, no guessing at chemicals, no green surprise after a week away — just clear water, always ready."
+                        ],
+                        "id": "4ab7473b-5c82-4f0e-8014-699f97153841",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a local, licensed and insured team that treats every pool like our own — the same trained techs each week, flat-rate plans you can count on, and a standing promise to make it right if a visit isn’t perfect."
+                        ],
+                        "id": "cc8cd703-df47-45b6-838c-dc3466eea4c4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Get a free quote"],
+                            "id": "bc11adec-4efa-4019-bd1a-cba3f18c2a89",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "91e15a7c-7462-4a94-80ef-c33252fb74e4",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "661ffebf-33c2-42b5-a25b-1bf2578defd3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b7adc127-d6a2-4ae6-ba25-af7a4bdeeac4",
+                "ord": "a0"
+              }
+            ],
+            "id": "25a42afc-a239-485b-ae00-e969eadb0be1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "47b31518-9483-43bf-afe1-9ad67cb58ca3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Show up when we say"],
+                            "id": "11ad4025-4aa2-4a46-ae95-4cc4abd03747",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A set weekly day you can rely on, with a text when we’re on the way and another with a recap once the pool’s done."
+                            ],
+                            "id": "9ac6af1c-8677-40dd-bcda-6d0967710e9f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "72235445-f256-42bc-8f9f-8f40dff21dd5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One clear, flat price"],
+                            "id": "c4778fe6-e8df-4474-824d-3fa369eaa0f8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You know what weekly service costs before we start — no surprise fees, no upsells, no haggling."
+                            ],
+                            "id": "bca1b2ea-b501-412f-b961-608cc4c6c8e8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2652f430-aec1-45dc-a268-01750fa190cc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Balanced, tested, guaranteed"],
+                            "id": "c6d3d43f-a834-44ad-8305-2811d5b6e762",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every visit we test and balance the water, and if something’s ever off, we come back and fix it. Clear, safe water is the whole job."
+                            ],
+                            "id": "f9c352eb-d376-4b79-8426-1541665befa2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "97478e01-0ab0-40fe-b871-065dc4596f33",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "36e5768d-2b3d-4882-b040-7139fca98467",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ccfa3b46-ced7-431b-9f41-7de5ff92d98a",
+                "ord": "a0"
+              }
+            ],
+            "id": "ac29d9b8-c47b-4dd3-a126-697de52271d3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — BlueWave Pool Care",
+      "seoDescription": "Where to find BlueWave Pool Care, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b0486703-138a-4de5-a5e8-075103b13f70",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Where we work"],
+                        "id": "7cb3eb81-b12a-4590-8a83-2e19d18de38c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["BlueWave Pool Care"],
+                            "id": "8bbc1e67-3746-4854-8844-3bed7a616900",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["2185 Seabreeze Drive"],
+                            "id": "f30c41c0-a266-4113-8888-530d193492fe",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Palm Harbor, FL 34683"],
+                            "id": "b0864183-6f99-468f-a72e-63fc13c68f01",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "196ac560-b6d3-45ee-a853-446a7c6be368",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "6c3be212-8433-4f5d-9e73-52557a30e60d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00"],
+                                "id": "80761aeb-8cfe-4520-a784-427c9fe52c2c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b811fe8b-ce58-49de-8daa-ed621e94131c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "7c9c48e1-f2e0-49ae-9c78-825e09f96da2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 3:00"],
+                                "id": "441f30f2-9fbd-4dc8-acdc-fa55a3556418",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b894bd0f-b12d-4a50-81ee-66c0e7c30342",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "f60dbc1e-33e5-454c-bfa1-51a177f9c141",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "0e8c3061-1b2b-4773-b664-a4a633d6349e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d4048b6d-c629-4e04-81d3-b04c6e2b2676",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2be85130-0c5c-4d65-bdc7-5ab033c3e06d",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "dcdad1a9-4eae-4c5f-a922-d142c635d6c6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "2185 Seabreeze Drive, Palm Harbor, FL 34683",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "84c43634-3917-40a8-b791-c1d0f5638d9b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6a086f05-cd86-41c4-8bfb-73805f994829",
+                "ord": "a0"
+              }
+            ],
+            "id": "e757416d-4900-421a-a92d-4ba5867f2637",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "82cd879a-bfb0-412f-b62c-83dd28fec9a3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Get a free quote and see the next available days online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "b2f12365-f8d1-4e96-8777-4c804ec7f4b9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Get a free quote"],
+                    "id": "a4ee9644-dfc9-4220-81e0-1b34fd32eb72",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "260cb3d9-dcea-4ee9-b069-7ac23744e23e",
+                "ord": "a0"
+              }
+            ],
+            "id": "39cc71de-941a-4e31-929e-3ea3de29c722",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "bluewave",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98.5% 0.006 230)",
+      "--color-base-200": "oklch(96% 0.014 228)",
+      "--color-base-300": "oklch(91% 0.024 226)",
+      "--color-base-content": "oklch(24% 0.03 242)",
+      "--color-primary": "oklch(62% 0.16 232)",
+      "--color-secondary": "oklch(34% 0.04 240)",
+      "--color-accent": "oklch(74% 0.13 195)",
+      "--color-neutral": "oklch(27% 0.02 240)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.625rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 232)",
+      "--color-secondary-content": "oklch(98% 0.01 240)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(98% 0.01 240)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(74% 0.13 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(91% 0.024 226)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(21% 0.02 240)",
+      "--color-base-200": "oklch(17% 0.016 240)",
+      "--color-base-300": "oklch(13% 0.012 240)",
+      "--color-base-content": "oklch(95% 0.01 230)",
+      "--color-primary": "oklch(72% 0.15 232)",
+      "--color-secondary": "oklch(80% 0.03 235)",
+      "--color-accent": "oklch(80% 0.12 195)",
+      "--color-neutral": "oklch(84% 0.02 235)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 232)",
+      "--color-secondary-content": "oklch(15% 0.02 235)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(15% 0.02 235)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.12 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(13% 0.012 240)"
+    }
+  }
+}

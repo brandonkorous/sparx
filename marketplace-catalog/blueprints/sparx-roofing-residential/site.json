@@ -1,0 +1,2130 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "a746d956-0844-4761-8118-52807941fa54",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "73267f6b-9a12-499f-b10b-a327895a3abb",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "06ad6796-c670-46e3-ba7e-b24bab5dd451",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "f31f9fbc-fe1b-4e88-a966-c85994374587",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "97742340-85c9-4aba-a92c-93dd294de290",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "25699817-e9ee-4b0c-a14d-3646724c4174",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "1c8788ef-688c-40df-8c8e-a66470dcb057",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "16901b69-8070-4870-9a46-6b2a62f2b4c3",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "455e1f41-c1f9-426a-970f-ffa5ee0792eb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "038c7c1a-a1f3-46d7-a3d8-cf11b52fdcec",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "6aa323e2-12af-4910-83cf-f6e94cd47f38",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8d3b2bb0-5d3e-43d8-bf29-51a48e0ab929",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f9ab8b2f-bd67-4bf1-8b05-94237e99bac0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9a5f86b7-fa01-43d6-ba24-53c8d853c6eb",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "ee5d16c8-cd77-4ad4-95cd-d7d269bfeec9",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "b50841e0-918e-4b68-b6d9-018e8d13d9dd",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "8ed0ec46-a76a-48c2-b37c-d640c2457d29",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "76639f8a-8a50-4770-b277-39bef1ccb11e",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "9e9dab20-dc73-47cf-a313-9691bab886fd",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "4e518654-ee52-4568-a307-cb44ccb5a3f7",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "b5ba6036-67d9-4bed-a035-a69380711201",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "876ae4bf-5e05-4308-9472-43e70a6fb8c4",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "36d78bd4-500f-420c-8ce0-5760044f2360",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "f3693050-a987-4870-bcaf-482a3ab611c9",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "a3617e39-a735-4868-a4b2-d68aaf4ec20d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "2afc07f3-5046-44ac-89ab-7675be512931",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "50b3c790-0f88-4da6-9331-e14339cebbf2",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "619462d3-78e9-474a-bd03-3ea51deced3a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a8531624-f741-4a8c-bc26-1e7efb3607d1",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "a461382e-19bb-46bf-8761-8d0eb3af5156",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "dc6b21c7-275d-45ff-a53c-a49d72184e7f",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "bce17023-67bf-4c82-8ee9-a0a8a43ff878",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9c63af12-6b39-43c3-b0e0-eb02b3759b56",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "1792ecf5-9b95-4c15-a25d-00ca4e7ae2bf",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "909979b7-7d84-47de-88d9-1b3cd4ced315",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "faadd08c-4ad4-4aa9-a8a8-1c1bb08e683c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "98e4bee3-e408-4bec-bf8d-f36007e40948",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "271853bb-ba28-46e1-89b5-f4de74e972c3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6875a2dd-5dbb-4895-bf82-ef6cecb18b29",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "56691869-3646-4610-97e0-fe6cd402c280",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "56892470-3b94-40eb-b19a-5aec7419b663",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "0b3f24d9-57a2-4f91-bf7f-edff65f279ac",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "cb91d7cf-f60b-4c4c-83f1-7e5339140a1e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "fc69ed07-fcd4-434f-9477-096ee2ab5b87",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "2106e572-67df-4cfd-a1f6-0bce99a7585d",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d48efec7-6780-481c-aac1-ce44bcd95bbd",
+                  "ord": "a1"
+                }
+              ],
+              "id": "a847a4c3-26fc-41e8-98af-d79237a8895e",
+              "ord": "a0"
+            }
+          ],
+          "id": "847a9b13-6765-4e9d-9221-58ea16728c59",
+          "ord": "a2"
+        }
+      ],
+      "id": "285766c0-c7bd-4530-99aa-1cb374b57bc6"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Summit Roofing — trusted residential roofers",
+      "seoDescription": "Summit Roofing is a local, family-run roofing company with honest quotes, quality work and written warranties. Book a free roof inspection or replacement estimate online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "57e1c07c-07c9-46de-945b-6c5d92510547",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1587061633437-187ac80e8e7a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG91c2UlMjByb29mJTIwc2hpbmdsZXN8ZW58MHwwfHx8MTc4NjM5MzcyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A freshly finished asphalt-shingle roof on a suburban home under a clear sky",
+                  "loading": "eager"
+                },
+                "id": "fb0971f6-7091-4845-b62f-01f9f26b5930",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "53d47add-2b7a-4a96-9991-931265786d51",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A roof that lasts, done right"],
+                    "id": "4ef9c21c-b683-4bf1-b807-34bb558ac4b2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands — no pressure, no sales pitch."
+                    ],
+                    "id": "1394016b-52ea-40db-97b1-7a400c6acb43",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a free inspection"],
+                        "id": "13b05051-7825-4f9e-bf00-d6fdea9ef799",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our services"],
+                        "id": "0b37a9f6-5556-488b-bac4-1ec6e249405c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "dcd5db16-f2f9-4d84-bc5a-489a486576ff",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "fc53bdb4-fe1a-4f63-87da-b7f55d9a61c8",
+                "ord": "a2"
+              }
+            ],
+            "id": "5c440554-ce86-4ef4-8aed-6744696215b5",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed & insured"],
+                            "id": "a5a22f38-96fa-4171-9d6a-5cfb5a619f9e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Fully licensed, bonded and insured — our own uniformed crew on your roof, never a rotating cast of subcontractors."
+                            ],
+                            "id": "f7e1b25e-50c8-478f-8074-7d58dade5d04",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "95f3ffa5-997a-415b-ab30-38c17e7ff6a0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Workmanship & material warranty"],
+                            "id": "f533ac72-146a-4972-a96c-aacf1bb32f3c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every roof is backed in writing — the manufacturer’s material warranty plus our own workmanship guarantee on top."
+                            ],
+                            "id": "db03e5f5-71db-45c1-b9c3-f57117d8e4c9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "54264a0b-ce93-48f7-9c35-f23ad7345d54",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Upfront, honest quotes"],
+                            "id": "3e53cbf8-c819-443c-85c2-e18f74c2ee16",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You get an itemized written price before anything starts. We tell you when a repair beats a replacement, even if it’s the smaller job."
+                            ],
+                            "id": "c4346a6d-4ae3-49ec-bf3a-0d7447d5c85b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f53f137c-138f-4965-b39b-2f93c7afe8e1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["On-time crews"],
+                            "id": "e42ec68e-b30e-4a6d-903e-4dfbd8969689",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A real arrival window and a clean, protected job site. Running behind? You hear from us first, and we haul away every scrap when we’re done."
+                            ],
+                            "id": "f1863c9a-177e-499a-93d1-a810bc020ab9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f00967e8-068c-4420-86bc-8b0ebfab6c87",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "523e844a-120e-44a4-9add-cbd2c7d90937",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "575275a9-2ca4-4c5d-a5f5-71bfb63d3b3a",
+                "ord": "a0"
+              }
+            ],
+            "id": "9c95e7a2-53f5-447b-9296-a17a77a24c94",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we come out for"],
+                        "id": "824a8f22-bb64-4373-b621-33e568bbdb63",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The visits we book most. Pick one to see the price, how long it takes and the next open time — inspections and estimates are always free."
+                        ],
+                        "id": "91b727f2-e8bc-4cce-9518-2c25dddc6203",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c272b785-d8fe-4594-b8fa-488f269dc2a8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free roof inspection"],
+                                "id": "ffdd294b-5475-4839-bf50-d441b74c196e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "2045d16e-febf-41b0-bc76-2f0c039a45ec",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "33375a1e-0763-40c4-a1bf-b1c07678d474",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "274560bc-76ba-4b99-8248-e266dddcb9b1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A full check of every slope, valley and flashing — no charge."
+                            ],
+                            "id": "7914b447-bd1d-46e2-905f-fd853110464d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "555c19d6-92bc-4e77-8df9-e31a8e2dec9a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Roof repair visit"],
+                                "id": "056fad93-fbec-4bb5-8da4-e737a3b3a286",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$189"],
+                                "id": "2babe5fd-fb02-494e-8b00-dce84a37f30e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5c0a2bd5-1e80-41d0-8953-c61108670b91",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "8b9db041-dafd-4cf0-9088-c05f761bd72a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A leak, lifted flashing or missing shingle fixed for good."
+                            ],
+                            "id": "b6167b8c-d6d8-4d0b-80c1-ef15116f0f8f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "90b65f44-5df4-4ac9-9fd7-c2dd4f31eba9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Replacement estimate"],
+                                "id": "b529ddd9-4b49-4a4a-8702-b7c05939e452",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "b1d2cbcf-b72a-47f7-8a52-a4e67f87854c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "34a2acda-3f3e-467a-a898-c0f578646532",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "7a74567c-57b8-41f5-9050-4e10fa989d0f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An honest, itemized written quote to re-roof your home."],
+                            "id": "7a885e3a-0ff9-4494-bdbd-05ef98a83349",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b2bbc65c-03ce-40df-b025-ddfbed9d9ad5",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Gutter cleaning & repair"],
+                                "id": "dc7a2ebd-871c-4f78-852d-e698ea2b1c51",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$149"],
+                                "id": "81162c3a-467d-4ed7-a327-93090ba667af",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6745e130-24e0-47d1-9554-b21bf9889f0d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "00cd83ef-5ff7-493a-b771-ac8099caf9fe",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Gutters cleared, resecured and tested to run."],
+                            "id": "4ee943aa-90d4-4042-a424-e0f38338af88",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "93e06103-c18c-4834-bac5-4c7d01703e13",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b1351067-1273-4b40-a65a-53a625170268",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "1f9cb31d-dedd-4f14-8118-bd7145f02211",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "37d6459d-9561-4f26-ab53-04ad5590218c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d5649bbf-de39-4318-9729-fac721fca4b5",
+                "ord": "a0"
+              }
+            ],
+            "id": "b178f732-2bc3-4825-bf25-78ee4987ed34",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwd29ya2luZyUyMHJvb2Z8ZW58MHwwfHx8MTc4NjM5MzcyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A roofer nailing down new shingles along a clean roof line",
+                      "loading": "lazy"
+                    },
+                    "id": "a1b67e29-ded3-4789-b226-ad4099a84712",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Built to last, and backed to prove it"],
+                        "id": "9c2677f8-da08-42a8-bc1b-736eb2908069",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We install the roof the right way — proper underlayment, sealed valleys, flashing done by hand — because the shortcuts you can’t see are the ones that leak in five years."
+                        ],
+                        "id": "b9e4bff9-0523-42ef-93c3-3a88a3b5ed0a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Then we stand behind it. Every replacement carries the manufacturer’s material warranty and our own workmanship guarantee in writing, so if anything isn’t right, one call brings us back."
+                        ],
+                        "id": "7369fe8d-8623-4def-b18a-075aaf6e2ec5",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free inspection"],
+                            "id": "bd7c2f6e-1816-4b16-bee6-d3bbd56bf722",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e88360d0-4cf1-45db-bab7-d8836baa76de",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "1b366640-cd7b-4d05-9cff-4e145bbbe5c3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "97d875e8-d50a-4605-bb1d-b5fe93166956",
+                "ord": "a0"
+              }
+            ],
+            "id": "126bbdf4-6d8d-4ff6-ba71-da4ab1f3a8d1",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The crew who’ll be on your roof"],
+                        "id": "b3da9fd0-f139-448e-b032-f041ef8f3a87",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The same familiar faces every visit — licensed, background-checked, and glad to explain what they’re doing and why."
+                        ],
+                        "id": "71a39049-22ec-482d-9fe2-f9e8c2db6882",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4be01c9e-4431-4ff2-8034-9998272e77df",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uc3RydWN0aW9uJTIwd29ya2VyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MzcyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Ray Sullivan, owner and lead roofer",
+                              "loading": "lazy"
+                            },
+                            "id": "73225ba5-a7d2-402c-8a1a-0662d5373319",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Ray Sullivan"],
+                                "id": "84a9a5c0-70e1-490b-a45d-703645fde22e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Owner & lead roofer"],
+                                "id": "95f32e68-b498-4009-ae6f-9e285951e774",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Thirty years on roofs. Ray does the inspections, gives every quote straight, and answers the phone himself."
+                                ],
+                                "id": "d00835b2-938d-4c6f-89ac-f15bb88e1ef1",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0890a5bf-b1e8-4ac9-9348-98bf1bb74683",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "72844d57-6726-4425-bdab-a0119bbba2f8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1507126117511-e87526de90e2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzczMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Luis Ferrara, replacement and install lead",
+                              "loading": "lazy"
+                            },
+                            "id": "47afbb63-27b1-4db0-a449-09c135bc00e9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Luis Ferrara"],
+                                "id": "f15dad6e-d1b2-4be3-85f8-d3ebef5c1dec",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Replacement & install lead"],
+                                "id": "6bf4afdb-3330-4341-8647-da8711d08d23",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Full re-roofs and installs. Luis runs the crew and leaves a job site cleaner than he found it."
+                                ],
+                                "id": "0cc4f87e-0d32-4b47-a4c7-2065e0c09c2e",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "fab60444-0b9e-4e46-bd68-44f58b74f1ea",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "63e58189-326d-4982-a434-7ea8db33fa14",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29udHJhY3RvciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTI2Mjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dale Hutchins, gutter and maintenance tech",
+                              "loading": "lazy"
+                            },
+                            "id": "98a80192-fb4e-4956-ac68-c04c0fd4f525",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dale Hutchins"],
+                                "id": "28c0334c-7936-44a6-a42f-4dcb6ab90ed2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Gutter & maintenance tech"],
+                                "id": "c465efb8-ab06-4c91-9e4b-69b4a38fe712",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Gutters, tune-ups and the small fixes that keep a good roof going. Dale is the reason yours lasts longer."
+                                ],
+                                "id": "f40720fd-d9b8-4473-9c31-30a6a4954d59",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "ce314ae2-c14b-4904-8c0d-367bbdeef636",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a72d37ab-c30f-43b1-92de-96486a35a3f2",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b6a1a48b-2bb0-4482-b3c9-1dfa0d35dcb0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c4c97335-c8a2-456c-ba1d-d1572640bbaf",
+                "ord": "a0"
+              }
+            ],
+            "id": "9d9e2808-bc9b-432b-a34d-48c917ebb5ff",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair — a fraction of the price. That honesty is why we’ll never call anyone else.”"
+                    ],
+                    "id": "6548bfcb-fd2a-43f8-a17c-f223e0d1374e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["The Delgados, Oakridge homeowners"],
+                    "id": "ebcaf003-7dd3-4d6e-a898-4d1469301926",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c3d98ee4-6931-46ba-ba35-279b6f4f1645",
+                "ord": "a0"
+              }
+            ],
+            "id": "5d02af1e-77ba-47c3-8e20-bcbb151a7b94",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Not sure what your roof needs? Let’s take a look."],
+                    "id": "738dca53-a3fe-489d-bf8b-d86f8e665a5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free inspection online in about a minute. Pick a day, and we’ll confirm your arrival window."
+                    ],
+                    "id": "ee1dc904-c93d-4c16-b6ed-245eccb579c9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free inspection"],
+                    "id": "0212d793-dafd-4335-8e27-839974bd32e2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c0229246-fa4e-4ac2-ac5e-87bf70f002d0",
+                "ord": "a0"
+              }
+            ],
+            "id": "4605ef2b-463b-4c47-b573-ca4cb24b203f",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Summit Roofing",
+      "seoDescription": "See what Summit Roofing offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ab11d1f0-f75e-41db-81ef-f919001deb38",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwd29ya2luZyUyMHJvb2Z8ZW58MHwwfHx8MTc4NjM5MzcyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A roofer nailing down new shingles along a clean roof line",
+                  "loading": "eager"
+                },
+                "id": "3d785614-87f1-44d2-aabb-1217f39a9df2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "a782042f-477c-41cb-b961-34032395c4ce",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your roof visit"],
+                    "id": "c16a3a7c-d22b-46ef-862b-14c117c8a3c3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose the visit you need to see the price, how long it takes and the next open time — then pick your roofer and day. Inspections and estimates are always free."
+                    ],
+                    "id": "ab80f26e-a277-40bd-9c56-3cd7ae62c0b1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "8a066df6-e81e-47a9-8c9d-80e6f1dbad12",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "8394f635-f79f-40cc-abca-ebb2453efd90",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c86423eb-d6ce-4aef-bc70-67790355bd57",
+                "ord": "a2"
+              }
+            ],
+            "id": "c3ae2635-5378-448e-9332-f637d461087a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "1047f704-fef6-44d8-847a-86576f7747fe",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Summit Roofing",
+      "seoDescription": "Who Summit Roofing is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "99c3b2be-2e89-4a2e-bd5c-c929f6bbe677",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1587061633437-187ac80e8e7a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG91c2UlMjByb29mJTIwc2hpbmdsZXN8ZW58MHwwfHx8MTc4NjM5MzcyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A freshly finished asphalt-shingle roof on a suburban home under a clear sky",
+                      "loading": "lazy"
+                    },
+                    "id": "aca7f050-5e49-4de9-b81e-15c06cec3039",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Summit Roofing"],
+                        "id": "af6f6e47-16d0-41f2-9aa4-e0bfc8c5f2ea",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Summit Roofing started with one truck, one crew and a simple rule: tell homeowners the truth about their roof, do the work right, and stand behind it. Two decades later, that rule hasn’t changed."
+                        ],
+                        "id": "eeea714f-01e3-459e-8efb-70f8dac6c391",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors — just honest quotes, quality work, and a roof that’s backed in writing."
+                        ],
+                        "id": "c7af24e3-1d23-4273-8416-ee06537b4c44",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free inspection"],
+                            "id": "9d9fd637-6bc5-4baa-bf5f-9d0b02951314",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "61276b5e-5356-43d2-8e04-653eaf491df4",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2403d09b-f368-4000-8c1d-b7aa50f1358e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "30fae907-b226-4461-93a0-345baa1080c7",
+                "ord": "a0"
+              }
+            ],
+            "id": "12dbface-2e9b-4376-aa0c-2d54fa6463f1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "308b4f8b-4550-4d0f-92e6-6adef2c761dc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["An honest assessment first"],
+                            "id": "22fe0ba2-1fea-4d55-800a-3f5cf208a3b4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We inspect the whole roof and show you the photos. If a repair will do, we say so — we’d rather earn the replacement when you actually need it."
+                            ],
+                            "id": "677b083d-a63a-443d-a61e-1c924234791d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "22becc12-62ee-44d3-b467-1840bc027300",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Clean, protected work"],
+                            "id": "5839e955-ce5d-4714-8aab-ed744d4d5b3f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Tarps over the landscaping, a magnet sweep for every nail, and the old material hauled away. We treat your home the way we’d want ours treated."
+                            ],
+                            "id": "a5312a3f-2ab6-44ca-9198-1e0301f579c7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5f05813-b437-4d6a-9424-507f708c5602",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Guaranteed and here to stay"],
+                            "id": "19bb5b4e-8553-4ef3-9b26-e0da92d88eb6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Manufacturer material warranties plus our own workmanship guarantee, all in writing — and we’re a local call away if anything ever needs a second look."
+                            ],
+                            "id": "1296e03b-de1b-43a0-82a7-5836ee16062c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d248636-8cfc-4072-b1ec-d52a56e11a6e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "59077046-e66d-4d1e-9f83-95a5e405deeb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ac8ae341-e677-42ba-b9b3-b998948614d9",
+                "ord": "a0"
+              }
+            ],
+            "id": "deef6409-3f5b-4711-8a04-b16d073a7cef",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Summit Roofing",
+      "seoDescription": "Where to find Summit Roofing, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3975e75e-2b71-4282-b974-203d2a9b71a1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Where we work & how to reach us"],
+                        "id": "533ae4c8-afff-43d2-8892-63ea4e1694b8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Summit Roofing"],
+                            "id": "49d1599b-4664-48ee-8bb0-1826686b2b8c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["1804 Ridgeline Avenue"],
+                            "id": "fafa648a-0ffa-4067-9ffc-25bf79118fdf",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Cedar Falls, IA 50613"],
+                            "id": "cebc9dcf-d77b-400b-b8a9-488859cf7f55",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8380c715-c79a-45b0-ae91-76e07ec54e34",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "4be81129-33e3-4266-bb7a-4fe4a499e569",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00"],
+                                "id": "6f36a90b-7e06-4b90-a832-c911c6de71f8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "62eacebc-1616-4662-ab31-fd680d68daec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "21a75181-23bb-41b2-8c86-1a94a6c6ccca",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00 (estimates)"],
+                                "id": "0dd59852-c4d8-43d2-825d-83666c52a402",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c7a68ac4-27c4-4eb7-b670-aabe57e5d0ce",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "1e53fdd5-7831-4a25-b30f-5389e91c74da",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "c0260a21-0b21-45a1-9fa4-69cfd798f94f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6fc37379-be9d-47f1-9217-f36f955947da",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Storm damage"],
+                                "id": "49caf7e3-be7a-4516-a201-9611afe94775",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Call anytime"],
+                                "id": "6839178c-285e-41be-993f-484890ab6851",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5810ff3a-8120-4a15-bc6f-b992dc40c114",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "f1eec93c-dbe7-4092-a7ab-bd97dd5df235",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6217ef82-0497-4e8f-b852-303ea4dd59d3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "1804 Ridgeline Avenue, Cedar Falls, IA 50613",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "7e471694-44a0-4542-943d-a395d8083a3e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a9f149fe-d571-4123-bfa4-ce65b5963713",
+                "ord": "a0"
+              }
+            ],
+            "id": "d7156608-2f62-4afa-9f30-87c3d316bed9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "55637cd4-5705-4184-b1f1-f391fa984101",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See the next open times and reserve your free inspection online — no phone tag, no waiting on hold."
+                    ],
+                    "id": "6dd6bec5-aca2-4493-b205-3c9b6c8af470",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free inspection"],
+                    "id": "df506204-1cd6-402f-841d-22d100045b17",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a08e5bd2-2ce7-474d-abf2-2844833d094b",
+                "ord": "a0"
+              }
+            ],
+            "id": "179644eb-a823-462f-891c-a693b6497510",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "summit",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(94% 0.006 250)",
+      "--color-base-300": "oklch(89% 0.01 252)",
+      "--color-base-content": "oklch(24% 0.028 255)",
+      "--color-primary": "oklch(40% 0.06 255)",
+      "--color-secondary": "oklch(35% 0.02 255)",
+      "--color-accent": "oklch(68% 0.145 58)",
+      "--color-neutral": "oklch(28% 0.02 255)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.1875rem",
+      "--radius-field": "0.1875rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Archivo\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 255)",
+      "--color-secondary-content": "oklch(98% 0.01 255)",
+      "--color-accent-content": "oklch(15% 0.02 58)",
+      "--color-neutral-content": "oklch(98% 0.01 255)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(68% 0.145 58)",
+      "--color-highlight-content": "oklch(15% 0.02 58)",
+      "--color-border": "oklch(89% 0.01 252)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Archivo\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(21% 0.02 255)",
+      "--color-base-200": "oklch(17% 0.018 255)",
+      "--color-base-300": "oklch(13% 0.014 255)",
+      "--color-base-content": "oklch(95% 0.005 250)",
+      "--color-primary": "oklch(72% 0.09 255)",
+      "--color-secondary": "oklch(78% 0.02 255)",
+      "--color-accent": "oklch(76% 0.14 62)",
+      "--color-neutral": "oklch(80% 0.02 255)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 255)",
+      "--color-secondary-content": "oklch(15% 0.02 255)",
+      "--color-accent-content": "oklch(15% 0.02 62)",
+      "--color-neutral-content": "oklch(15% 0.02 255)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.14 62)",
+      "--color-highlight-content": "oklch(15% 0.02 62)",
+      "--color-border": "oklch(13% 0.014 255)"
+    }
+  }
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "med-hero",
+    "url": "https://images.unsplash.com/photo-1603398938378-e54eab446dde?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93cyUyMG1lZGljYWwlMjBzdXBwbGllc3xlbnwwfDB8fHwxNzg2NDIyMzc2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rows of medical supplies on organised shelving in a clinical stockroom"
+  },
+  {
+    "id": "med-tile-ppe",
+    "url": "https://images.unsplash.com/photo-1607227063002-677dc5fdf96f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94ZXMlMjBuaXRyaWxlJTIwZ2xvdmVzJTIwZmFjZSUyMG1hc2tzJTIwc3VwcGx5JTIwc2hlbGZ8ZW58MHwwfHx8MTc4NjQyMjIwOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Boxes of nitrile gloves and face masks on a supply shelf"
+  },
+  {
+    "id": "med-tile-consumables",
+    "url": "https://images.unsplash.com/photo-1561328635-c1c6ad1753b0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RlcmlsZSUyMHN5cmluZ2VzJTIwY2xpbmljYWx8ZW58MHwwfHx8MTc4NjQyMjM4MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sterile syringes and clinical consumables in trays"
+  },
+  {
+    "id": "med-tile-woundcare",
+    "url": "https://images.unsplash.com/photo-1609840533741-62c180d0be79?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFja3MlMjBzdGVyaWxlJTIwZ2F1emUlMjBhZGhlc2l2ZSUyMGRyZXNzaW5nc3xlbnwwfDB8fHwxNzg2NDIyMjEzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Packs of sterile gauze and adhesive dressings"
+  },
+  {
+    "id": "med-tile-infection",
+    "url": "https://images.unsplash.com/photo-1583947582886-f40ec95dd752?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlzaW5mZWN0YW50JTIwd2lwZXMlMjBoYW5kfGVufDB8MHx8fDE3ODY0MjIzODN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Disinfectant wipes and hand sanitiser at a hygiene station"
+  },
+  {
+    "id": "med-band-trade",
+    "url": "https://images.unsplash.com/photo-1741275269731-83526786bb93?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3VwcGxpZXIlMjBwYWNraW5nJTIwY2xpbmljfGVufDB8MHx8fDE3ODY0MjIzODZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A supplier packing a clinic order for dispatch from a warehouse"
+  },
+  {
+    "id": "prod-gloves",
+    "url": "https://images.unsplash.com/photo-1628235176517-71013205a2de?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGJsdWUlMjBuaXRyaWxlfGVufDB8MHx8fDE3ODY0MjIzODl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of blue nitrile examination gloves"
+  },
+  {
+    "id": "prod-masks",
+    "url": "https://images.unsplash.com/photo-1597440658768-f3ffdf64223c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwZWFyLWxvb3AlMjBwcm9jZWR1cmUlMjBmYWNlJTIwbWFza3N8ZW58MHwwfHx8MTc4NjQyMjIyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of ear-loop procedure face masks"
+  },
+  {
+    "id": "prod-wipes",
+    "url": "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMHN1cmZhY2UlMjBkaXNpbmZlY3RhbnR8ZW58MHwwfHx8MTc4NjQyMjM5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of surface disinfectant wipe canisters"
+  },
+  {
+    "id": "prod-gauze",
+    "url": "https://images.unsplash.com/photo-1672985020068-75281fd2a8d2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwc3RlcmlsZSUyMGdhdXplJTIwc3dhYnN8ZW58MHwwfHx8MTc4NjQyMjIyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of sterile gauze swabs"
+  },
+  {
+    "id": "prod-syringes",
+    "url": "https://images.unsplash.com/photo-1605109015365-9921914f9eb0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMHN0ZXJpbGUlMjBsdWVyLWxvY2t8ZW58MHwwfHx8MTc4NjQyMjM5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of sterile luer-lock syringes"
+  },
+  {
+    "id": "prod-gowns",
+    "url": "https://images.unsplash.com/photo-1591611003243-76ff23413796?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGRpc3Bvc2FibGUlMjBpc29sYXRpb258ZW58MHwwfHx8MTc4NjQyMjM5OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of disposable isolation gowns"
+  },
+  {
+    "id": "prod-sanitiser",
+    "url": "https://images.unsplash.com/photo-1785061381923-1875465d45a4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGFsY29ob2wlMjBoYW5kJTIwc2FuaXRpc2VyJTIwZ2VsJTIwYm90dGxlc3xlbnwwfDB8fHwxNzg2NDIyMjM3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of alcohol hand sanitiser gel bottles"
+  },
+  {
+    "id": "prod-thermometer",
+    "url": "https://images.unsplash.com/photo-1594790628624-9e563bea851d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwZGlnaXRhbCUyMGNsaW5pY2FsJTIwdGhlcm1vbWV0ZXJzfGVufDB8MHx8fDE3ODY0MjIyNDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of digital clinical thermometers"
+  },
+  {
+    "id": "prod-dressings",
+    "url": "https://images.unsplash.com/photo-1776047129625-50b8c7299705?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Ym94JTIwYWRoZXNpdmUlMjB3b3VuZCUyMGRyZXNzaW5nc3xlbnwwfDB8fHwxNzg2NDIyMjQzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of adhesive wound dressings"
+  },
+  {
+    "id": "prod-starter-kit",
+    "url": "https://picsum.photos/seed/prod-starter-kit/1600/1000",
+    "alt": "A clinic starter kit of essential consumables"
+  },
+  {
+    "id": "post-infection-control",
+    "url": "https://images.unsplash.com/photo-1627905646269-7f034dcc5738?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xpbmljaWFuJTIwY2xlYW5pbmclMjBzdXJmYWNlJTIwZGlzaW5mZWN0YW50JTIwd2lwZXxlbnwwfDB8fHwxNzg2NDIyMjQ5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A clinician cleaning a surface with a disinfectant wipe"
+  },
+  {
+    "id": "post-ppe",
+    "url": "https://images.unsplash.com/photo-1599412227383-b7d4751c8765?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyZSUyMHdvcmtlciUyMHB1bGxpbmclMjBuaXRyaWxlJTIwZXhhbWluYXRpb24lMjBnbG92ZXN8ZW58MHwwfHx8MTc4NjQyMjI1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A care worker pulling on nitrile examination gloves"
+  },
+  {
+    "id": "post-stockroom",
+    "url": "https://picsum.photos/seed/post-stockroom/1600/1000",
+    "alt": "A well-organised clinical stockroom with labelled bins"
+  }
+]

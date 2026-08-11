@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-choose-staff-picks",
+    "status": "published",
+    "body": {
+      "title": "How we choose a staff pick",
+      "excerpt": "A shelf-talker is a promise with a name signed to it. Here’s what has to be true before a book gets one.",
+      "featuredImage": {
+        "$asset": "post-staff"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A staff pick isn’t a bestseller list and it isn’t whatever the publisher paid to stack by the door. It’s one bookseller saying, in their own handwriting, \"I read this, I loved it, and here’s who it’s for.\" That last part is the whole job — a recommendation you can’t act on is just enthusiasm."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It has to be read, all the way through"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We don’t pick from the jacket copy or the first fifty pages. Somebody here finishes the book, sits with it for a day or two, and then decides whether they’d actually hand it to a stranger. Plenty of good books don’t make the table — not because they’re bad, but because none of us could honestly say who to give them to."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It has to say something true"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The card names the reader, not just the book: \"for anyone who loved a quiet family novel,\" \"for the friend who says they hate poetry.\" If we can’t finish that sentence, it isn’t a pick yet. And every card is signed, because a recommendation with a name on it is one someone will stand behind when you come back to tell us what you thought."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "ten-books-to-carry-you-into-autumn",
+    "status": "published",
+    "body": {
+      "title": "Ten books to carry you into autumn",
+      "excerpt": "Shorter days, longer reads. A seasonal list from the tables — a novel to sink into, a memoir to slow down with, and one for the friend who’s hard to buy for.",
+      "featuredImage": {
+        "$asset": "post-fall"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Autumn is the reading season, and every year the tables tell us so — the moment the light shifts, people stop asking for a beach read and start asking for something to sink into. Here’s where we’d start this year, drawn from the books we’ve been quietly pushing on regulars all month."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "To sink into"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you want a novel to disappear inside, begin with The Salt in Her Name — a debut about grief and a town that keeps its secrets, salt-scoured and quietly furious. Follow it with Tin Ceilings, three decades of ordinary lives that sneaks up and breaks your heart on the last page. And if you swear you don’t like short stories, Small Hours will change your mind before the second one is done."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "To slow down with"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For nonfiction, A Field Guide to Leaving is the one we can’t stop pressing on people — a memoir shaped like a naturalist’s notebook, hopeful in a way that sneaks up on you. Pair it with Root and Branch for a very funny year in an orchard, or How Cities Breathe if you’d like to never walk your own street the same way again. Wrap any of them with the book club and you’ve solved the hardest gift on your list."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "why-shop-an-independent-bookshop",
+    "status": "published",
+    "body": {
+      "title": "Why shop an independent bookshop",
+      "excerpt": "The same book costs about the same everywhere. What changes is everything around it — the person, the room, and where your money goes after.",
+      "featuredImage": {
+        "$asset": "post-indie"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Let’s be honest about the thing everyone’s thinking: yes, you can get most of these books cheaper, faster, and without leaving the couch. We’re not going to pretend otherwise. What we’ll argue is that the price on the back isn’t the whole cost, and the book isn’t the whole thing you’re buying."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "You’re buying a person who read it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An algorithm can tell you what people who bought this also bought. It cannot finish a book, sit with it, and decide who in your life needs it. That’s what the shelf-talkers are — a stranger’s taste, made useful, with a name signed to it. Come in undecided and you’ll leave with something better than what you came for, more often than not."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where the money goes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A dollar spent here stays close to home for a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author events, the school orders, and the kids’ story hour that no marketplace will ever run. A bookshop is infrastructure for a reading town — and it only exists if people use it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

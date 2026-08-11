@@ -1,0 +1,27 @@
+[
+  {
+    "id": "painting-residential-hero",
+    "url": "https://images.unsplash.com/photo-1688372199140-cade7ae820fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZnJlc2hseSUyMHBhaW50ZWQlMjByb29tfGVufDB8MHx8fDE3ODYzOTM3Nzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A freshly painted, sunlit living room with crisp white trim"
+  },
+  {
+    "id": "painting-residential-story",
+    "url": "https://images.unsplash.com/photo-1688372199140-cade7ae820fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpbnRlciUyMHBhaW50aW5nJTIwd2FsbHxlbnwwfDB8fHwxNzg2MzkzNzgxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A painter cutting a clean line along the ceiling with a brush"
+  },
+  {
+    "id": "painting-residential-maya",
+    "url": "https://images.unsplash.com/photo-1696416749433-f0abf2e0c524?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpbnRlciUyMHBvcnRyYWl0JTIwd29tYW58ZW58MHwwfHx8MTc4NjM5Mzc4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Maya Okonkwo, interior and trim lead"
+  },
+  {
+    "id": "painting-residential-diego",
+    "url": "https://images.unsplash.com/photo-1664482017668-91158897414c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpbnRlciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTM3ODd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Diego Herrera, exterior and prep painter"
+  },
+  {
+    "id": "painting-residential-priya",
+    "url": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB3b21hbnxlbnwwfDB8fHwxNzg2MzkzNzc1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, cabinet and finishes painter"
+  }
+]

@@ -362,6 +362,20 @@ export interface SiteChromeOptions {
    *  that leads with the wordmark and nav alone (the Kith-family bar has no filled CTA) —
    *  the `cta` slot is pruned on both the desktop bar and the phone panel. */
   showCta?: boolean;
+  /** Override the navbar CTA button's label + destination. Defaults to "Get in touch" →
+   *  `/contact`. A B2B/wholesale site says "Open a trade account", a booking site "Book now",
+   *  etc. Ignored when `showCta` is false (the slot is pruned). Backward-compatible: unset =
+   *  the original "Get in touch" button. */
+  ctaLabel?: string;
+  ctaHref?: string;
+  /** EXPLICIT primary destinations, overriding the module-derived Shop/Book/Journal/About/
+   *  Contact set. When provided, the navbar AND the footer's Explore column show EXACTLY
+   *  these — for a site whose page set isn't the content/commerce shape (a personal
+   *  portfolio: Work/About/Contact). The footer's trailing `/search` link is dropped too,
+   *  because a custom-nav site defines its own pages and has no commerce search route.
+   *  Unset (the default) leaves the module-gated behaviour every existing caller relies on
+   *  untouched. */
+  navLinks?: [string, string][];
 }
 
 /** The site's primary destinations, in one place so the desktop row and the phone
@@ -371,6 +385,9 @@ export interface SiteChromeOptions {
  *  of the same type, a call site that transposes two arguments type-checks perfectly
  *  and silently ships the wrong nav. */
 function navDestinations(opts: SiteChromeOptions): [string, string][] {
+  // An explicit list wins outright — a site whose pages aren't the module-shaped set names
+  // its own destinations, and gets exactly them (no invented Shop/Journal into empty routes).
+  if (opts.navLinks) return opts.navLinks;
   const { commerceEnabled = true, schedulingEnabled = false, cmsEnabled = false } = opts;
   const link = (label: string, href: string): [string, string][] => [[label, href]];
   return [
@@ -419,8 +436,13 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
     // on a content-only site too — it reaches the account, not a store.
     secondary: { text: 'Sign in', href: '/account/login' },
     // `null` prunes the CTA slot (both the desktop bar and the phone panel declare it), for
-    // an editorial header that leads with the wordmark + nav and no filled button.
-    cta: (opts.showCta ?? true) ? { text: 'Get in touch', href: '/contact' } : null,
+    // an editorial header that leads with the wordmark + nav and no filled button. The label +
+    // destination are overridable (`ctaLabel`/`ctaHref`) — a trade site says "Open a trade
+    // account", a booking site "Book now" — defaulting to the original "Get in touch".
+    cta:
+      (opts.showCta ?? true)
+        ? { text: opts.ctaLabel ?? 'Get in touch', href: opts.ctaHref ?? '/contact' }
+        : null,
   });
   // The nav renders EXACTLY the site's destinations — the block's link slots GROW to fit
   // however many there are, never truncating at the block's default count.
@@ -511,6 +533,11 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
   // same no-cap rule as the navbar, scoped to that one column (via its `link1`) so the
   // Account and legal columns are never touched.
   const explore = findLinkListContainer(filled, 1);
-  if (explore) fillNavLinks(explore, [...destinations, ['Search', '/search']]);
+  if (explore) {
+    // A custom-nav site defines its own pages — no forced `/search` (there's no commerce
+    // search route behind it). The module-shaped default keeps the footer-only Search link.
+    const extras: [string, string][] = opts.navLinks ? [] : [['Search', '/search']];
+    fillNavLinks(explore, [...destinations, ...extras]);
+  }
   return filled;
 }

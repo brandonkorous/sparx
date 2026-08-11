@@ -1,0 +1,97 @@
+[
+  {
+    "id": "ind-hero",
+    "url": "https://images.unsplash.com/photo-1627915589334-14a3c3e3a741?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93cyUyMGluZHVzdHJpYWwlMjBzdXBwbHklMjBzaGVsdmluZyUyMGRpc3RyaWJ1dGlvbiUyMHdhcmVob3VzZXxlbnwwfDB8fHwxNzg2NDEzMjIzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rows of industrial supply shelving in a distribution warehouse"
+  },
+  {
+    "id": "ind-tile-fasteners",
+    "url": "https://images.unsplash.com/photo-1605701249987-f0bb9b505d06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmlucyUyMGFzc29ydGVkJTIwYm9sdHMlMjBudXRzJTIwd2FzaGVyc3xlbnwwfDB8fHwxNzg2NDEzMjI2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Bins of assorted bolts, nuts and washers"
+  },
+  {
+    "id": "ind-tile-abrasives",
+    "url": "https://images.unsplash.com/photo-1522322512347-a0e57fd1744c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBjdXQtb2ZmJTIwZ3JpbmRpbmclMjB3aGVlbHN8ZW58MHwwfHx8MTc4NjQxMzIyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of cut-off and grinding wheels"
+  },
+  {
+    "id": "ind-tile-safety",
+    "url": "https://images.unsplash.com/photo-1596513058031-bc51c5cbe091?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8c2FmZXR5JTIwZ2xhc3NlcyUyMG5pdHJpbGV8ZW58MHwwfHx8MTc4NjQxMzYwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Safety glasses and nitrile gloves on a workbench"
+  },
+  {
+    "id": "ind-tile-consumables",
+    "url": "https://images.unsplash.com/photo-1764866085369-44c7ef1a18f3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVsayUyMHNob3AlMjBjb25zdW1hYmxlcyUyMHJhZ3MlMjB0YXBlJTIwY2FibGUlMjB0aWVzfGVufDB8MHx8fDE3ODY0MTMyMzR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Bulk shop consumables — rags, tape and cable ties"
+  },
+  {
+    "id": "ind-band-trade",
+    "url": "https://images.unsplash.com/photo-1532635026-d12867005472?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FyZWhvdXNlJTIwd29ya2VyJTIwbG9hZGluZyUyMHBhbGxldHMlMjBvbnRvJTIwZm9ya2xpZnR8ZW58MHwwfHx8MTc4NjQxMzIzOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warehouse worker loading pallets onto a forklift"
+  },
+  {
+    "id": "prod-fasteners",
+    "url": "https://images.unsplash.com/photo-1638332746468-b4ffecd64ca0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z3JhZGUlMjA4JTIwZmFzdGVuZXIlMjBhc3NvcnRtZW50JTIwYm94fGVufDB8MHx8fDE3ODY0MTMyNDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A Grade 8 fastener assortment box"
+  },
+  {
+    "id": "prod-cutoff",
+    "url": "https://images.unsplash.com/photo-1738162837672-de9d735a9b90?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwNCUyMDUlMjBpbmNoJTIwY3V0LW9mZiUyMHdoZWVsc3xlbnwwfDB8fHwxNzg2NDEzMjQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of 4.5 inch cut-off wheels"
+  },
+  {
+    "id": "prod-grinding",
+    "url": "https://images.unsplash.com/photo-1564030390658-84b5d8fed479?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Ym94JTIwNCUyMDUlMjBpbmNoJTIwZ3JpbmRpbmclMjB3aGVlbHN8ZW58MHwwfHx8MTc4NjQxMzI0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of 4.5 inch grinding wheels"
+  },
+  {
+    "id": "prod-gloves",
+    "url": "https://images.unsplash.com/photo-1599412227383-b7d4751c8765?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGJsdWUlMjBuaXRyaWxlJTIwZGlzcG9zYWJsZSUyMGdsb3Zlc3xlbnwwfDB8fHwxNzg2NDEzMjUyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of blue nitrile disposable gloves"
+  },
+  {
+    "id": "prod-glasses",
+    "url": "https://images.unsplash.com/photo-1763144536757-d90b9144e6ef?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGNsZWFyJTIwYW50aS1mb2d8ZW58MHwwfHx8MTc4NjQxMzYwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of clear anti-fog safety glasses"
+  },
+  {
+    "id": "prod-rags",
+    "url": "https://images.unsplash.com/photo-1594139180581-ed12484ba98c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFsZSUyMHJlY2xhaW1lZCUyMGNvdHRvbiUyMHNob3AlMjByYWdzfGVufDB8MHx8fDE3ODY0MTMyNTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bale of reclaimed cotton shop rags"
+  },
+  {
+    "id": "prod-ties",
+    "url": "https://images.unsplash.com/photo-1631872112096-7b1b700237f6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVsayUyMGJhZyUyMGJsYWNrJTIwY2FibGUlMjB0aWVzfGVufDB8MHx8fDE3ODY0MTMyNjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bulk bag of black cable ties"
+  },
+  {
+    "id": "prod-threadlocker",
+    "url": "https://picsum.photos/seed/prod-threadlocker/1600/1000",
+    "alt": "A case of medium-strength threadlocker bottles"
+  },
+  {
+    "id": "prod-ducttape",
+    "url": "https://images.unsplash.com/photo-1623666936743-4d70c6ae32a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGluZHVzdHJpYWwlMjBjbG90aHxlbnwwfDB8fHwxNzg2NDEzNjA4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of industrial cloth duct tape rolls"
+  },
+  {
+    "id": "prod-mro-kit",
+    "url": "https://picsum.photos/seed/prod-mro-kit/1600/1000",
+    "alt": "An MRO shop starter kit of essential consumables"
+  },
+  {
+    "id": "post-stockroom",
+    "url": "https://picsum.photos/seed/post-stockroom/1600/1000",
+    "alt": "A well-organised MRO stockroom with labelled bins"
+  },
+  {
+    "id": "post-abrasives",
+    "url": "https://images.unsplash.com/photo-1598302936625-6075fbd98dd7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YW5nbGUlMjBncmluZGVyJTIwY3V0dGluZyUyMHN0ZWVsJTIwc3BhcmtzfGVufDB8MHx8fDE3ODY0MTMyNzN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An angle grinder cutting steel with sparks"
+  },
+  {
+    "id": "post-ppe",
+    "url": "https://images.unsplash.com/photo-1628235176517-71013205a2de?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8d29ya2VyJTIwcHVsbGluZyUyMG5pdHJpbGV8ZW58MHwwfHx8MTc4NjQxMzYxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A worker pulling on nitrile gloves on the shop floor"
+  }
+]

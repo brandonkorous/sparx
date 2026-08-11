@@ -1,0 +1,534 @@
+{
+  "categories": [
+    {
+      "handle": "cable-wiring",
+      "name": "Cable & wiring",
+      "description": "Twin & earth, conduit and trunking.",
+      "featured": true
+    },
+    {
+      "handle": "wiring-accessories",
+      "name": "Wiring accessories",
+      "description": "Sockets, switches and cable clips.",
+      "featured": true
+    },
+    {
+      "handle": "lighting",
+      "name": "Lighting",
+      "description": "LED downlights and fittings.",
+      "featured": true
+    },
+    {
+      "handle": "protection",
+      "name": "Protection",
+      "description": "Consumer units, breakers and testers.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The lines firms reorder most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "twin-and-earth-cable-reel",
+        "consumer-unit",
+        "double-sockets-box",
+        "led-downlights-box"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "Lines just added to the catalog.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["led-downlights-box", "installation-tester", "first-fix-bundle"]
+    },
+    {
+      "handle": "first-fix",
+      "name": "First-fix essentials",
+      "description": "Cable, containment and fixings for the first fix.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "twin-and-earth-cable-reel",
+        "trunking-conduit-bundle",
+        "cable-clips-tub",
+        "mcb-circuit-breakers-pack",
+        "first-fix-bundle"
+      ]
+    },
+    {
+      "handle": "second-fix",
+      "name": "Second-fix accessories",
+      "description": "The sockets and switches a second fix eats through.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["double-sockets-box", "light-switches-box"]
+    },
+    {
+      "handle": "circuit-protection",
+      "name": "Circuit protection",
+      "description": "Boards, breakers and the tester to certify them.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["consumer-unit", "mcb-circuit-breakers-pack", "installation-tester"]
+    },
+    {
+      "handle": "cable-wiring-shelf",
+      "name": "Cable & wiring",
+      "description": "By the reel and the bundle.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["twin-and-earth-cable-reel", "trunking-conduit-bundle", "first-fix-bundle"]
+    },
+    {
+      "handle": "wiring-accessories-shelf",
+      "name": "Wiring accessories",
+      "description": "Sockets, switches and clips by the box.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["double-sockets-box", "light-switches-box", "cable-clips-tub"]
+    },
+    {
+      "handle": "lighting-shelf",
+      "name": "Lighting",
+      "description": "Downlights for the fit-out.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["led-downlights-box"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "twin-and-earth-cable-reel",
+      "title": "Twin & Earth Cable — 100 m Reel",
+      "description": "Grey PVC twin-and-earth (6242Y) flat cable on a 100 m reel — the everyday wiring for lighting and ring finals. Pick the CSA the circuit calls for: 1.0 mm² and 1.5 mm² for lighting, 2.5 mm² for sockets. MOQ 1 reel; the more reels, the better the per-metre rate.",
+      "status": "active",
+      "productType": "Cable",
+      "vendor": "Livewire Trade",
+      "tags": ["cable", "twin-and-earth", "6242y", "wiring"],
+      "categoryHandles": ["cable-wiring"],
+      "collectionHandles": ["best-sellers", "first-fix", "cable-wiring-shelf"],
+      "seoTitle": "Twin & Earth Cable, 100 m Reel (6242Y) | Livewire Trade",
+      "seoDescription": "Grey PVC twin-and-earth flat cable, 100 m reel. 1.0, 1.5 or 2.5 mm² for lighting and ring finals. Trade prices.",
+      "options": [
+        {
+          "name": "Cable size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "1.0 mm²"
+            },
+            {
+              "value": "1.5 mm²"
+            },
+            {
+              "value": "2.5 mm²"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LWT-CAB-TE-10",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cable size": "1.0 mm²"
+          }
+        },
+        {
+          "sku": "LWT-CAB-TE-15",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cable size": "1.5 mm²"
+          }
+        },
+        {
+          "sku": "LWT-CAB-TE-25",
+          "priceCents": 6900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cable size": "2.5 mm²"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-twin-earth",
+          "isPrimary": true,
+          "alt": "A 100 metre reel of grey twin and earth cable"
+        }
+      ]
+    },
+    {
+      "handle": "consumer-unit",
+      "title": "Metal Consumer Unit — Populated",
+      "description": "A steel-enclosure consumer unit to the latest wiring regs, pre-populated with a main switch, dual RCDs and a bank of MCBs — the board a domestic rewire or a new install drops straight in. Choose the way count for the circuits on the job. MOQ 1 unit.",
+      "status": "active",
+      "productType": "Protection",
+      "vendor": "Livewire Trade",
+      "tags": ["consumer-unit", "board", "rcd", "protection"],
+      "categoryHandles": ["protection"],
+      "collectionHandles": ["best-sellers", "circuit-protection"],
+      "seoTitle": "Metal Consumer Unit, Populated (10 or 16 way) | Livewire Trade",
+      "seoDescription": "A metal-enclosure populated consumer unit with dual RCDs and MCBs, to the latest wiring regs. 10 or 16 way.",
+      "options": [
+        {
+          "name": "Ways",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "10 way"
+            },
+            {
+              "value": "16 way"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LWT-PRO-CU-10",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ways": "10 way"
+          }
+        },
+        {
+          "sku": "LWT-PRO-CU-16",
+          "priceCents": 13900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ways": "16 way"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-consumer-unit",
+          "isPrimary": true,
+          "alt": "A metal consumer unit populated with breakers and RCDs"
+        }
+      ]
+    },
+    {
+      "handle": "double-sockets-box",
+      "title": "Double Switched Sockets — Box of 20",
+      "description": "13 A twin switched sockets with a clean flat plate, a box of 20 — the accessory a second fix eats through. White moulded as standard; step up to brushed steel for the feature rooms. MOQ 1 box. Buy the box and stop running back for singles.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Livewire Trade",
+      "tags": ["accessories", "sockets", "wiring-accessories", "second-fix"],
+      "categoryHandles": ["wiring-accessories"],
+      "collectionHandles": ["best-sellers", "second-fix"],
+      "seoTitle": "Double Switched Sockets, Box of 20 (13 A) | Livewire Trade",
+      "seoDescription": "13 A twin switched sockets, flat plate, box of 20. White moulded or brushed steel. Trade prices.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "White moulded"
+            },
+            {
+              "value": "Brushed steel"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LWT-ACC-SKT-WHT",
+          "priceCents": 5200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "White moulded"
+          }
+        },
+        {
+          "sku": "LWT-ACC-SKT-STL",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Brushed steel"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sockets",
+          "isPrimary": true,
+          "alt": "A trade box of double sockets"
+        }
+      ]
+    },
+    {
+      "handle": "light-switches-box",
+      "title": "Light Switches, 1-Gang 2-Way — Box of 20",
+      "description": "1-gang 2-way 10 A light switches on a slim flat plate, a box of 20 — the workhorse switch for landings, hallways and every room on the job. White moulded, screwless clip-on plate. MOQ 1 box.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Livewire Trade",
+      "tags": ["accessories", "switches", "wiring-accessories", "second-fix"],
+      "categoryHandles": ["wiring-accessories"],
+      "collectionHandles": ["second-fix", "wiring-accessories-shelf"],
+      "seoTitle": "Light Switches 1-Gang 2-Way, Box of 20 | Livewire Trade",
+      "seoDescription": "1-gang 2-way 10 A light switches, flat plate, box of 20. White moulded, screwless plate. Trade prices.",
+      "variants": [
+        {
+          "sku": "LWT-ACC-SW-1G",
+          "priceCents": 3300,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-switches",
+          "isPrimary": true,
+          "alt": "Light Switches, 1-Gang 2-Way — Box of 20"
+        }
+      ]
+    },
+    {
+      "handle": "led-downlights-box",
+      "title": "Fire-Rated LED Downlights — Box of 10",
+      "description": "Integrated fire-rated LED downlights, 6 W, dimmable, IP65 for bathrooms and kitchens — a box of 10 with a 90-minute fire rating and a flush white bezel. Pick the colour temperature the room wants: warm 3000K or cool 4000K. MOQ 1 box.",
+      "status": "active",
+      "productType": "Lighting",
+      "vendor": "Livewire Trade",
+      "tags": ["lighting", "downlights", "led", "fire-rated"],
+      "categoryHandles": ["lighting"],
+      "collectionHandles": ["best-sellers", "new-in", "lighting-shelf"],
+      "seoTitle": "Fire-Rated LED Downlights, Box of 10 (IP65) | Livewire Trade",
+      "seoDescription": "Integrated fire-rated LED downlights, 6 W dimmable, IP65, box of 10. Warm 3000K or cool 4000K. Trade prices.",
+      "options": [
+        {
+          "name": "Colour temperature",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Warm 3000K"
+            },
+            {
+              "value": "Cool 4000K"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LWT-LGT-DL-30",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour temperature": "Warm 3000K"
+          }
+        },
+        {
+          "sku": "LWT-LGT-DL-40",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour temperature": "Cool 4000K"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-downlights",
+          "isPrimary": true,
+          "alt": "A box of fire-rated LED downlights"
+        }
+      ]
+    },
+    {
+      "handle": "mcb-circuit-breakers-pack",
+      "title": "MCB Circuit Breakers — Pack of 10",
+      "description": "Type B single-pole miniature circuit breakers, 6 kA, a pack of 10 to populate a board or restock the van — the everyday protection for lighting and socket circuits. Pick the rating: 6 A for lighting, 16 A or 32 A for socket and appliance circuits. MOQ 2 packs.",
+      "status": "active",
+      "productType": "Protection",
+      "vendor": "Livewire Trade",
+      "tags": ["protection", "mcb", "circuit-breaker", "consumable"],
+      "categoryHandles": ["protection"],
+      "collectionHandles": ["circuit-protection", "first-fix"],
+      "seoTitle": "MCB Circuit Breakers Type B, Pack of 10 (6 kA) | Livewire Trade",
+      "seoDescription": "Type B single-pole MCBs, 6 kA, pack of 10. 6 A, 16 A or 32 A for lighting and socket circuits. Trade prices.",
+      "options": [
+        {
+          "name": "Rating",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "6 A"
+            },
+            {
+              "value": "16 A"
+            },
+            {
+              "value": "32 A"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LWT-PRO-MCB-06",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Rating": "6 A"
+          }
+        },
+        {
+          "sku": "LWT-PRO-MCB-16",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Rating": "16 A"
+          }
+        },
+        {
+          "sku": "LWT-PRO-MCB-32",
+          "priceCents": 2700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Rating": "32 A"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-breakers",
+          "isPrimary": true,
+          "alt": "A pack of Type B MCB circuit breakers"
+        }
+      ]
+    },
+    {
+      "handle": "trunking-conduit-bundle",
+      "title": "PVC Trunking & Conduit — Trade Bundle",
+      "description": "A mixed bundle of white PVC mini-trunking and round conduit with couplers and clips — the surface containment for a quick rewire or a garage circuit. 3 m lengths, self-adhesive backing on the trunking. MOQ 1 bundle. The tidy way to run cable on show.",
+      "status": "active",
+      "productType": "Conduit & Trunking",
+      "vendor": "Livewire Trade",
+      "tags": ["conduit", "trunking", "containment", "first-fix"],
+      "categoryHandles": ["cable-wiring"],
+      "collectionHandles": ["first-fix", "cable-wiring-shelf"],
+      "seoTitle": "PVC Trunking & Conduit Trade Bundle | Livewire Trade",
+      "seoDescription": "A mixed bundle of white PVC mini-trunking and round conduit with couplers and clips. 3 m lengths. Trade prices.",
+      "variants": [
+        {
+          "sku": "LWT-CON-TRUNK-BDL",
+          "priceCents": 4100,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-conduit",
+          "isPrimary": true,
+          "alt": "PVC Trunking & Conduit — Trade Bundle"
+        }
+      ]
+    },
+    {
+      "handle": "cable-clips-tub",
+      "title": "Cable Clips — Tub of 1000",
+      "description": "Twin-and-earth cable clips in a bulk tub of 1000 — the fixing you go through faster than any other on a first fix. Sized for 1.5 and 2.5 mm² T&E, with a hardened masonry nail that drives into brick and timber alike. MOQ 1 tub.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Livewire Trade",
+      "tags": ["accessories", "cable-clips", "fixings", "first-fix", "bulk"],
+      "categoryHandles": ["wiring-accessories"],
+      "collectionHandles": ["first-fix", "wiring-accessories-shelf"],
+      "seoTitle": "Cable Clips, Tub of 1000 (T&E) | Livewire Trade",
+      "seoDescription": "Twin-and-earth cable clips, bulk tub of 1000, for 1.5 and 2.5 mm² T&E. Hardened masonry nail. Trade prices.",
+      "variants": [
+        {
+          "sku": "LWT-ACC-CLIP-1000",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-clips",
+          "isPrimary": true,
+          "alt": "Cable Clips — Tub of 1000"
+        }
+      ]
+    },
+    {
+      "handle": "installation-tester",
+      "title": "Multifunction Installation Tester",
+      "description": "A multifunction installation tester in a hard case — insulation resistance, continuity, loop impedance and RCD trip in one instrument, so you can certify a job to the regs without carrying four boxes. Calibration certificate included. MOQ 1 unit.",
+      "status": "active",
+      "productType": "Test Equipment",
+      "vendor": "Livewire Trade",
+      "tags": ["test-equipment", "tester", "certification", "tools"],
+      "categoryHandles": ["protection"],
+      "collectionHandles": ["new-in", "circuit-protection"],
+      "seoTitle": "Multifunction Installation Tester | Livewire Trade",
+      "seoDescription": "A multifunction installation tester — insulation, continuity, loop impedance and RCD trip in one, with calibration cert.",
+      "variants": [
+        {
+          "sku": "LWT-TST-MFT",
+          "priceCents": 42900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tester",
+          "isPrimary": true,
+          "alt": "Multifunction Installation Tester"
+        }
+      ]
+    },
+    {
+      "handle": "first-fix-bundle",
+      "title": "First-Fix Trade Bundle",
+      "description": "A curated bundle of the lines a first fix runs out of first — a reel of 2.5 mm² T&E, a box of back boxes, a tub of cable clips and a pack of MCBs, packed together and priced below the sum of its parts. MOQ 1 bundle. The fastest way to kit a job from empty.",
+      "status": "active",
+      "productType": "Bundle",
+      "vendor": "Livewire Trade",
+      "tags": ["bundle", "first-fix", "kit", "starter"],
+      "categoryHandles": ["cable-wiring"],
+      "collectionHandles": ["new-in", "first-fix"],
+      "seoTitle": "First-Fix Trade Bundle | Livewire Trade",
+      "seoDescription": "A curated first-fix bundle — 2.5 mm² T&E reel, back boxes, cable clips and MCBs, priced below the sum.",
+      "variants": [
+        {
+          "sku": "LWT-KIT-FIRSTFIX",
+          "priceCents": 12900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-first-fix",
+          "isPrimary": true,
+          "alt": "First-Fix Trade Bundle"
+        }
+      ]
+    }
+  ]
+}

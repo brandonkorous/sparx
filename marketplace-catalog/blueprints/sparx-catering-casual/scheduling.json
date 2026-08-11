@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "bbq-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Give us at least 48 hours’ notice to move or cancel a consult. We send a reminder two days out, the day before and two hours ahead."
+    },
+    {
+      "handle": "tasting-deposit",
+      "name": "Tasting deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 4000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Tastings hold a $40 deposit that comes right off your event total when you book us. Reschedule with 48 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Doyle",
+      "kind": "staff",
+      "skillTags": ["bbq", "tasting", "events"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "lucia",
+      "name": "Lucia Reyes",
+      "kind": "staff",
+      "skillTags": ["tacos", "tasting", "events"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "deshawn",
+      "name": "DeShawn Blake",
+      "kind": "staff",
+      "skillTags": ["corporate", "tasting", "events"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "event-consultation",
+      "name": "Event consultation",
+      "description": "A free, no-pressure call to talk headcount, budget, menu and logistics. Fifteen guests or five hundred — we’ll map it out.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bbq-standard"
+    },
+    {
+      "handle": "bbq-tasting",
+      "name": "Signature BBQ tasting",
+      "description": "Come hungry. Brisket, pulled pork, ribs, chicken and the sides that go with them — taste the spread before you book the date.",
+      "durationMinutes": 60,
+      "priceCents": 4000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tasting-deposit"
+    },
+    {
+      "handle": "backyard-party-consult",
+      "name": "Backyard party consult",
+      "description": "Graduations, birthdays, family reunions — a relaxed sit-down to build a generous flat per-head spread that feeds the whole yard.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bbq-standard"
+    },
+    {
+      "handle": "corporate-lunch-consult",
+      "name": "Corporate lunch consult",
+      "description": "Team lunches, client meetings and office spreads — dependable drop-off or full-service, on time, with easy per-head pricing.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bbq-standard"
+    },
+    {
+      "handle": "taco-bar-tasting",
+      "name": "Taco bar tasting",
+      "description": "A build-your-own taco bar with smoked meats, fresh salsas and all the fixings. Taste it, tweak it, then get it on the calendar.",
+      "durationMinutes": 60,
+      "priceCents": 4000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "tasting-deposit"
+    },
+    {
+      "handle": "game-day-package-consult",
+      "name": "Game-day package consult",
+      "description": "Wings, sliders, brisket nachos and a cooler’s worth of sides — plan the tailgate or watch-party spread that keeps everyone fed.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bbq-standard"
+    },
+    {
+      "handle": "large-event-consult",
+      "name": "Large event consult",
+      "description": "Weddings, company picnics and festivals from 100 guests up — full-service catering, staffing and timing planned end to end.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["tasting"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bbq-standard"
+    }
+  ]
+}

@@ -1,0 +1,980 @@
+{
+  "categories": [
+    {
+      "handle": "apparel",
+      "name": "Apparel",
+      "description": "Shells, merino and technical layers.",
+      "featured": true
+    },
+    {
+      "handle": "bags",
+      "name": "Bags",
+      "description": "Packs and totes, pared back.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Caps, socks and the small stuff.",
+      "featured": true
+    },
+    {
+      "handle": "essentials",
+      "name": "Essentials",
+      "description": "The everyday-carry hardware.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "The latest pieces to join the range.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "featherline-shell-jacket",
+        "everyday-merino-tee",
+        "commuter-pack-20",
+        "insulated-bottle"
+      ]
+    },
+    {
+      "handle": "best-loved",
+      "name": "Best loved",
+      "description": "The pieces people reach for every day.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "featherline-shell-jacket",
+        "everyday-merino-tee",
+        "commuter-pack-20",
+        "packable-tote",
+        "insulated-bottle"
+      ]
+    },
+    {
+      "handle": "city-to-trail",
+      "name": "City to trail",
+      "description": "One versatile kit for the commute and the climb.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["featherline-shell-jacket", "traverse-trousers", "commuter-pack-20"]
+    },
+    {
+      "handle": "the-merino-edit",
+      "name": "The merino edit",
+      "description": "The soft, odour-resistant wool we’re known for.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["everyday-merino-tee", "merino-trail-socks"]
+    },
+    {
+      "handle": "the-everyday",
+      "name": "The everyday",
+      "description": "The small, useful things you carry without thinking.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["packable-tote", "six-panel-cap", "merino-trail-socks", "insulated-bottle"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "featherline-shell-jacket",
+      "title": "Featherline Shell Jacket",
+      "description": "A minimalist 2.5-layer waterproof shell that weighs almost nothing and disappears into a jacket pocket. Fully taped seams keep the weather out, underarm vents let it back in on the climb, and a clean, unbranded cut means it reads as easily on a city street as on an exposed ridge. The one shell that covers the whole week.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Tarn",
+      "tags": ["apparel", "shell", "waterproof", "outerwear"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["new-in", "city-to-trail", "best-loved"],
+      "seoTitle": "Featherline Shell Jacket — packable 2.5-layer waterproof | Tarn",
+      "seoDescription": "A minimal, packable 2.5-layer waterproof shell with taped seams and pit vents. City-clean, trail-ready.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Fog"
+            },
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-SHELL-XS-FOG",
+          "priceCents": 24500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-XS-INK",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-XS-SAG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Sage"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-S-FOG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-S-INK",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-S-SAG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Sage"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-M-FOG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-M-INK",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-M-SAG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Sage"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-L-FOG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-L-INK",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-L-SAG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Sage"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-XL-FOG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-XL-INK",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-SHELL-XL-SAG",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-shell-jacket",
+          "isPrimary": true,
+          "alt": "Featherline Shell Jacket"
+        }
+      ]
+    },
+    {
+      "handle": "everyday-merino-tee",
+      "title": "Everyday Merino Tee",
+      "description": "A fine-gauge merino tee that behaves like your favourite cotton one but wicks, breathes and resists odour for days between washes. A clean crew neck, a trim-but-not-tight cut and a hand that stays soft wash after wash — the layer you’ll pack for one day and end up wearing for three.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Tarn",
+      "tags": ["apparel", "merino", "base-layer", "tee"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["new-in", "the-merino-edit", "best-loved"],
+      "seoTitle": "Everyday Merino Tee — fine-gauge merino crew | Tarn",
+      "seoDescription": "A soft, odour-resistant fine-gauge merino tee with a clean crew neck and a trim everyday cut.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-TEE-XS-BON",
+          "priceCents": 6800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TEE-XS-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TEE-XS-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "TARN-TEE-S-BON",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TEE-S-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TEE-S-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "TARN-TEE-M-BON",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TEE-M-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TEE-M-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "TARN-TEE-L-BON",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TEE-L-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TEE-L-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "TARN-TEE-XL-BON",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TEE-XL-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TEE-XL-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-merino-tee",
+          "isPrimary": true,
+          "alt": "Everyday Merino Tee"
+        }
+      ]
+    },
+    {
+      "handle": "traverse-trousers",
+      "title": "Traverse Trousers",
+      "description": "A technical trouser cut clean enough for the office and stretchy enough for a scramble. A four-way stretch weave sheds light rain and dries fast, a gusseted crotch moves with you, and zip security pockets keep a phone and keys close. Tailored lines, hidden performance — trousers that never look like gear.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Tarn",
+      "tags": ["apparel", "trousers", "technical", "stretch"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["new-in", "city-to-trail"],
+      "seoTitle": "Traverse Trousers — technical stretch trousers | Tarn",
+      "seoDescription": "A clean-cut four-way-stretch technical trouser that sheds light rain and dries fast. Office to trail.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Stone"
+            },
+            {
+              "value": "Olive"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-TROU-XS-INK",
+          "priceCents": 11800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TROU-XS-STO",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-TROU-XS-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "TARN-TROU-S-INK",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TROU-S-STO",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-TROU-S-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "TARN-TROU-M-INK",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TROU-M-STO",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-TROU-M-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "TARN-TROU-L-INK",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TROU-L-STO",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-TROU-L-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "TARN-TROU-XL-INK",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TROU-XL-STO",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-TROU-XL-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Olive"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-trousers",
+          "isPrimary": true,
+          "alt": "Traverse Trousers"
+        }
+      ]
+    },
+    {
+      "handle": "commuter-pack-20",
+      "title": "Commuter Pack 20",
+      "description": "A 20-litre daypack pared back to what a day actually needs — a padded laptop sleeve, a clean single main compartment, and a weatherproof roll-top that flexes from a light load to a full one. No dangling straps, no logos, no clutter. The pack that looks right in a meeting and a downpour both.",
+      "status": "active",
+      "productType": "Bag",
+      "vendor": "Tarn",
+      "tags": ["bags", "daypack", "commuter"],
+      "categoryHandles": ["bags"],
+      "collectionHandles": ["new-in", "city-to-trail", "best-loved"],
+      "seoTitle": "Commuter Pack 20 — 20L weatherproof daypack | Tarn",
+      "seoDescription": "A pared-back 20L roll-top daypack with a padded laptop sleeve. Clean enough for the office, sealed for the rain.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Fog"
+            },
+            {
+              "value": "Olive"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-PACK20-INK",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-PACK20-FOG",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Fog"
+          }
+        },
+        {
+          "sku": "TARN-PACK20-OLI",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Olive"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pack",
+          "isPrimary": true,
+          "alt": "Commuter Pack 20"
+        }
+      ]
+    },
+    {
+      "handle": "packable-tote",
+      "title": "Packable Tote",
+      "description": "A roomy 18-litre tote in a tough, feather-light ripstop that folds into its own inner pocket the size of a wallet. Keep one in the pack for the market run, the extra layer or the overflow on the way home. Water-resistant, wipe-clean, and quietly good-looking empty or full.",
+      "status": "active",
+      "productType": "Bag",
+      "vendor": "Tarn",
+      "tags": ["bags", "tote", "packable"],
+      "categoryHandles": ["bags"],
+      "collectionHandles": ["best-loved", "the-everyday"],
+      "seoTitle": "Packable Tote — 18L ripstop tote | Tarn",
+      "seoDescription": "A light, water-resistant 18L ripstop tote that folds into its own pocket. For the market run and the overflow.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-TOTE-BON",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-TOTE-INK",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-TOTE-SAG",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tote",
+          "isPrimary": true,
+          "alt": "Packable Tote"
+        }
+      ]
+    },
+    {
+      "handle": "six-panel-cap",
+      "title": "Six-Panel Cap",
+      "description": "A clean six-panel cap in a quick-drying technical twill with a soft, packable brim that survives a rolled-up spot in a bag. An unstructured fit and an understated tonal finish keep it from ever looking like a souvenir. The cap you grab on the way out without thinking about it.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Tarn",
+      "tags": ["accessories", "cap", "headwear"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["new-in", "the-everyday"],
+      "seoTitle": "Six-Panel Cap — packable technical cap | Tarn",
+      "seoDescription": "A clean, unstructured six-panel cap in quick-drying twill with a soft packable brim. Understated and tonal.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Stone"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-CAP-INK",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Ink"
+          }
+        },
+        {
+          "sku": "TARN-CAP-STO",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "TARN-CAP-SAG",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cap",
+          "isPrimary": true,
+          "alt": "Six-Panel Cap"
+        }
+      ]
+    },
+    {
+      "handle": "merino-trail-socks",
+      "title": "Merino Trail Socks",
+      "description": "A fine merino-blend sock cushioned exactly where it counts and thin where it doesn’t — a supportive arch, a seamless toe and enough wool to stay warm damp and fresh for days. Cut to sit neat under a trainer or a boot alike, and knit to hold its shape long past the point most socks give up.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Tarn",
+      "tags": ["accessories", "socks", "merino"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["the-merino-edit", "the-everyday"],
+      "seoTitle": "Merino Trail Socks — cushioned merino-blend socks | Tarn",
+      "seoDescription": "A fine merino-blend sock with targeted cushioning, an arch band and a seamless toe. Warm, fresh and hard-wearing.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-SOCK-BON",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "TARN-SOCK-CHA",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "TARN-SOCK-SAG",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-socks",
+          "isPrimary": true,
+          "alt": "Merino Trail Socks"
+        }
+      ]
+    },
+    {
+      "handle": "insulated-bottle",
+      "title": "Insulated Bottle",
+      "description": "A double-walled stainless bottle in a matte, fingerprint-proof finish that keeps water cold to the summit or coffee hot to the desk. A leak-proof lid drinks one-handed, the narrow profile slips into a pack pocket or a cup holder, and the whole thing is built to be the last bottle you buy. Two sizes for the day out or the desk.",
+      "status": "active",
+      "productType": "Essentials",
+      "vendor": "Tarn",
+      "tags": ["essentials", "bottle", "hydration"],
+      "categoryHandles": ["essentials"],
+      "collectionHandles": ["new-in", "the-everyday", "best-loved"],
+      "seoTitle": "Insulated Bottle — matte double-walled stainless | Tarn",
+      "seoDescription": "A matte double-walled stainless bottle in 500 and 750ml with a leak-proof one-handed lid. Built to be the last one.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "500ml"
+            },
+            {
+              "value": "750ml"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "TARN-BOTTLE-500",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "500ml"
+          }
+        },
+        {
+          "sku": "TARN-BOTTLE-750",
+          "priceCents": 4000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "750ml"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bottle",
+          "isPrimary": true,
+          "alt": "Insulated Bottle"
+        }
+      ]
+    }
+  ]
+}

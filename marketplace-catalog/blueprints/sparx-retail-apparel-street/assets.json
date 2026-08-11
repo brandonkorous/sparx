@@ -1,0 +1,102 @@
+[
+  {
+    "id": "cardinal-hero",
+    "url": "https://images.unsplash.com/photo-1780260989815-455e6afcc29f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZWwlMjByZWQlMjBncmFwaGljJTIwaG9vZGllJTIwYWdhaW5zdCUyMGNvbmNyZXRlJTIwd2FsbHxlbnwwfDB8fHwxNzg2NDAzNTgyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A model in a red graphic hoodie against a concrete wall"
+  },
+  {
+    "id": "cardinal-tile-tops",
+    "url": "https://images.unsplash.com/photo-1768145488772-db787036bb13?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8cmFjayUyMGdyYXBoaWMlMjB0ZWVzJTIwcmFpbHxlbnwwfDB8fHwxNzg2NDAzNTg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A rack of graphic tees on a rail"
+  },
+  {
+    "id": "cardinal-tile-fleece",
+    "url": "https://images.unsplash.com/photo-1699275303942-47957eea44b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9sZGVkJTIwc3RhY2slMjBoZWF2eXdlaWdodCUyMGhvb2RpZXN8ZW58MHwwfHx8MTc4NjQwMzU4OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A folded stack of heavyweight hoodies"
+  },
+  {
+    "id": "cardinal-tile-bottoms",
+    "url": "https://images.unsplash.com/photo-1563826830589-cd0946a9dc72?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8dXRpbGl0eSUyMGNhcmdvJTIwcGFudHN8ZW58MHwwfHx8MTc4NjQwMzk0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of utility cargo pants on a studio floor"
+  },
+  {
+    "id": "cardinal-tile-accessories",
+    "url": "https://images.unsplash.com/photo-1574365569389-a10d488ca3fb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2l4LXBhbmVsJTIwY2FwJTIwY2FudmFzJTIwdG90ZSUyMGNvbmNyZXRlfGVufDB8MHx8fDE3ODY0MDM1OTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A six-panel cap and a canvas tote on concrete"
+  },
+  {
+    "id": "cardinal-band-drop",
+    "url": "https://images.unsplash.com/photo-1708185663693-1f0a0707904d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y3Jvd2QlMjBsaW5pbmclMjB1cCUyMHN0cmVldHdlYXIlMjBkcm9wfGVufDB8MHx8fDE3ODY0MDM1OTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A crowd lining up for a streetwear drop"
+  },
+  {
+    "id": "cardinal-band-made",
+    "url": "https://images.unsplash.com/photo-1663433567177-9f94be0bff4c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2NyZWVuJTIwcHJpbnRlciUyMHB1bGxpbmclMjBpbmslMjBhY3Jvc3MlMjB0ZWV8ZW58MHwwfHx8MTc4NjQwMzYwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A screen printer pulling ink across a tee"
+  },
+  {
+    "id": "cardinal-prod-logo-tee",
+    "url": "https://images.unsplash.com/photo-1718724089504-ed489d4cc396?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjB0ZWUlMjBib2xkJTIwY2hlc3QlMjBsb2dvfGVufDB8MHx8fDE3ODY0MDM2MDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A heavyweight tee with a bold chest logo"
+  },
+  {
+    "id": "cardinal-prod-static-tee",
+    "url": "https://images.unsplash.com/photo-1621446511130-0ed6519bfeb6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z3JhcGhpYyUyMHRlZSUyMGRpc3RvcnRlZCUyMHN0YXRpYyUyMHByaW50fGVufDB8MHx8fDE3ODY0MDM2MDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A graphic tee with a distorted static print"
+  },
+  {
+    "id": "cardinal-prod-hoodie",
+    "url": "https://images.unsplash.com/photo-1512400930990-e0bc0bd809df?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjBwdWxsb3ZlciUyMGhvb2RpZXxlbnwwfDB8fHwxNzg2NDAzOTUyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A heavyweight pullover hoodie in cardinal red"
+  },
+  {
+    "id": "cardinal-prod-crew",
+    "url": "https://images.unsplash.com/photo-1593733926335-bdec7f12acfd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94eSUyMGhlYXZ5d2VpZ2h0JTIwY3Jld25lY2slMjBzd2VhdHNoaXJ0fGVufDB8MHx8fDE3ODY0MDM2MTN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A boxy heavyweight crewneck sweatshirt"
+  },
+  {
+    "id": "cardinal-prod-jacket",
+    "url": "https://images.unsplash.com/photo-1576775068668-c147f14c36f7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2hlcnBhLWxpbmVkJTIwY29hY2hlcyUyMGphY2tldHxlbnwwfDB8fHwxNzg2NDAzNjE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sherpa-lined coaches jacket"
+  },
+  {
+    "id": "cardinal-prod-cargo",
+    "url": "https://images.unsplash.com/photo-1776153627325-a5950e50b33a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMHV0aWxpdHklMjBjYXJnbyUyMHBhbnRzfGVufDB8MHx8fDE3ODY0MDM2MjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of utility cargo pants"
+  },
+  {
+    "id": "cardinal-prod-sweatpant",
+    "url": "https://images.unsplash.com/photo-1756662299903-2c4fc9dc263f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGhlYXZ5d2VpZ2h0JTIwc3dlYXRwYW50c3xlbnwwfDB8fHwxNzg2NDAzNjI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of heavyweight sweatpants"
+  },
+  {
+    "id": "cardinal-prod-cap",
+    "url": "https://images.unsplash.com/photo-1645266729222-17cd32e06fd0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RydWN0dXJlZCUyMHNpeC1wYW5lbCUyMGNhcHxlbnwwfDB8fHwxNzg2NDAzNjI3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A structured six-panel cap"
+  },
+  {
+    "id": "cardinal-prod-tote",
+    "url": "https://images.unsplash.com/photo-1630381260512-e3fe55c11973?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8aGVhdnklMjBjYW52YXMlMjB0b3RlJTIwYmFnJTIwcHJpbnRlZCUyMGxvZ298ZW58MHwwfHx8MTc4NjQwMzYzMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A heavy canvas tote bag with a printed logo"
+  },
+  {
+    "id": "cardinal-prod-beanie",
+    "url": "https://images.unsplash.com/photo-1630691650107-53dd500d2907?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmliYmVkJTIwY3VmZmVkJTIwYmVhbmllfGVufDB8MHx8fDE3ODY0MDM2MzN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ribbed cuffed beanie"
+  },
+  {
+    "id": "cardinal-post-drop",
+    "url": "https://images.unsplash.com/photo-1712903276048-6da8d45bd9fa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZHVjdCUyMGxhaWQlMjBvdXR8ZW58MHwwfHx8MTc4NjQwMzk1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Fresh product laid out ahead of a drop"
+  },
+  {
+    "id": "cardinal-post-fit",
+    "url": "https://images.unsplash.com/photo-1598971861567-6005bbdebbf6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94eSUyMHRlZSUyMHNob3dufGVufDB8MHx8fDE3ODY0MDM5NTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A boxy tee shown on two different builds"
+  },
+  {
+    "id": "cardinal-post-care",
+    "url": "https://images.unsplash.com/photo-1520434901111-8e9bcb42c628?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjBnYXJtZW50cyUyMGRyeWluZyUyMGZsYXQlMjByYWNrfGVufDB8MHx8fDE3ODY0MDM2NDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Heavyweight garments drying flat on a rack"
+  }
+]

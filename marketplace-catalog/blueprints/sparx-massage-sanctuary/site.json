@@ -1,0 +1,1931 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "f46c8acb-0d5e-4fe2-8deb-2776148b679d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "c9d61c28-a61e-4f92-acd5-fc24525ab629",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "1054c621-8626-4cf2-8812-d47364ccea60",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "71cb3938-6d48-4c80-aab4-3689cc01c5ba",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "511ff245-ca41-46d7-901d-93f67b4d6a88",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "f415ec63-7c67-476d-9340-7fb4d7a45ca9",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0a8a0f14-00b8-4bbf-a249-5187870a8c07",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "07562e22-9966-4da0-b91e-92daaaf0959e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "f4d0552b-729b-4aeb-9e2b-c4eed041c929",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "932e4dfe-b022-4d2f-9ca4-33c8bfd0a5ff",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e9679fff-1bba-48b2-98a6-2c677257fd48",
+                  "ord": "a2"
+                }
+              ],
+              "id": "b3fac1f6-47e8-4d0c-a2b1-e808ef725e1d",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "d468be67-9bdd-4f5f-a944-70b9f0262ca4",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "f8a69653-e65c-405c-a318-f901f172e9ad",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "492a86ec-b637-437c-a419-24d3914fa419",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "46275809-5f78-401e-92e6-893af8010f78",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "1ac9b4cc-a55b-468f-825d-086aef8b51cd",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "363a6f59-2d04-42f8-a3f5-8234890bdc30",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "589e9a6e-ba25-454a-824d-11a56d29193e",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "2017b54b-979d-4e2b-ba82-df63fda7d518",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "12abb29e-eb15-482c-8c33-01906d91596a",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9d4aae86-695e-4bc0-ac92-3f168ce629bd",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "e2321111-2942-4e83-ae05-b58887c545b7",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "a774ea87-aa58-4c7b-9ebc-335a6cf5e41e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "d798f5c7-6d82-4ee3-b25b-ea0d415d42a5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "2bfbfb8e-e2cc-4d69-a3f7-2b1fb77975f8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5ce08c5e-c5cb-4d5e-ab40-073faa04397b",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "ee74273a-be96-4ffd-bfff-2dc1372b7c3c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a10b9654-a88b-4786-986f-44d3daf8f36b",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "2bb02506-410a-40d1-a323-2c508e546f0c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5c5ad364-2c65-418b-be06-a6f64d8bc231",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "0a7df5cc-5aa8-45ac-85ac-5a7f1ab426f5",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e495959f-e314-44e7-ae93-5e4a084f563e",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "7a9abfef-cfef-4cf3-8d7a-d2889d97ff20",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "6a1ac55f-2662-4b37-9bf4-f662ec63d0e0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "2329f372-41c5-4c85-9868-005ae1d867d3",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "80f5b05b-4643-4890-bc78-72d0b94a7a59",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "0caf144f-2e10-4a0c-af66-68b24eb98bff",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "812686d1-ecaa-4f48-ac9a-30fbdcc5a6b6",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "2097de6b-923d-41af-93a6-89f0e8e9b542",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "31d06b69-39bf-4bae-bee4-64ed3b9bf3e8",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "1dc2aad6-ca04-41b7-bd13-571f2e480164",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "b8ceecc1-387a-45f1-9cd0-38f099712d52",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "5c6ea97b-e2ad-4104-ac1e-bb3566d6791b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "4892293a-98a1-4124-ad71-661640a5dd0b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "58e36521-8099-4d7d-b3a8-d7bd6a6abe46",
+                  "ord": "a1"
+                }
+              ],
+              "id": "4cd72ad7-6996-4104-b691-dc9d1241304c",
+              "ord": "a0"
+            }
+          ],
+          "id": "5d42a0c3-60d8-42c4-89fb-00f500f73154",
+          "ord": "a2"
+        }
+      ],
+      "id": "8627db94-0c92-48c4-91a2-bdcadfbd33d4"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Stillwater — a serene massage retreat",
+      "seoDescription": "Stillwater is a quiet massage retreat for Swedish, warm stone and aromatherapy massage, a signature two-hour ritual and couples rooms. Book your therapist online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ea9410c0-cb99-4902-8ba4-b5477210837e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwbWFzc2FnZSUyMHJlbGF4YXRpb258ZW58MHwwfHx8MTc4NjM4NzQxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A dim, candlelit treatment room with warm towels and soft light",
+                  "loading": "eager"
+                },
+                "id": "dcdc4eee-57a5-4dd0-afd6-2e726e4b89e6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "12bd9234-7151-4c04-b5af-39fbd2d0b881",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["An hour that dissolves"],
+                    "id": "7f5bf7cd-1588-46bb-b26a-96474fb7eae3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Stillwater is a quiet massage retreat built for one thing — letting you put everything down. Warm light, soft hands, and nowhere else to be."
+                    ],
+                    "id": "9fe901bd-91e1-420b-8ea7-14e7056a6336",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book your escape"],
+                        "id": "ff163e43-0b2e-4cc3-bd9f-30e0926cbf35",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the menu"],
+                        "id": "8acbc92c-3748-4486-abf3-dfa831076fe3",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0b62e85d-7fee-48b6-8fe3-d6dc8b6e2292",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "b422fa4c-d4f6-4a5f-afc9-fed713c327d5",
+                "ord": "a2"
+              }
+            ],
+            "id": "2e239b65-d01c-42ae-a078-3c61f69b0fef",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1591020330942-e9c3bce82096?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwc3RvbmVzJTIwY2FuZGxlc3xlbnwwfDB8fHwxNzg2Mzg3NDE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "Warm oil and smooth stones laid out on folded linen",
+                      "loading": "lazy"
+                    },
+                    "id": "9e67b860-c09c-4c0c-8d31-5ca9840b2e48",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What an hour here feels like"],
+                        "id": "75a43486-b504-4f99-8e07-09deee7b702b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "You arrive to warm tea and a room already dim and quiet. No forms to rush through, no small talk you don’t want. Just a slow start and a therapist who lets the hour set its own pace."
+                        ],
+                        "id": "8e8a9109-a138-4c51-a8c2-2f2e6e196333",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Warm oil, unhurried pressure, and the particular stillness that only comes when someone else is minding the time for once. You leave loose, warm, and a little further from the morning than you thought possible."
+                        ],
+                        "id": "b89a9595-3491-4c26-b475-b25166166d11",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Reserve a room"],
+                            "id": "7424f58e-0744-4388-8213-1b613601e851",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "99843c52-f921-459c-a647-5d4759acd1b1",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "18ff20da-1cfc-422c-ba7b-3678b11e5f03",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8fd4b982-7be9-4a9f-9f78-cfae3f0f043e",
+                "ord": "a0"
+              }
+            ],
+            "id": "b97ed474-bb16-4fc0-8ecc-be9f3e0aef39",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The menu"],
+                        "id": "1e67740f-494f-4ec3-8697-98c334295c90",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A short, considered list — nothing rushed, nothing clinical. Live availability and full prices are on the booking page."
+                        ],
+                        "id": "d665b4fa-db02-49b2-af04-e2187d6f13d2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "bd002373-ee9a-41e6-8cd6-e6a2d83e83ad",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Swedish relaxation · 60 min"],
+                                "id": "7da0bbf6-e041-4e2b-912a-eccf1df84f07",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$110"],
+                                "id": "0c586e2a-e7e5-44d8-a17b-ff127ce6067f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5fb2239e-ebdc-4437-95aa-99042149cfd3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "7327e0ec-e176-4c4d-b258-c6fc6ba23029",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Slow, flowing strokes to quiet the mind."],
+                            "id": "98e6b143-e811-4168-b700-bdebe035673f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6eb70038-5201-4a08-b05a-a627faf1318a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Warm stone massage · 90 min"],
+                                "id": "84d2a585-d938-4404-a53b-341991f40719",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$170"],
+                                "id": "376bdfac-8acb-4beb-aa36-e0c0acd02c52",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e4db573b-d852-4270-afd4-3cca8f651376",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "852f7974-6108-449a-a9c1-c430a754d942",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Sun-warm stones melt tension first."],
+                            "id": "86f1bee1-4698-4b76-94e7-5e60b25b2efb",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a3f28006-504a-4f1f-9c91-0149fed05d18",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The Stillwater ritual · 120 min"],
+                                "id": "818b8895-bda9-4850-9d91-830e2f6665d2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$240"],
+                                "id": "ee7cea54-ff36-427d-ad7d-553f272c02be",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ea04042d-55e1-4094-bfff-5f8d571780bb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "b83272e7-c342-410a-b6f2-838b403b1037",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Foot soak, aromatherapy, stones, scalp."],
+                            "id": "99a7f4e2-10a4-4bbf-a293-de4ed5f1122d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8e9067f5-4c42-42f9-8443-1d23a095de42",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Couples massage · 90 min"],
+                                "id": "31f5937e-d594-4e59-a437-f0e8a59af18a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$320"],
+                                "id": "22f449ad-22ca-4378-a3a3-01afdd56858a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "86a0e4f0-c03c-4d28-afe2-d525f618dcab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "a09dfa93-9bdf-4464-b9f1-0ed9c70a27bd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Two therapists, one candlelit suite."],
+                            "id": "f559b6cd-706f-49a9-bcec-a0fc2ffe7bee",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "18a2bcec-3d49-4831-81e2-57d983be3b9e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c195fab3-422c-4930-adf1-85fded608bb3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "887a2366-0fe9-4144-b8ce-e06394dc80fb",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "12925566-4324-4b6c-a711-128205184271",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "190e689a-cf28-4c1d-b5e6-f27b24dff976",
+                "ord": "a0"
+              }
+            ],
+            "id": "acbd05d9-9928-4a0d-b499-19b63f031caa",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["The small things that make it soft"],
+                    "id": "02a6dd4f-ca2b-4089-84f5-3f42b39ec25a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Quiet, low-lit rooms"],
+                            "id": "593b1cea-551f-44ae-a78c-5a657be9bdcc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Sound-softened, candle-warm and yours alone. The phone stays in the locker — the hour belongs to you."
+                            ],
+                            "id": "7a54e7ab-24fd-4e20-a23b-83f9453b242f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2484db48-dfd9-43fa-8973-d00076a01353",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Warm towels, warm oil"],
+                            "id": "b33a6cfe-ff12-4feb-8822-eeb510d3f401",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Everything that touches you is heated first. It’s a small thing that changes the whole hour."
+                            ],
+                            "id": "872f7a3d-75a6-4b74-ba61-f3ab15426497",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bbc6389c-c58e-4a62-9d83-92fd6c1dcc7f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["No rushing, ever"],
+                            "id": "b1912e21-78ad-4e00-8dc0-17ecc4324c0e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We build in real time between guests, so you’re never hurried off the table or into the next thing."
+                            ],
+                            "id": "ca20cb77-2df1-4c2e-9753-1e895ff3e6f9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "24828bcc-17dd-4061-a10b-265b99624937",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "05b6e8ee-d15b-4336-b4ae-026d1d6a75eb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8dd9b438-4c7b-4496-9ca6-440f267618c8",
+                "ord": "a0"
+              }
+            ],
+            "id": "da6281e3-6caf-4e25-ad27-f9c9d34f2e42",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Inside the sanctuary"],
+                    "id": "9adfbd6a-a291-4182-81e5-d0194727e44d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1665824249476-a7951ab0aaaa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwY2FuZGxlcyUyMGZsb3dlcnN8ZW58MHwwfHx8MTc4NjM4NzQyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A made massage table under a window with sheer curtains",
+                          "loading": "lazy"
+                        },
+                        "id": "e02383f8-299c-4d22-83a7-c9afc8881145",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwdG93ZWxzJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM4NzQyN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A shelf of essential oils and a single lit candle",
+                          "loading": "lazy"
+                        },
+                        "id": "e83bc90f-f8e8-4241-9d3e-12969a219e06",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJvbWF0aGVyYXB5JTIwb2lsc3xlbnwwfDB8fHwxNzg2Mzg3NDMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Folded warm towels and a bowl of water with floating petals",
+                          "loading": "lazy"
+                        },
+                        "id": "e32bfb40-5432-4e00-8cf1-bd278ed1e883",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "983806e6-8738-4c5f-aeed-6d8da563294c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ec9d0bd5-8595-476f-9ba5-6271891cf147",
+                "ord": "a0"
+              }
+            ],
+            "id": "bbe2e8e2-3ae2-4288-ad6a-82aa3bf5ba25",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I came in wound tight and left feeling like myself again. I don’t remember the last time I was that unhurried. I’ve already booked the next one.”"
+                    ],
+                    "id": "44d7d1cc-584c-4c81-be6f-2420877beb60",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Renata, guest since 2024"],
+                    "id": "78d46fbf-eeb1-4bb9-af95-0b36904f7bfd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "eed94385-8a3f-4d95-9213-646d7d82aa58",
+                "ord": "a0"
+              }
+            ],
+            "id": "06b7c7c5-d7de-41fa-8e01-980743477710",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Give yourself the hour"],
+                    "id": "78996428-fa5e-4b92-a7d5-d69687d9cd13",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Choose a treatment, pick your therapist and room, and see live times. It takes about a minute — the rest is rest."
+                    ],
+                    "id": "d6e6e3e8-f4eb-4600-a7b7-a0c67e090874",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "b391f88e-c2b1-473f-9209-3a4db2ca4d4e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "02e564be-cefa-4bc8-8f5b-4f3213bc98b5",
+                "ord": "a0"
+              }
+            ],
+            "id": "c3221b6d-6faf-42bf-a375-030f083a5229",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Stillwater",
+      "seoDescription": "See what Stillwater offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1c1a7a98-6243-4400-99a9-2742c909c0d0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1630835425197-50feeba99ecd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwaW50ZXJpb3IlMjBjYWxtfGVufDB8MHx8fDE3ODYzODc0MjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A quiet lounge with low light, plants and a pot of tea",
+                  "loading": "eager"
+                },
+                "id": "76d47277-8ec7-43b5-8ad0-9454c3236556",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "de6e1367-0c47-4ea8-ad39-399871447a6c",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your time"],
+                    "id": "0a182f44-f6a5-46cd-b1b1-4067941e68b7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a treatment to see prices and how long it takes, then pick your therapist, your room, and a time that’s yours."
+                    ],
+                    "id": "bd261a1d-1008-4483-8b69-fd6eeeb91859",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See treatments below"],
+                        "id": "a9d6e175-795b-44ae-b25b-92af46ce9e75",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "cfcfb4e7-204a-493e-b299-2be4ab4f273d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "244dc62b-1f98-446c-b7dd-268b6f4fb529",
+                "ord": "a2"
+              }
+            ],
+            "id": "882c7a00-798d-4f70-84cb-e3d877de9746",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "204c7375-0459-4d1f-b662-48b117a6a1f8",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Stillwater",
+      "seoDescription": "Who Stillwater is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c75a2b45-f4e5-4a9a-a1eb-20018e61a8d4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1630835425197-50feeba99ecd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwaW50ZXJpb3IlMjBjYWxtfGVufDB8MHx8fDE3ODYzODc0MjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A quiet lounge with low light, plants and a pot of tea",
+                      "loading": "lazy"
+                    },
+                    "id": "e18714e4-afcb-482c-9cb3-5f638f03616d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Stillwater"],
+                        "id": "7f6e776a-40dd-4cdb-bc81-c7fd834d6435",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Stillwater because rest had started to feel like something you had to earn. We wanted a room where you didn’t — where the light was already low, the towels already warm, and no one was watching the clock but us."
+                        ],
+                        "id": "0c0719c2-caff-4ed7-8958-7f74495ad4b2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It’s a small retreat on purpose. A handful of rooms, a few therapists who’ve worked together for years, and a pace that never speeds up. Come as you are, tired as you are. That’s exactly who this is for."
+                        ],
+                        "id": "3274e3bb-4047-4669-8085-45bbcb5198b0",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a room"],
+                            "id": "a7021631-4be2-416c-8354-ec613bdc62c6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8bc66835-2ce3-42db-8472-e822dc96ed27",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0c7bb085-4b53-46ac-8faf-3053320ed88b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "44dab42c-ba7f-4274-85a2-20feaa5bc54b",
+                "ord": "a0"
+              }
+            ],
+            "id": "86360b15-296a-4ce3-9896-47705dadab4e",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we hold the space"],
+                    "id": "c276a8fb-2f16-4897-96c5-a3b7337dbc13",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One guest at a time"],
+                            "id": "e0d20ed7-c836-4081-9a97-e24727b4a523",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Your room, your hour, your quiet. We never double-book a therapist or hurry the changeover between guests."
+                            ],
+                            "id": "44eb15ec-1593-484f-b5db-b1789c0b3d9a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "12468ca5-676d-4544-a56b-bb79e72d0e57",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Gentle, plant-based care"],
+                            "id": "6a59387e-b717-4d03-9a47-7cef37af8b0e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Warm oils and essential blends we’d use ourselves — nothing harsh, nothing you’ll smell all day unless you want to."
+                            ],
+                            "id": "293bab24-c5f8-4001-b591-1569b533fa26",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a4c8986b-0133-4b3e-a5a0-16f96a75677f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["You set the pressure"],
+                            "id": "106c7909-0d8b-4e4e-9059-f2c723a2b9df",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Deep or feather-light, chatty or silent — you tell us at the start, and we follow it the whole way through."
+                            ],
+                            "id": "7fa8f91a-b4b9-4f07-973d-3de2065ffebb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ef7e38d4-35be-492f-b240-8994317b74f8",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "43c3f89e-02aa-4a03-8dcf-17f20690d2bf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3104a785-f31a-45ff-a697-d6b0f48ea02b",
+                "ord": "a0"
+              }
+            ],
+            "id": "cf401f13-f19b-4093-9bd4-6c4c895b74e8",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Stillwater",
+      "seoDescription": "Where to find Stillwater, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "580db1f8-7603-4ea7-b3f0-9fa3c6cdd33b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the sanctuary"],
+                        "id": "50f33e6a-455d-44a8-b416-4128d0c355f2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Stillwater Massage Retreat"],
+                            "id": "194d38c1-72a5-4750-8b9c-b4b6d6ecfc1f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["9 Willow Court"],
+                            "id": "1b8b850e-eedd-4147-a37a-3fb4d23766f5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Garden Level · Asheville, NC 28801"],
+                            "id": "4fa91116-fb55-4419-bb55-2c289713a1df",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a331e826-85a3-4f24-8b59-a0f3d30619d0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Saturday"],
+                                "id": "4dddd046-ec6c-4552-ada6-2ab223cf18bf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 8:00"],
+                                "id": "0333115c-9bb6-4f96-9516-7e00fd53b357",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "821959c5-2367-46ba-8d71-9c06443c5ff7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "8ffea824-478e-4e02-940c-319da64bbf01",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 7:00"],
+                                "id": "ec784850-631e-4fc4-b302-426a264107d6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5e35c309-7531-4005-b3ce-68e96e2df3fb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "2274cc21-826a-4678-9f28-37c159646ae3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "c6951b73-bcf8-4e14-b2f3-4612573bbaa2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1eeb218e-ac16-4871-91ec-1efb76c68d98",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "21cf3a19-7caa-43e0-b665-3cd34a821a12",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2268e5e9-790c-4e8b-9d38-8f8c58d600f5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "9 Willow Court, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "f2ffbca2-6dea-47d5-95b1-858cd2bd9bb0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f87c7273-f353-4a91-8447-2d47c320a58d",
+                "ord": "a0"
+              }
+            ],
+            "id": "26719614-2860-4729-8510-1856127c052b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "ddd0ca35-155b-40e9-ac28-245b9bf3afc7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your room online — no phone tag, no waiting on hold."
+                    ],
+                    "id": "90b14ce5-5193-4ce1-8f7e-7395a3311b7e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "62860d40-886a-4d49-bc0e-6015664d4303",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a677e048-a515-481a-8e2a-fa8f118be160",
+                "ord": "a0"
+              }
+            ],
+            "id": "a7ef3aa5-2921-4b26-88c8-3964765710ec",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "stillwater",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.013 85)",
+      "--color-base-200": "oklch(92% 0.017 82)",
+      "--color-base-300": "oklch(87% 0.02 80)",
+      "--color-base-content": "oklch(29% 0.02 150)",
+      "--color-primary": "oklch(62% 0.058 150)",
+      "--color-secondary": "oklch(44% 0.02 95)",
+      "--color-accent": "oklch(64% 0.11 45)",
+      "--color-neutral": "oklch(30% 0.015 130)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(98% 0.01 95)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(98% 0.01 130)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(64% 0.11 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(87% 0.02 80)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.014 150)",
+      "--color-base-200": "oklch(20% 0.011 150)",
+      "--color-base-300": "oklch(16% 0.009 150)",
+      "--color-base-content": "oklch(93% 0.013 85)",
+      "--color-primary": "oklch(73% 0.07 150)",
+      "--color-secondary": "oklch(76% 0.016 90)",
+      "--color-accent": "oklch(72% 0.1 45)",
+      "--color-neutral": "oklch(83% 0.012 130)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(15% 0.016 90)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(15% 0.012 130)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.1 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(16% 0.009 150)"
+    }
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "policies": [
+    {
+      "handle": "standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Need to move your appointment? Just give us 24 hours’ notice. We’ll send a reminder the day before and again two hours ahead, so nothing sneaks up on you."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dana",
+      "name": "Dana Whitfield",
+      "kind": "staff",
+      "skillTags": ["tax", "smallbiz", "setup"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["bookkeeping", "payroll", "advisory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "rosa",
+      "name": "Rosa Nguyen",
+      "kind": "staff",
+      "skillTags": ["tax", "bookkeeping", "payroll"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-consultation",
+      "name": "Free consultation",
+      "description": "A relaxed 30-minute call to talk through where your books are, what’s stressing you out, and how we can help. No cost, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["tax"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "tax-prep-consult",
+      "name": "Tax prep consultation",
+      "description": "Sit down with us before tax season so nothing gets missed. We’ll map out what you owe, what you can deduct, and how to keep more of what you earn.",
+      "durationMinutes": 45,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["tax"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "bookkeeping-setup",
+      "name": "Bookkeeping setup",
+      "description": "We’ll get your books set up right from the start — connected accounts, clean categories, and a simple monthly rhythm you can actually keep up with.",
+      "durationMinutes": 60,
+      "priceCents": 20000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["bookkeeping"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "payroll-setup",
+      "name": "Payroll setup",
+      "description": "Hiring your first employee, or just tired of doing payroll by hand? We’ll set it up so everyone gets paid on time and the taxes are handled for you.",
+      "durationMinutes": 60,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["payroll"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "quarterly-tax-review",
+      "name": "Quarterly tax review",
+      "description": "A quick check-in each quarter so your estimated taxes are on track and there are no surprises in April. Peace of mind, four times a year.",
+      "durationMinutes": 45,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["tax"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "new-business-setup",
+      "name": "New business setup",
+      "description": "Starting something new? We’ll help you pick the right structure (LLC, S-corp and the rest), register it properly, and start on the right foot.",
+      "durationMinutes": 60,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["setup"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    },
+    {
+      "handle": "small-business-advisory",
+      "name": "Small business advisory",
+      "description": "A sit-down to look at the bigger picture — cash flow, pricing, what the numbers are telling you, and the next smart move for your business.",
+      "durationMinutes": 60,
+      "priceCents": 22000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "accountant",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard"
+    }
+  ]
+}

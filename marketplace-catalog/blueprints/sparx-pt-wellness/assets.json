@@ -1,0 +1,37 @@
+[
+  {
+    "id": "pt-wellness-hero",
+    "url": "https://images.unsplash.com/photo-1649751361457-01d3a696c7e6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2VudGxlJTIwcGh5c2ljYWwlMjB0aGVyYXB5fGVufDB8MHx8fDE3ODYzOTIwNjZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, sunlit physical-therapy studio with soft neutral tones"
+  },
+  {
+    "id": "pt-wellness-care",
+    "url": "https://images.unsplash.com/photo-1507537362848-9c7e70b7b5c1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGhlcmFwaXN0JTIwaGVscGluZyUyMHBhdGllbnR8ZW58MHwwfHx8MTc4NjM5MjA2OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A therapist guiding a patient through a gentle, hands-on movement"
+  },
+  {
+    "id": "pt-wellness-room",
+    "url": "https://images.unsplash.com/photo-1759214630580-7b2e97e2c29b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VsbG5lc3MlMjB0cmVhdG1lbnQlMjByb29tfGVufDB8MHx8fDE3ODYzOTIwNzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet private treatment room with a low table and soft light"
+  },
+  {
+    "id": "pt-wellness-elena",
+    "url": "https://images.unsplash.com/photo-1714976694810-85add1a29c96?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0aGVyYXBpc3QlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyMDc0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Marsh, pelvic & women’s-health physical therapist"
+  },
+  {
+    "id": "pt-wellness-ruth",
+    "url": "https://images.unsplash.com/photo-1526080652727-5b77f74eacd2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGh5c2ljYWwlMjB0aGVyYXBpc3QlMjBwb3J0cmFpdCUyMHdvbWFufGVufDB8MHx8fDE3ODYzOTIwNzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ruth Okafor, geriatric & balance physical therapist"
+  },
+  {
+    "id": "pt-wellness-dana",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhbHRoY2FyZSUyMHdvbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MjA4MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dana Feldman, chronic-pain & wellness physical therapist"
+  },
+  {
+    "id": "pt-wellness-about",
+    "url": "https://images.unsplash.com/photo-1665231795856-769fb08a90bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FsbSUyMGNsaW5pYyUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTIwODJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Two therapists talking softly in a bright, plant-filled reception"
+  }
+]

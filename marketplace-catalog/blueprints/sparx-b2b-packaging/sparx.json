@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-b2b-packaging",
+  "name": "sparx — Packaging Supplies (Wholesale)",
+  "version": "1.2.0",
+  "tagline": "A dependable trade storefront for a packaging distributor.",
+  "description": "A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "b2b",
+    "industry": "Packaging & shipping supplies"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Packaging Supplies (Wholesale) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Packaging Supplies (Wholesale) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#004479",
+  "sortWeight": 84
+}

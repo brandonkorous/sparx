@@ -1,0 +1,2124 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "33deae44-f644-4ced-8667-80c1d9aebb58",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "043438f2-52d0-4a29-8612-b9c5b8a92dac",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "b86bad3b-6a7c-4635-acfd-80c527c43473",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "13df3dad-d157-4291-89b6-44cc75c66624",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "c11c5e0d-aeb8-4ffb-b97e-ad57e8c19add",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e436617c-f482-4375-bccf-2be21309f19a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "2a3fe672-8998-47b9-ac59-28f371154162",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "c9005f40-34d1-44f7-9c70-c953556cce06",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "60568430-55d5-41a6-8efc-e00e3ea4b658",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "70cb9742-1bba-45fa-a493-64a8d954e663",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "43565926-b39b-4c4f-9832-a1f6fad4833a",
+                  "ord": "a2"
+                }
+              ],
+              "id": "7e8efe07-efe7-4f43-9b7e-be12ef2686b5",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "d87d30e9-eaa2-49d9-b6f7-603cab141c35",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "26e1fae4-c440-446b-8380-7a151e1c3539",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "f1b3fb48-2c16-4c83-a618-fdd8e8635004",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "52bbb3c1-c012-4bef-83ae-6d9dfc46d6bc",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "cc839a47-55c1-4aa1-8d83-d75efcafce2d",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "31d1c767-7f11-49d0-a917-8a6984a0e5c6",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "f1521a80-76e4-418f-a005-42d3a7ac93f5",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "0a84baa3-e0f9-4fa3-a5ab-df35914a760f",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "86f9770a-bceb-4a16-b2c8-ca918826fd03",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0ff30bc0-fcd1-4bd3-bfb2-1ef591522c4a",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "9f836c48-9466-4866-80f9-4548875a9315",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ae4a2d9e-69ae-409e-8f52-a042e899518a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "555de2f2-a5e6-4563-b50f-46d1d3a8c518",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "6435af6b-53b8-40ce-bbc1-240afdde3daf",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "646a3d94-0f3e-4f74-b1e4-01ad2d10c04c",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "b2b55a8e-61d3-47b8-8137-7cc6208eda94",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "37a63a91-a289-44e0-9591-261feda20535",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "b9e2ffed-0968-4602-9d39-6d34f0294d24",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d24b3474-c75b-4560-a11e-b818b486de10",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "6c3ec651-c735-41de-a8f7-99dce922549c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3cb31e79-174d-461d-b2b0-a19f56de057c",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "5dae4239-c8a1-4dce-84b8-e267f7bac230",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "495f18d9-e5ae-4347-b864-ca2985c18891",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "6635dd7c-8701-4956-bae0-0500d7d6f995",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8c94ac48-10d9-4a08-92e6-571998409e86",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "c77386dc-e6d8-408b-a0fe-deada71217d6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "12bfbee6-70fe-4814-9cfd-35943560608c",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "ec42c8ec-b9c1-4250-aad6-b444a36cbe3d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "1cb66038-26a2-42e5-beaa-35c08e6e41f4",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "73dcb336-9269-4402-86e9-75a9f47cd77e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "34b61aba-7bc2-4e02-acc4-84b1439c44a6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "aadc5e93-99fc-4961-b70d-e32557ab6d08",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "7b0519e5-793c-4668-9205-c980303b09f9",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9cbc7023-700b-4e40-98a6-917c3b58c15d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "26b55d7b-d713-4bdb-afaf-8261d689ef78",
+              "ord": "a0"
+            }
+          ],
+          "id": "bca4d9f6-3c94-4f21-9624-0298e4623f7a",
+          "ord": "a2"
+        }
+      ],
+      "id": "55a1bc3f-cd7c-40fa-980a-dea928466768"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Faint — a fine-line tattoo studio",
+      "seoDescription": "Faint is a bright, minimal fine-line tattoo studio for delicate line work, lettering and botanical pieces. Book your artist online, starting with a free consultation.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8ba082a5-4c94-4194-bffb-1169ca7c3f61",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Fine lines, meant to last."],
+                    "id": "b69a3f51-84b7-4e1e-b983-cfa7ed36b7ee",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A bright, quiet studio for delicate fine-line tattoos — considered work, unhurried sessions, and a plan you leave with before any needle touches skin."
+                    ],
+                    "id": "05630f96-758b-4d29-b17e-14d7aceb3ed7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "fad8410f-77c6-4fa1-b20d-ff45c902b7f5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the work"],
+                        "id": "be3572a2-6854-4ab4-aad2-203a9a60b6c5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1eaa0976-9163-48d4-b2bf-7016b5a3c294",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e7cfc7d8-31a6-4edc-8e0f-af0f29b4e645",
+                "ord": "a0"
+              }
+            ],
+            "id": "d94e2a4c-060d-4078-a906-6538a8b5f0b6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Selected work"],
+                    "id": "8622d44b-71af-4a93-b62c-1e739a6af1fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1547754145-ef9ff306e3f3?w=1600&q=80",
+                          "alt": "A single fine-line botanical stem on a forearm",
+                          "loading": "lazy"
+                        },
+                        "id": "7039d640-a416-45f8-a191-e61ec7ea4a7b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1570168983832-8989dae1522e?w=1600&q=80",
+                          "alt": "Delicate script lettering along the collarbone",
+                          "loading": "lazy"
+                        },
+                        "id": "004447c3-1640-43d0-be8d-2ddf686edc95",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1523346889551-06a8879f5c71?w=1600&q=80",
+                          "alt": "A minimal line-work bird, no shading",
+                          "loading": "lazy"
+                        },
+                        "id": "6d5bfb7c-b475-4063-8307-f684f32d695c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1547754145-ef9ff306e3f3?w=1600&q=80",
+                          "alt": "A small floral cluster in fine line",
+                          "loading": "lazy"
+                        },
+                        "id": "c0be60a1-4b3c-4e6b-bde7-22981084c40f",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1570168983832-8989dae1522e?w=1600&q=80",
+                          "alt": "A thin geometric line piece on an inner arm",
+                          "loading": "lazy"
+                        },
+                        "id": "bea283dd-d8d2-4065-a336-29ecd0898da4",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1523346889551-06a8879f5c71?w=1600&q=80",
+                          "alt": "A single-needle wildflower on an ankle",
+                          "loading": "lazy"
+                        },
+                        "id": "c89d851e-37d4-46ab-a604-8706351f9b74",
+                        "ord": "a5"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1547754145-ef9ff306e3f3?w=1600&q=80",
+                          "alt": "Fine cursive script on an inner bicep",
+                          "loading": "lazy"
+                        },
+                        "id": "fa87af53-5d58-410a-bb35-b6f9f3a8a23b",
+                        "ord": "a6"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1570168983832-8989dae1522e?w=1600&q=80",
+                          "alt": "A delicate line-work portrait study",
+                          "loading": "lazy"
+                        },
+                        "id": "89ba4e6f-43dd-487d-a5dc-863bd1604949",
+                        "ord": "a7"
+                      }
+                    ],
+                    "id": "a28c9c48-6bb6-4de0-89d2-e12fc7bbd5a0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e84a536b-4663-41cd-8296-70755e9fc5fe",
+                "ord": "a0"
+              }
+            ],
+            "id": "a42f873e-7958-4b16-a59b-2c5c38d648a0",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we do"],
+                        "id": "7ff0766d-e10f-49e4-8a31-dc074996404f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Fine-line work, priced by size and detail. Every piece starts with a free consultation. Live availability is on the booking page."
+                        ],
+                        "id": "4858822c-0d75-424c-a7d5-c3620ff197e8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "04d0e7df-396f-4224-8fd8-87764b9c9500",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fine-line — small"],
+                                "id": "f7aca4e9-a65d-4b74-92d0-cf245a0d372c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "625dfd45-8aa0-461e-b369-683b9465b3e0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f9bbed73-9cb0-45d3-b200-cd7df833f86d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "d70c3a69-f248-42fd-8a5b-1b3f419996d6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A single-needle piece — a stem, a symbol, a few words."],
+                            "id": "e6f08750-27af-46d3-a557-bac0418344f7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "910415ea-4524-4267-9a06-02bb1efb093e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fine-line — medium"],
+                                "id": "7b824059-6509-4d23-9836-7b259b5a626b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$240"],
+                                "id": "b93c4b30-4001-4128-be64-690d3fba952a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "05d8e6d5-bd83-4280-aa34-11ebe906a7bb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "01eb6f85-e435-407d-b8d0-d06652b2be38",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A more detailed line piece or a small composition."],
+                            "id": "e81faee8-0d3a-4fb2-b4a6-4e1779a052be",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "597629f4-649b-4f90-ac48-8580284d536c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fine-line — large"],
+                                "id": "5bc7d77d-be7a-4e03-8dc8-b75841a1c156",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$360"],
+                                "id": "b3ed52ab-ccbb-48d6-bfce-071b997dd964",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "24ac1b95-f63d-4ec8-9ec8-e7f05bbcc279",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["3 hr"],
+                            "id": "6e6e33ea-16f9-4ed4-90e5-6f72d24ec17d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A larger, layered piece across a full placement."],
+                            "id": "8587c935-d38e-41f0-821f-4b3bb6902163",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "600ca6ef-0bda-4192-8494-d8914798a989",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Lettering & script"],
+                                "id": "37cfc6cb-303f-4056-8176-44513af8f4a3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$180"],
+                                "id": "d60e7985-8e44-4c58-84c2-9454fda2efbc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "453cf6c5-1bd5-4cf1-be11-75f0bfbd0a06",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "3e3b3854-46bc-4330-9ed6-5478b6835dd4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Fine cursive or hand-drawn script, set with your artist."
+                            ],
+                            "id": "7c1f84f9-9e73-41a5-8729-7ee56f64b2a0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3662fc52-2a42-4fbd-8d1e-35d79dc7d9c3",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Delicate floral"],
+                                "id": "7ad45c95-3eac-48eb-bf22-6f6889cb24b9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$220"],
+                                "id": "49b2e4c3-a94b-4344-8916-b4dfd5baf9dd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7ab2d28f-5c11-4e71-b49f-724b16fef94c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "acac3101-dc89-4d3b-a848-9e6219efa9c7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Botanical fine-line — single stems and small clusters."],
+                            "id": "b300f61d-e5ef-4ad6-9580-78deda489cfa",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d3fa18b4-0af1-4534-878e-91c54fba34e1",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "477ea9a5-2fc7-4efc-99c5-8f9cf3bd95df",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "8165e960-7f7c-46b7-b243-bbfc4069f528",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "56868681-4d13-43ab-b408-bf361b62e89e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a4f4df05-4145-48a4-bce6-579be9d17725",
+                "ord": "a0"
+              }
+            ],
+            "id": "45bd97a6-21d2-400a-b0df-3fa4697e253c",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1736594635582-7f60e14604cc?w=1600&q=80",
+                      "alt": "A single fine needle tracing a delicate line on skin",
+                      "loading": "lazy"
+                    },
+                    "id": "bc0b2b28-64f7-446b-a7b9-13d8fd06a1ce",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["How a session works"],
+                        "id": "0ca5c62a-8b5c-46ea-82bd-ff96609f2a90",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It starts with a short, free consultation — we talk through the idea, the placement and the size, and agree on a design before we book anything."
+                        ],
+                        "id": "5857dac3-408b-447d-9950-1c6240bedc35",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "On the day, we take our time: a fresh stencil, a single needle, and a slow, precise hand. Fine-line work rewards patience, so we never rush the chair."
+                        ],
+                        "id": "bb233b7b-0913-4c97-8cb2-a070645441ed",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "You leave with clear aftercare and a piece drawn to settle softly and hold its line for years, not months."
+                        ],
+                        "id": "c6bef358-2346-4824-bc39-c68e67339b87",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "260bd350-107b-4e7a-a429-5037c7454bd2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "41055ad2-ecf5-490f-83de-8f17585b2fca",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "88f675dd-6f1e-4f10-8f1f-dca36d8ef28a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d35dc162-3527-4cad-9bd2-e284fcd00442",
+                "ord": "a0"
+              }
+            ],
+            "id": "ccf82594-80fa-4c7a-b6d7-a4b5515f6bab",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Artists"],
+                        "id": "ce325ac4-1d05-4996-9a35-0ac14a64f306",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with the same artist from the first line to the last."
+                        ],
+                        "id": "0fbf2645-90fb-40d5-a318-e113930a17c1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "05fa32fb-0f43-48dc-8385-7f1efe9ae80a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1563815241656-2dfe4fbb4775?w=1600&q=80",
+                              "alt": "Iris Devlin, fine-line artist and studio lead",
+                              "loading": "lazy"
+                            },
+                            "id": "dc74f3ce-d447-4fd2-b723-2d090a2fd466",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Iris Devlin"],
+                                "id": "45f36c18-9b17-49bd-852e-32491bd441ba",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Studio lead · fine line"],
+                                "id": "3423c8f7-29ff-4955-bcef-1cef25d3a7e6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Minimal line work and quiet compositions. Iris runs the studio."
+                                ],
+                                "id": "0a613384-1532-4016-8ab8-cd0961c67249",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0b09e55d-2aa5-4ad6-b816-b1c25042b978",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "507e1c32-15ad-46dd-a0a4-9203e4f4d0a7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1761956323091-343849aa1576?w=1600&q=80",
+                              "alt": "Wren Ashby, fine-line and lettering artist",
+                              "loading": "lazy"
+                            },
+                            "id": "3e8fdbee-1996-400c-804f-7313494a5638",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Wren Ashby"],
+                                "id": "d652fcfa-5639-4b17-a738-25457f83a14e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Fine line · lettering"],
+                                "id": "7ea6c38b-02f1-4af6-99cc-ecac8303507f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Hand-drawn script and fine cursive, set to fit the body."
+                                ],
+                                "id": "e5c4b860-59b8-411b-befb-d721211164f6",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c2da07e7-3ce2-4914-aad2-b32ef51148d6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "673fa134-76ff-46d8-a7f8-372c6eda6462",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1614769842925-8193ebda68b5?w=1600&q=80",
+                              "alt": "Sol Marés, fine-line and botanical artist",
+                              "loading": "lazy"
+                            },
+                            "id": "6acbd2bf-a9ba-4a4a-99db-3e21b54d2392",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Sol Marés"],
+                                "id": "22a62584-34cf-402f-a869-d0f667251c3e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Fine line · botanical"],
+                                "id": "7d4a0a45-57e8-431b-baa1-ff6b6fed30f5",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Single stems, wildflowers and delicate botanical detail."
+                                ],
+                                "id": "6d39bf6c-ca5f-4393-b7a8-07fcbc6f0bfc",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3a2fd296-43ed-40ce-b5be-00fd79942c3f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f6fbca25-0805-435b-b00a-cba4b88c3f89",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e409a641-347d-4216-8748-6bbb7aa2cf01",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "deb35461-7ce1-4ab9-b6f4-d2d0ef3e403b",
+                "ord": "a0"
+              }
+            ],
+            "id": "751a0182-a96f-4fa6-b24a-2cccf477ad59",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They talked me out of making it bigger, then drew exactly what I’d pictured. A year on the line is still crisp — and the room felt like a gallery, not a garage.”"
+                    ],
+                    "id": "1a423f3b-0bcc-4464-83de-20d63c27bdca",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Devi, client since 2024"],
+                    "id": "1aad1778-b09c-457f-b5fe-d50ff602d77e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "475ee42d-a7f6-4b48-a544-3f489b371062",
+                "ord": "a0"
+              }
+            ],
+            "id": "a6f76ddf-58a9-4bef-abc9-03ae834a31e3",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Start with a consultation."],
+                    "id": "1705102a-c42a-47f2-b80c-2e8b53b0f7bc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Tell us the idea, pick your artist, and see live times. It takes about a minute, and the first conversation is free."
+                    ],
+                    "id": "f0543183-7127-4378-aec7-de330d18e1db",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "8ee1df95-1ec0-4ce7-97e6-b24359386c7b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "36d003b3-43af-482d-a4bb-77d097788adb",
+                "ord": "a0"
+              }
+            ],
+            "id": "ca69404e-5409-431c-9dd5-b266bf82d29c",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Faint",
+      "seoDescription": "See what Faint offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e589f8a0-49c2-4046-9f82-0d66f76f7839",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Book your session"],
+                    "id": "8f1a0375-9b42-4a1a-891e-50ff8f8f5341",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service to see prices and live availability, then pick your artist and time. New ideas start with a free consultation."
+                    ],
+                    "id": "b979dc7d-036a-4d19-a174-f19ba3f2c8d9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "21aff584-cbf6-4fcb-ac4d-cf50c382c96e",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "33459009-6e67-45b4-abbe-fed5e2cff506",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8e7edf73-56d1-4ac5-9446-740b801322ed",
+                "ord": "a0"
+              }
+            ],
+            "id": "531ff09a-e00f-4f6c-a707-89d9b7c38f5e",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "6838a4a5-7da7-4917-86d8-60988294a6d8",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Faint",
+      "seoDescription": "Who Faint is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "51f5df43-fe9f-4996-b825-6058bbab7740",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1665000805953-07c06558ae90?w=1600&q=80",
+                      "alt": "A bright, minimal tattoo studio with white walls and natural light",
+                      "loading": "lazy"
+                    },
+                    "id": "1f536885-c08d-4046-98e1-34acc129bdcd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Faint"],
+                        "id": "f6555677-fdb3-491c-b590-b0f7f968d638",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Faint is a small, bright fine-line studio — white walls, good light, and work that hangs like a gallery. We opened it to prove a tattoo shop doesn’t have to be dark to be serious."
+                        ],
+                        "id": "e9e9b1cf-61cf-43f0-8310-2f96ab292316",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We do one thing carefully: delicate line work. No walk-in flash wall, no rushing, no talking you into more than you came for — just a considered piece, drawn light and made to last."
+                        ],
+                        "id": "6455ff56-3995-4643-8632-d0bd04c8b057",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "b7f116f9-5ff3-440b-a771-17631bb2ec3b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b0ed7415-dfd9-4f43-b66e-cad23fc0ce95",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "31fd07e2-a4e5-49dd-bbe6-a436e4685c5c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ad4e5585-ab0b-4975-a592-4923762cefd3",
+                "ord": "a0"
+              }
+            ],
+            "id": "550db3a4-c353-43fb-b6b6-6d74df4641a7",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "f2d2fd91-4794-4406-85dd-5fc463b2da22",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A plan before a needle"],
+                            "id": "2e6b6e63-68fa-4d6d-9681-3402c92befb1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every piece begins with a free consultation. We agree the design, size and placement before anything is booked."
+                            ],
+                            "id": "3c91400e-0c91-4db1-a125-8a5bfb4116e8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "51fd5885-3a31-4d9b-9209-9b60575e0c94",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One artist, start to finish"],
+                            "id": "2b1c77c2-8bcc-4482-83a4-3b6cf30cf89c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You book by name and stay with the same hand — someone who knows the line they’re drawing and why."
+                            ],
+                            "id": "81b6ccd6-6676-405f-8ae2-690dfbb55d0f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ffba1386-ff3c-4f5f-9d58-1cb12ab2ddb1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Clean, calm, unhurried"],
+                            "id": "df0fe99f-bdf5-4f7d-8901-73e56355677b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A single-use, single-needle setup in a quiet room. We take the time fine-line work actually needs."
+                            ],
+                            "id": "b28041ab-dce3-4f2e-b7d6-566e30775bf0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c4d89964-1618-46cc-98f4-8f4a8b82ec88",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f3e260d9-2fd8-491c-86b0-ab708f1c5fe3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b6f40513-0f8a-41fa-809f-af14ec3f5fdf",
+                "ord": "a0"
+              }
+            ],
+            "id": "599c93a9-1f4b-4560-a22a-4c15e3f79c80",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Faint",
+      "seoDescription": "Where to find Faint, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f2ba6b4d-7b15-40c8-9aec-fb0d3b984262",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the studio"],
+                        "id": "79dadde1-72dc-4ad0-9a1a-5e96c5779d5e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Faint"],
+                            "id": "40267b5d-2dc6-4bff-a7c1-5e21963562d8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["14 Alder Lane"],
+                            "id": "2ddc262c-dd98-4cc1-b100-bc65139ea74d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio 3 · Portland, OR 97209"],
+                            "id": "55d39a41-c086-4701-8d22-78dbe5888cd9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "64bcb54d-8da4-4e1c-9e20-3110c1b1d99a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Saturday"],
+                                "id": "db0decef-5871-4c5f-a517-572af125fb9c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["11:00 – 8:00"],
+                                "id": "34d25807-e25f-4b65-8271-d370294ccef3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b72ed00c-65d7-4c27-b785-55a5f0aeb250",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "d44c30ad-38ec-4794-9992-40b96c09737f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["12:00 – 6:00"],
+                                "id": "679d1d0b-33fc-42e8-9d40-7fc645e79bb2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "111c2504-2104-4f53-95f5-560305ef6ef3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "2f976f54-46b8-45e6-afff-dddbdb35ccf7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "0bb97bd9-51dd-4064-bd6e-297b52d1580a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6b1fd94e-9a5d-419c-98c8-46730234b458",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c92a40eb-b5d8-440f-95e9-80f123a19598",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d4bf87a3-fa50-460f-b37f-587866204c0e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "14 Alder Lane, Portland, OR 97209",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "9849161d-bfb5-45e0-98d6-63f681dabb4b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "47ccacba-3776-4ef1-aa73-9de228583c7d",
+                "ord": "a0"
+              }
+            ],
+            "id": "06475d89-b120-46a3-9f81-6e72cfe65186",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "5c87ea0a-99bb-4942-b240-57d835e36878",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your consultation online — no phone tag."
+                    ],
+                    "id": "974e281a-8475-474f-96de-241735474745",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "5dcea79b-9764-4433-ab5e-3a475f124514",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ff1dae0f-ae0f-4e85-8c56-a6a1f1ae6965",
+                "ord": "a0"
+              }
+            ],
+            "id": "8cbf3e2c-4436-4b41-8855-6680a43afde7",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "faint",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 85)",
+      "--color-base-200": "oklch(96% 0.005 85)",
+      "--color-base-300": "oklch(91% 0.006 82)",
+      "--color-base-content": "oklch(22% 0.008 62)",
+      "--color-primary": "oklch(74% 0.055 80)",
+      "--color-secondary": "oklch(45% 0.008 62)",
+      "--color-accent": "oklch(60% 0.02 72)",
+      "--color-neutral": "oklch(24% 0.008 62)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 80)",
+      "--color-secondary-content": "oklch(98% 0.008 62)",
+      "--color-accent-content": "oklch(15% 0.02 72)",
+      "--color-neutral-content": "oklch(98% 0.008 62)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(60% 0.02 72)",
+      "--color-highlight-content": "oklch(15% 0.02 72)",
+      "--color-border": "oklch(91% 0.006 82)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.006 62)",
+      "--color-base-200": "oklch(17% 0.005 62)",
+      "--color-base-300": "oklch(14% 0.004 62)",
+      "--color-base-content": "oklch(96% 0.004 85)",
+      "--color-primary": "oklch(80% 0.07 82)",
+      "--color-secondary": "oklch(72% 0.008 70)",
+      "--color-accent": "oklch(70% 0.03 72)",
+      "--color-neutral": "oklch(82% 0.008 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 82)",
+      "--color-secondary-content": "oklch(15% 0.008 70)",
+      "--color-accent-content": "oklch(15% 0.02 72)",
+      "--color-neutral-content": "oklch(15% 0.008 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(70% 0.03 72)",
+      "--color-highlight-content": "oklch(15% 0.02 72)",
+      "--color-border": "oklch(14% 0.004 62)"
+    }
+  }
+}

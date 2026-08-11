@@ -1,0 +1,537 @@
+{
+  "categories": [
+    {
+      "handle": "single-origin",
+      "name": "Single origin",
+      "description": "Coffees from one farm or region.",
+      "featured": true
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "Everyday and espresso blends.",
+      "featured": true
+    },
+    {
+      "handle": "gear",
+      "name": "Brew gear",
+      "description": "Drippers, filters and mugs.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "Coffee on your schedule.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "this-week",
+      "name": "This week’s roasts",
+      "description": "What came off the roaster this week.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["ethiopia-guji", "colombia-huila", "house-blend", "subscription"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The coffees people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["house-blend", "espresso-roast", "subscription"]
+    },
+    {
+      "handle": "single-origins",
+      "name": "Single origins",
+      "description": "Bright, distinct coffees from one place.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ethiopia-guji", "colombia-huila"]
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "Balanced everyday and espresso blends.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["house-blend", "espresso-roast", "decaf"]
+    },
+    {
+      "handle": "gear",
+      "name": "Brew gear",
+      "description": "Everything to brew it at home.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["pour-over-dripper", "pour-over-filters", "stoneware-mug"]
+    },
+    {
+      "handle": "starter-kit",
+      "name": "Starter kit",
+      "description": "New to pour-over? Start here.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["pour-over-dripper", "pour-over-filters", "house-blend"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ethiopia-guji",
+      "title": "Ethiopia Guji",
+      "description": "A washed Ethiopia from the Guji highlands — bright and floral, with jasmine on the nose and a clean, tea-like finish. The one to reach for when you want coffee that tastes like a place, not just like coffee.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["single-origin", "ethiopia", "washed", "light-roast"],
+      "categoryHandles": ["single-origin"],
+      "collectionHandles": ["this-week", "single-origins"],
+      "seoTitle": "Ethiopia Guji — washed single-origin coffee | Cairn",
+      "seoDescription": "A bright, floral washed Ethiopia from the Guji highlands, roasted light. Jasmine and stone fruit.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-ETH-GUJI-WB",
+          "priceCents": 2100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "CAIRN-ETH-GUJI-FL",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "CAIRN-ETH-GUJI-ES",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ethiopia",
+          "isPrimary": true,
+          "alt": "Ethiopia Guji"
+        }
+      ]
+    },
+    {
+      "handle": "colombia-huila",
+      "title": "Colombia Huila",
+      "description": "A washed Colombia from smallholders in Huila — the crowd-pleaser of the shelf. Milk chocolate, red apple and caramel, medium-bodied and endlessly easy to drink, black or with milk.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["single-origin", "colombia", "washed", "medium-roast"],
+      "categoryHandles": ["single-origin"],
+      "collectionHandles": ["this-week", "single-origins"],
+      "seoTitle": "Colombia Huila — washed single-origin coffee | Cairn",
+      "seoDescription": "A sweet, balanced washed Colombia — milk chocolate, red apple and caramel. Roasted medium.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-COL-HUILA-WB",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "CAIRN-COL-HUILA-FL",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "CAIRN-COL-HUILA-ES",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-colombia",
+          "isPrimary": true,
+          "alt": "Colombia Huila"
+        }
+      ]
+    },
+    {
+      "handle": "house-blend",
+      "title": "Cairn House Blend",
+      "description": "Our everyday blend and the coffee we drink most — a balance of Latin American and East African beans that’s sweet, round and forgiving. Great in a filter, great in a French press, great half-asleep at 6am.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["blend", "everyday", "medium-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["this-week", "blends", "best-sellers"],
+      "seoTitle": "Cairn House Blend — everyday coffee | Cairn",
+      "seoDescription": "A sweet, round, forgiving everyday blend that works in any brewer. Roasted medium.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-HOUSE-WB",
+          "priceCents": 1700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "CAIRN-HOUSE-FL",
+          "priceCents": 1700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "CAIRN-HOUSE-ES",
+          "priceCents": 1700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-house-blend",
+          "isPrimary": true,
+          "alt": "Cairn House Blend"
+        }
+      ]
+    },
+    {
+      "handle": "espresso-roast",
+      "title": "Foundry Espresso",
+      "description": "A blend built for the machine — a touch darker, syrupy and chocolatey, with a heavy body that stands up to milk without disappearing. Pulls a sweet, forgiving shot and makes a flat white you’ll want twice.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["blend", "espresso", "dark-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends", "best-sellers"],
+      "seoTitle": "Foundry Espresso — espresso blend | Cairn",
+      "seoDescription": "A syrupy, chocolatey espresso blend with a heavy body that stands up to milk. Roasted dark.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-ESPRESSO-WB",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "CAIRN-ESPRESSO-FL",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "CAIRN-ESPRESSO-ES",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-espresso",
+          "isPrimary": true,
+          "alt": "Foundry Espresso"
+        }
+      ]
+    },
+    {
+      "handle": "decaf",
+      "title": "Nightcap Decaf",
+      "description": "A sugarcane-process decaf that actually tastes like coffee — cocoa, roasted almond and a little dried cherry, with none of the flat, papery thing decaf is famous for. The 4pm cup that won’t keep you up.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["decaf", "medium-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends"],
+      "seoTitle": "Nightcap Decaf — sugarcane-process decaf coffee | Cairn",
+      "seoDescription": "A genuinely good sugarcane-process decaf — cocoa, almond and dried cherry. Roasted medium.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-DECAF-WB",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "CAIRN-DECAF-FL",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "CAIRN-DECAF-ES",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-decaf",
+          "isPrimary": true,
+          "alt": "Nightcap Decaf"
+        }
+      ]
+    },
+    {
+      "handle": "pour-over-dripper",
+      "title": "Ceramic Pour-Over Dripper",
+      "description": "A single-cup ceramic dripper that holds heat and pours clean — the simplest way to make café-quality coffee at home. Pairs with standard cone filters; no gadgets, no power, no fuss.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["gear", "brewing", "pour-over"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear", "starter-kit"],
+      "seoTitle": "Ceramic Pour-Over Dripper — brew gear | Cairn",
+      "seoDescription": "A single-cup ceramic pour-over dripper that holds heat and pours clean.",
+      "variants": [
+        {
+          "sku": "CAIRN-GEAR-DRIPPER",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dripper",
+          "isPrimary": true,
+          "alt": "A ceramic pour-over dripper"
+        }
+      ]
+    },
+    {
+      "handle": "pour-over-filters",
+      "title": "Pour-Over Filters (100)",
+      "description": "A hundred natural paper filters for the cone dripper — unbleached, so there’s no papery taste to rinse out. The consumable you always forget to reorder, so put it on the subscription.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["gear", "brewing", "filters"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear", "starter-kit"],
+      "seoTitle": "Pour-Over Filters, 100 pack — brew gear | Cairn",
+      "seoDescription": "A hundred unbleached natural paper filters for a cone pour-over dripper.",
+      "variants": [
+        {
+          "sku": "CAIRN-GEAR-FILTERS",
+          "priceCents": 900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-filters",
+          "isPrimary": true,
+          "alt": "A pack of pour-over filters"
+        }
+      ]
+    },
+    {
+      "handle": "stoneware-mug",
+      "title": "Cairn Stoneware Mug",
+      "description": "A heavy, hand-glazed stoneware mug that keeps coffee hot and feels right in the hand. Made in small runs by a local pottery, so no two glazes are exactly the same. 10oz — the size of a proper morning cup.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["gear", "mug", "ceramics"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear"],
+      "seoTitle": "Cairn Stoneware Mug — 10oz coffee mug | Cairn",
+      "seoDescription": "A heavy hand-glazed stoneware coffee mug, 10oz, made in small runs by a local pottery.",
+      "variants": [
+        {
+          "sku": "CAIRN-GEAR-MUG",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-mug",
+          "isPrimary": true,
+          "alt": "A stoneware coffee mug"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Coffee Subscription",
+      "description": "Freshly roasted coffee on your schedule — pick a size and how often, and we roast and ship it to match. Rotate through single origins or stick with the house blend; skip, swap or cancel any time. The easiest way to never run out.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Cairn Coffee Roasters",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["this-week", "best-sellers"],
+      "seoTitle": "Coffee Subscription — freshly roasted, on your schedule | Cairn",
+      "seoDescription": "A flexible coffee subscription — pick a size and cadence; skip, swap or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One bag"
+            },
+            {
+              "value": "Two bags"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CAIRN-SUB-1",
+          "priceCents": 1700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "One bag"
+          }
+        },
+        {
+          "sku": "CAIRN-SUB-2",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Two bags"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A coffee subscription box"
+        }
+      ]
+    }
+  ]
+}

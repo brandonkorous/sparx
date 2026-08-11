@@ -532,6 +532,9 @@ describe('recordPagePlan — a legacy occupant is upgraded, never duplicated', (
     over: Partial<Parameters<typeof recordPagePlan>[0][number]>
   ): Parameters<typeof recordPagePlan>[0][number] => ({
     id: 'p1',
+    // A name a person chose, so the default row is one the rename heal must NOT touch —
+    // a fixture that opted into being healed would hide the guard rather than test it.
+    name: 'Treatments',
     slug: null,
     recordType: null,
     position: 0,
@@ -645,5 +648,81 @@ describe('recordPagePlan — a legacy occupant is upgraded, never duplicated', (
     const legacy = row({ id: 'legacy', slug: '/about', position: 7 });
     const plan = recordPagePlan([home, legacy], { commerceEnabled: true });
     expect(plan.nextPosition).toBe(8);
+  });
+});
+
+// Record pages went into the page switcher, which turned their names from an internal DTO
+// field into the first thing a business owner reads. Two of the old ones were actively
+// misleading there — `Collection` sat one letter from the `Collections` index page — so
+// the labels changed. Changing a label only reaches sites seeded AFTER the change, and the
+// confusing pair is sitting in the switcher of every site that already has these pages, so
+// the plan heals them on read. The line it must not cross is a name a PERSON chose.
+describe('recordPagePlan — stale platform names are healed, chosen names are not', () => {
+  const row = (
+    over: Partial<Parameters<typeof recordPagePlan>[0][number]>
+  ): Parameters<typeof recordPagePlan>[0][number] => ({
+    id: 'p1',
+    name: 'Treatments',
+    slug: null,
+    recordType: null,
+    position: 0,
+    silicaDraftTree: null,
+    ...over,
+  });
+  const home = row({ id: 'home', name: 'Home', slug: '/', silicaDraftTree: { kind: 'element' } });
+  const commerce = { commerceEnabled: true, cmsEnabled: false, schedulingEnabled: false };
+
+  const product = (name: string) =>
+    row({
+      id: 'prod',
+      name,
+      slug: '/products/:handle',
+      recordType: 'commerce.product',
+      silicaDraftTree: { kind: 'element' },
+    });
+
+  it('corrects a name an earlier release wrote', () => {
+    const plan = recordPagePlan([home, product('Product detail')], commerce);
+    expect(plan.renames).toContainEqual({ id: 'prod', name: 'Each product' });
+  });
+
+  it('corrects the pre-silica starter name too', () => {
+    // `STARTER_PAGES` seeded `Product page` on every fresh property for a long time; those
+    // rows are the majority of what exists, so missing them would miss most of the fleet.
+    const plan = recordPagePlan([home, product('Product page')], commerce);
+    expect(plan.renames).toContainEqual({ id: 'prod', name: 'Each product' });
+  });
+
+  it('leaves a name a person chose completely alone', () => {
+    // The whole reason the heal is gated rather than blanket. An operator who renamed
+    // their product page to `Our range` gets to keep it, confusing neighbour or not —
+    // silently reverting that on a READ is an edit they never made.
+    const plan = recordPagePlan([home, product('Our range')], commerce);
+    expect(plan.renames).toEqual([]);
+  });
+
+  it('is idempotent — a healed row plans nothing', () => {
+    // `load` runs this on every open. A rename that re-fires would write on every read and
+    // show up as a change the operator never made, forever.
+    const plan = recordPagePlan([home, product('Each product')], commerce);
+    expect(plan.renames).toEqual([]);
+  });
+
+  it('heals a row it is not otherwise touching', () => {
+    // The case that makes this a separate pass rather than a field on `upgrades`: this row
+    // is already delivered — silica body, right address — so it is neither an upgrade nor
+    // a create, and an earlier release is exactly what gave it its stale name.
+    const plan = recordPagePlan([home, product('Product detail')], commerce);
+    expect(plan.upgrades).toEqual([]);
+    expect(plan.creates.map((a) => a.recordType)).not.toContain('commerce.product');
+    expect(plan.renames).toHaveLength(1);
+  });
+
+  it('never renames an ordinary page that happens to share the name', () => {
+    // `Blog post` is a platform record-page name AND a plausible name for an ordinary
+    // page. Only a row sitting at a record ADDRESS is eligible.
+    const ordinary = row({ id: 'ord', name: 'Blog post', slug: '/writing' });
+    const plan = recordPagePlan([home, ordinary], commerce);
+    expect(plan.renames).toEqual([]);
   });
 });

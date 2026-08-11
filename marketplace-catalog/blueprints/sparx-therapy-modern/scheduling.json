@@ -1,0 +1,242 @@
+{
+  "policies": [
+    {
+      "handle": "therapy-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "therapy-no-show",
+      "name": "Session hold",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Booked sessions are time held just for you. Reschedule with 24 hours’ notice at no cost; a missed session or a same-day cancellation is billed as the full fee so your therapist’s time is respected."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Dr. Elena Voss",
+      "kind": "staff",
+      "skillTags": ["individual", "stress", "burnout"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 960,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Reed",
+      "kind": "staff",
+      "skillTags": ["individual", "anxiety", "professionals"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 1020,
+          "endMinute": 1320
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["individual", "coaching", "stress"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 960,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 960,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 960,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 840
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-matching-call",
+      "name": "Free matching call",
+      "description": "A relaxed 20-minute call to hear what you’re looking for and match you with the right therapist. No cost, no pressure.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-standard"
+    },
+    {
+      "handle": "intro-session",
+      "name": "Intro session",
+      "description": "A first full session to talk things through, set a direction and decide together how to move forward.",
+      "durationMinutes": 30,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-standard"
+    },
+    {
+      "handle": "individual-session",
+      "name": "Individual therapy session",
+      "description": "A standard one-to-one video session — a calm, confidential hour to work through what’s on your mind.",
+      "durationMinutes": 50,
+      "priceCents": 14000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-no-show"
+    },
+    {
+      "handle": "stress-burnout-session",
+      "name": "Stress & burnout session",
+      "description": "Focused support for chronic stress, overwhelm and burnout — practical tools alongside space to actually breathe.",
+      "durationMinutes": 50,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-no-show"
+    },
+    {
+      "handle": "professional-wellness-session",
+      "name": "Therapy for professionals",
+      "description": "Coaching-informed therapy for high-demand careers — pressure, perfectionism and work-life balance, on a schedule that fits.",
+      "durationMinutes": 45,
+      "priceCents": 14500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-no-show"
+    },
+    {
+      "handle": "membership-consult",
+      "name": "Membership consult",
+      "description": "A short call to walk through our affordable monthly memberships and find the plan that fits your budget and needs.",
+      "durationMinutes": 25,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-standard"
+    },
+    {
+      "handle": "follow-up-session",
+      "name": "Follow-up session",
+      "description": "A shorter check-in between full sessions to keep momentum, adjust the plan and stay on track.",
+      "durationMinutes": 30,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "therapy-no-show"
+    }
+  ]
+}

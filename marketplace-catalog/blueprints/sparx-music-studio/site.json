@@ -1,0 +1,2213 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "a641836b-050f-4445-9c05-e92848066122",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "6ccd8aa1-0d13-424c-b93c-502147e17a34",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "435b259d-82a6-48b7-8d79-d2feccc885de",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "fd6aa0ab-691b-4120-8be6-ff7a46772d52",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "f881e4a8-cc61-4889-a4f8-3c5de27053b6",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "005d193d-9dd4-4084-93a1-ff7dfae7111d",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "171e7f14-2a96-4278-baaa-8be1ee1ccb7b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "563f4fa3-13f2-41ca-a74f-56f9cbd95c20",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "6023b742-3dfd-4de8-8964-8e6ad622b365",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "46f7967c-2f45-40a3-8ac3-d2b3f53ab6a9",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "3f81b7fb-4d2a-4395-a2ca-196203c890eb",
+                  "ord": "a2"
+                }
+              ],
+              "id": "b882ccd6-793c-4889-9453-f9b84f8cc4b7",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "344a8149-7ed0-43aa-bf15-e3c59a1ed0b8",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "40665709-728a-46ff-9a6f-268b56ceaea5",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "d2b39113-eb55-4340-a059-4546e602f728",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "69518964-8957-4998-8abd-979a4b58ab36",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "74c13c9d-607b-4c08-b017-e254b1ff7048",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "a092a41b-127a-4ab5-af8b-fcbe0f96ad54",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "6ab60b25-5fe8-4f7e-9cc4-3538b92ccffc",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "04becd7e-da98-404d-99a0-61c86b4747e9",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "24b7b578-42b1-462f-8446-7c16826104b3",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "01402d52-2a9a-410e-a3d3-acef5887cd98",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "e72a390c-8ec5-453f-aab3-c1fe0633acc3",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "70ca2c89-5719-429a-b4b4-83b73ed57794",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "a366cc7f-6481-428b-95a2-2b83df985179",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "da6d3f90-51b9-4db7-b9bf-efc661b3ed57",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e86b89e1-4965-41ca-a16e-733b6d1effde",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "ab1a00d3-3a96-4f4c-9e43-84e9e7072594",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e7908eb3-ca28-49d3-9176-a6b351902cfa",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "006296f0-9dce-4eff-a093-b2656bb32fbb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a8259679-9a63-4f53-a82a-dfcb133d4536",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "aae35630-b1d3-4028-a275-5a257bc5879f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d4f5b35e-d438-4e5f-8f8b-9696898510a7",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "7441bca3-5e79-4270-9041-3a8e5c5a6e3f",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "f6fe39ad-9851-4a37-8e7b-bb197e1d2a86",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "8694ebe4-ab0f-4173-b1b9-a9d37b730042",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a6ce91a4-92dd-4f6a-b186-be4d342c45d2",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "1872ddca-a12c-4f3e-a7fb-e358c5f154d8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ce2ba849-618b-4c98-a6fa-5c017f912192",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "bf850c49-55e4-49ac-93b6-2bdff7c3835b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d8cf46bd-be5f-452a-96c3-2a4a4dca5e1e",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "ff1ace2e-9e7f-42be-bbbb-28b2836b3b91",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "8ef07170-6529-4bd7-81b6-89793aeb02aa",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "99ac8f6b-01c8-4ef0-ac57-2297bdcad923",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "1d6fda4e-4453-4875-9909-89eed2fa6c01",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e3129e74-7eb4-4391-af93-996b12061782",
+                  "ord": "a1"
+                }
+              ],
+              "id": "1ef7d34c-4a89-4863-9630-3569be3e045a",
+              "ord": "a0"
+            }
+          ],
+          "id": "631be845-0ae7-4cdf-908a-e9f0ff1c70a6",
+          "ord": "a2"
+        }
+      ],
+      "id": "1f207dfe-e5a5-4c01-8f4e-b6a8b3a70553"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Amp Room — contemporary music lessons",
+      "seoDescription": "Amp Room is a modern music-lessons studio for guitar, vocals, bass, production and songwriting — teens and adults, beginners to gigging players. Book a free trial lesson online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "19f6cadf-fa73-410f-856c-a9d87a814829",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Plug in. Play the songs you love."],
+                    "id": "79602fc2-767d-4733-b122-46294dee480c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A modern lessons studio for guitar, vocals, bass, production and songwriting — for teens and adults who want to actually make music, not just practise scales. Start with a trial."
+                    ],
+                    "id": "671417c2-5a84-4353-8026-54b14b2e6757",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a trial lesson"],
+                        "id": "01cb4bcc-20ba-45f5-b845-52d78d976ab2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons"],
+                        "id": "ccf8d907-f32e-4491-a472-5bed1b09fed4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "97f9e12f-e1d1-46cd-93c0-db4a5680ec8c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "41d57bf9-4341-43c2-810d-8262624fdad2",
+                "ord": "a0"
+              }
+            ],
+            "id": "1b400d27-82b0-469c-a9e5-f07cdd8745cb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Working-musician instructors"],
+                            "id": "ef86b4e0-f0c0-4a4e-b022-02c96b24ef1b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You learn from people who gig, record and release — not from a textbook. Real players who’ve done the thing you’re trying to do."
+                            ],
+                            "id": "214129f0-6fd1-4f80-974b-82e70a18d510",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8df86aa8-995c-499c-bffa-4eeeed42aeca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Real gear, a real studio"],
+                            "id": "89d3290e-3b68-4b1c-9d5d-c55a4d6daa6c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Amps, a live room and a full production suite. You play on proper equipment from lesson one, not a practice pad in a closet."
+                            ],
+                            "id": "5657081b-0cf1-40a2-b6a0-e9a38e195886",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e0842918-c4da-49d3-9d52-796d16b5182b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Learn the songs you love"],
+                            "id": "2e45de9c-ef18-4e12-8f7c-11a701bef71d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Bring the track that made you want to play. We build the technique and theory around music you actually care about."
+                            ],
+                            "id": "ad6639bd-f4e9-4f40-9f45-1850549b7899",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f47bcc70-47e8-4f96-92e2-dc9e1e9620a7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Online or in person"],
+                            "id": "0dbc7405-ee7c-4735-b7da-bb6c9025d87f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Book the room or link up from home — same instructor, same plan. Lessons flex around school, work and everything else."
+                            ],
+                            "id": "b5565821-93d4-4724-8ced-dabe3c40c3e4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "613cb778-d767-4e88-99f4-2b2becf0ca94",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0fbf35d6-fc61-420f-a903-9ef02cc156a3",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f9c9aae4-f486-4dfb-9324-9d8935ce7797",
+                "ord": "a0"
+              }
+            ],
+            "id": "0a3bfd5d-0690-4aef-aa2b-180e4c5d3b7c",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Lessons"],
+                        "id": "de4c6454-6425-431a-9d52-c9e11ba2e627",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What we teach, with real prices. Live times, every instructor and the full menu are on the booking page."
+                        ],
+                        "id": "376675ea-c0d0-4b2a-848c-65573bf07548",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f43fd16c-d8c4-45e8-bd2b-0b0098778c5c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Book a trial lesson"],
+                                "id": "4f3076b7-a8fd-4830-b831-694dfd18c7f7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "fc460e9b-53dc-4db7-8630-077617e407f2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2fca4021-420b-43f4-b7ab-a68033fcf8eb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "61c164c3-dd98-47b9-907a-207468165f96",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Any instrument — meet a teacher and play. Free."],
+                            "id": "26187700-8d81-4e11-80d5-1776aa0fe827",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "51f837dd-c768-4214-b230-ad9f3b277834",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Guitar lesson"],
+                                "id": "c9ee5f71-9080-4722-b640-ee4014e01f17",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$55"],
+                                "id": "bd5f2ef9-0079-4c5f-9dd0-62913a5a8a28",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b367f9ba-783c-420d-9b40-137a932776de",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "4a53deea-e5f6-456e-98b9-e56e583be46d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Electric or acoustic, riffs to solos."],
+                            "id": "fa856153-786f-4571-893f-e5fbe520695c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f231cf1f-5788-453f-85eb-a1b3c33a4269",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Vocal lesson"],
+                                "id": "bcd19ed2-87da-45ac-be81-e8a72272173b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$55"],
+                                "id": "f5e438cc-1114-4045-a32d-d711b2e9209b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1e9da0bd-b91b-4fdf-a574-c3d01c1ad9ae",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "115d61bb-28e1-4345-80ba-12f3fadf56a7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Range, tone and stage confidence."],
+                            "id": "2d3fe439-6a96-43e5-a7d0-4e891849c5c9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9473e3e6-bb94-4cda-be62-8a34c10698ca",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Bass lesson"],
+                                "id": "6a82db65-eda8-49bb-8f08-a20eb04b0345",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$55"],
+                                "id": "c1435356-7b82-42ef-9b75-282dcbb96dc2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d8c5128e-b3f4-43b0-aaba-3c6024faa05e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "28ce043a-3d44-411d-86af-17f68d3ebf45",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Groove, timing and the pocket."],
+                            "id": "153009b4-8952-49ca-873f-41f9975a161a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8dd94fc5-2858-4683-aa38-91e7fe17d7bc",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Music production & beat-making"],
+                                "id": "274bb88b-66e6-4520-b75e-84d226611660",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$75"],
+                                "id": "47da628b-5178-428e-b0b0-198226503db5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cf98ec2d-dd97-4b3f-91ad-2c6c45062b18",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "6754b1ff-0109-4cd1-b139-948cbf080f19",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Build a track in the production suite."],
+                            "id": "3ec4a4e3-c896-461b-bc85-796445828245",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fc969463-657e-4017-90a5-fb8b15d93dca",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Songwriting session"],
+                                "id": "e6d0076c-1a54-45e7-a6e8-4fa5cf6d0da5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$65"],
+                                "id": "d6b1b829-f36f-4e2c-9ef6-be88927abd99",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9bd72c26-9794-47f2-974a-d6e1331b2825",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "4d538a59-391f-4b1b-851e-334ef32d5b55",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Ideas into finished songs."],
+                            "id": "e1b7f103-eab4-4488-b081-f75d5279be46",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9db7ef12-b6ba-4647-a748-5f7c3ad92c28",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "69dc77df-b80e-467d-a1ee-115d2109171d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "ef9d8f66-d9f7-47d5-995f-c41c59a72d52",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "840606d0-ac7c-4aa7-9feb-c9aee72b2eb0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a21a51f2-213f-4e18-884b-6b8d5b7e9016",
+                "ord": "a0"
+              }
+            ],
+            "id": "aef2b4e8-40e9-49ad-90d3-e33223aa18cf",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBwcm9kdWN0aW9uJTIwc3R1ZGlvfGVufDB8MHx8fDE3ODYzOTE1NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A production suite with a mixing desk, monitors and a mic booth",
+                      "loading": "lazy"
+                    },
+                    "id": "bf033aec-881a-47f4-9812-7d46870cc0d4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["A studio, not a spare room"],
+                        "id": "f9cc9c61-687f-4c23-b6a3-47070658975f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Amp Room is a proper space — a live room stacked with amps for playing loud, and a full production suite with a mixing desk, studio monitors and a vocal booth for making records."
+                        ],
+                        "id": "44c12cb4-6280-4b2c-8b1f-c6007e208b91",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It means your production lesson happens on the same gear the pros use, and your first take can end up being a real recording. You’re making music here, not just taking a class."
+                        ],
+                        "id": "5077b517-0bc5-4b72-8aa0-74e017055b6c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book studio time"],
+                            "id": "dfd2b0a7-e449-4926-abc6-163d35f9a073",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b9f94b62-0a63-4b58-8d4b-0f6ce7fc2000",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ba875e7a-3f31-4e41-b86f-58c1b0fe1730",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1074d2bf-3cde-47dd-bca5-becb6c57dbe4",
+                "ord": "a0"
+              }
+            ],
+            "id": "a323a0a0-299e-47a8-9a92-b53ab738d305",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your instructors"],
+                        "id": "8ef3c200-1ac3-487a-979c-968a3df7ae0e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — the same person every week, someone who plays the music you want to make."
+                        ],
+                        "id": "a6a5711f-770b-44ea-bfb2-0dd7a27f2326",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "fb294285-406e-43fb-a73f-fdfd95fefb5f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1595971294624-80bcf0d7eb24?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWNpYW4lMjBwb3J0cmFpdCUyMGd1aXRhcnxlbnwwfDB8fHwxNzg2MzkxNTQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Jules Kade, guitar, bass & songwriting instructor",
+                              "loading": "lazy"
+                            },
+                            "id": "5c596ca8-f772-4d5c-9665-2b58f4cf8dbf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Jules Kade"],
+                                "id": "81ff25a2-eb3d-4ec9-9539-ef3a4fe1e2fd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Guitar · Bass · Songwriting"],
+                                "id": "21622a25-990a-4589-be47-7387b82d5b35",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Toured guitarist and session player. Gets beginners playing real songs fast, and pushes players who’ve plateaued."
+                                ],
+                                "id": "13488079-3880-4e6f-873f-3bb4d66057d7",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "673ff378-22af-4460-bba8-cb0568de523e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6b4560ba-682d-477f-8ede-322e441dc6d5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1517230878791-4d28214057c2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBzaW5nZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkxNTQ4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Nova Reyes, vocals, songwriting & performance coach",
+                              "loading": "lazy"
+                            },
+                            "id": "33b2f112-8c4f-49f2-90f4-5644aff4e1ce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Nova Reyes"],
+                                "id": "77292a7b-8361-400e-beb6-d850678a0f88",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Vocals · Songwriting · Performance"],
+                                "id": "74a9849a-d78b-43f9-b12e-a8a7fecae404",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Released artist and vocal coach. Builds range and confidence, then gets you stage-ready for the gig."
+                                ],
+                                "id": "7802a727-3cbf-4caf-8f8f-1e1c456d4697",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "b7315739-ad81-4fc7-82db-a970e968fa80",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e819a5a3-1f8f-448a-be99-49b2acf12b7f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1650765814769-593f0798d6e1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBwcm9kdWNlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1NTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dez Okonkwo, music production & beat-making instructor",
+                              "loading": "lazy"
+                            },
+                            "id": "491f96de-1e4e-4a58-a6e4-60e3c5c82db9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dez Okonkwo"],
+                                "id": "13a6ed97-2e97-4204-8858-beb7960ee31d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Production · Beats · Mixing"],
+                                "id": "8c5b3648-7906-4faf-a6b8-e371a0d2cb6c",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Producer and beatmaker with credits across hip-hop and pop. Teaches you to finish tracks, not just start them."
+                                ],
+                                "id": "887a98a8-7ea0-4a4e-9826-c2d3945a7b87",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "498c27cb-52b4-4328-98f6-c0380bfc1539",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f74188da-7629-4ef4-9c08-9dec28058a44",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d0609490-303b-4dd3-9bf7-96dc424c9759",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "87cd48b8-723e-4762-a8d3-38449d4495eb",
+                "ord": "a0"
+              }
+            ],
+            "id": "bb1ea7bc-7824-4b97-bf52-8d3114fa8d3f",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I came in barely able to play a chord and walked out six months later with a song I actually recorded in their studio. The instructors treat you like a musician from day one.”"
+                    ],
+                    "id": "43374bdc-970d-4e27-86f7-cce689035cd3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Sam, student since last autumn"],
+                    "id": "743055d7-8fc4-49c0-9239-b1e8ca818ec4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f92425ba-179b-4f80-9052-4f56df5c529e",
+                "ord": "a0"
+              }
+            ],
+            "id": "af6dee38-bfdf-4b6b-aba8-40be0988836e",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Your first lesson is free"],
+                    "id": "58c44557-5114-4cb0-a745-455f2f36c57f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick an instrument, choose a time, meet your instructor. The trial’s on us — see where it goes."
+                    ],
+                    "id": "215420d2-8d3e-44ed-9437-33a90c2abc0f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a trial lesson"],
+                    "id": "e2b5d891-9c08-41c1-ac1b-569004809034",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8c19a8aa-5e81-4403-ae62-fe0c5022fd62",
+                "ord": "a0"
+              }
+            ],
+            "id": "2deaf79e-0339-4f5e-ae37-81b7cbb174a0",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Amp Room",
+      "seoDescription": "See what Amp Room offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ded65572-d79a-408d-aa55-c5bd66c4796b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBzdHVkaW8lMjBndWl0YXJ8ZW58MHwwfHx8MTc4NjM5MTU0MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A live room with amps, a drum kit and warm stage lighting",
+                  "loading": "eager"
+                },
+                "id": "962e7be3-80a5-4862-a018-9a91deaece01",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "290c6634-e777-424b-af48-5c7af3ceef91",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a lesson"],
+                    "id": "31190be3-e76e-4b4f-8e86-9d0991dcb8df",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a lesson to see prices and live times, then pick your instructor and slot. New here? Start with the free trial."
+                    ],
+                    "id": "c498ab17-92a6-40a3-a9be-0bc3b57cdf1a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons below"],
+                        "id": "fe13a655-6b30-4ec0-855d-0979662f4fc6",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "94322cc7-4bbd-40f0-8754-c10b03c034b1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "71a362d4-725c-46cb-a2d3-a431fd2dcc33",
+                "ord": "a2"
+              }
+            ],
+            "id": "45ff8d5b-3e29-42c8-a2fd-88ca9382d420",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "d1decfc6-0048-4653-80f3-3a609c9df376",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Amp Room",
+      "seoDescription": "Who Amp Room is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "29f27278-32b5-4740-b946-4c181a4cd646",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBzdHVkaW8lMjBndWl0YXJ8ZW58MHwwfHx8MTc4NjM5MTU0MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A live room with amps, a drum kit and warm stage lighting",
+                      "loading": "lazy"
+                    },
+                    "id": "d1dd43ac-866f-44e4-a21b-3fce353796b2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Amp Room"],
+                        "id": "aeecaaf7-fb7f-4602-830d-c614730b2f42",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Amp Room because the way most people are taught music is backwards — years of scales before you’re allowed to play anything you like. So we flipped it: you play real songs from lesson one, and the technique comes with them."
+                        ],
+                        "id": "6092f574-12ea-46ce-b96b-4ad0adff2028",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It’s a contemporary studio for guitar, vocals, bass, production and songwriting — teens and adults, total beginners and returning players. Real gear, working-musician teachers, and a room that makes you want to keep showing up."
+                        ],
+                        "id": "88477c90-eee3-4e92-95e8-29f86789a859",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a trial lesson"],
+                            "id": "93e22a6d-1ddf-4810-85b6-f81afad16be0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "15c00115-af7a-4273-82a9-3b44b983b7d1",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "651f1d69-56f4-4f96-9cbb-6eecae180d9b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3b77a35c-3f8e-45ca-b0cc-704c91dd4be3",
+                "ord": "a0"
+              }
+            ],
+            "id": "c9cb8d54-675a-4049-8a60-61d9e0b0575c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we teach"],
+                    "id": "398a9c27-4428-4d24-9179-3f7300b590c4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Songs first"],
+                            "id": "b8954259-be14-49fd-9ddb-03a16f18990c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Bring what you love and we build the skills around it. You’ll be playing real music long before it stops feeling like work."
+                            ],
+                            "id": "f4ba2303-45fc-42aa-a2dd-9a9cace198b8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "18cb333e-fa98-4463-917b-79c81de88190",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One instructor, yours"],
+                            "id": "41292905-de60-4f3a-bedf-b4047ff2b4c0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Book the same teacher each week. They learn how you learn, track your progress, and plan every lesson around where you’re headed."
+                            ],
+                            "id": "af4fd0f9-af02-4bb3-b2fb-c463e7acbeaf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5b05a447-ad58-470e-a33d-55e969cb99b3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Made to be heard"],
+                            "id": "05475bd7-17f8-4b93-8e08-30c3bcfdf42d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Recitals, open mics and studio recordings. We give you reasons to play in front of people, because that’s where it gets real."
+                            ],
+                            "id": "fa99582d-9036-47ac-908d-ee48003d0e72",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "23ebe4f9-6d32-47a3-bcd1-6ffac2536a28",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "7277e905-b68d-4728-8f36-9e557c537395",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1e40be54-3ea4-4151-8f87-66e774fe26cf",
+                "ord": "a0"
+              }
+            ],
+            "id": "bc37898d-730e-4bcc-861c-0c897307cd62",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Amp Room",
+      "seoDescription": "Where to find Amp Room, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2767354d-1971-4364-a574-e994b778d0d6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the studio"],
+                        "id": "177485fb-f81a-4420-94e7-2bc35d15e876",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Amp Room"],
+                            "id": "a0af1a3d-4c41-4de3-ac73-99c8ba5bff96",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["88 Sundry Street"],
+                            "id": "a3640580-dc19-41e9-bb2c-ee8475ca63aa",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Unit 4 · Austin, TX 78702"],
+                            "id": "cfce634b-8394-4b69-a893-a62a34a778c4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "94df9278-30fc-4e39-8ef1-9d236a115294",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "6ad5a737-6653-43ac-ae2e-b812e31b0004",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["11:00 – 21:30"],
+                                "id": "f7b6904a-a109-4d51-b37a-57edddf2d675",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f84aed91-a4b8-4ace-a513-5210a41a37e9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "16be14e7-28b9-4eeb-b7f4-c659ba519d97",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["11:00 – 20:00"],
+                                "id": "c615b41a-1b54-4169-b91d-4e5c14d12154",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "52ab37ae-de07-4878-958c-bf7d7e6e1fb2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "30a86a1f-7d49-4cb1-b7a3-ec3c40ff04e8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["12:00 – 18:00"],
+                                "id": "6e9e3673-0067-4dc3-84f6-47a5f1b73cba",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bbbed7e1-62b7-4b67-8149-b921348f217e",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Online lessons"],
+                                "id": "53e78591-853c-4e5d-b194-8812cb7ece6e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "d68c1b9c-214c-439f-a220-4d2f65eaa6b7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bec5f1a2-28cf-4222-b369-f10dba05effd",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "93a071dd-a579-4a59-83a8-91054da592cd",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e1ba88e6-3c9d-4a76-9469-382466346082",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "88 Sundry Street, Austin, TX 78702",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "cfc5e5a1-d414-4123-8e7d-fea19667ec9e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d712a0bd-0ede-40ad-a6aa-c3d9d2eadc70",
+                "ord": "a0"
+              }
+            ],
+            "id": "65ecd00d-1f37-4722-bf6a-a31789ed9eec",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to play?"],
+                    "id": "23429fd4-9b6c-421a-83e7-fab78a6a9fce",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book your free trial online and see live times — pick an instrument, pick a slot, we’ll take it from there."
+                    ],
+                    "id": "32640985-c67b-4bbc-82a1-e12d70139187",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a trial lesson"],
+                    "id": "459ca1aa-919d-43a0-a351-22f8c68af0c8",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "df2e9490-07eb-4c6a-a229-58c18862ba3b",
+                "ord": "a0"
+              }
+            ],
+            "id": "a07e6031-e7f1-424a-804d-434b9f3f029c",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "amproom",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(17% 0.022 292)",
+      "--color-base-200": "oklch(21% 0.026 292)",
+      "--color-base-300": "oklch(31% 0.03 292)",
+      "--color-base-content": "oklch(96% 0.012 292)",
+      "--color-primary": "oklch(62% 0.23 300)",
+      "--color-secondary": "oklch(80% 0.035 292)",
+      "--color-accent": "oklch(86% 0.21 128)",
+      "--color-neutral": "oklch(30% 0.024 292)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.125rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 300)",
+      "--color-secondary-content": "oklch(15% 0.02 292)",
+      "--color-accent-content": "oklch(15% 0.02 128)",
+      "--color-neutral-content": "oklch(98% 0.01 292)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(86% 0.21 128)",
+      "--color-highlight-content": "oklch(15% 0.02 128)",
+      "--color-border": "oklch(31% 0.03 292)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(14% 0.02 292)",
+      "--color-base-200": "oklch(18% 0.024 292)",
+      "--color-base-300": "oklch(27% 0.03 292)",
+      "--color-base-content": "oklch(97% 0.01 292)",
+      "--color-primary": "oklch(66% 0.24 300)",
+      "--color-secondary": "oklch(82% 0.035 292)",
+      "--color-accent": "oklch(88% 0.22 128)",
+      "--color-neutral": "oklch(28% 0.024 292)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 300)",
+      "--color-secondary-content": "oklch(15% 0.02 292)",
+      "--color-accent-content": "oklch(15% 0.02 128)",
+      "--color-neutral-content": "oklch(98% 0.01 292)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(88% 0.22 128)",
+      "--color-highlight-content": "oklch(15% 0.02 128)",
+      "--color-border": "oklch(27% 0.03 292)"
+    }
+  }
+}

@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "where-to-start-collecting",
+    "status": "published",
+    "body": {
+      "title": "Where to start a record collection",
+      "excerpt": "You don’t need a hi-fi and a spreadsheet to start collecting. You need a deck that works, a handful of records you love, and somewhere warm to play them.",
+      "featuredImage": {
+        "$asset": "post-start-collecting"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People put off buying their first records because they think they need to spend a fortune first — a rare pressing, an audiophile deck, a special shelf. You don’t. The best-sounding record collection in the world is the one you actually play, and that starts with three cheap, honest things."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A deck, not a museum piece"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You want a belt-drive turntable with a decent cartridge already fitted and a preamp built in, so it plugs straight into powered speakers or an amp with nothing to configure. That’s the whole ask. Our SL-70 is the one we set up for people getting started, but any deck that meets that description will keep you happy for years. Skip the vintage garage-sale find until you know what a good one sounds like."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Five records you love, not fifty you should"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Don’t buy for the shelf. Buy the five albums you already know every word of, put them on front to back, and let the collection grow from there — a staff-pick card that catches your eye, a reissue of something your parents played, the record a friend won’t shut up about. A collection built out of real affection sounds better than one built out of obligation, every time."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-the-bins-are-laid-out",
+    "status": "published",
+    "body": {
+      "title": "How the bins are laid out",
+      "excerpt": "A quick map of the shop, so your first dig feels less like a maze and more like a treasure hunt.",
+      "featuredImage": {
+        "$asset": "post-genres"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "First time in, the wall of records can look like a wall. It isn’t — there’s a logic to it, and once you know it you’ll find what you’re after in a minute and lose an hour to everything you weren’t. Here’s how we file things."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Arrivals up front, genres along the wall"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The front table is always this month’s arrivals — whatever’s newest, restocked, or just came in as a trade. Past that, the wooden bins run by genre along the wall: soul and funk, jazz, folk and country, the classic-rock and psych corner, and a soft-rock shelf we love more than we’ll admit. The hand-lettered dividers are there to be flipped past, not tiptoed around."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The cards are us talking to you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Anywhere you see a little hand-written card tucked into a sleeve, that’s a staff pick — a record someone here will personally vouch for, with a line about why. They’re not marketing; they’re just the fastest way to hear something great you’d never have pulled out yourself. Follow the cards and you’ll rarely go wrong."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "keep-your-records-sounding-new",
+    "status": "published",
+    "body": {
+      "title": "How to keep your records sounding new",
+      "excerpt": "Most pops and crackle aren’t damage — they’re dust and static. Two minutes of care before each play does more than any upgrade you can buy.",
+      "featuredImage": {
+        "$asset": "post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People spend a fortune chasing a quieter record and skip the two things that actually cause the noise: dust down in the groove, and a static charge that keeps pulling more of it in. Handle both and most of the crackle disappears — no new cartridge, no new deck required."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Before every play"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter — hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust away. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is exactly what dust sticks to in the first place."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Every so often, a proper clean"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When a record’s been passed around or bought second-hand, give it a wet clean — a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the deck out of direct sun. Do that and a record you buy today will still sound right in thirty years."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

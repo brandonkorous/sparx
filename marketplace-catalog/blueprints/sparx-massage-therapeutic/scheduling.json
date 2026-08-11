@@ -1,0 +1,365 @@
+{
+  "policies": [
+    {
+      "handle": "meridian-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We text a reminder the day before and two hours ahead so the time is never wasted."
+    },
+    {
+      "handle": "meridian-hold",
+      "name": "Card-on-file hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer sessions and rehab intakes hold a card on file — nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dana",
+      "name": "Dana Okafor, LMT",
+      "kind": "staff",
+      "skillTags": ["deep-tissue", "sports", "trigger-point"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marisol",
+      "name": "Marisol Reyes, LMT",
+      "kind": "staff",
+      "skillTags": ["prenatal", "swedish", "cupping"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Lindqvist, LMT",
+      "kind": "staff",
+      "skillTags": ["deep-tissue", "medical", "sports"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room 1",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Treatment Room 2",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "deep-tissue-60",
+      "name": "Deep tissue — 60 min",
+      "description": "Firm, focused work into the layers that hold tension — for the neck, back and shoulders that never quite let go.",
+      "durationMinutes": 60,
+      "priceCents": 11000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["deep-tissue"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-standard"
+    },
+    {
+      "handle": "deep-tissue-90",
+      "name": "Deep tissue — 90 min",
+      "description": "The full session — time to work more than one area properly and actually change how it moves, not just soothe it.",
+      "durationMinutes": 90,
+      "priceCents": 15500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["deep-tissue"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-standard"
+    },
+    {
+      "handle": "sports-recovery-90",
+      "name": "Sports & recovery — 90 min",
+      "description": "For training loads and stubborn injuries: assisted stretching, targeted release and a plan to get you back to the thing you do.",
+      "durationMinutes": 90,
+      "priceCents": 16500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["sports"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-hold"
+    },
+    {
+      "handle": "trigger-point-60",
+      "name": "Trigger-point therapy — 60 min",
+      "description": "Pinpoint work on the knots that refer pain elsewhere — the headache that starts in your shoulder, the ache that never sits still.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["trigger-point"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-standard"
+    },
+    {
+      "handle": "prenatal-60",
+      "name": "Prenatal massage — 60 min",
+      "description": "Safe, side-lying work for the lower back, hips and legs that carry a pregnancy — from a therapist trained for it.",
+      "durationMinutes": 60,
+      "priceCents": 11000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["prenatal"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-standard"
+    },
+    {
+      "handle": "cupping-therapy-60",
+      "name": "Cupping & myofascial — 60 min",
+      "description": "Decompression cupping paired with hands-on myofascial release to free up tight fascia and restore glide to stuck tissue.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["cupping"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-standard"
+    },
+    {
+      "handle": "medical-rehab-120",
+      "name": "Medical & rehab intake — 120 min",
+      "description": "A full assessment and first treatment for post-injury or post-surgical recovery — we review your history, agree a plan, and provide a superbill for your insurer or HSA. Booked with a short approval so we can prepare.",
+      "durationMinutes": 120,
+      "priceCents": 21000,
+      "bufferAfterMin": 15,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["medical"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "meridian-hold"
+    }
+  ]
+}

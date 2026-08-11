@@ -1,0 +1,97 @@
+[
+  {
+    "id": "elec-hero",
+    "url": "https://images.unsplash.com/photo-1608574839637-2f7d0290d01d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93cyUyMGVsZWN0cmljYWwlMjB3aG9sZXNhbGUlMjB0cmFkZS1jb3VudGVyJTIwc2hlbHZpbmclMjBzdG9ja2VkJTIwY2FibGV8ZW58MHwwfHx8MTc4NjQyMjE0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rows of electrical wholesale trade-counter shelving stocked with cable and accessories"
+  },
+  {
+    "id": "elec-tile-cable",
+    "url": "https://images.unsplash.com/photo-1607631755187-298a3f9a640a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlbHMlMjB0d2luJTIwZWFydGglMjBjYWJsZSUyMHdob2xlc2FsZXIlMjByYWNrfGVufDB8MHx8fDE3ODY0MjIxNTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Reels of twin and earth cable on a wholesaler rack"
+  },
+  {
+    "id": "elec-tile-accessories",
+    "url": "https://images.unsplash.com/photo-1707570349880-745e000a6d97?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94ZXMlMjB3aGl0ZSUyMHNvY2tldHN8ZW58MHwwfHx8MTc4NjQyMjM1OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Boxes of white sockets and switches on a shelf"
+  },
+  {
+    "id": "elec-tile-lighting",
+    "url": "https://images.unsplash.com/photo-1526116638181-d787e552d669?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJheSUyMGxlZCUyMGRvd25saWdodHMlMjByZWFkeSUyMGZpdHxlbnwwfDB8fHwxNzg2NDIyMTU4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tray of LED downlights ready to fit"
+  },
+  {
+    "id": "elec-tile-protection",
+    "url": "https://images.unsplash.com/photo-1777894162454-35cff9998a25?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y29uc3VtZXIlMjB1bml0JTIwcm93cyUyMGNpcmN1aXQlMjBicmVha2Vyc3xlbnwwfDB8fHwxNzg2NDIyMTYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A consumer unit with rows of circuit breakers"
+  },
+  {
+    "id": "elec-band-trade",
+    "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNpYW4lMjBjb2xsZWN0aW5nJTIwb3JkZXJ8ZW58MHwwfHx8MTc4NjQyMjM2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An electrician collecting an order at a trade counter"
+  },
+  {
+    "id": "prod-twin-earth",
+    "url": "https://images.unsplash.com/photo-1543536448-d209d2d13a1c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8MTAwJTIwbWV0cmUlMjByZWVsfGVufDB8MHx8fDE3ODY0MjIzNjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A 100 metre reel of grey twin and earth cable"
+  },
+  {
+    "id": "prod-consumer-unit",
+    "url": "https://images.unsplash.com/photo-1566417110090-6b15a06ec800?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWV0YWwlMjBjb25zdW1lciUyMHVuaXQlMjBwb3B1bGF0ZWQlMjBicmVha2VycyUyMHJjZHN8ZW58MHwwfHx8MTc4NjQyMjE2OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A metal consumer unit populated with breakers and RCDs"
+  },
+  {
+    "id": "prod-sockets",
+    "url": "https://images.unsplash.com/photo-1657776655487-18dcab7b2c65?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhZGUlMjBib3glMjBkb3VibGUlMjBzb2NrZXRzfGVufDB8MHx8fDE3ODY0MjIxNzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A trade box of double sockets"
+  },
+  {
+    "id": "prod-switches",
+    "url": "https://picsum.photos/seed/prod-switches/1600/1000",
+    "alt": "A box of light switches"
+  },
+  {
+    "id": "prod-downlights",
+    "url": "https://images.unsplash.com/photo-1643151540477-1bc603bedf12?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Ym94JTIwZmlyZS1yYXRlZCUyMGxlZCUyMGRvd25saWdodHN8ZW58MHwwfHx8MTc4NjQyMjE3N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of fire-rated LED downlights"
+  },
+  {
+    "id": "prod-breakers",
+    "url": "https://images.unsplash.com/photo-1561015314-20e681abbac2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFjayUyMHR5cGUlMjBifGVufDB8MHx8fDE3ODY0MjIzNzB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pack of Type B MCB circuit breakers"
+  },
+  {
+    "id": "prod-conduit",
+    "url": "https://images.unsplash.com/photo-1549084348-2b801274775a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVuZGxlJTIwd2hpdGUlMjBwdmMlMjB0cnVua2luZyUyMGNvbmR1aXR8ZW58MHwwfHx8MTc4NjQyMjE4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bundle of white PVC trunking and conduit"
+  },
+  {
+    "id": "prod-clips",
+    "url": "https://images.unsplash.com/photo-1760348213270-7cd00b8c3405?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHViJTIwY2FibGUlMjBjbGlwc3xlbnwwfDB8fHwxNzg2NDIyMTg2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tub of cable clips"
+  },
+  {
+    "id": "prod-tester",
+    "url": "https://images.unsplash.com/photo-1564942513760-da4dc8da3d47?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVsdGlmdW5jdGlvbiUyMGluc3RhbGxhdGlvbiUyMHRlc3RlciUyMGNhc2V8ZW58MHwwfHx8MTc4NjQyMjE4OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A multifunction installation tester in a case"
+  },
+  {
+    "id": "prod-first-fix",
+    "url": "https://images.unsplash.com/photo-1582954820640-42c30eeabe35?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Zmlyc3QtZml4JTIwYnVuZGxlJTIwY2FibGUlMjBiYWNrJTIwYm94ZXMlMjBjbGlwc3xlbnwwfDB8fHwxNzg2NDIyMTkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A first-fix bundle of cable, back boxes and clips"
+  },
+  {
+    "id": "post-consumer-unit",
+    "url": "https://images.unsplash.com/photo-1635335874521-7987db781153?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8ZWxlY3RyaWNpYW4lMjB3aXJpbmclMjBuZXd8ZW58MHwwfHx8MTc4NjQyMjM3NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An electrician wiring a new consumer unit"
+  },
+  {
+    "id": "post-downlights",
+    "url": "https://images.unsplash.com/photo-1771599141394-bc646d21cd61?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmlyZS1yYXRlZCUyMGxlZCUyMGRvd25saWdodHMlMjBmaXR0ZWQlMjBpbnRvJTIwY2VpbGluZ3xlbnwwfDB8fHwxNzg2NDIyMTk5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Fire-rated LED downlights fitted into a ceiling"
+  },
+  {
+    "id": "post-van-stock",
+    "url": "https://images.unsplash.com/photo-1763025747123-bb3a2e3a5ac3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VsbC1vcmdhbmlzZWQlMjBlbGVjdHJpY2lhbiUyMHZhbiUyMHJhY2tlZCUyMHN0b2NrfGVufDB8MHx8fDE3ODY0MjIyMDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A well-organised electrician van racked with stock"
+  }
+]

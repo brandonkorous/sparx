@@ -1,0 +1,230 @@
+{
+  "policies": [
+    {
+      "handle": "faderoom-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us a heads-up at least 24 hours out if you need to move or cancel. We text a reminder the day before and two hours ahead so you never miss your slot."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Reed",
+      "kind": "staff",
+      "skillTags": ["fade", "cut", "beard", "kids", "hottowel"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "deshawn",
+      "name": "DeShawn Wells",
+      "kind": "staff",
+      "skillTags": ["fade", "cut", "beard", "hottowel"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "tony",
+      "name": "Tony Alvarez",
+      "kind": "staff",
+      "skillTags": ["cut", "beard", "kids"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "skin-fade",
+      "name": "Skin fade",
+      "description": "A clean fade down to the skin, blended tight and finished with a razor line-up.",
+      "durationMinutes": 45,
+      "priceCents": 4000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["fade"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "taper-fade",
+      "name": "Taper fade",
+      "description": "A gradual taper around the ears and neckline — sharp, but a touch more grown-in.",
+      "durationMinutes": 45,
+      "priceCents": 3800,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["fade"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "scissor-cut",
+      "name": "Scissor cut",
+      "description": "A scissor-over-comb cut for length and texture on top — no clippers, all shape.",
+      "durationMinutes": 45,
+      "priceCents": 4200,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "beard-lineup",
+      "name": "Beard line-up",
+      "description": "Razor-edged cheeks and neckline with the beard shaped and evened out.",
+      "durationMinutes": 20,
+      "priceCents": 2000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["beard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "cut-beard",
+      "name": "Cut + beard",
+      "description": "The full reset — a fresh cut and a shaped, lined-up beard in one sitting.",
+      "durationMinutes": 60,
+      "priceCents": 5500,
+      "bufferAfterMin": 5,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut", "beard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "kids-cut",
+      "name": "Kids cut",
+      "description": "A quick, easy cut for the under-12s — in the chair, cleaned up and out the door.",
+      "durationMinutes": 30,
+      "priceCents": 2800,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["kids"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    },
+    {
+      "handle": "buzz-hot-towel",
+      "name": "Buzz + hot towel",
+      "description": "A one-length buzz finished with a hot-towel neck shave — fast, clean, done right.",
+      "durationMinutes": 30,
+      "priceCents": 3000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["hottowel"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "faderoom-standard"
+    }
+  ]
+}

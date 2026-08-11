@@ -1,0 +1,27 @@
+[
+  {
+    "id": "petgroom-boutique-hero",
+    "url": "https://images.unsplash.com/photo-1611173622933-91942d394b04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwc3BhJTIwZ3Jvb21pbmd8ZW58MHwwfHx8MTc4NjM4NzUwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small dog resting calmly on a soft towel in a quiet, sunlit grooming suite"
+  },
+  {
+    "id": "petgroom-boutique-suite",
+    "url": "https://images.unsplash.com/photo-1765100018948-24a80a072c21?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGV0JTIwZ3Jvb21pbmclMjBzYWxvbiUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzODc1MDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A serene private grooming suite with a single table and soft daylight"
+  },
+  {
+    "id": "petgroom-boutique-eloise",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMGVsZWdhbnR8ZW58MHwwfHx8MTc4NjM4NzUxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Eloise Fairbanks, master groomer and founder"
+  },
+  {
+    "id": "petgroom-boutique-marcus",
+    "url": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MHwwfHx8MTc4NjM4NzUxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Devlin, master groomer and cat specialist"
+  },
+  {
+    "id": "petgroom-boutique-priya",
+    "url": "https://images.unsplash.com/photo-1758599543125-0a927f1d7a3b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfDB8fHwxNzg2Mzg3NTE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, master groomer and spa specialist"
+  }
+]

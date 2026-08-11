@@ -1,0 +1,2454 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "446eb8aa-cc0c-4e54-b3a8-45ac4462861b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "83da47a7-2a5c-40aa-8977-a5436f1bf198",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d3c93ba8-7702-4cef-ae12-d64b5c8497d6",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "a90743c0-6a7c-448b-a57b-e19277168431",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "37c738e9-09ea-49c6-9e7b-fdcac8d9cbba",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "93e9245c-dc06-4c00-9c01-4dd77b832563",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "20b40150-bf86-4e72-bdf7-d4cc85917abd",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "cea412da-1c41-40e8-9e33-d736cb632d59",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "bf56ce59-4b71-4f4f-b481-9a271a5b104e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "022014ed-1a55-4d12-a7da-e10fbe2553bb",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "91c6d432-7b45-4981-b697-7363561bd2b8",
+                  "ord": "a2"
+                }
+              ],
+              "id": "d989c004-2171-4a10-93c9-81c0d0a40d96",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "c588bf14-8b6c-4b48-a722-f3c68109baac",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "0240d27e-99b3-4bd5-9ace-a6815fc36828",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "8ab67218-bbad-4aad-8163-6555e79c8349",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "8ebee531-a36f-47e4-8f0b-f6cb9355475b",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "b5bccf96-5d2a-4a8d-948e-37df31d9ceba",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "951ed03f-f129-42cc-bddb-e7fbd644a9e3",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "332453cf-cb62-43c9-a906-b642f7680c46",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "799dca2a-a849-4840-915c-c42d8a7dccae",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "83b89682-a379-49e3-9138-2b072a1e0871",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "78928e81-c7e6-4486-9582-794c8b136ad7",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "ae7baa98-db50-4db1-a992-5c4daba21f09",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "a3b0e58a-5cab-455b-9b38-7e85cf7a6825",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "4169fe70-8aed-4137-ac5a-eabe1a186941",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "93ffb9ad-1ef5-4ed1-89ec-39ab9645a9ff",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "a3e97e73-3834-4018-bc63-d2f283856850",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "398a355a-3088-4faa-b0a1-b66507796932",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b9115f73-6d95-4971-b632-a03200a8924f",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "9cf9f20f-c7f0-4025-8e76-a83636401a32",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "03af318c-acff-4260-8d84-e8f69d658398",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "2826bb59-a5a6-4f8d-bfc1-f76ff88fa6e6",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8e3f95f5-a8f9-46fd-8609-c06103a217eb",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "bd60c2c3-5285-4330-a170-8b6e8112e786",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c4f23b03-2f59-4de8-be07-e85bd9932f23",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "e2890b32-e500-492c-8393-ddbb77badccd",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "d8ad999e-e58c-482b-b9de-0e1c47997986",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "f3c224a4-63d9-4fad-8e88-a5bc15d5f5cc",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "39b08b89-2931-43a5-84cb-5c09a0f1479d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "50754f5f-5ad1-4270-b0d2-7e2719ceddda",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "7c580811-a535-45eb-9bac-7c820865a116",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "25788232-4be5-439e-96c3-ab3029839b4f",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "29e4db18-526e-4ce0-aaee-273b9bd55b45",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "915a7242-b1ac-413c-9a29-515859c36ae2",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "bbda5d9b-76e5-46ee-bed7-282d4ad2847a",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "486f58c9-3a17-4330-ba79-fd66be0819a8",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "92c6652f-2b6e-4159-aa25-ebcae8c60785",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "0fc960ba-05c3-4d4f-a217-a59ad6646432",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "3671a8c4-1fad-46ff-a945-ef671b1f6673",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0efc2c3f-4001-448c-851e-23023a806242",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "db1fa74b-2e2f-49c0-9c89-b4c5d917230c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "01a92967-34e6-47a5-9ca2-01407e41aeb5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "248f5458-1366-4444-9f79-a3dc36ba6630",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e93792be-53a6-48f4-a999-2e070b4ecc12",
+                  "ord": "a1"
+                }
+              ],
+              "id": "0320ff81-d8c1-43a0-a7f1-f07d9f911df3",
+              "ord": "a0"
+            }
+          ],
+          "id": "03439805-cde0-4f92-9a73-cac139725f05",
+          "ord": "a2"
+        }
+      ],
+      "id": "c6311b33-44df-4dbc-bf0c-fd8b6b030af4"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Kiln & Clay — handmade stoneware, thrown to order",
+      "seoDescription": "Kiln & Clay is a small pottery studio making thrown-and-glazed stoneware for the table and the home — mugs, bowls, plates, vases and planters, each made to order in three studio glazes.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2d68503d-333a-43b0-9b4d-f9023653a1dd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1611013621103-91e10668a120?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG90dGVyJTIwcyUyMGhhbmRzJTIwY2VudGVyaW5nJTIwd2V0JTIwY2xheSUyMHNwaW5uaW5nfGVufDB8MHx8fDE3ODY0MDIxODB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A potter’s hands centering clay on the wheel",
+                  "loading": "lazy"
+                },
+                "id": "0747b3a5-164c-4b52-bcbd-75540e815bff",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Made by hand, one at a time."],
+                        "id": "9b4a3e95-cfb8-499e-a811-0d8975b95316",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Kiln & Clay is a small pottery studio. We throw every piece on the wheel, glaze it by hand and fire it in our own kiln — so what lands on your table was shaped by someone, not stamped out by a machine."
+                        ],
+                        "id": "a5251694-182f-4c33-a326-79b75e8de080",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the studio"],
+                            "id": "80d86805-7378-4a42-810a-769012d50ee6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/blog/how-a-piece-is-made"
+                            },
+                            "children": ["How a piece is made"],
+                            "id": "6cd3c388-05cc-426c-920c-334a9748d7cc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8c2a389b-75b3-4636-97d9-e38183c81064",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ca7ac1c5-40be-4c1f-8d71-4b9736552553",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "af3675cf-885a-4cb4-8a07-c12fbd128f58",
+                "ord": "a1"
+              }
+            ],
+            "id": "d2b328fe-7d8f-46ee-992f-a30e1fc24670",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-semibold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Shop by room"],
+                    "id": "f3b236c4-51a9-46a8-b08f-29152f15d180",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1530968831187-a937ade474cb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8c3RvbmV3YXJlJTIwbXVncyUyMHdhcm18ZW58MHwwfHx8MTc4NjQwMjU0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Stoneware mugs in an oatmeal glaze",
+                              "loading": "lazy"
+                            },
+                            "id": "4223cea4-22f5-4269-b727-15964f4199dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-semibold text-base-content",
+                            "children": ["Drink"],
+                            "id": "acf1aaff-c718-4d8a-bd8c-92fc45118c60",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0bc090f5-0ed9-4701-8496-53bd90bf98fd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1769690176773-1c6e73bfb26a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZG1hZGUlMjBwbGF0ZXMlMjBib3dscyUyMHN0YWNrZWQlMjB3b29kZW4lMjBzaGVsZnxlbnwwfDB8fHwxNzg2NDAyMTg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Handmade plates and bowls on a shelf",
+                              "loading": "lazy"
+                            },
+                            "id": "b09bfb93-2295-4269-b8ab-9be3a8851e6d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-semibold text-base-content",
+                            "children": ["Dine"],
+                            "id": "1f8852ee-1d7e-4c01-9d7c-c2fe53bb337a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f151c6db-b606-43e5-be0a-805a7b8d2367",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1687191883721-257d8cad5b54?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMGJ1ZCUyMHZhc2UlMjBob2xkaW5nJTIwc2luZ2xlJTIwZHJpZWQlMjBzdGVtfGVufDB8MHx8fDE3ODY0MDIxODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A ceramic bud vase with a dried stem",
+                              "loading": "lazy"
+                            },
+                            "id": "48ad1bfc-5968-493a-b293-ef5218734215",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-semibold text-base-content",
+                            "children": ["Vessels"],
+                            "id": "4db2d461-9ab3-43e9-b46a-316d4f8a5af4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7ddd25d1-d51e-4846-99a8-0dc7e2620346",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1668117653442-dd03862e957f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhemVkJTIwcGxhbnRlciUyMHRyYWlsaW5nJTIwaG91c2VwbGFudCUyMHdpbmRvd3NpbGx8ZW58MHwwfHx8MTc4NjQwMjE5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A glazed planter on a windowsill",
+                              "loading": "lazy"
+                            },
+                            "id": "346d3c2d-8c05-40e4-88ff-ffeaf473208a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-semibold text-base-content",
+                            "children": ["Home"],
+                            "id": "b92b7666-1a6a-406d-bd79-bd4fa4e1c9c2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "aae26bcd-a68a-4e73-830d-a5cfbe6d6cf3",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "e3074e0c-8bcf-4787-a484-89fc5918484a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "19e30644-a29d-4b22-bf04-ff257d2fcae8",
+                "ord": "a0"
+              }
+            ],
+            "id": "a28c3cea-20c8-499b-aa3c-2688632b4df7",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New from the studio"],
+                    "id": "2458a606-b7d9-447f-80ef-e5f218421dc7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "cb765371-72ae-4550-bfc5-2f9bac831a9a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "446333e0-abf8-4930-9a75-5d23f7c791d3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "ba6f236b-cf63-477b-8d8d-c552af8e2c2e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0d0aa3de-133d-44c3-849a-bb61c7ed4d8f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "44a9a301-7a80-4ef1-b206-ad1e6ab5c932",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bf65b859-44d9-4b43-a9c2-d2700881d8bc",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "83c87f2f-238a-433d-b7df-1595b415ffa3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "13ce1231-9b1c-449f-b1b8-ba47de1223ee",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e34e7f4a-b187-4c62-9a6d-45180ddbd47c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "901c27c5-8591-4c79-a0ca-a903ff8218ef",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "6c8d3cfc-085a-40bf-a28c-56c00131b90e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "44258d96-11e9-4941-b667-8c7b38bfa146",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "8b062178-eda8-4433-b0c1-16c9babfd635",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1597257457828-ae134977674f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJpbW1lZCUyMHBvdHMlMjBkcnlpbmd8ZW58MHwwfHx8MTc4NjQwMjU0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Trimmed pots drying on a plaster bat",
+                  "loading": "lazy"
+                },
+                "id": "416bf433-00dc-459f-ad76-e123a55dd5bf",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-semibold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Thrown, trimmed, glazed, fired"],
+                        "id": "53105ba4-a3a9-463f-bea0-c2dc9e9f6886",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every piece passes through a lot of hands — and every pair of them is ours. We centre the clay on the wheel, trim the foot when it’s leather-hard, glaze it by hand and fire it twice. Days of work go into a mug you’ll reach for every morning."
+                        ],
+                        "id": "6b8df337-36f4-48a7-ac92-4d152c117f00",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/how-a-piece-is-made"
+                        },
+                        "children": ["How a piece is made"],
+                        "id": "51cb3efe-067e-41bb-b5ed-61c266bc1a89",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "65b742ca-5343-4108-85d9-683e0f97999e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4d283c81-2a95-45c0-944c-db35a9d28586",
+                "ord": "a1"
+              }
+            ],
+            "id": "e49a4e61-9d27-4a9c-913f-3d2a21125921",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["For the everyday table"],
+                    "id": "ce20d14d-309d-4b32-a2fd-b9b8bb9a9f23",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "bda28fac-334d-4628-a8c8-4e976ad9ed7c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "31de1392-c0b1-41ca-9c48-c72620e3bc7b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "863a3dac-24b6-4c2a-91b0-7a8852a96f43",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "34b234c6-8f6b-4a55-a384-22e13edbfdb2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "07ba08fd-e3d6-4ed7-b58d-2a0ea42c4a68",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "644eafbf-3c85-4bf4-971c-c4e2d0b31660",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "231b8211-b04b-4424-ac9c-9694604d42af",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e33f4bb7-f14c-48c6-b8e3-45c249b77825",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "352507d9-d571-43bd-a1f3-630a799b957e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d0de660c-41fb-4b86-adf9-783f09afa0f7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "c6f781f4-da3b-4bc9-9b7a-2710e1035e46",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.dine"
+                },
+                "id": "a5b7b6d6-183e-492a-a06b-e323f4d110b8",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "f4b5ae0d-397b-49fb-bce7-7820cabe0348",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1669393533135-7580ae7ca1c4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZCUyMGRpcHBpbmclMjBib3dsJTIwaW50byUyMGJ1Y2tldCUyMHBhbGUlMjBzYWdlfGVufDB8MHx8fDE3ODY0MDIxOTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A hand dipping a bowl into pale sage glaze",
+                  "loading": "lazy"
+                },
+                "id": "41d82b41-1618-438d-9552-f17a8ef1698a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-semibold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["No two are exactly alike"],
+                        "id": "63cd5de7-f53b-42bf-9e1b-2615b9a6e2f9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Because a person made it, a person shows in it — a glaze that pools a little deeper on one side, a rim that carries the maker’s mark. We don’t hide that. It’s the difference between something you own and something you love."
+                        ],
+                        "id": "180786be-86b8-4fec-a3d8-cbd765714ea6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/a-word-on-glazes"
+                        },
+                        "children": ["A word on our glazes"],
+                        "id": "556e5a40-ee84-447f-a617-991d7595ae79",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "142b6fd7-fc45-4b16-9025-cacbafe4dafe",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5b58a638-3f13-451d-a0f5-46d85360c7e3",
+                "ord": "a1"
+              }
+            ],
+            "id": "31d33b13-fa9c-45dc-8192-3b709538ba64",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Kiln & Clay",
+      "seoDescription": "Browse everything Kiln & Clay makes, with prices and options at a glance. Ceramics studio.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7b74325d-cd71-491e-acb6-2dcd7a09a1b5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The studio shop"],
+                    "id": "96464f7b-7aee-4cf4-a75c-920803259b28",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we’re making right now — mugs and tumblers to drink from, plates and bowls to eat off, vases and planters for the rest of the house. Filter by room or glaze; each piece is thrown, glazed and fired by hand, and made to order."
+                    ],
+                    "id": "edd1d838-b788-4c7e-8c11-940ac92467ec",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2c479b12-9365-4936-8d4c-95f9232ce552",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f01ea90-2639-4bcb-97bd-bc6d1f02edb2",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "0c05330f-747b-47f3-a028-5c915648ee1b",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Kiln & Clay",
+      "seoDescription": "Explore the collections at Kiln & Clay, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "da2094db-bcbd-4524-b283-10523f5de269",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "811674ab-d7c6-492d-ad25-234ac2071fa4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The work grouped the way people actually shop — the newest pieces off the wheel, a set that dresses the everyday table, the drinkware, and gift-ready pairs and sets."
+                    ],
+                    "id": "92d5e3ba-7f40-4d3b-b24c-f08eb6829d0c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "01dd505b-e7cf-4aac-a078-313c0964fc09",
+                "ord": "a0"
+              }
+            ],
+            "id": "adf9d6b8-ac15-4d09-a0ab-bdb439644596",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "93737e74-0095-4ab1-ba9c-aade8d81d52d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Kiln & Clay",
+      "seoDescription": "Review what is in your cart and check out securely at Kiln & Clay.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "70a819e6-d3cc-4cf7-af1f-218d5c7a0b0d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "6236a448-c82b-409d-9411-50dc1a9d2b1e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything is made to order and wrapped by hand for the post, so allow two to three weeks. Free shipping on orders over $120. If a piece ever arrives less than perfect, tell us and we’ll put it right."
+                    ],
+                    "id": "4f61be39-4352-4ba4-ba27-1c059d355d6a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "48a3b66e-b2ba-4e4e-a0c5-2c88ae014b53",
+                "ord": "a0"
+              }
+            ],
+            "id": "59d7b06b-447f-4256-aefa-f54d201a6ef7",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "acc1f520-e6ff-4b77-bf40-5ee2755b873a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Kiln & Clay",
+      "seoDescription": "Search Kiln & Clay for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "015353ef-2786-46f7-9371-4ce9425dd232",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Kiln & Clay"],
+                    "id": "e4bae7f7-8dda-448c-be06-a31d671d1311",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a particular piece, a glaze, or a note from the studio? Search the whole shop and the journal below."
+                    ],
+                    "id": "3bf08514-bc29-4100-a1d0-71361c05752d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7527b777-2960-4166-95d5-3ec4c266bc31",
+                "ord": "a0"
+              }
+            ],
+            "id": "af9cedf5-0db5-4718-baef-c06b6901eec6",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "4ed1ffb0-1e57-48ec-978b-1e774b3fc316",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Kiln & Clay",
+      "seoDescription": "Stories, guides and notes from Kiln & Clay.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "74992e68-f083-4c8a-b15d-7f30f98fe0f7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["From the studio"],
+                    "id": "c48f9fd2-9dbf-47c6-b324-77c8f9468fc0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the wheel — how a piece is made, what the glazes are and why they vary, and how to look after handmade ceramics so they last for years. Plain and useful, no pottery mystique."
+                    ],
+                    "id": "35c40bf3-1b2c-47ef-ac50-2dc496ce53f2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9e28cbfd-2233-4fb8-9aa2-f199b1f6d4de",
+                "ord": "a0"
+              }
+            ],
+            "id": "39f26fa1-f66c-4b38-8551-3437250c0352",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "e7d7ec06-9de5-46be-bd03-ee919b036669",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "b25eee6e-3339-418c-8e81-900f781c251d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "55414b53-97ab-4c5e-bb62-c4065bdde2a9",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "4d4abde6-d1f5-4c39-9da1-ddfb8d6cffc5",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "4659d042-cb1d-4881-9a9d-08cd0a184b5d",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "e575d310-9323-44af-a202-0c8f686110c5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5f25c41e-f72f-4f52-b9af-eef2996d13c7",
+                "ord": "a0"
+              }
+            ],
+            "id": "21b6fa36-a367-4e96-a622-6db9f661b061",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Kiln & Clay",
+      "seoDescription": "A one-studio pottery: how Kiln & Clay throws, trims, glazes and fires every piece by hand — honest forms, quiet glazes, made to be used every day.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a78adb57-f89a-40e8-890d-463534a93ab8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Kiln & Clay"],
+                    "id": "5d3763a0-8e5f-4b18-85b3-6b97c2a51aab",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Kiln & Clay began with one secondhand wheel in a spare room and a stubborn idea: that the things you use every day should be worth using. We started making mugs for friends, then for a local café, and it grew the slow way — one firing at a time."
+                    ],
+                    "id": "ca2a30ba-f7b0-4bb2-863d-60f45ecf5038",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything is still made in-house, by us. We throw on the wheel, trim by hand, mix our own glazes from raw materials, and fire twice in a kiln we load ourselves. Nothing is outsourced and nothing is mass-produced — the studio can only make so much, and that’s the point."
+                    ],
+                    "id": "87af6e32-4d72-43ba-80cc-bc10c7cec69d",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We like clay that looks like clay: honest forms, quiet glazes, a bare foot you can feel the grit of. A piece from here should feel good in the hand, live in the dishwasher, and get better the more you use it."
+                    ],
+                    "id": "512c8782-2c01-4b93-99da-fc42b7d21006",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "dfb95820-3d4d-42a3-ac6e-b28b50ebb049",
+                "ord": "a0"
+              }
+            ],
+            "id": "336ca921-ba4a-439f-a5ad-692637c5a20c",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Kiln & Clay",
+      "seoDescription": "Get in touch with Kiln & Clay — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a6338089-f73b-45d3-9b7e-6b55b68cb375",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-semibold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "1995e2c7-9387-4e28-92c0-67c8d5aa92c7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a piece, a custom commission, or a wholesale enquiry for your shop or café? Tell us what you have in mind and one of us — the people who actually make the work — will write back."
+                    ],
+                    "id": "728b094f-b24a-46a1-bff1-a5cc2b62b5fc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@kilnandclay.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "769c2b56-1006-4d5e-9120-fe95aaf5f086",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "435a9ac9-3778-40ed-bf07-48691b192bef",
+                "ord": "a0"
+              }
+            ],
+            "id": "9ef6d4df-d5c5-4603-9d08-606d5f913b22",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Kiln & Clay",
+      "seoDescription": "Product details at Kiln & Clay — ceramics studio, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "6a9e9b5b-ac6e-4d08-aa58-e38baa6cfb5d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Kiln & Clay"],
+                            "id": "fa6d2851-d47f-4062-b493-93d03f18929b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-semibold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "32b22183-9b4b-4c1a-b3b7-1ff8daa5e824",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "bfc8e0e0-ea40-4787-b0ac-0db0bd3b231e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "13b54ed9-9469-4488-ae65-f06a036d6b7e",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "7beb89fd-32e6-418b-a941-9a6a00cf1180",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8dcfa47b-cb0e-4578-b9d0-c8d379e4136f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Last few"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "1ee2902c-d839-4bbe-9008-5ea71ae65e4f",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "204147eb-e8f2-48d6-9661-8a5df8c832c7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "e81b514f-7ef2-445f-9e02-93c2a6707e39",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "38fea2cf-793a-426d-801f-070cf76fdde4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "d12335ec-6146-4c5f-8b65-fddeb0e450c5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "c569a153-b3c2-4a3e-b29d-1eb0d5f0ca96",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "09a0f938-5e73-4a4e-ba1c-deb458525fbe",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "2ef19bc6-939c-4023-b1e1-003fa40d4f82",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "08be82ae-1f72-4eea-9011-03744628b84e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Made to order in the studio"],
+                            "id": "f93ba975-6667-42e8-b87e-2f285c00281b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Each piece is thrown and glazed to order, so allow two to three weeks before it ships. Small variations in glaze, tone and size are the mark of a handmade object — yours will be a little different from the photo, and entirely its own."
+                            ],
+                            "id": "e39877e0-5d04-47e3-bc82-3b90733130e9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8bb3d76a-6eda-4255-96ae-1c22742d351e",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "0f7c54d1-d578-4d9b-974b-ad1428556ce8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "fa3da0a2-6d4a-4db8-a2df-38f0d6f4d93e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8fbfa108-afd6-44f0-b81b-719229790a31",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "3d1210d5-b700-4d00-ad2a-e9af45eb53d2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f009676d-fa15-4e22-b1ef-e8f014af138d",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "636f4746-85ae-4edd-82c0-e02509129c91",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Made to go together"],
+                    "id": "5b8cc506-8469-476d-92f0-fd38bddcf861",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "8be07a7e-c8c2-49bf-b8e7-ef2426a157c1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "0b279329-a976-4c10-b963-0bddf3f42ba5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "6f01bf97-00cd-44a0-bf4b-de97368d69cd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0049645d-c1a6-43ca-a906-dfff04ebe41c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "584be6fd-c960-442c-bfa2-456e95fcdb0d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3f97dfa7-3a8b-4336-bc1d-b5fa37099c6c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "b91f7e35-ad5b-4aca-ab0d-6d69fde93d99",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e83009bf-5040-475b-9acd-6b14963adb19",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "77a9e604-ee45-4a59-a09b-f9b5642e42c5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ba947de3-5048-4ff3-bad0-0cee53c2f683",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "09d421ca-1d8d-4b30-847b-69f76f81df8e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "070c1a63-66f5-4ac4-a8b0-ac938eca3e53",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "94e19535-ae52-4daf-bd6b-2d40e4a98eca",
+            "ord": "a1"
+          }
+        ],
+        "id": "34605a18-a4e3-4604-a481-87f9f631c600"
+      }
+    }
+  ],
+  "theme": {
+    "name": "kiln-clay",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.009 78)",
+      "--color-base-200": "oklch(93% 0.012 74)",
+      "--color-base-300": "oklch(88% 0.016 70)",
+      "--color-base-content": "oklch(24% 0.02 60)",
+      "--color-primary": "oklch(40% 0.035 62)",
+      "--color-secondary": "oklch(43% 0.028 118)",
+      "--color-accent": "oklch(52% 0.06 150)",
+      "--color-neutral": "oklch(27% 0.02 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(98% 0.01 62)",
+      "--color-secondary-content": "oklch(98% 0.01 118)",
+      "--color-accent-content": "oklch(98% 0.01 150)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(52% 0.06 150)",
+      "--color-highlight-content": "oklch(98% 0.01 150)",
+      "--color-border": "oklch(88% 0.016 70)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.012 60)",
+      "--color-base-200": "oklch(19% 0.012 60)",
+      "--color-base-300": "oklch(16% 0.012 60)",
+      "--color-base-content": "oklch(94% 0.009 78)",
+      "--color-primary": "oklch(80% 0.045 74)",
+      "--color-secondary": "oklch(78% 0.03 120)",
+      "--color-accent": "oklch(72% 0.08 150)",
+      "--color-neutral": "oklch(32% 0.015 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 74)",
+      "--color-secondary-content": "oklch(15% 0.02 120)",
+      "--color-accent-content": "oklch(15% 0.02 150)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.08 150)",
+      "--color-highlight-content": "oklch(15% 0.02 150)",
+      "--color-border": "oklch(16% 0.012 60)"
+    }
+  }
+}

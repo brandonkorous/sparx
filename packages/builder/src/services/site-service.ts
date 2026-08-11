@@ -50,6 +50,8 @@ import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
 import {
   RECORD_ADDRESSES,
   RECORD_ADDRESS_SLUGS,
+  RECORD_TEMPLATE_LABELS,
+  isPlatformRecordPageName,
   isRecordAddress,
   recordAddressAt,
   recordAddressFor,
@@ -382,7 +384,7 @@ function addressOf(slug: string): RecordAddress | null {
  *  own, so "what the planner reads" cannot drift from what the row actually is. */
 export type RecordPageRow = Pick<
   BuilderPage,
-  'id' | 'slug' | 'recordType' | 'position' | 'silicaDraftTree'
+  'id' | 'name' | 'slug' | 'recordType' | 'position' | 'silicaDraftTree'
 >;
 
 /** What {@link ensureRecordPagesTx} should write. `upgrades` come first: they are the
@@ -394,6 +396,10 @@ export interface RecordPagePlan {
   upgrades: { id: string; address: RecordAddress; slug: string | null }[];
   /** Addresses no row holds at all — created fresh. */
   creates: RecordAddress[];
+  /** Rows still carrying a name the PLATFORM wrote, where that name is no longer the one
+   *  the platform uses — corrected in place. Never a name a person chose; see
+   *  `isPlatformRecordPageName`. Empty once healed, which is what keeps `load` idempotent. */
+  renames: { id: string; name: string }[];
   /** The `position` the first created page takes; each later one increments. */
   nextPosition: number;
 }
@@ -483,7 +489,30 @@ export function recordPagePlan(
     if (writeSlug) occupiedSlugs.add(normalizeSlug(address.slug));
     upgrades.push({ id: occupant.id, address, slug: writeSlug ? address.slug : null });
   }
-  return { upgrades, creates, nextPosition: Math.max(0, ...rows.map((r) => r.position)) + 1 };
+
+  // Correct a stale PLATFORM name wherever one sits at an address — including on rows this
+  // plan is not otherwise touching, which is the whole point: a site healed by an earlier
+  // release already has its record pages, and they are carrying the labels that release
+  // wrote. Without this the new names reach only sites seeded after the change.
+  const renames: RecordPagePlan['renames'] = [];
+  for (const row of rows) {
+    const address = addressOfRow(row);
+    if (!address) continue;
+    const target = RECORD_TEMPLATE_LABELS[address.recordType];
+    // Two guards, and they are different questions. `isPlatformRecordPageName` asks may we
+    // touch this at all; the inequality asks is there anything to do. Together they make
+    // the heal a no-op on both a renamed page and an already-correct one.
+    if (row.name !== target && isPlatformRecordPageName(row.name)) {
+      renames.push({ id: row.id, name: target });
+    }
+  }
+
+  return {
+    upgrades,
+    creates,
+    renames,
+    nextPosition: Math.max(0, ...rows.map((r) => r.position)) + 1,
+  };
 }
 
 /**
@@ -515,7 +544,15 @@ async function ensureRecordPagesTx(
   modules: SiteChromeOptions
 ): Promise<boolean> {
   const plan = recordPagePlan(rows, modules);
-  if (plan.upgrades.length === 0 && plan.creates.length === 0) return false;
+  if (plan.upgrades.length === 0 && plan.creates.length === 0 && plan.renames.length === 0) {
+    return false;
+  }
+
+  // Stale platform names first, so an upgrade below can still overwrite one on the same
+  // row without the two fighting over `name`.
+  for (const { id, name } of plan.renames) {
+    await tx.builderPage.update({ where: { id }, data: { name } });
+  }
 
   // Upgrades FIRST — each one settles a slug a create might otherwise have reached for.
   for (const { id, address, slug } of plan.upgrades) {
@@ -525,9 +562,10 @@ async function ensureRecordPagesTx(
         kind: 'collection',
         recordType: address.recordType,
         ...(slug !== null ? { slug } : {}),
-        // The body it was always missing. `name` is deliberately NOT written: the row is
-        // the tenant's, and renaming their page to the factory label on a READ would be
-        // an edit they never made.
+        // The body it was always missing. `name` is NOT written here — the `renames` pass
+        // above owns it, and owns it more narrowly than this branch could: it corrects a
+        // name only when the PLATFORM wrote it. Blanket-writing the label here would
+        // rename a page an operator had deliberately called `Treatments`, on a read.
         silicaDraftTree: asJson(recordPage(address).root),
       },
     });

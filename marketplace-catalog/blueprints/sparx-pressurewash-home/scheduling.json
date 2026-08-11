@@ -1,0 +1,247 @@
+{
+  "policies": [
+    {
+      "handle": "wash-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Need to move your visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised."
+    },
+    {
+      "handle": "maintenance-plan",
+      "name": "Maintenance plan & first service",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Maintenance plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "tech-marcus",
+      "name": "Marcus Vance",
+      "kind": "staff",
+      "skillTags": ["driveway", "house", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "tech-dana",
+      "name": "Dana Whitfield",
+      "kind": "staff",
+      "skillTags": ["soft-wash", "roof", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "tech-ty",
+      "name": "Ty Okafor",
+      "kind": "staff",
+      "skillTags": ["deck", "patio", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-quote",
+      "name": "Free washing quote",
+      "description": "We stop by, walk your property, and send a clear flat-rate quote — no pressure, no obligation. The fastest way to get started.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "driveway-cleaning",
+      "name": "Driveway & concrete cleaning",
+      "description": "High-pressure surface cleaning that lifts years of dirt, oil, algae and tire marks — concrete, pavers and walkways brought back to bright, even and new.",
+      "durationMinutes": 90,
+      "priceCents": 15900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "house-soft-wash",
+      "name": "House soft-wash",
+      "description": "A gentle, low-pressure soft-wash that safely strips grime, mildew and green off siding, stucco and brick — deep-clean results without ever blasting your home.",
+      "durationMinutes": 120,
+      "priceCents": 29900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["soft-wash"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "deck-patio-cleaning",
+      "name": "Deck & patio cleaning",
+      "description": "Wood, composite and stone cleaned at the right pressure for the surface — greyed decks freshened and patios cleared of moss and buildup, ready to enjoy.",
+      "durationMinutes": 90,
+      "priceCents": 22900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "roof-soft-wash",
+      "name": "Roof soft-wash",
+      "description": "A no-pressure treatment that kills and removes the black streaks and moss on your roof without damaging shingles — the safe way to get years of curb appeal back.",
+      "durationMinutes": 150,
+      "priceCents": 39900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["soft-wash"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "gutter-cleaning",
+      "name": "Gutter cleaning & brightening",
+      "description": "Gutters cleared of leaves and debris so water flows, plus an exterior brightening that wipes away the black tiger-stripe stains along the front of the house.",
+      "durationMinutes": 60,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wash-standard"
+    },
+    {
+      "handle": "full-exterior-package",
+      "name": "Full exterior package",
+      "description": "The whole house done in one visit — house soft-wash, driveway, walkways and patio — and set up on an annual refresh so it stays looking new year after year.",
+      "durationMinutes": 180,
+      "priceCents": 74900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "maintenance-plan"
+    }
+  ]
+}

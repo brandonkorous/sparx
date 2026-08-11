@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "what-were-reading-now",
+    "status": "published",
+    "body": {
+      "title": "What we’re reading now",
+      "excerpt": "The books on our front table this month, and the one-line reason each earned its spot. Steal our taste — that’s what it’s there for.",
+      "featuredImage": {
+        "$asset": "post-new-releases"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A staff pick at Volume isn’t whatever a publisher paid to stack by the door, and it isn’t a bestseller chart doing the thinking for us. It’s one person on the team saying, in a single honest line, \"I read this, I loved it, and here’s who it’s for.\" Here’s what’s facing out this month, and why."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The one we fought over"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Glass Orchard got the front-and-centre spot the day it arrived — a luminous novel about three sisters and a failing greenhouse that reads like sunlight through glass. If you like a family story that’s warm without being soft, start here. Pair it with Static & Signal, twelve funny, precise stories that will convert anyone who swears they don’t read short fiction."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "For the nonfiction shelf"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Attention Diet is the book we can’t stop pressing on people — a clear, un-preachy look at what our attention is actually worth, with none of the shame. Follow it with Deep Time, Bright Water if you want science that reads like a memoir, or hand either to the person on your list who \"doesn’t really read nonfiction.\" They will, after this."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-actually-read-more-this-year",
+    "status": "published",
+    "body": {
+      "title": "How to actually read more this year",
+      "excerpt": "No 100-book challenge, no guilt. A few small, genuinely useful habits from people who read for a living — and one shortcut we might be biased about.",
+      "featuredImage": {
+        "$asset": "post-reading-year"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every January the internet tells you to read fifty books, then makes you feel bad in March for reading four. We think that’s backwards. Reading more isn’t a target to hit; it’s a handful of small frictions to remove. Here’s what actually works, from a shop full of people who read constantly and still fall off the wagon."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Make the next book easy to reach"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single biggest lever is having the right book already in your hand when you have a spare ten minutes. Keep one going in every place you wait — a paperback in your bag, something on your phone, a picture book by the kids’ bed. And give yourself permission to quit a book that isn’t working; the fastest way to read more is to stop finishing things out of duty."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Let someone else choose sometimes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Decision fatigue kills more reading streaks than busyness does. When you can’t face picking, let a bookseller do it — that’s literally the job. Our monthly subscription exists for exactly this: one hand-picked book lands each month, wrapped, with a note on why, and you just… read it. No browsing, no overwhelm, no lapsed streak. Yes, we’re biased. We’re also right."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "why-a-bookshop-still-matters",
+    "status": "published",
+    "body": {
+      "title": "Why a bookshop still matters",
+      "excerpt": "The same book costs about the same everywhere. What changes is everything around it — the person, the room, and where your money goes next.",
+      "featuredImage": {
+        "$asset": "post-modern-bookshop"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Let’s be straight about the thing everyone’s thinking: yes, you can usually get these books cheaper, faster, and without leaving the sofa. We’re not going to pretend otherwise, and we’re not going to guilt-trip you about it. What we’ll argue is that the number on the back cover isn’t the whole cost, and the book isn’t the whole thing you’re buying."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "You’re buying taste, not just a title"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A recommendation engine can tell you what people who bought this also bought. It can’t finish a novel, sit with it for a day, and decide who in your life needs it. That’s what our picks are — a real person’s taste, made useful, with a name behind it. Come in undecided and you’ll leave with something better than what you came for, more often than not. That’s the whole trick, and no amount of software has cracked it yet."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where the money goes next"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A dollar spent here stays close to home a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author nights, the school orders and the kids’ story hour that no marketplace will ever bother to run. A good bookshop is quiet infrastructure for a reading town — and it only exists if people choose to use it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

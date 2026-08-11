@@ -1,0 +1,32 @@
+[
+  {
+    "id": "void-hero",
+    "url": "https://images.unsplash.com/photo-1753998943413-8cba1b923c0e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29kZSUyMGVkaXRvciUyMGRhcmslMjBzY3JlZW4lMjB0ZXJtaW5hbHxlbnwwfDB8fHwxNzg2Mzk5NzczfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dark code editor and a running terminal, green text on black"
+  },
+  {
+    "id": "void-drift",
+    "url": "https://images.unsplash.com/photo-1760978631959-87fa2724d6e9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2VuZXJhdGl2ZSUyMGFydCUyMHBhcnRpY2xlcyUyMGRhcmslMjBhYnN0cmFjdHxlbnwwfDB8fHwxNzg2Mzk5Nzc3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A WebGL particle field rendered as thousands of glowing points drifting in 3D space"
+  },
+  {
+    "id": "void-loom",
+    "url": "https://images.unsplash.com/photo-1518773553398-650c184e0bb3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVybWluYWwlMjBjb2RlJTIwc2NyZWVuJTIwZGFyayUyMG1vbm9zcGFjZXxlbnwwfDB8fHwxNzg2Mzk5NzgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A terminal user interface with panes, tables and a status bar rendered in monospace"
+  },
+  {
+    "id": "void-prism",
+    "url": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29sb3JmdWwlMjBjb2RlJTIwc2NyZWVuJTIwc2hhZGVyfGVufDB8MHx8fDE3ODYzOTk3ODJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A browser shader playground — a live fragment-shader preview beside a code panel"
+  },
+  {
+    "id": "void-signal",
+    "url": "https://images.unsplash.com/photo-1707386264728-0e9feb83da19?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXVkaW8lMjB3YXZlZm9ybSUyMGFic3RyYWN0JTIwdmlzdWFsfGVufDB8MHx8fDE3ODYzOTk3ODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An audio-reactive generative visual — concentric waveforms reacting to sound"
+  },
+  {
+    "id": "void-portrait",
+    "url": "https://images.unsplash.com/photo-1623479322729-28b25c16b011?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGV2ZWxvcGVyJTIwcG9ydHJhaXQlMjBkYXJrfGVufDB8MHx8fDE3ODYzOTk3ODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Portrait of Kade Nakamura, creative developer"
+  }
+]

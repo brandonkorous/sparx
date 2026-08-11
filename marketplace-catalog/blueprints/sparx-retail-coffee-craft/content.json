@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-roast",
+    "status": "published",
+    "body": {
+      "title": "How we roast, and why it’s in small batches",
+      "excerpt": "Roasting is cooking, and like any cooking it goes wrong at scale if you stop paying attention. Here’s how we keep it honest.",
+      "featuredImage": {
+        "$asset": "post-roast"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Roasting green coffee is closer to cooking than most people expect. You’re applying heat over time and chasing a set of chemical reactions — the same browning that happens to toast and caramel — and stopping at exactly the right moment for the coffee in front of you. A minute too long or fifteen degrees too hot, and a bright, floral Ethiopia turns into a flat, roasty sameness."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Small batches, by ear and by nose"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We roast in tens of pounds on a drum roaster, and we run it by ear and by nose as much as by the numbers. You learn to hear first crack, to smell the turn from grassy to sweet, and to pull the batch before it tips into bitterness. That kind of attention doesn’t scale to thousand-pound loads, which is exactly why we don’t roast them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cupped before it ships"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every batch is cupped — brewed and tasted on a table — before a single bag goes out. If it isn’t what we tasted when we bought the coffee, it doesn’t ship. Sometimes that means re-roasting; occasionally it means an apology to whoever was waiting. It always means the bag on your shelf tastes like it was supposed to."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-simple-pour-over-guide",
+    "status": "published",
+    "body": {
+      "title": "A simple pour-over guide",
+      "excerpt": "No scale-worshipping, no ten-variable spreadsheet. A repeatable pour-over you can make before you’re fully awake.",
+      "featuredImage": {
+        "$asset": "post-brew"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A good pour-over doesn’t need a chemistry set. It needs fresh coffee, a burr grind, hot-but-not-boiling water, and a bit of patience. Here’s the version we actually use on a weekday morning."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The recipe"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Use about a 1-to-16 ratio — say 25 grams of coffee to 400 grams of water. Grind medium, like coarse sand. Rinse the filter, add the coffee, and pour twice the coffee’s weight in water to start — that’s the bloom. Wait thirty seconds while it puffs up and releases gas, then pour the rest in slow, steady circles, keeping the bed level. The whole thing should finish in about three minutes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "If it tastes off"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sour and thin means under-extracted — grind finer or pour slower. Bitter and dry means over-extracted — grind coarser or pour a touch faster. Change one thing at a time, and taste. Two or three cups in, you’ll have it dialled for that coffee, and it’ll be the same every morning after."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "where-the-coffee-comes-from",
+    "status": "published",
+    "body": {
+      "title": "Where the coffee actually comes from",
+      "excerpt": "A bag with a farm name on it should mean something. Here’s what we know about the people who grow ours, and why we pay more.",
+      "featuredImage": {
+        "$asset": "post-origin"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most coffee is sold as a commodity — bought and priced with no reference to who grew it or how good it is. We buy the other way: specific lots, from farms and washing stations we can name, through importers who’ve built long relationships with the growers."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why we pay above the market"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Coffee at altitude, picked ripe and processed with care, costs more to produce than the commodity price rewards. If we want farmers to keep growing it — and to keep improving it — they have to make a living from it. Paying above the market isn’t charity; it’s how the good coffee keeps existing."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What that gets you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Traceability, for one: when you can name the farm, you can taste the difference a region and a process make, season after season. And consistency: the same growers, treated well, come back with the same lots year on year. The name on the bag is a promise that someone, somewhere, was paid fairly to grow something worth roasting."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

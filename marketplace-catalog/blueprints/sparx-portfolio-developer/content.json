@@ -1,0 +1,490 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "drift-particle-field",
+    "status": "published",
+    "authorSlug": "kade-nakamura",
+    "categories": ["WebGL"],
+    "tags": ["Three.js", "GLSL", "GPGPU"],
+    "body": {
+      "title": "Drift — a million particles at 60fps",
+      "excerpt": "A GPU particle field that simulates a million points entirely on the graphics card, so the CPU never touches a single one after launch.",
+      "featuredImage": {
+        "$asset": "void-drift"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Role: solo build. Timeline: three weeks, on and off. Drift is an interactive particle field — a million glowing points that drift, curl and respond to the cursor, running in a browser tab at a locked 60fps on a mid-range laptop."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It started as a demo for a music-visualiser pitch and turned into a small engine. Points flow through an animated noise field; the cursor drags a well through them; colour is driven by velocity. It’s the kind of thing that looks like a screensaver until you realise every point is a live simulation, not a video."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hard part"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A million particles is nothing to draw and everything to update. The moment you loop over them on the CPU each frame, you’ve lost — JavaScript can’t touch a million objects in 16 milliseconds. So the particles can never live in JavaScript at all."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The trick is GPGPU: I store every particle’s position and velocity in floating-point textures, then a fragment shader advances the whole simulation in one pass on the GPU. The CPU’s only job per frame is to say \"go\". Getting the ping-pong buffers, the float-texture precision and the noise function right was most of the three weeks."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The stack"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Three.js for the WebGL plumbing, hand-written GLSL for the simulation and render passes, and a GPU compute step built on render-to-texture. No physics library — at this scale you write the integrator yourself, because a general one can’t make the assumptions that keep it fast."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What shipped"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Drift runs at a steady 60fps with a million particles on integrated graphics, and degrades gracefully to fewer on weaker devices by reading back a quick benchmark on load. It shipped as the hero of the client’s launch site, and the engine underneath became the base for two later interactive pieces."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "loom-terminal-ui",
+    "status": "published",
+    "authorSlug": "kade-nakamura",
+    "categories": ["Open source"],
+    "tags": ["Rust", "TUI", "CLI"],
+    "body": {
+      "title": "Loom — a terminal-UI toolkit in Rust",
+      "excerpt": "An open-source toolkit for building fast, keyboard-driven console apps — a real layout engine, panes, tables and a status bar, all in monospace.",
+      "featuredImage": {
+        "$asset": "void-loom"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Role: creator and maintainer. Timeline: six months to 1.0, ongoing since. Loom is an open-source library for building terminal user interfaces — the panes, tables and forms you see in tools that run entirely inside a console window."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I kept building the same scaffolding for every CLI I wrote: split the screen, draw a bordered pane, put a scrollable table in it, handle the arrow keys. Loom is that scaffolding, extracted and made general — a widget set plus a layout engine that flows a UI into whatever size the terminal happens to be."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hard part"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A terminal is a hostile canvas. You get a grid of character cells, no pixels, no sub-cell positioning, and a redraw model from the 1970s where the wrong escape sequence leaves visible garbage on screen. Making a flexbox-style layout engine feel natural on top of that grid — while only ever repainting the cells that actually changed — was the whole engineering problem."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The other hard part was Unicode width. A single emoji can be two cells wide, a combining accent is zero, and getting that wrong shears every column to the right of it. Loom carries a width table so authors never think about it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The stack"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Pure Rust, no unsafe in the public path, with an immediate-mode API so app authors describe the UI every frame and Loom diffs it against the last frame to compute the minimal set of cell writes. Crossterm handles the raw terminal; everything above it is Loom."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What shipped"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Loom is on its 1.x line with a few thousand downloads a month, a documentation site built with Loom itself, and outside contributors who’ve added widgets I never would have. It’s the project that taught me maintaining open source is a design job as much as a code one — every API you ship, you ship forever."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "prism-shader-playground",
+    "status": "published",
+    "authorSlug": "kade-nakamura",
+    "categories": ["Tooling"],
+    "tags": ["WebGL2", "TypeScript", "Shaders"],
+    "body": {
+      "title": "Prism — a shader playground in the browser",
+      "excerpt": "A live fragment-shader editor with hot reload, error mapping and shareable links — the tool I wanted while learning GLSL, so I built it.",
+      "featuredImage": {
+        "$asset": "void-prism"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Role: solo build, open source. Timeline: two months to launch. Prism is a browser-based playground for writing GLSL fragment shaders — code on one side, a live preview on the other, updating as you type."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Learning shaders is brutal because the feedback loop is broken: you write maths that describes a colour per pixel, and a typo gives you either a black screen or a cryptic driver error with no line number. Prism closes that loop — every keystroke recompiles the shader and either shows the result or points at the exact line that broke."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hard part"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "GLSL compile errors are reported against the driver’s view of the source, not yours — with your uniforms, your boilerplate and your prelude all injected ahead of the code you actually wrote. Mapping a driver error at \"line 214\" back to \"line 12 of what the user typed\" meant tracking every line I prepended and rewriting the error offsets before showing them. Nobody notices when it’s right; everybody rage-quits when it’s wrong."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Hot reload without flicker was the other one: swap the compiled program between frames, keep the same textures and uniforms bound, and never drop to a black frame while the new shader links."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The stack"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "TypeScript and raw WebGL2 — no framework, because the whole app is one canvas and one editor. Monaco for the code pane, a small GLSL grammar for highlighting, and URL-encoded state so any shader is a shareable link with nothing stored server-side."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What shipped"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Prism went out as a free, open tool and found its way into a couple of university graphics courses. The shareable-link feature turned it into a way people swap shaders in chat, which I never planned and now think is the best thing about it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "signal-audio-reactive",
+    "status": "published",
+    "authorSlug": "kade-nakamura",
+    "categories": ["Interactive"],
+    "tags": ["Web Audio", "Canvas", "Generative"],
+    "body": {
+      "title": "Signal — visuals that listen",
+      "excerpt": "An audio-reactive generative visual for a live show — sound comes in, geometry moves in time, and it never renders the same frame twice.",
+      "featuredImage": {
+        "$asset": "void-signal"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Role: solo build, commissioned. Timeline: five weeks. Signal is an audio-reactive visual built for a musician’s live set — a generative system that takes the live audio feed and turns it into moving geometry projected behind the stage."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it is"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It’s the visuals you half-notice at a good show: waveforms that bloom on a kick, fields that ripple with the bass, a whole scene that’s clearly listening to the music rather than looping a pre-rendered clip. Because it’s generative and driven by the actual audio, every performance looks different, which is exactly what a live act wants."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The hard part"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Audio analysis is deceptively hard to make feel musical. The raw FFT is jittery and noisy — map it straight to motion and you get a twitchy mess that reacts to every hiss. The work was in the smoothing: beat detection with hysteresis so a kick reads as one hit, envelope followers so energy decays like a real instrument, and separating bass, mid and treble into bands that drive different parts of the scene."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "And it had to be bulletproof live. A dropped frame or a crash mid-set isn’t a bug report, it’s a ruined show — so it runs with a fixed memory budget and degrades rather than stalls if the machine gets busy."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The stack"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Web Audio API for analysis, Canvas and WebGL for the render, and a small generative system of my own where a handful of parameters — energy, tempo, band balance — drive a much larger visual. TypeScript throughout, with a control panel the VJ drives from a second screen."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What shipped"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Signal ran a full tour without a single crash, driven live off the front-of-house audio feed. It’s since been adapted into an installation version that listens to a room instead of a mixing desk — same engine, different microphone."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

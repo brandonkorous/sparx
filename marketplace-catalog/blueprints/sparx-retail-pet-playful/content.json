@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "toys-that-survive-the-zoomies",
+    "status": "published",
+    "body": {
+      "title": "How to buy a dog toy that actually survives the zoomies",
+      "excerpt": "A shelf of half-dead toys is a rite of passage — but it doesn’t have to be. Here’s how to pick toys that last, and match them to how your dog actually plays.",
+      "featuredImage": {
+        "$asset": "post-play"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every dog owner has the drawer: the deflated ball, the plush with the stuffing pulled out, the rope frayed down to a nub. Toys don’t have to be disposable, though. The trick is buying for the way your dog actually plays, not the way the packaging looks — because a great toy for a gentle cuddler is a ten-minute snack for a power chewer."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Know your dog’s play style"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Watch what your dog does with a toy in the first five minutes and you’ll know their type. Chewers work at a toy with their back teeth and want something dense and tough. Tuggers want a rope or a handle and a good game with you. Shredders love the satisfying rip, so a crinkle plush or a puzzle scratches the itch. And fetchers just want to run — give them a bright, bouncy ball they can spot in long grass. Buy against the type, not against the price tag, and toys last far longer."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Rotate, don’t pile on"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Here’s the cheat code: dogs get bored of what’s always there. Instead of tipping the whole toy box out at once, keep a handful in rotation and swap them every few days. A toy that vanishes for a week comes back feeling brand new, your dog stays interested, and everything lasts longer because nothing gets hammered non-stop. It’s the same reason our Mega Bundle covers a few different play styles — so you can find the winner, then keep it exciting."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "treats-you-can-feel-good-about",
+    "status": "published",
+    "body": {
+      "title": "Treats you can feel good about handing over",
+      "excerpt": "You give treats dozens of times a day, so they add up fast. Here’s how to read a treat label in ten seconds and pick ones that won’t undo all your good work.",
+      "featuredImage": {
+        "$asset": "post-treats"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Treats are the currency of a happy dog — the “good sit”, the coming-when-called, the just-because. But because you hand them over so often, a bad treat does a lot of quiet damage: too much sugar, mystery fillers, a label that reads like a chemistry set. The good news is that spotting the good ones takes about ten seconds once you know what you’re looking at."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Read the first ingredient"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ingredients are listed by weight, so the first one is most of what your dog is actually eating. You want a named protein right at the top — “chicken”, “salmon”, “beef” — not a vague “meat meal”, “animal derivatives”, or a grain doing the heavy lifting. If sugar, glycerine or a colour you can’t pronounce shows up early in the list, put it back. Real food doesn’t need dressing up."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Match the size to the job"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For training, smaller is better — you’re rewarding often, so a treat the size of a pea keeps your dog keen without filling them up or wrecking their dinner. Save the big chews for downtime, when a longer-lasting treat gives busy paws and jaws something calm to do. It’s exactly why our monthly box mixes training-sized nibbles with a couple of proper chews: the right treat for the moment, all with labels you can actually read."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "first-week-with-a-new-pup",
+    "status": "published",
+    "body": {
+      "title": "The first week with a new pup (keep it fun, keep it calm)",
+      "excerpt": "A new puppy is pure joy and total chaos. Here’s how we help a new arrival settle — more about safety and play than serious training on day one.",
+      "featuredImage": {
+        "$asset": "post-newpup"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The day a puppy comes home, everything is enormous and new — the floor, the smells, the giant loud humans who keep wanting to cuddle. Whether it’s an eight-week bundle or a slightly older rescue, the most useful thing you can do in week one isn’t drilling commands. It’s making them feel safe, and letting the fun come in small, happy doses. A relaxed dog learns fast; an overwhelmed one just copes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Give them a spot that’s theirs"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Before anything else, set up one cosy place that belongs to the pup and nobody else — a soft bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves off to it, leave them completely alone, even when the kids are desperate for one more cuddle. A dog that learns it can retreat and won’t be followed settles far faster, because it always has somewhere to switch off."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Play little, play often"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Puppies have a short attention span and a shorter fuse, so keep play sessions brief, silly and frequent rather than long and intense. A minute of gentle tug, a rolled treat to chase, a squeaky toy squeaked just out of reach — then a rest before it tips into overtired zoomies and tears. Little-and-often builds a dog who thinks the world (and you) is brilliant, and that happy foundation makes every bit of real training later go far, far easier."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

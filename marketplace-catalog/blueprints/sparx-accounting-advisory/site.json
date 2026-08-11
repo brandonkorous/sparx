@@ -1,0 +1,2205 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "2cdf9eb1-f379-4d04-a8e1-a87de582a118",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "7a0c8e27-a6a5-40d5-bff2-46e47f04f820",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "9a84151f-6c16-4efa-a632-a4df9ca9829a",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "feb34b66-d038-413a-bc19-af0f156e5b70",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "69d7f754-0f97-4244-afd1-3c19aeed0a60",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e4beeff4-5429-4aa2-a624-efa2df585b26",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "2a445652-580a-4984-87d2-e504b0bb73b0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "3a5f6dd3-7503-48d2-86a4-4eb1eb07c4f8",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "87458782-3f6e-432a-96ef-bea03dd1b1a7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "276ea580-6fcf-4a62-8614-33e054872fd5",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "0da54cfa-e8bd-49c5-84f7-d07b428c6f47",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8338d07c-cc25-45aa-a6ea-78640aec88af",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "2a8d5c09-68d5-4b02-aa4e-8ed4f4df99c5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "3fb7782f-d581-48a4-8b2a-04b18b28521f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "02507859-24e4-4910-a113-475fe383af71",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "311593fb-97b7-4b80-a4dd-64accbec2d3b",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "3a193a6b-7cd1-4979-904d-7f5f1e0c75ae",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "cbbd93fb-3a18-4e73-8bd8-4a520e669d78",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "a353619c-c09c-46c1-8bca-7aa862d92254",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "d200932f-3c8b-46ca-adad-e9db57be7f48",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "699823f4-1026-49b6-938d-48a8378223e7",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "94b6811c-3721-4b3e-9b5c-be7823fad079",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "836e1431-c552-40a9-a6fb-eaff8a74b324",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "be835733-bf4d-4759-b8ae-9d34b6aac6cc",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "5e2ef68c-332c-4f04-9175-b8dd2e7929ff",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "3c0d8f84-e35d-4b22-9b0d-8b9cec9b75cb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0f83aeab-3f66-443a-b4c7-66a5f8d51020",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "42033d4b-8729-4427-9240-88f49e579680",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e89a24cc-69dd-4527-bafc-95b19194430f",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "6d2a0b39-728d-4816-8303-b02387cf6054",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "69c34fda-626e-47e1-a41a-e83e2592773e",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "5873db68-fee9-4878-9530-00ea727c3794",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3d47f8f0-d40e-4544-986d-d171ccd61e5f",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "c8b5f471-8fa8-47e9-b73a-f6031ea327cf",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "26d5c6a1-df59-43b2-8998-2a695b09724b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "feccb8f4-e40e-41cf-afd4-d7089592975f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6b5c6da6-482e-4b4d-b7ae-931894d87c5b",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "1c1c2224-791d-4990-8dbf-74096feb68ca",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2a1cd473-7b96-40a4-970a-81c7a37728d2",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "21b9c450-f72a-4b5d-a760-aabe72914f13",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "299f5646-c144-4eb1-8b3a-a9a5058930d8",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "f966a9ab-d296-447d-a27f-6e32106161ed",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "890058dd-4a28-41a3-a6be-bd6505e724ac",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "382bce7b-01b4-453a-ba27-7a7373e6ea4a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "6b123c08-d5bd-4f7b-9141-bfd243a435f8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "01b9c974-b473-4274-bed9-82f29eb2a4d3",
+                  "ord": "a1"
+                }
+              ],
+              "id": "55776a45-890a-4fc0-88cd-d32ef32da460",
+              "ord": "a0"
+            }
+          ],
+          "id": "7d4160d2-c8ac-470e-b77c-41080f06d6bb",
+          "ord": "a2"
+        }
+      ],
+      "id": "5ff3ce78-b68f-4f59-8486-0cf6a12f37e9"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Northpoint CPA — advisory-led accounting & wealth",
+      "seoDescription": "Northpoint CPA is a modern advisory and wealth firm — proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners. Book a strategy consultation online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2ee4d12d-5e62-4c2e-b773-8da1e9b5de03",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1713461983836-de0a45009424?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluYW5jaWFsJTIwYWR2aXNvciUyMG9mZmljZXxlbnwwfDB8fHwxNzg2MzkwMDYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A calm, glass-walled boardroom at dusk over a city skyline",
+                  "loading": "eager"
+                },
+                "id": "3f19d717-54bd-4362-8023-408822cc9f0b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "b6fdf7ea-16bb-478b-98ab-641fd8db20fb",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Advisory that works before the tax bill does"],
+                    "id": "a206e177-a0d3-4ae2-afb9-7279b28b94ec",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners — built around where you’re going, not just what already happened."
+                    ],
+                    "id": "2dd0691f-63a9-4d6c-b836-fee468359c0f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a strategy consultation"],
+                        "id": "04985a79-333f-4c97-9f07-a696efab7c7b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See how we work"],
+                        "id": "128419ef-12b4-4d39-a826-4246e83af215",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8eaba4cb-e7ff-4bd2-9aa3-9d0dbf2c8c92",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0c712373-85fb-43af-a4c3-861b73059b7c",
+                "ord": "a2"
+              }
+            ],
+            "id": "c7b8b5df-298c-40b5-bc8b-2039e2312fcf",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Proactive tax strategy"],
+                            "id": "b40621d5-f4c6-489b-a8aa-85da7ee2dcca",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We plan the year, not just file it — the moves that lower next April’s bill are made in the months before it, together."
+                            ],
+                            "id": "0f6d89c6-2fab-4e0d-a19d-cd282cdd6f6d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c440f22d-11ad-46bb-a760-a1cb2a079ab6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A dedicated CPA advisor"],
+                            "id": "a843e29e-fe02-4988-a6a3-b9c8022903b9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You work with one senior advisor who knows your numbers and your goals — not a rotating desk and a portal ticket."
+                            ],
+                            "id": "07f23f5d-4ad8-471b-977a-74635dc1a173",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "adaabe37-0621-4a05-bdcd-5a0ad2fe7450",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Quarterly business reviews"],
+                            "id": "b485a93d-c5ae-4f07-987e-b37848a2404a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A standing conversation about margins, cash and what’s next, so decisions are made on real figures instead of a gut feel."
+                            ],
+                            "id": "324197b7-d095-4f75-b5c7-30dc6f6e2696",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a7e15c57-ce53-4146-a7aa-6ad120bf5b76",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "644a56a2-5743-4c11-ace2-c4aff811216e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "528a9da3-8589-4cbc-bc72-88eb783c047e",
+                "ord": "a0"
+              }
+            ],
+            "id": "8d585550-8ae0-467b-b2b6-34623879c2b7",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways to work with us"],
+                        "id": "8fef226b-b195-4d03-a890-70b2793d9394",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every relationship starts with a complimentary strategy call. Paid advisory sessions apply toward your engagement. Full details and live availability are on the booking page."
+                        ],
+                        "id": "7e5491b9-1a16-49c9-8462-371c8e7e37b6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8c4f3c8f-e557-4d0f-a815-6725952047e9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Strategy consultation"],
+                                "id": "ffe9fdcb-aa34-48ae-a039-d57c113a68d9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "c5bce5b0-bf73-4af2-b614-d32d45ff21fb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e43aa317-6fc2-40f1-8452-dabbdd567ad5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "0858fa5c-df4f-468c-94bd-85a8dda8b83a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A complimentary call to map where we can help most."],
+                            "id": "16bf632c-6324-4796-be31-74951486bd6d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7cb15e3b-dd17-4635-982c-bfb142e74c57",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Tax strategy review"],
+                                "id": "f0619032-1cc6-4b37-9990-9d67f9348260",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$450"],
+                                "id": "6c241597-87d2-4449-b52e-a4f84c378095",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "895a87b5-3942-47e6-847e-e6c5f37f4484",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "7c4d09be-0c5c-4ea9-996d-0e284b6f3373",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Forward-looking, multi-year tax planning."],
+                            "id": "e8326d23-b4ad-4230-a305-be598f9057d4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ffc788ee-9212-47f3-8b75-6d67d0a20516",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["CFO advisory consult"],
+                                "id": "ebbdd802-bb75-4be7-83bb-a66fc7d79928",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$550"],
+                                "id": "4717a7e3-3285-4301-9f08-71727283ab05",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a5bff76b-6bf7-4c3a-ad16-fcd7effe4d98",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "14dc4898-5093-426c-b2a9-639456d9a5b9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Cash flow, margins and the numbers behind the call."],
+                            "id": "49b40a7a-99b3-4947-9632-418d9e63d93e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f48c7cab-1a31-45cb-8073-303acdd0f3f3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Business valuation consult"],
+                                "id": "c1edb855-373e-44a0-b110-ac5f4a075b8b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$750"],
+                                "id": "52e63d33-d256-4dc7-b907-ac79b14649f3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "434dd887-d313-4a3e-9bc8-28990295f625",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "80375b7b-ab4c-4abb-9fe1-b106ada736ce",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A defensible number for a sale, buy-in or exit."],
+                            "id": "9ead75d2-f412-4d86-8213-41d17dc43686",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1742cfda-7c14-427a-98c6-4a1de926c855",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Wealth planning consult"],
+                                "id": "5c6d2087-b91a-4336-a06a-7704bb592311",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$500"],
+                                "id": "2058d340-a195-46f1-8be9-a195129408fc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a4fdc4bc-5379-4242-b783-0788883a87e9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "27d45433-ef6b-4724-9f41-379e3a728821",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Tax-efficient wealth, business and personal, aligned."],
+                            "id": "d91a7781-05c5-4b1a-ab59-79ac65c24f13",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fe341b19-e680-4e43-8c47-551e57146d1a",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Retirement planning consult"],
+                                "id": "f0918256-ca0f-4bb1-96a3-3c626b193885",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$450"],
+                                "id": "ff83ed32-280c-4fd6-9515-860274641dd0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "be13a6d6-9c0d-446a-89bc-0342841c4b22",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "e21c490d-d954-4f07-a2d3-810f07cf89f4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Contribution strategy, exit timing and real income."],
+                            "id": "563fcbb4-7939-4d58-a3aa-9811fc846305",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fa2f39ce-737e-440b-80ed-32c763b8f225",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "38963e6f-0a11-4e6a-afb2-d603fa662b34",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "40c345d4-4600-4b1b-94ab-bf07f0e50262",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "72544b54-80be-44de-9fa1-48065be105f1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "42c0efda-96b7-4733-ba97-9a078286e423",
+                "ord": "a0"
+              }
+            ],
+            "id": "ad09c951-34f1-4aa4-9f83-14d1aea067ba",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3MlMjBtZWV0aW5nJTIwYm9hcmRyb29tfGVufDB8MHx8fDE3ODYzOTAwNjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "Advisors reviewing figures around a long table in soft light",
+                      "loading": "lazy"
+                    },
+                    "id": "4fc52baf-414d-4136-93c0-409f99296cd7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The advisory approach"],
+                        "id": "73f532b8-7fad-4c7d-82e9-dc74f7e7f89c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most firms show up at tax time to record what already happened. We work the other way around — the strategy is set early, revisited every quarter, and measured against the goals you actually care about."
+                        ],
+                        "id": "349c0c49-3e75-44ca-8a8c-e57bf1edb824",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The result is fewer surprises, a lower long-run tax burden, and a clear line of sight from this year’s decisions to where the business and your wealth are headed."
+                        ],
+                        "id": "c5f48713-b5e1-42e3-973b-9d72754eed9d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a strategy consultation"],
+                            "id": "4b316059-ff9b-42ac-a9a2-930458ec90bd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "25b3f967-7dc6-49aa-9302-fe544e461f5a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "755cbdfc-5e52-4fef-9e8f-62ca62558f88",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7174e659-36b3-499a-8ba8-89a7140e9cfc",
+                "ord": "a0"
+              }
+            ],
+            "id": "7f549af7-f149-4149-9d4c-f1dec40caf2b",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your advisory team"],
+                        "id": "315a3ad1-f481-4740-901b-8a5447a708c7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with the same advisor from the first call onward."
+                        ],
+                        "id": "b53a4386-cc74-4566-a070-e8b12ead6c76",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c965b10e-0a9e-4fb9-b136-7c5c43698eaa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1696960190591-60d693f4d50d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0JTIwcHJvZmVzc2lvbmFsfGVufDB8MHx8fDE3ODYzOTAwNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Elena Vasquez, CPA and managing partner",
+                              "loading": "lazy"
+                            },
+                            "id": "f2a5d32b-de96-42e0-88d6-719adead0b41",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Elena Vasquez, CPA"],
+                                "id": "5ad94c47-2adb-4952-a78a-52cd9156ab68",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Managing partner"],
+                                "id": "92f8fcb7-4b9d-4743-8254-95976b164d4a",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Tax strategy, entity structuring and valuation for founders and high earners."
+                                ],
+                                "id": "6586254a-eca0-4a88-94e7-a0c2a658ff5c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "500a9a70-1ec5-444c-9ffb-4a9a32e775ec",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "68b8248f-96cb-4209-b8bd-6b48b8e5089f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3NtYW4lMjBwb3J0cmFpdCUyMHByb2Zlc3Npb25hbHxlbnwwfDB8fHwxNzg2MzkwMDcxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Bell, CPA and CFO advisory lead",
+                              "loading": "lazy"
+                            },
+                            "id": "d6e67c14-3ff9-4e04-aa6a-cca65a1e4af6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Bell, CPA"],
+                                "id": "d1614cdb-f574-4cd4-9742-8041bfcdd563",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["CFO advisory lead"],
+                                "id": "013bb908-bebb-443c-a029-725d0310feb9",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Outsourced-CFO guidance — forecasting, margins and the decisions behind them."
+                                ],
+                                "id": "2c43a572-116b-4f19-a0d7-1646398a7ea7",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "399e5984-6abd-48d4-b7e9-30da37f5c3f5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "980e3299-c446-4041-a9f9-b056afc5e14a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBleGVjdXRpdmUlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDc0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Anand, CFP and wealth planning director",
+                              "loading": "lazy"
+                            },
+                            "id": "e524646f-90c6-4d54-91a3-953579dcd1fa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Anand, CFP"],
+                                "id": "84509d12-f540-47b9-8eea-a3228ef702eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Wealth planning director"],
+                                "id": "21c52570-5c43-438b-8c35-6b5110c6b783",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Wealth, retirement and succession planning that ties business to personal."
+                                ],
+                                "id": "07614b4f-ea34-48c2-b9fb-b76343ad33ec",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0485f378-badb-464e-aac2-22364be126d0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fc6f5db6-881c-49e2-b876-d876187a0546",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "09a304d3-a3dc-4ac2-bae6-fb11af43307e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f3ac9b6b-6a66-4d78-ba31-14534b7df8a2",
+                "ord": "a0"
+              }
+            ],
+            "id": "dbe94a3d-7a33-4367-93e8-f37aebb00aab",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year — and for the first time I actually understand why.”"
+                    ],
+                    "id": "6436d037-9e5d-43dc-be23-f2758c147333",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Daniel R., founder of a $9M services firm"],
+                    "id": "bee8bad8-77cb-43be-8382-cfee0d8696ac",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "fd015a68-68f8-4551-b731-78570b19a0b3",
+                "ord": "a0"
+              }
+            ],
+            "id": "d66b2d84-02b2-4c93-b151-63a6d4af0501",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Start with a strategy conversation"],
+                    "id": "12fbab0a-3e08-4455-be85-33e7ab9525a4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "A complimentary 45-minute call. Pick your advisor, choose a time, and see exactly where we can add value. It takes about a minute to book."
+                    ],
+                    "id": "ee6b602c-1793-4133-bcb4-5e1571017dde",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a strategy consultation"],
+                    "id": "d5f7723a-9e9c-41cb-b206-2d7d5f7f5f95",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "651230bd-a734-4357-b5d0-9651b1e72305",
+                "ord": "a0"
+              }
+            ],
+            "id": "04a503c2-f967-4e5d-bdb0-c554f8c36b33",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Northpoint CPA",
+      "seoDescription": "See what Northpoint CPA offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "da4dff7f-e2cc-422f-afa8-cc6121c921ae",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3MlMjBtZWV0aW5nJTIwYm9hcmRyb29tfGVufDB8MHx8fDE3ODYzOTAwNjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Advisors reviewing figures around a long table in soft light",
+                  "loading": "eager"
+                },
+                "id": "465b3480-58e5-4119-94cf-fb67d4a28809",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "3b92def4-b47a-45f7-86ee-27e0b1381166",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your consultation"],
+                    "id": "b4243598-620e-4944-af03-fd83949d5271",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a session to see the fee and live availability, then pick your advisor and a time that works. Every engagement begins with a complimentary strategy call."
+                    ],
+                    "id": "7f907f9d-a666-4ec9-96bf-c501095ad340",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See sessions below"],
+                        "id": "2a30ca06-5c0f-4a0e-96ab-70d7dfc7ceca",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "716846dd-9cc0-49d5-bd19-45cb588255ba",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8ab003eb-5587-4875-ad21-1d7900a45470",
+                "ord": "a2"
+              }
+            ],
+            "id": "465a5d7f-7437-4f15-9bdb-eab6fc22eaec",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "8c1f2bc1-e6e9-4164-aa47-1b72b9f7a51d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Northpoint CPA",
+      "seoDescription": "Who Northpoint CPA is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "97058040-a3cb-4dcc-bbc3-54d3d38c9938",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1713461983836-de0a45009424?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluYW5jaWFsJTIwYWR2aXNvciUyMG9mZmljZXxlbnwwfDB8fHwxNzg2MzkwMDYxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm, glass-walled boardroom at dusk over a city skyline",
+                      "loading": "lazy"
+                    },
+                    "id": "377d07d0-504c-4129-b018-c85b14098dea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Northpoint CPA"],
+                        "id": "dfc9c98b-6e30-473b-bb01-9e7af611d249",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Northpoint CPA is a modern advisory and wealth practice for established businesses and the people who run them. We pair the rigor of a traditional CPA firm with the forward view of a CFO and the discipline of a private wealth office."
+                        ],
+                        "id": "ce001061-02c5-4b58-85ab-e9d03199ac43",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We took the parts of accounting that clients value — the strategy, the counsel, the person who knows their whole picture — and made them the whole relationship, not the afterthought at year-end."
+                        ],
+                        "id": "49bf791b-2600-4526-9f23-40c1d617dcad",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a strategy consultation"],
+                            "id": "4cce59ef-2936-49ee-9a1c-c40c3066fdd8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "25294dca-0440-4417-8713-6c0756025163",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "bbd82fda-f424-463b-880b-14a35b7371f9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c2ae2925-9e02-4d69-a8d6-0bb865c2b212",
+                "ord": "a0"
+              }
+            ],
+            "id": "f9d9635f-2fa7-441d-aa86-c75d42863dae",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "ffdc97a8-b7e0-4415-a27e-155cda528798",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Strategy first"],
+                            "id": "a132314a-6cdb-4742-922b-3d1cb30a1219",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every engagement opens with a real conversation about the business, the numbers and where you want to be in three years."
+                            ],
+                            "id": "a715603c-065b-4327-8252-94ab709fcbf7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4a53806a-a7a5-43f4-9ef9-9140bdb46bb4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One advisor, whole picture"],
+                            "id": "e19444b7-4117-4436-a3c0-9e97401d1cd2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Your advisor holds the full view — tax, cash flow, valuation and personal wealth — so the advice is joined-up, never siloed."
+                            ],
+                            "id": "9718fc46-307a-4d10-a446-d13b17d3c53d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bcaf2609-7221-4189-b7e6-c29b338267e9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Measured every quarter"],
+                            "id": "1e28795d-0b52-466a-94ef-0ba729ab5145",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We revisit the plan on a standing quarterly cadence, so strategy keeps pace with the business instead of drifting out of date."
+                            ],
+                            "id": "36121bcf-f382-4d6c-9ff7-14cff8a31dd3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d3a9b4e9-d941-45f0-8198-e938dbaf5987",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f13264a1-1ec8-4f6d-901c-df534ca6f238",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9e06905e-df66-4e49-84d2-b70556508a01",
+                "ord": "a0"
+              }
+            ],
+            "id": "d5aa6a11-ca89-4a2c-90a6-acfd156ff543",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Northpoint CPA",
+      "seoDescription": "Where to find Northpoint CPA, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "24231171-1389-4344-a767-7c6280a72070",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the office"],
+                        "id": "22d4aee3-1a83-4a49-b730-6c7e24c00bf0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Northpoint CPA"],
+                            "id": "58627602-1a2f-4d83-b2d9-9df5c06e84e0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["4200 Meridian Avenue"],
+                            "id": "782be5e7-0762-4805-aabd-6eef0a645915",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 900 · Denver, CO 80202"],
+                            "id": "769a8491-f253-4ae2-99ed-f4e0f630363b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "486e964d-a112-438a-bdb5-a21fd3abf8b1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Thursday"],
+                                "id": "1df5bc5e-7cde-41c2-9824-3ad17b58a8c0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:30 – 5:30"],
+                                "id": "697f054e-6ba4-4d78-a009-251712c75aff",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4d46d0e2-02a9-4ac4-9788-b5c36668e7d7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday"],
+                                "id": "b2b1f25a-98f4-41f7-83b9-3d30f65b214b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "14f7c962-e6c3-4abf-9928-0057c2759ac4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f8e38147-9fb0-4085-92d7-ac46424a6f66",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "9c9f5f90-6741-41f2-bade-9eafae8537c5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "6c3e13ff-4493-45b4-b086-029942d94f4e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4d2097a5-fbc4-4214-8466-100734955364",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "88ae2e5c-47fb-45e0-9ceb-27deff6074ae",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "c4e9b2bf-444a-4b4c-8343-ed92fcca3735",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8051f820-6036-4c7a-ab29-6762c0d8a55e",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "8fa43afd-3b48-4861-823f-6d693cc8fa34",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4e713f14-bfef-4184-8043-157fda42db7f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "4200 Meridian Avenue, Denver, CO 80202",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "184e95f2-bc41-4bf6-badd-5ece6f08e229",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "568e2ada-50cb-4ba5-92c0-bfeb12559f4f",
+                "ord": "a0"
+              }
+            ],
+            "id": "02835e20-17c2-4cc5-aefa-dd600788352a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "280d3ca4-21a5-489d-a85c-d803a70960bc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your complimentary strategy call online — no phone tag."
+                    ],
+                    "id": "7acdb75c-9268-477a-8394-c4631e83b717",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a strategy consultation"],
+                    "id": "c576718b-7b1d-4473-ba68-d98c602ca6ad",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "adff888c-d7ef-44b6-a20b-1f8a8acdb7a2",
+                "ord": "a0"
+              }
+            ],
+            "id": "49f0eb80-cf3c-46f9-a767-259099405565",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "northpoint",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.006 90)",
+      "--color-base-200": "oklch(94% 0.008 88)",
+      "--color-base-300": "oklch(89% 0.01 86)",
+      "--color-base-content": "oklch(24% 0.035 255)",
+      "--color-primary": "oklch(34% 0.07 258)",
+      "--color-secondary": "oklch(38% 0.03 258)",
+      "--color-accent": "oklch(70% 0.11 85)",
+      "--color-neutral": "oklch(28% 0.02 258)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 258)",
+      "--color-secondary-content": "oklch(98% 0.01 258)",
+      "--color-accent-content": "oklch(15% 0.02 85)",
+      "--color-neutral-content": "oklch(98% 0.01 258)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.11 85)",
+      "--color-highlight-content": "oklch(15% 0.02 85)",
+      "--color-border": "oklch(89% 0.01 86)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(23% 0.02 258)",
+      "--color-base-200": "oklch(19% 0.018 258)",
+      "--color-base-300": "oklch(15% 0.014 258)",
+      "--color-base-content": "oklch(94% 0.006 90)",
+      "--color-primary": "oklch(72% 0.09 258)",
+      "--color-secondary": "oklch(80% 0.02 258)",
+      "--color-accent": "oklch(80% 0.12 85)",
+      "--color-neutral": "oklch(84% 0.015 258)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 258)",
+      "--color-secondary-content": "oklch(15% 0.02 258)",
+      "--color-accent-content": "oklch(15% 0.02 85)",
+      "--color-neutral-content": "oklch(15% 0.015 258)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.12 85)",
+      "--color-highlight-content": "oklch(15% 0.02 85)",
+      "--color-border": "oklch(15% 0.014 258)"
+    }
+  }
+}

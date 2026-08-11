@@ -1,0 +1,42 @@
+[
+  {
+    "id": "medspa-editorial-hero",
+    "url": "https://images.unsplash.com/photo-1763873993447-1d0be71a96d9?w=1600&q=80",
+    "alt": "A calm, light-filled aesthetics studio in warm champagne tones"
+  },
+  {
+    "id": "medspa-editorial-interior",
+    "url": "https://images.unsplash.com/photo-1782159981479-5e90597f284a?w=1600&q=80",
+    "alt": "A private treatment room with soft, natural light"
+  },
+  {
+    "id": "medspa-editorial-elise",
+    "url": "https://images.unsplash.com/photo-1706795033728-9232ef548a16?w=1600&q=80",
+    "alt": "Élise Marchetti, lead aesthetician"
+  },
+  {
+    "id": "medspa-editorial-nadia",
+    "url": "https://images.unsplash.com/photo-1741934023052-26baf5535088?w=1600&q=80",
+    "alt": "Nadia Okafor, nurse injector"
+  },
+  {
+    "id": "medspa-editorial-camille",
+    "url": "https://images.unsplash.com/photo-1757689373248-a6cd07328ba5?w=1600&q=80",
+    "alt": "Camille Rousseau, aesthetician and laser specialist"
+  },
+  {
+    "id": "medspa-editorial-work1",
+    "url": "https://images.unsplash.com/photo-1741896135512-084b251887f7?w=1600&q=80",
+    "alt": "Lit-from-within skin after a signature facial"
+  },
+  {
+    "id": "medspa-editorial-work2",
+    "url": "https://images.unsplash.com/photo-1741896136069-f3588d8993b5?w=1600&q=80",
+    "alt": "The calm, boutique-hotel treatment space"
+  },
+  {
+    "id": "medspa-editorial-work3",
+    "url": "https://images.unsplash.com/photo-1743309026555-97f545a08490?w=1600&q=80",
+    "alt": "Considered detail in the studio"
+  }
+]

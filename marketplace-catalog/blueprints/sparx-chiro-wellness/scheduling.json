@@ -1,0 +1,358 @@
+{
+  "policies": [
+    {
+      "handle": "align-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to someone else who needs relief. We’ll send a friendly reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "align-no-show",
+      "name": "Reserved-room hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Longer visits reserve a treatment room and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without notice. Reschedule in time and the hold simply releases."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-ren",
+      "name": "Dr. Ren Ishikawa",
+      "kind": "staff",
+      "skillTags": ["adjustment", "exam", "wellness"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dr-sol",
+      "name": "Dr. Sol Marín",
+      "kind": "staff",
+      "skillTags": ["adjustment", "posture", "wellness"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "mira",
+      "name": "Mira Novak",
+      "kind": "staff",
+      "skillTags": ["massage", "recovery"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room 1",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Treatment Room 2",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "new-patient-exam",
+      "name": "New patient exam",
+      "description": "Your first visit: a thorough consultation, a gentle exam and a plan tailored to how you actually feel and move.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-no-show"
+    },
+    {
+      "handle": "adjustment",
+      "name": "Chiropractic adjustment",
+      "description": "A gentle, precise adjustment to ease tension and restore easy movement. The everyday visit most people come in for.",
+      "durationMinutes": 20,
+      "priceCents": 6500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["adjustment"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    },
+    {
+      "handle": "wellness-visit",
+      "name": "Wellness visit",
+      "description": "A relaxed maintenance visit for anyone on a plan — a check-in, an adjustment and small tweaks to keep you feeling good.",
+      "durationMinutes": 30,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["wellness"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    },
+    {
+      "handle": "posture-assessment",
+      "name": "Posture assessment",
+      "description": "A focused look at how you sit, stand and work — with simple, doable changes to take the strain off your neck and back.",
+      "durationMinutes": 40,
+      "priceCents": 8500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["posture"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    },
+    {
+      "handle": "massage-add-on",
+      "name": "Therapeutic massage",
+      "description": "A calming, tension-releasing massage — lovely on its own or added before an adjustment to help everything settle.",
+      "durationMinutes": 60,
+      "priceCents": 9000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["massage"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    },
+    {
+      "handle": "follow-up",
+      "name": "Follow-up adjustment",
+      "description": "A shorter return visit to keep your progress on track between wellness appointments.",
+      "durationMinutes": 15,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["adjustment"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    },
+    {
+      "handle": "wellness-plan-consult",
+      "name": "Wellness plan consult",
+      "description": "A free, no-pressure chat about a longer-term wellness plan — what it covers, what it costs, and whether it’s right for you.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["wellness"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "align-standard"
+    }
+  ]
+}

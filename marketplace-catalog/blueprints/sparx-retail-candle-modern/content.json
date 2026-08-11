@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "whats-in-a-lumen-candle",
+    "status": "published",
+    "body": {
+      "title": "What’s actually in a Lumen candle",
+      "excerpt": "Most candles list one ingredient: “fragrance.” Here’s our whole label, and why each thing on it is there.",
+      "featuredImage": {
+        "$asset": "post-ingredients"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Pick up almost any candle and read the box. If it lists ingredients at all, you’ll usually find one word — “fragrance” — standing in for a blend of dozens of compounds the maker doesn’t have to disclose. We think that’s backwards. A candle is something you burn in a closed room for hours, breathing the air it changes, so you ought to be able to read exactly what it’s made of. Here’s the whole list, and the reason for each part."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Coconut-soy wax and a cotton wick"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The wax is a coconut-soy blend. Straight soy is clean but can burn unevenly and struggle to throw scent; coconut wax carries fragrance beautifully and holds a smooth surface. Blended, they give a slow, even burn with a strong-but-not-cloying throw and no paraffin — which is the petroleum-derived wax responsible for most of the black soot you see creeping up a jar. The wick is braided cotton with no lead or metal core, so nothing but plant wax and cotton is ever alight."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Fragrance, phthalate-free — and named"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Our scents are built from fragrance and essential oils blended without phthalates or parabens — two families of additive common in cheaper fragrance that plenty of people would rather not have off-gassing into their living room. We keep the load measured to the gram so a scent is the same strength every time you buy it, and we print the notes on the box, not a marketing word. Fresh Linen is exactly that: cotton, a little bergamot, clean musk. No mystery, because there doesn’t need to be one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-the-refill-works",
+    "status": "published",
+    "body": {
+      "title": "How the refill system works (and why we built it)",
+      "excerpt": "Buy the vessel once, then top it up for less and no new glass. Here’s the two-minute routine.",
+      "featuredImage": {
+        "$asset": "post-refill"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single most wasteful thing about candles is the part that has nothing to do with the candle: the glass. A vessel gets used once, burns down, and goes in the bin or the recycling — a heavy, hard-to-recycle object made for a few weeks of light. We designed the whole Lumen range around not doing that. The ceramic vessel is the durable part you keep; the candle is the part you replace."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The two-minute routine"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When a candle burns down to the last half-inch, retire it. Pop any leftover wax out — a minute in the freezer shrinks it and it lifts straight out — then wash the vessel with warm soapy water and dry it. Drop in a refill, trim the new wick to a quarter inch, and light it. That’s the whole thing. The vessel looks and works exactly as it did new, and you’ve spent about a third less than buying another full candle."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What it adds up to"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A refill costs less than a full candle because you’re not paying for the ceramic again, and it ships in a flat recycled-kraft pouch instead of a boxed glass jar — lighter to post, smaller to store, nothing to throw away. Refill a vessel four or five times and you’ve kept that many jars out of landfill and spent noticeably less doing it. Good for the shelf, good for the bill, good for the bin. That’s the whole argument, and it’s a quiet one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "get-a-clean-even-burn",
+    "status": "published",
+    "body": {
+      "title": "Two habits for a clean, even burn",
+      "excerpt": "One before you ever light it, one every time after — and a candle lasts longer and never tunnels.",
+      "featuredImage": {
+        "$asset": "post-styling"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A clean candle can still burn badly if you don’t give it two small things. Neither takes any effort once you know them, and together they mean the same candle lasts noticeably longer, burns without soot, and gives you an even pool right down to the last hour — which also means the refill drops into a clean, even vessel every time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The first burn sets the memory"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wax has a memory. The very first time you light a candle, leave it lit long enough for the melted pool to reach the full edge of the vessel — usually two to three hours for the Everyday. Blow it out early and the wax remembers that smaller pool and tunnels down the middle from then on, leaving a ring of wasted wax on the sides. Give it that first full melt and it burns edge-to-edge for the rest of its life."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Trim the wick, every time"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Before every light, trim the cotton wick down to about a quarter inch — nail scissors are fine. A long wick burns too hot, flickers, and mushrooms a little ball of carbon that throws soot up the glass; a short trimmed wick burns low, steady and clean. It takes five seconds and it’s the single biggest thing you can do for a candle. When there’s about half an inch of wax left, retire it, clean the vessel, and start a refill."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

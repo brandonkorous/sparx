@@ -1,0 +1,2153 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "a4d6a605-2cd9-43af-ab64-59d31c93082a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ed0eb29f-fb9c-4eef-a153-d11a42971173",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "f90704b0-7dc7-4eb2-83fe-1958c95f898c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "79b7d05f-b44c-45aa-a4e5-2d306faad4b6",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "4f4b35f3-acb0-470e-ae1e-d0fe92cfc220",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "171739b9-15b9-41b3-9eab-fce7c83df133",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "a6ed9195-7d73-4302-aa05-b36ebbea42f4",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "995142d7-2df4-4639-a8bb-bb01e636897a",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "03d094b1-b00b-485c-bde6-3d4256c2c453",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "a0d9c9dd-6da8-493a-a205-2e09dc056ceb",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "de6e58ba-e90c-43a6-b6ad-5317dd13adfb",
+                  "ord": "a2"
+                }
+              ],
+              "id": "e88a615a-37cf-476f-9d9e-d5bd5c4e0c5a",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "e4d769ba-025c-4826-b35f-1963e99859cb",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "1861891e-2fd9-4dab-9bb7-8c1c8ac51fd0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "7b3c78ad-3404-4d2c-b08e-0e9263825fc8",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "541eb423-36ce-4624-9076-ec529d0afd59",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "75ca85a6-91ca-4225-84d4-a6aa0aeaea30",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "f8533b5e-3747-4ce8-bce2-25ff81087077",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "b0ebbee4-3ac2-401f-9504-18d56c041684",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "1fd1f6bb-0f0a-4fdc-9f05-b5456fc3450c",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "74368a3c-2380-45de-bf77-ebe703d206c8",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "3e335978-1c69-4e4c-a70b-1bc4f510d76b",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "a399bba8-f54c-49b1-aafb-5adef95acb86",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "538387eb-f177-4a2b-903c-83be41cdbd31",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "c21393c2-94e9-4d32-8c07-ddd76669677e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "57944b93-14ca-4990-83e9-fcab017ad445",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "75a55880-f321-449c-90c3-6eaa6855d638",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "2a34d915-cda0-4aad-81d1-32ddd34461e8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8266ffb0-ed70-42b5-b095-9bf89715a162",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "be4146d5-8787-4189-ae1f-97cfe092913f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2e6952b8-eb41-46b2-a166-eb46fe5baaa6",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "b5970e9d-65f2-4a95-a2fb-641ba7fea1f3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6d11b10c-fd69-4660-9250-4e9375b72e86",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "6506daae-f971-4cd2-935f-14aa0832a47d",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "eba107e0-543c-492a-852f-cd749af0000c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "2836db84-1a65-4cb5-94b8-d007323675d8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4ee3d6db-e4cd-40e3-aa5b-e934afde3cd4",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "5eab1d38-0a4e-48bf-8600-66439e9d2f13",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2a9a09d4-d770-4732-9334-20eba4e7668d",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "2b7795a4-5309-42fb-a296-2ede9c8798d9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f53c3930-fd50-4dd2-a299-4da64b7aca47",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "2c66e7e1-1b35-4858-8be6-00e62cd2e8e6",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "27e8a155-73d2-4a77-acab-4891ddcfa71d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ed65abb0-87c5-41da-a017-5cacdb9b70e7",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "d720bb70-28d7-4caf-a27c-1c68451123d4",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0a9e5b0c-9743-4fca-a95f-ee318f7ffe10",
+                  "ord": "a1"
+                }
+              ],
+              "id": "b60955fe-4afc-49f4-8213-ef7f6ec28414",
+              "ord": "a0"
+            }
+          ],
+          "id": "8bf56238-1dca-446d-93b8-84f2e345aedd",
+          "ord": "a2"
+        }
+      ],
+      "id": "b960384b-6aac-4357-8651-a2eca18135c6"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Room & Co. — online interior e-design",
+      "seoDescription": "Room & Co. is friendly, flat-fee interior design done online. Share your room, get a shoppable design board, and book a consult with your designer.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "eb933955-9d8c-4c27-badd-380aa2936fb8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwc3R5bGVkJTIwbGl2aW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzMTg3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, freshly styled living room with plants and warm textiles",
+                  "loading": "eager"
+                },
+                "id": "2c8da945-fe7b-425c-8277-b892b212a4d3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "8d2e1cf8-53eb-47ed-8336-1982db367ddd",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A room you love, designed online"],
+                    "id": "8755cdaf-9aff-4cf4-82de-4f775070e696",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Flat-fee interior design for real homes — share your space, get a shoppable design board, and shop the look on your own time."
+                    ],
+                    "id": "ac68f4d3-82df-45e2-a036-73e99ecfb5b0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consult"],
+                        "id": "40851004-282b-482a-a29c-bfd083ec67a7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See packages"],
+                        "id": "dcad4d71-500e-4af6-ab06-b7be7a1946bd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "db4ab723-c871-4a33-ac05-c00d768ff4ec",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7b9d20db-039a-425f-9dc7-9afdeb14b1c6",
+                "ord": "a2"
+              }
+            ],
+            "id": "718ebdaf-cd34-4a61-b368-76de93376bf1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How it works"],
+                    "id": "b13331b1-00be-479e-b1d3-c2505a99c21a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["1 · Share your room & style"],
+                            "id": "9c94b2e4-e7dc-41e3-8977-960166c195ed",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Send us photos, your measurements and a few things you love. A quick call gets us on the same page — no jargon, no homework."
+                            ],
+                            "id": "8605bd7c-e323-425e-9236-97c962295c71",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "01bdf58e-0bd8-41e8-b0c0-9024af32f402",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["2 · Get a design board"],
+                            "id": "d8342367-8033-4d6d-adb2-0dda8916e967",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We send back a shoppable design board: a layout that flows, a palette that works, and every piece picked to fit your room and budget."
+                            ],
+                            "id": "41296bb6-0d3c-49a2-bd56-85b7fecb91de",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "db17d514-4b45-46a5-8cac-d7ebfc9e2f14",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["3 · Shop the look"],
+                            "id": "4c3efa55-6f3e-4bcb-8803-98fb0c1eb31e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Buy the pieces at your own pace, straight from the board. Questions along the way? We’re one message away."
+                            ],
+                            "id": "7a39ee70-8ef3-4206-8c0d-cd5a38fc1b0c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9259cf96-6b40-4ec2-b043-70faecdbf249",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "1d951b8d-bd52-4b0b-9642-06141fd490fe",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b4e380e5-b073-4133-bd79-1410be513922",
+                "ord": "a0"
+              }
+            ],
+            "id": "b5b5a011-e86e-407c-9cec-bda767554a9a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Flat-fee packages"],
+                        "id": "14861692-0762-477e-96d1-f572f58cf922",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Simple, upfront pricing — pick what your room needs. Full details and live availability are on the booking page."
+                        ],
+                        "id": "4ecba9cf-cb73-4084-87aa-0eb9927a8b49",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0746c60b-d690-4f68-a9a8-5ddaa9ccccde",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free discovery consult"],
+                                "id": "1138a926-33a9-4b86-9fc3-71f2c4e3751b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "ecaf753e-f67d-498e-ba12-dade9e5b4c8d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b6aba317-c043-4995-abe0-230cf0205204",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "b0f7c94d-3ce2-444d-bdd7-0cf1e9d51801",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A friendly call to talk through your room and style."],
+                            "id": "a4e411d3-2d1f-4569-a683-534999527af2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "30d265d6-7698-47d3-9727-3a2d99a15c5c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Single-room e-design"],
+                                "id": "1c25d7f6-be52-435b-9059-df3ee34004a6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$299"],
+                                "id": "aee4af71-0936-4a41-8d07-c7b0437a2731",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "edd9c628-d862-4d5a-8982-8e4f4f155af1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "4155fe8c-21a1-4648-8419-eb1ff6b24603",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A full shoppable design board for one room."],
+                            "id": "003dc559-b2ed-4770-8741-5bf6d1c40e5d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b235694c-1982-4c9d-9f5e-96cfb5daee53",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Room refresh package"],
+                                "id": "4bfcec5d-f0fe-4b5d-a05c-8c5b7be87688",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$399"],
+                                "id": "81ccb775-5567-4a67-9fc9-600d089ae1f5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cd7df856-e302-4839-b596-3afdd2588fd3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "c3582d6c-59cd-48ba-bf39-563f47ac5b62",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Rework what you own, add a few key pieces."],
+                            "id": "5e3cf8b1-211d-476e-8108-3ee872708683",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "313d1088-156c-4f73-a72d-2ebca0edc269",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Colour consult"],
+                                "id": "a7c135c5-1fe3-47eb-984d-d40119998091",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$129"],
+                                "id": "b62c1e51-8084-48ee-92a2-fdbcda77227f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6c053b2e-f4d6-448a-a186-18bfbdaeb72d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "bf8d5080-f1a2-404e-a5f7-12b5d15440e4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Paint and palette that work in your light."],
+                            "id": "1d65ec5b-de0a-43c3-916e-c41d9f8200ea",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b4779884-ec6f-4dd4-8997-fa5753415f72",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "900436ef-e55f-4e8e-917d-a1f2106c1b1f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "d373f169-f182-49c0-bc13-2fe86bd0a126",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "e4a0abf6-fc6d-40d6-9dd3-82ffa449f169",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0466ea86-8963-4343-a476-8969d377340c",
+                "ord": "a0"
+              }
+            ],
+            "id": "eaee2247-b710-4906-9c1c-c90ad7dbc7cd",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Rooms we’ve refreshed"],
+                    "id": "20220999-905e-4197-9b38-46b940238431",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y296eSUyMGxpdmluZyUyMHJvb20lMjBkZWNvcnxlbnwwfDB8fHwxNzg2MzkzMjAyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A cosy reading nook in soft neutrals and coral accents",
+                          "loading": "lazy"
+                        },
+                        "id": "2337bed1-72a2-4f2e-99e9-d80abf60d0c8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1616486029423-aaa4789e8c9a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwYmVkcm9vbSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A cheerful home office with a green desk and gallery wall",
+                          "loading": "lazy"
+                        },
+                        "id": "3510e856-f677-48b0-b540-bfec2680ff18",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1600494603989-9650cf6ddd3d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG9tZSUyMG9mZmljZSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTMyMDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A light-filled dining corner with rattan chairs",
+                          "loading": "lazy"
+                        },
+                        "id": "0ec9fcbb-18b6-4898-a27f-9e6fe1c1643c",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ec5bdaf0-038f-4ae5-b8cf-ea1408b60b4d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ba4f249f-75fb-4443-9c9f-724358a5e94c",
+                "ord": "a0"
+              }
+            ],
+            "id": "e7536e4a-4c83-4314-9df3-24d0969e1999",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1664638413302-d1ca29ac885b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ24lMjBzd2F0Y2hlc3xlbnwwfDB8fHwxNzg2MzkzMTkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A colour-and-fabric moodboard laid out on a sunny table",
+                      "loading": "lazy"
+                    },
+                    "id": "858843d5-9e45-4395-b774-533e7f21ea1c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Great design, minus the big price tag"],
+                        "id": "9c5ae363-983e-4e40-927c-e2bc66164c6c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "E-design is interior design done online — which means no site visits, no hourly billing and no five-figure quote. You get the same trained eye for a clear, flat fee."
+                        ],
+                        "id": "dd0c8730-a803-418d-b5b4-8c4b189816e7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Because it’s all shoppable, you stay in control: buy the whole board at once or one piece at a time, and swap anything that doesn’t fit the budget."
+                        ],
+                        "id": "fc25ef17-93c3-4d99-beb4-06a765c50a1c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start your room"],
+                            "id": "04408666-9b05-49ce-85e8-0040db522910",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "3bb5ccbe-a92d-46c4-95cf-925e86cdb8af",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "de8e3537-fd35-4d49-94fb-c7bdd9e6f100",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3f9ffe76-bd4e-499d-800c-dbcf9468da33",
+                "ord": "a0"
+              }
+            ],
+            "id": "73d265c4-bf23-4a85-977a-c2488b496933",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your designers"],
+                        "id": "ff97c2a6-af61-410f-8b2c-0741360f2c13",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with the same designer from first call to final board."
+                        ],
+                        "id": "c71e6a5a-cfb3-422c-8b72-a9167de673fd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "eac9f5fb-a754-480d-90e0-69203ba3311a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1779405949264-a44d50a14315?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBpbnRlcmlvciUyMGRlc2lnbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzE5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Rae Whitfield, interior designer",
+                              "loading": "lazy"
+                            },
+                            "id": "b8b5f767-9de5-45ac-aeda-3983ab67bd22",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Rae Whitfield"],
+                                "id": "43727e80-a903-4898-9b65-c45b31bf1ae4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Interior designer"],
+                                "id": "4231e625-5290-426c-ba9f-899b8871c577",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Colour and styling, with a warm, layered look that feels lived-in from day one."
+                                ],
+                                "id": "798050bb-36db-48ef-adf4-755839012bea",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "25b40867-7f9c-4062-80c8-bef685e94301",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4e4991bd-5307-46d0-9ee7-47dfbcae3b8e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1730991568704-7456621bb75a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Devon Ellis, interior designer",
+                              "loading": "lazy"
+                            },
+                            "id": "99324f3b-80ce-40a2-b21f-d712173260d6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Devon Ellis"],
+                                "id": "7cebcbcb-1a18-4034-82da-bf64d6fd3c04",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Interior designer"],
+                                "id": "099cc14b-1ef8-4f42-83e9-64e7fe821afa",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A layout obsessive — small spaces and awkward rooms are his favourite puzzle."
+                                ],
+                                "id": "1aaa16b9-068b-4f4d-90c1-a7891d86ef19",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "29b0ea40-3e4a-46a2-96da-250606a2bc88",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0a3a6ab0-6e1a-4508-8e1a-5591483a8920",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1654762701727-de6ccd172eb9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkZXNpZ25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMxOTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Nair, interior designer",
+                              "loading": "lazy"
+                            },
+                            "id": "b8fcc337-e18a-4003-b75b-859c4f6f5183",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Nair"],
+                                "id": "231f92b0-80f8-4d06-80f6-08f2339d523b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Interior designer"],
+                                "id": "19d54512-89ec-4b71-bf29-b7914075adff",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Room refreshes and colour, reworking what you already own into something new."
+                                ],
+                                "id": "3e4e28d2-c3f1-47f8-816e-cd2ac1feb6ee",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "9e93e2c6-4de3-472c-9776-d7469112484a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8808ff41-b6ba-4981-ab70-d158beb8c03f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "126d07e3-167c-4b81-bfe6-acff73d2f912",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3280b2d1-bf47-4db1-9af8-87549c53be8d",
+                "ord": "a0"
+              }
+            ],
+            "id": "d7fd7572-04e7-4c09-9cd4-b5911312b62f",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I sent a few photos of my sad living room and got back a plan I could actually afford. It looks like a magazine now — and I bought it piece by piece.”"
+                    ],
+                    "id": "cd317e45-030f-418e-ae95-d9efb61ed3bd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Hannah, e-design client"],
+                    "id": "04a0df95-bd54-4587-8592-efecbf93a8d7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4bb21298-551e-4029-92eb-235d553f51de",
+                "ord": "a0"
+              }
+            ],
+            "id": "ff48166e-7c02-4ddb-963f-73ce796591a9",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to love your space?"],
+                    "id": "42670534-bf12-4aa4-86d4-f3246d36f13a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a free consult — pick a designer, choose a time, and see live availability. It takes about a minute."
+                    ],
+                    "id": "2a72463e-8b0a-4a50-b6c5-219a396023d6",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consult"],
+                    "id": "748f9f1c-8c6f-474b-8eda-117d95b2369b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f9bfcdb7-ea45-41e4-9450-debe4e5925f6",
+                "ord": "a0"
+              }
+            ],
+            "id": "85f59489-a0f2-4f2d-9996-d8370df98b7a",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Room & Co.",
+      "seoDescription": "See what Room & Co. offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8c09c937-f14b-4709-abf3-0cb793c8db2f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1664638413302-d1ca29ac885b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW50ZXJpb3IlMjBkZXNpZ24lMjBzd2F0Y2hlc3xlbnwwfDB8fHwxNzg2MzkzMTkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A colour-and-fabric moodboard laid out on a sunny table",
+                  "loading": "eager"
+                },
+                "id": "92ea37bc-b16d-433b-9226-880f67a3b011",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "5fcda7d2-aeb9-4e83-8c4c-e96e0edf4cc3",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your consult"],
+                    "id": "5a1edbc5-1014-4e10-a42e-16647350829c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a package or a free consult to see prices and live availability, then pick your designer and time."
+                    ],
+                    "id": "347824e7-439b-4ea4-843d-12aded441f47",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "3f3852e2-e994-4d1e-bc2d-710c7e56b965",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0778fb75-721f-41c5-aa1d-f100f46babe1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ce63677c-84bb-4f98-9c9b-67138d1ab589",
+                "ord": "a2"
+              }
+            ],
+            "id": "d556869a-adfa-49b3-84be-7a7fc6bf6eac",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "8f700d9e-39f2-488a-8d44-e33e099ea146",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Room & Co.",
+      "seoDescription": "Who Room & Co. is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "37860af4-ef82-45dd-8c32-ed7eeed7671b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1631679706909-1844bbd07221?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwc3R5bGVkJTIwbGl2aW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzMTg3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, freshly styled living room with plants and warm textiles",
+                      "loading": "lazy"
+                    },
+                    "id": "6339c682-1c8f-47bf-b04d-9fbdfae7f143",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Room & Co."],
+                        "id": "0cdc5961-0deb-4515-96e7-14ad8dcf39ed",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Room & Co. on a simple idea: good interior design shouldn’t be reserved for people building from scratch or writing big cheques. Most of us just want the room we already have to feel better."
+                        ],
+                        "id": "c7f1cf10-3c85-4ee2-aec9-e47beff2879e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So we do it online, for a flat fee — a real designer, a shoppable plan, and honest advice about what’s worth spending on and what isn’t. Friendly, fresh, and made for everyday homes."
+                        ],
+                        "id": "f1b4d99a-d7c2-4ce9-848e-e2157e75d40e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consult"],
+                            "id": "46c83bc2-0c72-41bb-a6d0-ea1aa18833a4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b5c2a4e4-6b35-4987-8de2-354df040213b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4a3b0714-fdb3-4d4f-850d-4905fdf764d9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4cf08bd5-e744-41a6-865e-0bdddfc27afe",
+                "ord": "a0"
+              }
+            ],
+            "id": "6fb30c8e-fe0c-4e6d-bc3f-d5ec0b0ec514",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["What makes us different"],
+                    "id": "3341485c-e478-4018-9d1f-bcaba9aae3e0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Flat fees, no surprises"],
+                            "id": "017c9185-498d-402d-aed6-24d33a5cc70b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You know the price before you start. No hourly billing, no scope creep, no invoice you didn’t see coming."
+                            ],
+                            "id": "f75a5c59-d8c0-4a66-b258-f910a4c34f69",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1cc2189a-4701-4d34-b604-d7b4c820401c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Shop at your pace"],
+                            "id": "7c24e648-1a31-40c8-a510-383b1852bc15",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Everything’s on a shoppable board, so you can buy it all at once or spread it out over months."
+                            ],
+                            "id": "11c299aa-ec55-4836-8ff2-16a658cae1e6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ea2b0b6f-4262-478c-a5b3-2f95cd225ce2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Made for real budgets"],
+                            "id": "81ce4847-2fbd-43ff-9a4d-97a605b485c9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We design around what you can actually spend, and we’ll always tell you where to save and where it’s worth it."
+                            ],
+                            "id": "d00bd6d9-13bf-4ebc-a1e9-11e8fe72d32e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cc933a0a-3c62-4f13-87ad-a1325780f4b6",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9f4b1788-dcea-4e8b-bf01-62bae6e34558",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "de399e42-3133-498d-90e0-f15a2614f09b",
+                "ord": "a0"
+              }
+            ],
+            "id": "0dd52abe-6aff-483f-bd62-42331c7eca0f",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Room & Co.",
+      "seoDescription": "Where to find Room & Co., our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8be6897e-37b3-47fd-91ae-92337b4af131",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Say hello"],
+                        "id": "e8add20d-2577-48b2-95e5-e25d71305b82",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Room & Co."],
+                            "id": "9b5bc7af-f859-4abb-a5b2-46d911cd1f9f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["415 Maple Avenue"],
+                            "id": "52be7f77-0fdb-4603-8398-f8c14a70bf0d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio 3 · Austin, TX 78702"],
+                            "id": "9250135d-e2f9-4ae8-9841-c9f32b908bb9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "13c9f539-3415-4f94-8d96-f82946eb8070",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "b6b301d3-8ea2-4597-a6ee-3168476d89a8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "d974db75-c08e-4b04-a0ce-7d5822cf5c0d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5f8c7932-6aee-4fdd-9739-8a0fc09b848a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "fdff39bf-0822-4846-8478-e9449dcc1d28",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "9498b5da-2e6d-4864-a054-4b6ca0eedd4b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "82fc6d92-1a5f-4389-9170-8f9fdaf1e51a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "9e65d4c1-8bec-4274-8d1d-07a831978b7f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "96dff33b-717f-4581-a097-93d0a5bdc158",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e94ddf34-f0cd-4b89-ad22-6fa87ca913d6",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a1366898-c897-4234-8243-bc59dd05706a",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "821d8c5d-e1f9-439c-b11c-91dae998c28c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "415 Maple Avenue, Austin, TX 78702",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "fa71b9d4-7110-42fe-ad1f-0199596e6b1d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "47873373-fb32-42cf-a306-8f8154d36114",
+                "ord": "a0"
+              }
+            ],
+            "id": "7d5606b4-b580-4faa-965d-e63f2b5ffbef",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather just get started?"],
+                    "id": "db11221d-1d33-448d-a07b-f202cc923bb1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free consult online and see live availability — no phone tag, no waiting."
+                    ],
+                    "id": "fd7910f9-bfc5-4644-bec7-41b4a4ad517e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consult"],
+                    "id": "ac07a6a8-48ce-4b7c-a5bc-a6afbd1193f7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6353a0dd-5496-4beb-b05d-932296110a2e",
+                "ord": "a0"
+              }
+            ],
+            "id": "efbae372-2b69-47b1-a4be-c9c91b09e985",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "roomco",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.006 80)",
+      "--color-base-200": "oklch(95% 0.009 75)",
+      "--color-base-300": "oklch(90% 0.012 72)",
+      "--color-base-content": "oklch(28% 0.02 60)",
+      "--color-primary": "oklch(66% 0.16 32)",
+      "--color-secondary": "oklch(35% 0.025 250)",
+      "--color-accent": "oklch(68% 0.09 195)",
+      "--color-neutral": "oklch(30% 0.015 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 32)",
+      "--color-secondary-content": "oklch(98% 0.01 250)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(68% 0.09 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(90% 0.012 72)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.015 258)",
+      "--color-base-200": "oklch(20% 0.012 258)",
+      "--color-base-300": "oklch(16% 0.01 258)",
+      "--color-base-content": "oklch(95% 0.006 80)",
+      "--color-primary": "oklch(73% 0.15 34)",
+      "--color-secondary": "oklch(82% 0.02 250)",
+      "--color-accent": "oklch(74% 0.09 195)",
+      "--color-neutral": "oklch(84% 0.015 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 34)",
+      "--color-secondary-content": "oklch(15% 0.02 250)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(15% 0.015 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.09 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(16% 0.01 258)"
+    }
+  }
+}

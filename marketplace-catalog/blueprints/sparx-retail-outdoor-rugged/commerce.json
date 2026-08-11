@@ -1,0 +1,888 @@
+{
+  "categories": [
+    {
+      "handle": "apparel",
+      "name": "Apparel",
+      "description": "Shells, insulation and base layers.",
+      "featured": true
+    },
+    {
+      "handle": "packs",
+      "name": "Packs",
+      "description": "Backpacks and dry bags built to haul.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Footwear & accessories",
+      "description": "Socks and the small stuff that matters.",
+      "featured": true
+    },
+    {
+      "handle": "gear",
+      "name": "Gear",
+      "description": "Bottles, lighting and trail hardware.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New arrivals",
+      "description": "The gear that just landed for the season.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "alpine-hardshell-jacket",
+        "summit-down-hoody",
+        "trailhead-38-backpack",
+        "beacon-400-headlamp"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people come back to reorder.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "alpine-hardshell-jacket",
+        "ridgeline-merino-crew",
+        "trailhead-38-backpack",
+        "switchback-trail-socks",
+        "vault-insulated-bottle"
+      ]
+    },
+    {
+      "handle": "layering-system",
+      "name": "The layering system",
+      "description": "Base, mid and shell — dialled to work together.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ridgeline-merino-crew", "summit-down-hoody", "alpine-hardshell-jacket"]
+    },
+    {
+      "handle": "trail-essentials",
+      "name": "Trail essentials",
+      "description": "The small stuff no trip should leave without.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "switchback-trail-socks",
+        "vault-insulated-bottle",
+        "beacon-400-headlamp",
+        "fathom-dry-bag",
+        "trailhead-38-backpack"
+      ]
+    },
+    {
+      "handle": "packs-and-carry",
+      "name": "Packs & carry",
+      "description": "Everything for hauling it in and keeping it dry.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["trailhead-38-backpack", "fathom-dry-bag", "ascent-trekking-poles"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "alpine-hardshell-jacket",
+      "title": "Alpine Hardshell Jacket",
+      "description": "A fully seam-taped, three-layer waterproof shell that shrugs off driving rain and alpine wind without turning into a sauna. Pit zips dump heat on the climb, a helmet-compatible hood cinches down one-handed, and the whole thing stuffs into its own chest pocket. The jacket you keep at the top of the pack all year.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Ridgeline Supply",
+      "tags": ["apparel", "shell", "waterproof", "hardshell"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["new-arrivals", "layering-system", "best-sellers"],
+      "seoTitle": "Alpine Hardshell Jacket — 3-layer waterproof shell | Ridgeline Supply",
+      "seoDescription": "A seam-taped 3-layer waterproof hardshell with pit zips and a helmet-compatible hood. Packs into its own pocket.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Slate"
+            },
+            {
+              "value": "Ember"
+            },
+            {
+              "value": "Moss"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-SHELL-S-SLA",
+          "priceCents": 27900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-S-EMB",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-S-MOS",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-M-SLA",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-M-EMB",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-M-MOS",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-L-SLA",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-L-EMB",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-L-MOS",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-XL-SLA",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-XL-EMB",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-SHELL-XL-MOS",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Moss"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-shell-jacket",
+          "isPrimary": true,
+          "alt": "Alpine Hardshell Jacket"
+        }
+      ]
+    },
+    {
+      "handle": "summit-down-hoody",
+      "title": "Summit Down Hoody",
+      "description": "A featherweight 800-fill down hoody that packs to the size of a water bottle and lofts back to full warmth in seconds. Responsibly-sourced down, a windproof ripstop face, and a hood that fits under a shell — the insulation layer you throw on the moment you stop moving.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Ridgeline Supply",
+      "tags": ["apparel", "insulation", "down", "midlayer"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["new-arrivals", "layering-system"],
+      "seoTitle": "Summit Down Hoody — 800-fill packable down | Ridgeline Supply",
+      "seoDescription": "A featherweight 800-fill down hoody with a windproof face and a shell-compatible hood. Packs to bottle size.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Storm"
+            },
+            {
+              "value": "Ember"
+            },
+            {
+              "value": "Bone"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-DOWN-S-STO",
+          "priceCents": 22900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Storm"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-S-EMB",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-S-BON",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-M-STO",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Storm"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-M-EMB",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-M-BON",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-L-STO",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Storm"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-L-EMB",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-L-BON",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-XL-STO",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Storm"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-XL-EMB",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ember"
+          }
+        },
+        {
+          "sku": "RDG-DOWN-XL-BON",
+          "priceCents": 22900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Bone"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-down-hoody",
+          "isPrimary": true,
+          "alt": "Summit Down Hoody"
+        }
+      ]
+    },
+    {
+      "handle": "ridgeline-merino-crew",
+      "title": "Ridgeline Merino Crew",
+      "description": "A 100% merino wool base layer that regulates temperature, resists odour after days on the trail, and feels nothing like the itchy wool you remember. Flatlock seams sit flat under a pack, and the fabric wicks and dries fast whether you’re climbing or belaying. The layer that touches your skin, so it’s the one that matters.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Ridgeline Supply",
+      "tags": ["apparel", "base-layer", "merino"],
+      "categoryHandles": ["apparel"],
+      "collectionHandles": ["layering-system", "best-sellers"],
+      "seoTitle": "Ridgeline Merino Crew — 100% merino base layer | Ridgeline Supply",
+      "seoDescription": "A soft, odour-resistant 100% merino base layer with flatlock seams that wicks and dries fast.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Moss"
+            },
+            {
+              "value": "Rust"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-BASE-S-CHA",
+          "priceCents": 8900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "RDG-BASE-S-MOS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-BASE-S-RUS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Rust"
+          }
+        },
+        {
+          "sku": "RDG-BASE-M-CHA",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "RDG-BASE-M-MOS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-BASE-M-RUS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Rust"
+          }
+        },
+        {
+          "sku": "RDG-BASE-L-CHA",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "RDG-BASE-L-MOS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-BASE-L-RUS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Rust"
+          }
+        },
+        {
+          "sku": "RDG-BASE-XL-CHA",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "RDG-BASE-XL-MOS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-BASE-XL-RUS",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Rust"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-base-layer",
+          "isPrimary": true,
+          "alt": "Ridgeline Merino Crew"
+        }
+      ]
+    },
+    {
+      "handle": "trailhead-38-backpack",
+      "title": "Trailhead 38 Backpack",
+      "description": "A 38-litre do-everything pack sized for fast overnights and long day trips. A ventilated framesheet keeps your back dry, the roll-top lid flexes from a light load to a full haul, and burly hipbelt pockets keep snacks and a phone within reach. Built from recycled ripstop that has already survived a season of abuse.",
+      "status": "active",
+      "productType": "Pack",
+      "vendor": "Ridgeline Supply",
+      "tags": ["packs", "backpack", "daypack"],
+      "categoryHandles": ["packs"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "packs-and-carry", "trail-essentials"],
+      "seoTitle": "Trailhead 38 Backpack — 38L pack | Ridgeline Supply",
+      "seoDescription": "A ventilated 38L pack with a roll-top lid and hipbelt pockets, built from recycled ripstop. Fast overnights to long days.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Slate"
+            },
+            {
+              "value": "Moss"
+            },
+            {
+              "value": "Ember"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-PACK38-SLA",
+          "priceCents": 18900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "RDG-PACK38-MOS",
+          "priceCents": 18900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-PACK38-EMB",
+          "priceCents": 18900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Ember"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-backpack",
+          "isPrimary": true,
+          "alt": "Trailhead 38 Backpack"
+        }
+      ]
+    },
+    {
+      "handle": "fathom-dry-bag",
+      "title": "Fathom Roll-Top Dry Bag",
+      "description": "A fully welded roll-top dry bag that keeps a sleeping bag, a change of clothes or your electronics bone-dry through a river crossing or a downpour. The tough TPU-coated fabric wipes clean, the buckle doubles as a lash point, and it compresses down when you roll the air out. Three sizes to line a pack or organise a boat.",
+      "status": "active",
+      "productType": "Pack",
+      "vendor": "Ridgeline Supply",
+      "tags": ["packs", "dry-bag", "waterproof"],
+      "categoryHandles": ["packs"],
+      "collectionHandles": ["packs-and-carry", "trail-essentials"],
+      "seoTitle": "Fathom Roll-Top Dry Bag — welded waterproof stuff sack | Ridgeline Supply",
+      "seoDescription": "A fully welded TPU roll-top dry bag in 10, 20 and 30L. Keeps kit bone-dry through crossings and downpours.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "10L"
+            },
+            {
+              "value": "20L"
+            },
+            {
+              "value": "30L"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-DRY-10L",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "10L"
+          }
+        },
+        {
+          "sku": "RDG-DRY-20L",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "20L"
+          }
+        },
+        {
+          "sku": "RDG-DRY-30L",
+          "priceCents": 4900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "30L"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dry-bag",
+          "isPrimary": true,
+          "alt": "Fathom Roll-Top Dry Bag"
+        }
+      ]
+    },
+    {
+      "handle": "switchback-trail-socks",
+      "title": "Switchback Trail Socks",
+      "description": "A merino-blend hiking sock with cushioning exactly where boots rub and none where they don’t — a proper toe box, a supportive arch band, and a seamless toe so nothing raises a blister at mile fifteen. They wick, they don’t stink, and they keep their shape wash after wash. Buy three pairs; you’ll want them.",
+      "status": "active",
+      "productType": "Socks",
+      "vendor": "Ridgeline Supply",
+      "tags": ["accessories", "socks", "footwear", "merino"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["best-sellers", "trail-essentials"],
+      "seoTitle": "Switchback Trail Socks — cushioned merino hiking socks | Ridgeline Supply",
+      "seoDescription": "A merino-blend hiking sock with targeted cushioning, an arch band and a seamless toe. Wicks and stays put.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Moss"
+            },
+            {
+              "value": "Rust"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-SOCK-CHA",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "RDG-SOCK-MOS",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Moss"
+          }
+        },
+        {
+          "sku": "RDG-SOCK-RUS",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Rust"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-socks",
+          "isPrimary": true,
+          "alt": "Switchback Trail Socks"
+        }
+      ]
+    },
+    {
+      "handle": "vault-insulated-bottle",
+      "title": "Vault Insulated Bottle",
+      "description": "A double-walled stainless bottle that keeps water cold for a full day out or coffee hot to the summit. The powder-coat shell takes a beating without chipping, the leak-proof lid drinks one-handed, and it fits a pack’s side pocket and a cup holder both. Built to be the last bottle you buy.",
+      "status": "active",
+      "productType": "Gear",
+      "vendor": "Ridgeline Supply",
+      "tags": ["gear", "bottle", "hydration"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["best-sellers", "trail-essentials"],
+      "seoTitle": "Vault Insulated Bottle — double-walled stainless | Ridgeline Supply",
+      "seoDescription": "A powder-coated double-walled stainless bottle in 18 and 32oz with a leak-proof one-handed lid.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "18oz"
+            },
+            {
+              "value": "32oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RDG-BOTTLE-18O",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "18oz"
+          }
+        },
+        {
+          "sku": "RDG-BOTTLE-32O",
+          "priceCents": 3900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "32oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-bottle",
+          "isPrimary": true,
+          "alt": "Vault Insulated Bottle"
+        }
+      ]
+    },
+    {
+      "handle": "beacon-400-headlamp",
+      "title": "Beacon 400 Headlamp",
+      "description": "A 400-lumen rechargeable headlamp that throws a genuine trail-finding beam and dims to a red night mode that won’t wreck your vision or wake the tent. USB-C charging, a lock-out so it never drains in your pack, and an IPX7 housing that laughs at rain. Small enough to forget you’re wearing, bright enough to trust in the dark.",
+      "status": "active",
+      "productType": "Gear",
+      "vendor": "Ridgeline Supply",
+      "tags": ["gear", "headlamp", "lighting"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["new-arrivals", "trail-essentials"],
+      "seoTitle": "Beacon 400 Headlamp — 400-lumen rechargeable | Ridgeline Supply",
+      "seoDescription": "A 400-lumen USB-C rechargeable headlamp with a red night mode, lock-out and an IPX7 rain-proof housing.",
+      "variants": [
+        {
+          "sku": "RDG-LAMP400",
+          "priceCents": 5400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-headlamp",
+          "isPrimary": true,
+          "alt": "Beacon 400 Headlamp"
+        }
+      ]
+    },
+    {
+      "handle": "ascent-trekking-poles",
+      "title": "Ascent Carbon Trekking Poles",
+      "description": "A pair of collapsible carbon poles that save your knees on the descent and steady the load on the climb. Quick-flip locks adjust in gloves, cork grips wick sweat and mould to your hand, and swappable tips grip rock or bite into mud. They fold short enough to strap to any daypack when the trail eases off.",
+      "status": "active",
+      "productType": "Gear",
+      "vendor": "Ridgeline Supply",
+      "tags": ["gear", "trekking-poles", "hiking"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["new-arrivals", "packs-and-carry"],
+      "seoTitle": "Ascent Carbon Trekking Poles — collapsible pair | Ridgeline Supply",
+      "seoDescription": "A pair of collapsible carbon trekking poles with quick-flip locks, cork grips and swappable tips.",
+      "variants": [
+        {
+          "sku": "RDG-POLES",
+          "priceCents": 12900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-poles",
+          "isPrimary": true,
+          "alt": "Ascent Carbon Trekking Poles"
+        }
+      ]
+    }
+  ]
+}

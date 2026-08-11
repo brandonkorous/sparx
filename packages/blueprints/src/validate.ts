@@ -227,6 +227,42 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
   if (sitePages.length > 0 && homes !== 1)
     add('site.pages', `A site needs exactly one home page (slug omitted or ""); found ${homes}.`);
 
+  // ── Scheduling (resources, policies, services) ──────────────────────────────
+  const scheduling = bp.scheduling;
+  if (scheduling) {
+    const resourceHandles = new Set<string>();
+    scheduling.resources.forEach((r, i) => {
+      if (resourceHandles.has(r.handle))
+        add(`scheduling.resources[${i}]`, `Duplicate resource handle "${r.handle}".`);
+      resourceHandles.add(r.handle);
+      checkAsset(`scheduling.resources[${i}].imageAssetId`, r.imageAssetId);
+      r.windows.forEach((w, j) => {
+        if (w.endMinute <= w.startMinute)
+          add(
+            `scheduling.resources[${i}].windows[${j}]`,
+            `Window end (${w.endMinute}) must be after start (${w.startMinute}).`
+          );
+      });
+    });
+
+    const policyHandles = new Set<string>();
+    scheduling.policies.forEach((p, i) => {
+      if (policyHandles.has(p.handle))
+        add(`scheduling.policies[${i}]`, `Duplicate policy handle "${p.handle}".`);
+      policyHandles.add(p.handle);
+    });
+
+    const serviceHandles = new Set<string>();
+    scheduling.services.forEach((s, i) => {
+      if (serviceHandles.has(s.handle))
+        add(`scheduling.services[${i}]`, `Duplicate service handle "${s.handle}".`);
+      serviceHandles.add(s.handle);
+      checkAsset(`scheduling.services[${i}].imageAssetId`, s.imageAssetId);
+      if (s.policyHandle && !policyHandles.has(s.policyHandle))
+        add(`scheduling.services[${i}].policyHandle`, `Unknown policy "${s.policyHandle}".`);
+    });
+  }
+
   // ── requiresModules sanity ──────────────────────────────────────────────────
   const mods = new Set(bp.requiresModules);
   const hasCommerce =
@@ -241,6 +277,8 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
     add('requiresModules', `Emails present but "email" is not listed.`);
   if (bp.site && !mods.has('builder'))
     add('requiresModules', `An authored site is present but "builder" is not listed.`);
+  if (bp.scheduling && bp.scheduling.services.length > 0 && !mods.has('scheduling'))
+    add('requiresModules', `Scheduling services present but "scheduling" is not listed.`);
 
   return issues;
 }

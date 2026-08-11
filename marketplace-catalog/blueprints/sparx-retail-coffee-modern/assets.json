@@ -1,0 +1,97 @@
+[
+  {
+    "id": "meridian-hero",
+    "url": "https://images.unsplash.com/photo-1610889556528-9a770e32642f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwZXNwcmVzc28lMjBwdWxsaW5nJTIwaW50byUyMHdoaXRlJTIwY3VwJTIwY2xlYW58ZW58MHwwfHx8MTc4NjQwMjAwOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single espresso pulling into a white cup on a clean steel bar"
+  },
+  {
+    "id": "meridian-tile-origin",
+    "url": "https://images.unsplash.com/photo-1651761483492-7d2e26dd3455?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8d2hpdGUlMjBiYWclMjBzaW5nbGUtb3JpZ2luJTIwY29mZmVlJTIwcGFsZSUyMGJhY2tncm91bmR8ZW58MHwwfHx8MTc4NjQwMjAxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A white bag of single-origin coffee on a pale background"
+  },
+  {
+    "id": "meridian-tile-blend",
+    "url": "https://images.unsplash.com/photo-1524350876685-274059332603?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFnJTIwYmxlbmQlMjBjb2ZmZWUlMjBiZXNpZGUlMjBzY2F0dGVyaW5nJTIwcm9hc3RlZCUyMGJlYW5zfGVufDB8MHx8fDE3ODY0MDIwMTN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of blend coffee beside a scattering of roasted beans"
+  },
+  {
+    "id": "meridian-tile-ready",
+    "url": "https://images.unsplash.com/photo-1672223303533-05fddcbf6e6c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlLXNlcnZlJTIwc3RlZXAlMjBiYWd8ZW58MHwwfHx8MTc4NjQwMjUxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single-serve steep bag of coffee over a mug"
+  },
+  {
+    "id": "meridian-tile-gear",
+    "url": "https://images.unsplash.com/photo-1646346834998-5b610ec21d12?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZCUyMGdyaW5kZXIlMjBmbGF0LWJvdHRvbSUyMGRyaXBwZXIlMjBicmlnaHQlMjBjb3VudGVyfGVufDB8MHx8fDE3ODY0MDIwMTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand grinder and a flat-bottom dripper on a bright counter"
+  },
+  {
+    "id": "meridian-feature",
+    "url": "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFyaXN0YSUyMHdlaWdoaW5nJTIwYmVhbnMlMjBzbWFsbCUyMHNjYWxlJTIwYnJpZ2h0JTIwcm9hc3Rlcnl8ZW58MHwwfHx8MTc4NjQwMjAyMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A barista weighing beans on a small scale in a bright roastery"
+  },
+  {
+    "id": "meridian-ethiopia",
+    "url": "https://picsum.photos/seed/meridian-ethiopia/1600/1000",
+    "alt": "A white bag of Ethiopia Yirgacheffe single-origin coffee"
+  },
+  {
+    "id": "meridian-kenya",
+    "url": "https://images.unsplash.com/photo-1762195657410-112fbc6f2d17?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2hpdGUlMjBiYWclMjBrZW55YSUyMG55ZXJpJTIwc2luZ2xlLW9yaWdpbiUyMGNvZmZlZXxlbnwwfDB8fHwxNzg2NDAyMDI3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A white bag of Kenya Nyeri single-origin coffee"
+  },
+  {
+    "id": "meridian-colombia",
+    "url": "https://images.unsplash.com/photo-1775434336035-e52be4790dc1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8d2hpdGUlMjBiYWclMjBjb2xvbWJpYSUyMG5hcmklMjBvJTIwc2luZ2xlLW9yaWdpbiUyMGNvZmZlZXxlbnwwfDB8fHwxNzg2NDAyMDMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A white bag of Colombia Nariño single-origin coffee"
+  },
+  {
+    "id": "meridian-signal",
+    "url": "https://picsum.photos/seed/meridian-signal/1600/1000",
+    "alt": "A bag of Signal Blend everyday coffee"
+  },
+  {
+    "id": "meridian-espresso",
+    "url": "https://images.unsplash.com/photo-1605733513597-a8f8341084e6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFnJTIwdHlwZSUyMDAxfGVufDB8MHx8fDE3ODY0MDI1MjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of Type 01 espresso coffee"
+  },
+  {
+    "id": "meridian-decaf",
+    "url": "https://images.unsplash.com/photo-1559056199-96c307526265?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFnJTIwb2ZmLWdyaWQlMjBzd2lzcy13YXRlciUyMGRlY2FmJTIwY29mZmVlfGVufDB8MHx8fDE3ODY0MDIwMzh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of Off-Grid Swiss-water decaf coffee"
+  },
+  {
+    "id": "meridian-steeped",
+    "url": "https://images.unsplash.com/photo-1695245503558-5cdb37f49092?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwc2luZ2xlLXNlcnZlJTIwY29mZmVlJTIwc3RlZXAlMjBiYWdzfGVufDB8MHx8fDE3ODY0MDIwNDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A box of single-serve coffee steep bags"
+  },
+  {
+    "id": "meridian-grinder",
+    "url": "https://images.unsplash.com/photo-1636434588547-fcf723c62b88?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJlY2lzaW9uJTIwaGFuZCUyMGdyaW5kZXIlMjBtYXR0ZSUyMHN0ZWVsfGVufDB8MHx8fDE3ODY0MDIwNDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A precision hand grinder in matte steel"
+  },
+  {
+    "id": "meridian-dripper",
+    "url": "https://images.unsplash.com/photo-1712664436441-ad3fcb96dff1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmxhdC1ib3R0b20lMjBjZXJhbWljJTIwcG91ci1vdmVyJTIwZHJpcHBlcnxlbnwwfDB8fHwxNzg2NDAyMDQ4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A flat-bottom ceramic pour-over dripper"
+  },
+  {
+    "id": "meridian-subscription",
+    "url": "https://images.unsplash.com/photo-1642505171999-d704cd50f93c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbGlzdCUyMGNvZmZlZSUyMHN1YnNjcmlwdGlvbiUyMGJveCUyMHR3byUyMGJhZ3N8ZW58MHwwfHx8MTc4NjQwMjA1MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A minimalist coffee subscription box of two bags"
+  },
+  {
+    "id": "meridian-post-brew",
+    "url": "https://images.unsplash.com/photo-1545665225-b23b99e4d45e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG91ci1vdmVyJTIwYnJld2luZyUyMGdsYXNzJTIwY2FyYWZlJTIwc2NhbGV8ZW58MHwwfHx8MTc4NjQwMjA1NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pour-over brewing over a glass carafe on a scale"
+  },
+  {
+    "id": "meridian-post-origin",
+    "url": "https://images.unsplash.com/photo-1649616550039-5921f1a5f3c8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29mZmVlJTIwY2hlcnJpZXMlMjBkcnlpbmd8ZW58MHwwfHx8MTc4NjQwMjUyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Coffee cherries drying on raised beds in the sun"
+  },
+  {
+    "id": "meridian-post-water",
+    "url": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2F0ZXIlMjBiZWluZyUyMHBvdXJlZCUyMGdvb3NlbmVjayUyMGtldHRsZSUyMGludG8lMjBicmV3ZXJ8ZW58MHwwfHx8MTc4NjQwMjA1OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Water being poured from a gooseneck kettle into a brewer"
+  }
+]

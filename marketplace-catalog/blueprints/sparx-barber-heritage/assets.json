@@ -1,0 +1,42 @@
+[
+  {
+    "id": "barber-heritage-hero",
+    "url": "https://images.unsplash.com/photo-1781455793310-8427c96454c7?w=1600&q=80",
+    "alt": "A dark, wood-and-brass barbershop with leather chairs"
+  },
+  {
+    "id": "barber-heritage-interior",
+    "url": "https://images.unsplash.com/photo-1573586927918-3e6476da8395?w=1600&q=80",
+    "alt": "A barber station with a straight razor and hot towels"
+  },
+  {
+    "id": "barber-heritage-vince",
+    "url": "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1600&q=80",
+    "alt": "Vince Cole, master barber"
+  },
+  {
+    "id": "barber-heritage-marcus",
+    "url": "https://images.unsplash.com/photo-1603899968034-1a56ca48d172?w=1600&q=80",
+    "alt": "Marcus Reyes, barber"
+  },
+  {
+    "id": "barber-heritage-silas",
+    "url": "https://images.unsplash.com/photo-1657105052497-f996284ffff8?w=1600&q=80",
+    "alt": "Silas Cooper, barber"
+  },
+  {
+    "id": "barber-heritage-work1",
+    "url": "https://images.unsplash.com/photo-1780688373499-c570319873a3?w=1600&q=80",
+    "alt": "A clean skin fade with a sharp line-up"
+  },
+  {
+    "id": "barber-heritage-work2",
+    "url": "https://images.unsplash.com/photo-1621645582931-d1d3e6564943?w=1600&q=80",
+    "alt": "A shaped beard after a hot-towel finish"
+  },
+  {
+    "id": "barber-heritage-work3",
+    "url": "https://images.unsplash.com/photo-1524230616393-d6229fcd2eff?w=1600&q=80",
+    "alt": "A classic scissor cut, tight on the sides"
+  }
+]

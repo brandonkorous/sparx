@@ -1,0 +1,433 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "casa-mirador",
+    "status": "published",
+    "authorSlug": "nadia-rehman",
+    "categories": ["Residential"],
+    "tags": ["House", "Board-formed concrete"],
+    "body": {
+      "title": "Casa Mirador",
+      "excerpt": "A hillside house that treats the view as a room you earn — board-formed concrete anchored to the slope, opening only where the landscape asks it to.",
+      "featuredImage": {
+        "$asset": "atlas-mirador"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Year 2026 · Role Lead architect · Location Lisbon · Scope Full design, concept to completion."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Casa Mirador is a family house on a steep south-facing slope above the Tagus. The clients had lived with the view from a caravan on the plot for two summers before they briefed it, so they knew exactly which minutes of the day mattered — and they did not want a glass box that surrendered all of them at once."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The site"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The slope falls nearly a full storey across the footprint, and the best light arrives late and low. Rather than cut a flat pad and perch a house on it, we let the building step with the ground — three half-levels tied to a single board-formed concrete spine that does the structural work and the retaining at once."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The concrete is not a finish choice so much as a site strategy: the same wall that holds the hill back becomes the thermal mass that carries the house through a hot afternoon and a cool night with almost no mechanical help."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The idea"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The house withholds the view and then gives it. You arrive at the top, in shadow, against solid concrete; the landscape is entirely hidden. Only as you descend through the plan does the wall open — first a slot, then a room, then the full terrace where the whole valley is finally in front of you. The view is the reward at the end of the sequence, not the first thing you see."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Board-formed concrete is unforgiving — every joint and tie is permanent — so we built a full-height sample panel on site and cast three test pours before the first real wall. The timber boards were milled from a single batch to keep the grain consistent, and the crew poured in the early morning to slow the cure. What you read as a quiet monolith is the product of a very loud few weeks of getting it exactly right."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "riverside-civic-hall",
+    "status": "published",
+    "authorSlug": "nadia-rehman",
+    "categories": ["Civic"],
+    "tags": ["Public building", "Colonnade"],
+    "body": {
+      "title": "Riverside Civic Hall",
+      "excerpt": "A public hall built around its threshold — a deep colonnade and a generous forecourt that make the building legible as everyone’s before anyone reads the sign.",
+      "featuredImage": {
+        "$asset": "atlas-civic"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Year 2025 · Role Design lead · Location Porto · Scope Architecture & public realm."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Riverside Civic Hall replaces a tired municipal annexe on the riverfront with a building that had to do an unusual amount of civic work: register offices, a council chamber, a public exhibition floor, and — the part the brief kept coming back to — somewhere the city could simply gather. Won in open competition for the City of Porto."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The site"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The plot sits between a busy embankment road and the water, on ground that floods in the worst winters. We lifted the occupied floors a full storey and gave the flood level back to the city as a sheltered, hard-wearing public room — a deep colonnade that runs the length of the building and a forecourt that steps down to the quay."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The idea"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A civic building earns its name at the threshold, not in the chamber. So the whole design argument is the edge: the colonnade is deliberately oversized, deep enough to hold a market, a protest or a wedding party, and it belongs to the street whether or not the offices behind it are open. You are inside the building, under its roof and among its columns, before you have decided to enter it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Above that public base, the offices and chamber are calm and frankly ordinary — good daylight, plain materials, nothing shouting. The generosity is spent where the public actually is."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The colonnade is precast concrete, its columns cast off site to a tolerance we could never have hit in a flood-prone excavation, then stitched to an in-situ deck. Getting the column rhythm right took the longest: too wide and the forecourt felt exposed, too tight and it read as a fence. We mocked up three full bays at scale on the quay before we committed."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "foundry-arts-centre",
+    "status": "published",
+    "authorSlug": "nadia-rehman",
+    "categories": ["Cultural"],
+    "tags": ["Adaptive reuse", "Gallery"],
+    "body": {
+      "title": "Foundry Arts Centre",
+      "excerpt": "A disused iron foundry turned arts centre — the old shed kept honest and legible, a new gallery inserted as a clearly separate, quiet room inside it.",
+      "featuredImage": {
+        "$asset": "atlas-foundry"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Year 2024 · Role Project architect · Location Bilbao · Scope Adaptive reuse & interiors."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Foundry was a nineteenth-century iron works that had sat empty for thirty years — a magnificent riveted-steel shed with a leaking roof and a floor that had reverted to weeds. The Bilbao Arts Trust wanted a home for exhibitions and residencies that felt found, not built, and could not afford to erase what was already there."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The site"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The shed’s value was entirely in its structure: the exposed roof trusses, the travelling crane rail, the scale of a space built to move molten iron. Everything else — later partitions, a mezzanine, decades of accreted services — was noise. The first six weeks on site were mostly subtraction, taking the building back to the frame that mattered."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The idea"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We resisted the obvious move of climate-controlling the whole volume, which would have meant sealing and lining the very structure worth keeping. Instead the gallery is a building-within-a-building: a calm, sealed, precisely conditioned room set down inside the shed like a piece of equipment, leaving the trusses and the crane rail in raw, un-heated air around it."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So the visitor reads two things at once and never confuses them — the honest industrial shell, and the quiet new room the art actually lives in. The old and the new touch as little as possible and are never dressed up to match."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The inserted gallery is a steel-framed box on its own foundations, structurally independent of the fragile old frame, which let us survey and stabilise the trusses without a deadline hanging over the conservation work. The junction where new meets old is a deliberate shadow gap — a finger’s width of daylight that says, plainly, these are two different buildings."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "meridian-workspace",
+    "status": "published",
+    "authorSlug": "nadia-rehman",
+    "categories": ["Workplace"],
+    "tags": ["Workplace", "Joinery"],
+    "body": {
+      "title": "Meridian Workspace",
+      "excerpt": "A workplace fit-out built on daylight and oak instead of open-plan sprawl — a floor of real rooms that give a small company room to think.",
+      "featuredImage": {
+        "$asset": "atlas-meridian"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Year 2025 · Role Lead architect · Location Lisbon · Scope Workplace & fit-out."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Meridian is a forty-person research group that had outgrown a generic open-plan floor where nobody could hear themselves think. The brief was not more desks; it was a place that could hold quiet, concentrated work and still bring the whole group together without a scramble for the one bookable room."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The site"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A single deep floor with glazing on two sides and a dead, dark core — the classic office problem. The whole design turns on getting daylight into the middle: we pulled the enclosed rooms away from the windows and into the core, so the good light stays shared and the desks all sit within reach of a real window."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The idea"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Open-plan promises flexibility and mostly delivers noise. We gave Meridian a floor of actual rooms instead — a graded set, from a silent focus room to a big table that seats everyone — arranged so you can find the right amount of company for the task in hand without booking anything. The building does the acoustic work so people don’t have to negotiate it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The rooms are defined by a single system of white-oak joinery — the same detail language for a door, a storage wall and a glazed partition — fabricated off site and installed in ten days over a holiday shutdown so the team never lost a working week. Because one detail repeats everywhere, the floor reads as calm and whole rather than fitted-out in pieces."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

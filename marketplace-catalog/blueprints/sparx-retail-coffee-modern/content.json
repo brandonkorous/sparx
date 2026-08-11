@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-brew-ratio",
+    "status": "published",
+    "body": {
+      "title": "The one number that fixes most coffee",
+      "excerpt": "Before you buy a scale, a kettle or a course, get the ratio right. It’s the single biggest lever you have.",
+      "featuredImage": {
+        "$asset": "meridian-post-brew"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most weak, sour or bitter coffee at home isn’t a bean problem or a gear problem — it’s a ratio problem. You’re using too little coffee for the water, or too much water for the coffee, and no amount of expensive equipment fixes that. The good news: it’s the easiest thing to correct."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start at 1-to-16"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Weigh your coffee and your water, and aim for roughly one gram of coffee to sixteen grams of water — say 25 grams of coffee to 400 grams of water for a two-cup pour-over. That single habit, more than any gadget, is what separates a flat cup from a bright, sweet one. A cheap kitchen scale is the best twenty dollars you’ll spend on coffee."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Then adjust to taste"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sour and thin means under-extracted — go a little finer on the grind, or a touch more coffee. Bitter and drying means over-extracted — go coarser, or pull back the coffee slightly. Change one variable at a time and taste as you go. Two or three brews in, you’ll have that coffee dialed, and it’ll taste the same every morning after."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "why-water-matters",
+    "status": "published",
+    "body": {
+      "title": "Your coffee is 98% water",
+      "excerpt": "You dialed the grind and weighed the dose — and it still tastes flat. The culprit is almost always the water.",
+      "featuredImage": {
+        "$asset": "meridian-post-water"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A brewed cup is about 98% water, so the water you use isn’t a background detail — it’s most of the drink. Too soft and the coffee tastes hollow and sour; too hard and it tastes chalky and dull; heavily chlorinated tap water flattens everything. If a great coffee tastes lifeless, look at what you’re brewing it with before you blame the beans."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Aim for the middle"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You want water with some minerality but not too much — filtered tap water is usually the sweet spot, and a simple carbon filter removes the chlorine that dulls aromatics. If your tap water is very hard or very soft, a low-mineral bottled water or a remineralizing sachet gets you closer to the balanced middle that lets a coffee show its best."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "And get the temperature right"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Brew just off the boil — around 92 to 96°C, or roughly thirty seconds after a kettle stops rolling. Too hot scorches and turns things bitter; too cool under-extracts and leaves the cup sour and weak. A gooseneck kettle helps you pour with control, but the temperature matters far more than the pretty stream."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-single-origin-means",
+    "status": "published",
+    "body": {
+      "title": "What “single origin” actually means",
+      "excerpt": "It’s on every bag, including ours — here’s what it tells you, what it doesn’t, and why we still pay more for it.",
+      "featuredImage": {
+        "$asset": "meridian-post-origin"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "“Single origin” means the coffee in the bag comes from one place — a single farm, a single washing station, or a single small region — rather than being blended across countries. It isn’t a quality grade on its own, but it’s a promise of traceability: you can point at where it grew, and taste the difference a place and a process make, season after season."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why a place tastes like a place"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Altitude, soil, the coffee variety, and how the cherry is processed all leave a fingerprint. A washed Ethiopia is floral and tea-like; a washed Kenya is blackcurrant and structured; a Colombian is red apple and caramel. Blend them together and those signatures average out into something rounder and more consistent — which is exactly why a good everyday blend exists too. Single origin is about clarity; a blend is about balance."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why we pay above the market"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Traceable, high-grown, carefully processed coffee costs more to produce than the commodity price rewards. Paying above the market isn’t charity — it’s how the good lots keep getting grown, and how the same farmers come back with the same quality year on year. The name on the bag is a promise that someone was paid fairly to grow something worth roasting."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,859 @@
+{
+  "categories": [
+    {
+      "handle": "single-origin",
+      "name": "Single origin",
+      "description": "Clean, distinct coffees from one farm or region.",
+      "featured": true
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "Everyday, espresso and decaf blends.",
+      "featured": true
+    },
+    {
+      "handle": "ready-to-brew",
+      "name": "Ready to brew",
+      "description": "Single-serve coffee, no machine required.",
+      "featured": true
+    },
+    {
+      "handle": "brew-gear",
+      "name": "Brew gear",
+      "description": "Grinders, drippers and the kit to brew it right.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "Fresh coffee on your schedule.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "fresh",
+      "name": "Fresh off the roaster",
+      "description": "What came off the roaster this week.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["ethiopia-yirgacheffe", "kenya-nyeri", "signal-blend", "subscription"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The coffees people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["signal-blend", "type-01-espresso", "steeped-coffee", "subscription"]
+    },
+    {
+      "handle": "single-origins",
+      "name": "Single origins",
+      "description": "Bright, distinct coffees from one place.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ethiopia-yirgacheffe", "kenya-nyeri", "colombia-narino"]
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "Balanced everyday, espresso and decaf blends.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["signal-blend", "type-01-espresso", "offgrid-decaf"]
+    },
+    {
+      "handle": "brew-gear",
+      "name": "Brew gear",
+      "description": "Everything to brew it at home.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["precision-grinder", "flat-bottom-dripper"]
+    },
+    {
+      "handle": "starter-kit",
+      "name": "Starter kit",
+      "description": "New to brewing? Start here.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["precision-grinder", "flat-bottom-dripper", "signal-blend"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ethiopia-yirgacheffe",
+      "title": "Ethiopia Yirgacheffe",
+      "description": "A washed Yirgacheffe roasted light — the archetype of a bright, clean Ethiopia. Jasmine and bergamot on the nose, lemon-tea acidity, a delicate, sparkling finish. The pour-over that tastes like a place, not just like coffee.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["single-origin", "ethiopia", "washed", "light-roast"],
+      "categoryHandles": ["single-origin"],
+      "collectionHandles": ["fresh", "single-origins"],
+      "seoTitle": "Ethiopia Yirgacheffe — washed single-origin coffee | Meridian",
+      "seoDescription": "A bright, floral washed Ethiopia Yirgacheffe, roasted light. Jasmine, bergamot and lemon-tea acidity.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-ETH-YIRG-250-WB",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-ETH-YIRG-250-FL",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-ETH-YIRG-250-ES",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-ETH-YIRG-1K-WB",
+          "priceCents": 7500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-ETH-YIRG-1K-FL",
+          "priceCents": 7500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-ETH-YIRG-1K-ES",
+          "priceCents": 7500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-ethiopia",
+          "isPrimary": true,
+          "alt": "Ethiopia Yirgacheffe"
+        }
+      ]
+    },
+    {
+      "handle": "kenya-nyeri",
+      "title": "Kenya Nyeri",
+      "description": "A washed Kenya from Nyeri County — the coffee that converts people who think they don’t like light roasts. Blackcurrant, ripe tomato and a juicy, structured acidity, with a syrupy weight that fills the cup. Loud, in the best way.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["single-origin", "kenya", "washed", "light-roast"],
+      "categoryHandles": ["single-origin"],
+      "collectionHandles": ["fresh", "single-origins"],
+      "seoTitle": "Kenya Nyeri — washed single-origin coffee | Meridian",
+      "seoDescription": "A juicy, structured washed Kenya from Nyeri — blackcurrant, ripe tomato and syrupy body. Roasted light.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-KEN-NYERI-250-WB",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-KEN-NYERI-250-FL",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-KEN-NYERI-250-ES",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-KEN-NYERI-1K-WB",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-KEN-NYERI-1K-FL",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-KEN-NYERI-1K-ES",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-kenya",
+          "isPrimary": true,
+          "alt": "Kenya Nyeri"
+        }
+      ]
+    },
+    {
+      "handle": "colombia-narino",
+      "title": "Colombia Nariño",
+      "description": "A washed Colombia from the high slopes of Nariño — the easy, everyone-likes-it single origin. Red apple, caramel and toasted almond, medium-bodied and sweet, equally good black or with milk. The reliable one.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["single-origin", "colombia", "washed", "medium-roast"],
+      "categoryHandles": ["single-origin"],
+      "collectionHandles": ["single-origins", "best-sellers"],
+      "seoTitle": "Colombia Nariño — washed single-origin coffee | Meridian",
+      "seoDescription": "A sweet, balanced washed Colombia from Nariño — red apple, caramel and toasted almond. Roasted medium.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-COL-NARINO-250-WB",
+          "priceCents": 2000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-COL-NARINO-250-FL",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-COL-NARINO-250-ES",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-COL-NARINO-1K-WB",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-COL-NARINO-1K-FL",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-COL-NARINO-1K-ES",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-colombia",
+          "isPrimary": true,
+          "alt": "Colombia Nariño"
+        }
+      ]
+    },
+    {
+      "handle": "signal-blend",
+      "title": "Signal Blend",
+      "description": "Our everyday blend and the coffee we drink most — a clean Latin American base lifted by a bright East African top note. Chocolate, orange and brown sugar, medium-bodied and forgiving. Great in a filter, great in a press, great half-asleep.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["blend", "everyday", "medium-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["fresh", "blends", "best-sellers"],
+      "seoTitle": "Signal Blend — everyday coffee | Meridian",
+      "seoDescription": "A clean, sweet everyday blend — chocolate, orange and brown sugar. Works in any brewer. Roasted medium.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-SIGNAL-250-WB",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-SIGNAL-250-FL",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-SIGNAL-250-ES",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-SIGNAL-1K-WB",
+          "priceCents": 6100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-SIGNAL-1K-FL",
+          "priceCents": 6100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-SIGNAL-1K-ES",
+          "priceCents": 6100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-signal",
+          "isPrimary": true,
+          "alt": "Signal Blend"
+        }
+      ]
+    },
+    {
+      "handle": "type-01-espresso",
+      "title": "Type 01 Espresso",
+      "description": "A modern espresso built for clarity, not char — a touch fuller than our filter roasts but still bright underneath. Pulls a syrupy, cocoa-and-red-fruit shot that holds its own in milk without turning to ash. Dialed for the home machine.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["blend", "espresso", "medium-dark-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends", "best-sellers"],
+      "seoTitle": "Type 01 Espresso — modern espresso blend | Meridian",
+      "seoDescription": "A bright, syrupy modern espresso — cocoa and red fruit, holds up in milk. Roasted medium-dark.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-ESP-01-250-WB",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-ESP-01-250-FL",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-ESP-01-250-ES",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-ESP-01-1K-WB",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-ESP-01-1K-FL",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-ESP-01-1K-ES",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-espresso",
+          "isPrimary": true,
+          "alt": "Type 01 Espresso"
+        }
+      ]
+    },
+    {
+      "handle": "offgrid-decaf",
+      "title": "Off-Grid Decaf",
+      "description": "A Swiss-water decaf that actually tastes like coffee — Colombian beans, chemical-free process, and a roast that keeps the sweetness in. Milk chocolate, baked apple and a soft nutty finish. The evening cup that won’t keep you up.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["decaf", "swiss-water", "medium-roast"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends"],
+      "seoTitle": "Off-Grid Decaf — Swiss-water decaf coffee | Meridian",
+      "seoDescription": "A genuinely good Swiss-water decaf — milk chocolate, baked apple and a nutty finish. Roasted medium.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "250g"
+            },
+            {
+              "value": "1kg"
+            }
+          ]
+        },
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-DECAF-250-WB",
+          "priceCents": 2000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-DECAF-250-FL",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-DECAF-250-ES",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "250g",
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "MER-DECAF-1K-WB",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "MER-DECAF-1K-FL",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "MER-DECAF-1K-ES",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "1kg",
+            "Grind": "Espresso"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-decaf",
+          "isPrimary": true,
+          "alt": "Off-Grid Decaf"
+        }
+      ]
+    },
+    {
+      "handle": "steeped-coffee",
+      "title": "Steeped Coffee (8-pack)",
+      "description": "Single-serve steep bags — like tea, but real specialty coffee. Tear one open, drop it in a mug, pour hot water and wait five minutes for a clean, full cup. No machine, no grinder, no mess. The travel, office and camp answer, filled with the Signal Blend.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "Meridian Coffee",
+      "tags": ["ready-to-brew", "single-serve", "travel"],
+      "categoryHandles": ["ready-to-brew"],
+      "collectionHandles": ["fresh", "best-sellers"],
+      "seoTitle": "Steeped Coffee, 8-pack — single-serve steep bags | Meridian",
+      "seoDescription": "Single-serve coffee steep bags — real specialty coffee, no machine. Filled with the Signal Blend.",
+      "variants": [
+        {
+          "sku": "MER-STEEP-8",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-steeped",
+          "isPrimary": true,
+          "alt": "A box of single-serve coffee steep bags"
+        }
+      ]
+    },
+    {
+      "handle": "precision-grinder",
+      "title": "Precision Hand Grinder",
+      "description": "A hand grinder with 38mm conical burrs and stepped adjustment — even, repeatable grounds from espresso to French press, without the noise or the price of a benchtop machine. Matte steel, glass catch, built to outlast a few coffee machines.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Meridian Coffee",
+      "tags": ["gear", "brewing", "grinder"],
+      "categoryHandles": ["brew-gear"],
+      "collectionHandles": ["brew-gear", "starter-kit"],
+      "seoTitle": "Precision Hand Grinder — 38mm conical burrs | Meridian",
+      "seoDescription": "A quiet, repeatable hand grinder with 38mm conical burrs, from espresso to French press.",
+      "variants": [
+        {
+          "sku": "MER-GEAR-GRINDER",
+          "priceCents": 8900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-grinder",
+          "isPrimary": true,
+          "alt": "A precision hand grinder in matte steel"
+        }
+      ]
+    },
+    {
+      "handle": "flat-bottom-dripper",
+      "title": "Flat-Bottom Dripper",
+      "description": "A flat-bottom ceramic dripper that’s far more forgiving than a cone — the even bed pulls a balanced, repeatable cup even when your pour isn’t perfect. Holds heat, pours clean, and uses standard basket filters. The easiest way into great pour-over.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Meridian Coffee",
+      "tags": ["gear", "brewing", "pour-over"],
+      "categoryHandles": ["brew-gear"],
+      "collectionHandles": ["brew-gear", "starter-kit"],
+      "seoTitle": "Flat-Bottom Dripper — forgiving pour-over brewer | Meridian",
+      "seoDescription": "A flat-bottom ceramic dripper for a balanced, repeatable pour-over. Uses standard basket filters.",
+      "variants": [
+        {
+          "sku": "MER-GEAR-DRIPPER",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-dripper",
+          "isPrimary": true,
+          "alt": "A flat-bottom ceramic pour-over dripper"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Coffee Subscription",
+      "description": "Freshly roasted coffee on your schedule — choose one or two bags and how often, and we roast and ship to match. Rotate through the single origins or lock in the Signal Blend; skip, swap or cancel any week. The easiest way to always have great coffee on the counter.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Meridian Coffee",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["fresh", "best-sellers"],
+      "seoTitle": "Coffee Subscription — freshly roasted, on your schedule | Meridian",
+      "seoDescription": "A flexible coffee subscription — pick one or two bags and a cadence; skip, swap or cancel any week.",
+      "options": [
+        {
+          "name": "Bags",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One bag"
+            },
+            {
+              "value": "Two bags"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MER-SUB-1",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Bags": "One bag"
+          }
+        },
+        {
+          "sku": "MER-SUB-2",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Bags": "Two bags"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "meridian-subscription",
+          "isPrimary": true,
+          "alt": "A minimalist coffee subscription box"
+        }
+      ]
+    }
+  ]
+}

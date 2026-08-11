@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cleaning-eco-hero",
+    "url": "https://images.unsplash.com/photo-1626965654957-fef1cb80d4b7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBwbGFudCUyMGZpbGxlZCUyMGhvbWV8ZW58MHwwfHx8MTc4NjM4OTMzMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, plant-filled living room, freshly cleaned and calm"
+  },
+  {
+    "id": "cleaning-eco-products",
+    "url": "https://images.unsplash.com/photo-1650964336599-a6b32f916378?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmF0dXJhbCUyMGNsZWFuaW5nJTIwcHJvZHVjdHN8ZW58MHwwfHx8MTc4NjM4OTMzNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Refillable bottles of plant-based, non-toxic cleaning products on a wooden shelf"
+  },
+  {
+    "id": "cleaning-eco-home",
+    "url": "https://images.unsplash.com/photo-1728649054288-61f332ee389b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbWluaW1hbCUyMGhvbWUlMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2Mzg5MzM4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A sunlit kitchen with open windows and green plants on the sill"
+  },
+  {
+    "id": "cleaning-eco-rosa",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMG5hdHVyYWx8ZW58MHwwfHx8MTc4NjM4OTM0MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rosa Vela, lead cleaner"
+  },
+  {
+    "id": "cleaning-eco-mara",
+    "url": "https://images.unsplash.com/photo-1680631626569-d163da98ff40?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBjbGVhbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTMyMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mara Quinn, deep-clean specialist"
+  },
+  {
+    "id": "cleaning-eco-tavi",
+    "url": "https://images.unsplash.com/photo-1758273705627-937374bfa978?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyc29uJTIwY2xlYW5pbmclMjBob21lfGVufDB8MHx8fDE3ODYzODkzNDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Tavi Okafor, recurring-care cleaner"
+  }
+]

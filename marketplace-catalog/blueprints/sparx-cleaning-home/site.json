@@ -1,0 +1,2188 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "d12ecd5b-2154-42e0-96f1-14b24242a17e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "86be7938-52e0-4a31-bde7-cbd74a4ad7a8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "039afcfe-8bb9-4906-91f6-c55d20d6a409",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "28951f28-c589-4608-a333-f9efbb93ec41",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "139f061d-3396-4cd3-b323-1fac17368e6e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "b08feb2b-e7a7-4e09-9b68-fc9dde16b5bf",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "e846df92-3189-4d03-9b14-4519bc33dc17",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "1eb78394-426f-4222-89ee-142ae56e4f0e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "27eddb73-8045-4375-bd3f-c57dea61dcd8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "f8df92f5-0f13-45d3-acb8-25b023b0e2bc",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b25d0887-2430-4564-953b-63b3028ebe50",
+                  "ord": "a2"
+                }
+              ],
+              "id": "456049ea-b004-420a-96b4-9c30efb1c8d9",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "3eac8618-4a27-4b9d-869c-4c26cfee6aeb",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "55445394-ef28-4aa4-8655-78ca0227e3e1",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "36029e65-f492-4537-8cd0-92a388822290",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "88ca20aa-dad2-44a3-a2e1-f6b6649a8900",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "79126475-a518-40b5-872c-ea3f28526195",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "baada198-59c5-4811-b125-8c73f4a27265",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "c148d1db-fd18-4521-86cc-6c8c04c380c7",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "8099a558-e8c6-4667-a593-33def41a9058",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "a87c0fec-c24e-4b1b-8b8f-454c5979bd24",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "96d600f1-8328-4df7-84cc-5d00eeed67e5",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "0638b960-3daf-433c-b001-7a5c98035b2f",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "3bef04ac-de14-44ec-b47a-bfb7a1ec03df",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "5130dbb7-7762-43be-940e-a96c26a75b5c",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "25f25cc1-32c4-46c5-81ca-d477fdfaa231",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "259a0108-a7e4-4f88-92dd-1f46a9d7a046",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "16b83c13-854e-4316-bd6b-7c150d29d86d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "99477934-0ab9-487d-a73a-a7e33c6db3c0",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "13cf71e2-7b66-413d-b776-9ab5d5ef3f12",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4d146c91-9530-4209-91a0-a1f3473cc8bc",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "13ad34e8-c41e-47f6-942a-e3d9f414c96a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e533ce91-98b9-4fad-b1c4-17d7924ce9cd",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "b050c591-27b2-4142-ad2c-5d9a1b99ca02",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "56336ed5-cc96-484a-9bc7-6c41826c9dd7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "7c316ecb-8b6e-4bb0-ac0d-5c782613e874",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f7237434-a97f-42c5-bb8f-982909ee7a74",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "ab01541e-2180-4b1b-837e-8aeb9b657110",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4cbef61f-ab1e-46ef-9740-77940f3c7b9c",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "8004600f-c0e5-4a25-a8d3-bdc8bb8db598",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "97a961c6-6553-4e1d-924d-069b65bd7ce3",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bddd23e2-8102-4588-a855-dda048159015",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "38549a33-2f6c-424e-a2ef-22cd7c7a68fe",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a2f4f81d-a8cf-4032-8869-f706a6e48595",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "954ce0a4-bb13-4e59-97c4-20863b6e12b9",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "195955b6-f132-408a-9a26-b031558fcb9d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "d0308162-c3a5-4a55-bf47-98029845e46f",
+              "ord": "a0"
+            }
+          ],
+          "id": "a22f770b-8372-45b1-b815-70816dd2c2da",
+          "ord": "a2"
+        }
+      ],
+      "id": "3fa9f3c7-ef65-4403-aac6-ab81e18540a7"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Tidy Nest — friendly house cleaning",
+      "seoDescription": "Tidy Nest is a friendly, insured house-cleaning service for recurring cleans, deep cleans and move-outs. Book your first clean online — or get a free estimate.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cec2cf2f-d34c-43bc-8a15-88e033dc8a11",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1632829882891-5047ccc421bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBicmlnaHQlMjBsaXZpbmclMjByb29tfGVufDB8MHx8fDE3ODYzODkzMTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, freshly cleaned living room full of morning light",
+                  "loading": "eager"
+                },
+                "id": "f910bcc9-c092-4670-afbc-aa91190ff783",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "7368231d-c218-4398-9d94-bb6e2a585c8c",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Come home to clean"],
+                    "id": "81ab8697-03e9-4ce6-8bd3-f6b006721da0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Friendly, vetted cleaners for your home — recurring cleans, deep cleans and move-outs. Book in about a minute and walk into a place that feels brand new."
+                    ],
+                    "id": "b237b0e4-8ff0-4f5b-915e-59a10926cdda",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book your first clean"],
+                        "id": "70c940e5-f2c7-4415-ab25-d07faf98bdd3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get a free estimate"],
+                        "id": "ea101dc7-3de7-454e-a4a0-8e3d9ed7195f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "30f18db0-3853-4c04-96d8-975367672867",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8940bfbe-6bdf-484c-8ce8-20698c6e1de1",
+                "ord": "a2"
+              }
+            ],
+            "id": "c1223007-2a47-4a2a-af50-f47c97e56ee7",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Vetted & insured"],
+                            "id": "198a662d-83d6-4939-9e22-3648cbe5a07a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every cleaner is background-checked, trained and fully insured. We bring our own supplies and treat your home like our own."
+                            ],
+                            "id": "9e91f189-62aa-43c6-9188-f555c9cf752e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "261625d2-28ae-4f26-8eb2-cf4400a76956",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Satisfaction guaranteed"],
+                            "id": "8edda1f2-334c-4457-a5a7-c3c498e5f485",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "If we miss a spot, tell us within 24 hours and we’ll come back and make it right — no arguing, no extra charge."
+                            ],
+                            "id": "0f974e1d-c56d-4942-a2ac-03d6808cdd8a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ca07b080-df17-4437-bdc7-3332afbaef3f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Flexible recurring plans"],
+                            "id": "c5ed22b6-6a9e-4ea0-97d1-f4cba33f0eb9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Weekly, every two weeks or monthly, with the same friendly cleaner each visit. Skip, move or cancel any time — no lock-in."
+                            ],
+                            "id": "9ca6c70d-c2f6-455e-bc7e-266a8950584e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ae8094a1-73aa-4844-88a7-96b9a65d7910",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Eco-friendly options"],
+                            "id": "35e5d12d-8d8a-4841-8c7f-c7a7605f9e5e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Just ask for our plant-based, family- and pet-safe products — a fresh, clean home without the harsh chemical smell."
+                            ],
+                            "id": "c2cbee08-f276-4c3f-80cb-8cd053d5c1cf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cd263d52-1704-4bfd-8f56-ee49ce3a6b2d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a163e2a9-b425-4a7e-9e54-439b3b11c5d4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5da39603-5f51-4fc3-acbb-4cdfa28b41b7",
+                "ord": "a0"
+              }
+            ],
+            "id": "b88aea25-2044-4ce8-a75c-1da7caf7691d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we clean"],
+                        "id": "cda610f1-76fa-451a-9e59-23fad626c753",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Clear, upfront pricing for every kind of clean. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "4908d7c6-952d-4cd8-b93e-5a821362ed7c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "92abdf76-a4fa-4884-9511-518abb01995a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Standard clean"],
+                                "id": "b5d65b33-ead1-4b61-9583-301520b15ba5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "1282ef17-246a-4a53-b9a9-50bfdf84f006",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "157cab89-574b-41b5-a7ce-43c2f6c332c4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "c019fe7d-8f96-4c3f-a2ae-ba6ac7a555fc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Kitchens, baths, floors and surfaces — your whole home refreshed."
+                            ],
+                            "id": "c09f70b5-e4c1-40b9-8672-8fdf027425f1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "14b26922-eb68-48a0-a730-8371d6b69e14",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Deep clean"],
+                                "id": "3f6fa734-2e5e-4798-9dcd-83217b1b9996",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$220"],
+                                "id": "fbe23313-5316-44b7-be20-a4dd9d6cde54",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "28387649-c1c4-4219-b402-c2a5e6144c9f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["3 hr"],
+                            "id": "74e28092-6ff0-471a-939d-908d0543df06",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Baseboards, inside the oven and fridge, grout — the works."
+                            ],
+                            "id": "845f9931-036d-4e55-b3f0-1a1f8b3218e4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6561f1cd-dc0e-47ee-b92a-8dafc54e61c5",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Recurring plan"],
+                                "id": "f5e04fad-5321-4a7d-a05a-07199c92b72e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$110"],
+                                "id": "5831b8b4-2c32-429a-b93e-a5726c628d7d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fb1758ed-4580-4ab5-8266-551031e3836d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "51ddd15e-186b-43f6-8a52-307781a65728",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Set it and forget it — the same cleaner on your schedule."
+                            ],
+                            "id": "a708e0af-e0e5-43ad-8fdf-55a8c022138a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "84fb9979-faa8-49f5-b25b-e98d8979193b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Move-in / move-out"],
+                                "id": "a17bf928-a475-433f-9f34-4852bd4e788a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$280"],
+                                "id": "c647ee3b-c604-433b-83c2-8dce8467ac76",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a915bd58-2278-453d-b256-59342ec1ccdf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["4 hr"],
+                            "id": "32d3c0cf-d81a-4635-9f48-c281bdc4facc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An empty-home deep clean so you get your deposit back."],
+                            "id": "505c046e-1994-43c7-a51c-3d7a3b7dd1b7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0c6df509-e345-4a0d-8f1e-2deef3f7e320",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "51e2995b-f668-4bd3-90b4-e730efc6cc06",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "f170669c-b126-46f9-a2cc-25d46da99815",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "f45c4f97-d2a1-4e1d-9d53-a621a8dcfe80",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8afde6e4-46c3-4a05-ac3b-17dfda33d8c0",
+                "ord": "a0"
+              }
+            ],
+            "id": "41524ceb-f4f2-4ede-be5f-4aa21b95fdbf",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1724582586529-62622e50c0b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMG1vZGVybiUyMGhvbWUlMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2Mzg5MzE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A spotless kitchen with sparkling counters and tidy shelves",
+                      "loading": "lazy"
+                    },
+                    "id": "c48b5a14-5317-455e-b306-7e6ff2b78af1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your same trusted cleaner, every time"],
+                        "id": "2b38a0ce-e3d0-42b7-999f-31e6dadec302",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "With a recurring plan you’re matched with one cleaner who gets to know your home — where things go, which products you like, the corners that always need a little extra."
+                        ],
+                        "id": "e280ae06-cbda-432a-89a1-fd3a4c4d53b6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No revolving door of strangers, no re-explaining yourself every week. Just a familiar, friendly face and a home that stays effortlessly clean."
+                        ],
+                        "id": "f3853f3e-4905-4a95-8a56-03da266b1ef3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start a recurring plan"],
+                            "id": "c330276a-84c2-4851-8b47-eb191a55a8f5",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "0231adf8-5359-4b13-b172-ce0ba03257e0",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b01d47b3-82cf-4805-8ace-de2fcb1788fe",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "28b66337-6516-4bef-b368-a23426195765",
+                "ord": "a0"
+              }
+            ],
+            "id": "9b2809ff-a0e4-4de2-af72-1686bd545289",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your cleaning team"],
+                        "id": "a6b81307-49f0-49a1-9754-b3b38e078eb1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Real people, background-checked and insured — the friendly faces who’ll make your home shine."
+                        ],
+                        "id": "91bb8028-b341-42d4-b0f5-b7293f70a5f2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "58f44094-a80a-4c27-a2f7-067af25884ee",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1680631626569-d163da98ff40?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBjbGVhbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTMyMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Rosa Delgado, lead cleaner",
+                              "loading": "lazy"
+                            },
+                            "id": "d7bd64fe-b2d1-4481-926d-6e5e774a4e6a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Rosa Delgado"],
+                                "id": "701d4c6e-790d-45d0-b380-0ce80723b09b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead cleaner"],
+                                "id": "368c56ab-0c2e-42be-8656-83e94df445d9",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Ten years of spotless homes and happy clients. Rosa runs the crew and loves a recurring route."
+                                ],
+                                "id": "bab9d79c-59b7-47ae-b413-90a28a5ddea4",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f06e1754-2228-4a4b-814b-2c44bf7e0dc8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "497c101e-14e6-48d7-bfc9-7ed07e1afc4d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1740657254989-42fe9c3b8cce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwY2xlYW5pbmclMjBzZXJ2aWNlfGVufDB8MHx8fDE3ODYzODkzMjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Mateo Rivera, cleaner",
+                              "loading": "lazy"
+                            },
+                            "id": "28b7d027-212d-4de2-a1fa-132d932a7833",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Mateo Rivera"],
+                                "id": "a29de500-096c-43ed-ba10-bb90ae50512e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Cleaner"],
+                                "id": "cc917619-7792-4974-95e3-ce039eb7b815",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The detail guy — deep cleans and move-outs where every corner has to be perfect."
+                                ],
+                                "id": "ba3b465d-cd4e-4afa-88c1-1f3df01d12e0",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "95172496-a810-4553-bd57-4aa995defc87",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9de91f26-43da-4e82-885a-34a6703eb716",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHNtaWxpbmd8ZW58MHwwfHx8MTc4NjM4OTMyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Aisha Bello, cleaner",
+                              "loading": "lazy"
+                            },
+                            "id": "4f6968eb-e789-49c3-8c1e-5cd8709775f3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Aisha Bello"],
+                                "id": "4f7f6e45-412d-40ab-ac45-42d8e046201a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Cleaner"],
+                                "id": "e9f9304a-ddf0-4c4f-97b3-43bf644acf19",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Your eco-friendly specialist, with plant-based products that are safe for kids and pets."
+                                ],
+                                "id": "ca4631e5-8af7-412f-9776-50ae0ccf6e1c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c9d2545a-dab7-41f5-8473-7913b16be974",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8dbddbff-97b5-49a5-a4ea-a94ec4fb2e17",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG91c2UlMjBjbGVhbmluZyUyMHBlcnNvbnxlbnwwfDB8fHwxNzg2Mzg5MzI5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Grace Lin, cleaner",
+                              "loading": "lazy"
+                            },
+                            "id": "721d2a1b-039e-4287-9f46-b3c82f544800",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Grace Lin"],
+                                "id": "1702b264-2c95-4a52-87bd-3f880ba10497",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Cleaner"],
+                                "id": "87b4b344-ad0d-43cf-b2e8-b163becfb1cb",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Handles the big jobs — post-renovation and move-out cleans, start to sparkling finish."
+                                ],
+                                "id": "d65bca9a-b02d-452e-9e80-20dede8f28ad",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "7a729ea8-a1e2-4471-b715-e35418f5efb0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5e41f2a1-755e-4e7b-b3d5-e1518b2b41e8",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "dee8741b-407b-48e6-8c32-6feaba07182e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3747b740-7cbb-4527-97c8-165c362c1d95",
+                "ord": "a0"
+              }
+            ],
+            "id": "0c693b45-87e9-4d39-a511-220ad45a7c99",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I come home on cleaning day and just exhale. Same lovely cleaner every time, everything sparkling, and it never costs more than they quoted. Worth every penny.”"
+                    ],
+                    "id": "7d64e36e-91fa-4be6-86c0-4ad45d739e94",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Danielle, client since 2024"],
+                    "id": "66ec6172-a7a5-471e-9ddb-de216d6aed41",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ce0a977e-c536-43d5-a323-3aa29859b389",
+                "ord": "a0"
+              }
+            ],
+            "id": "e3b77dc9-cfc9-4404-aa96-8997eae3cd0e",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready for a cleaner home?"],
+                    "id": "b35e225a-34fd-4dd3-b651-f9b767be066e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a clean, choose a day and see live times. It takes about a minute — or book a free estimate first."
+                    ],
+                    "id": "ea030b58-3bd8-4740-a46f-a6420374b71e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book your first clean"],
+                    "id": "aacbff44-c8f6-4dd6-894f-86eb92f12946",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6520b772-7f09-48c4-b573-0a313a75773d",
+                "ord": "a0"
+              }
+            ],
+            "id": "68e30774-d25d-494c-bf06-8bf0f70fa339",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Tidy Nest",
+      "seoDescription": "See what Tidy Nest offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a68f3b82-2e7a-4bab-9797-180dcd041847",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1724582586529-62622e50c0b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMG1vZGVybiUyMGhvbWUlMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2Mzg5MzE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A spotless kitchen with sparkling counters and tidy shelves",
+                  "loading": "eager"
+                },
+                "id": "d55d0595-d680-47d3-938d-f0603a364a4a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "c9ffd78e-2351-40f2-a74e-a7deaa58302a",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your clean"],
+                    "id": "696901d9-2f97-449e-a474-45317bf10817",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a clean to see the price and live availability, then pick a day and time that works for you."
+                    ],
+                    "id": "8a56eccc-37e1-4827-88c7-2569466a9d58",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See cleans below"],
+                        "id": "8b66985e-f179-4271-b766-10081a43c08a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "42e0bd85-7c0c-43e3-bef6-c907a6eba166",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9edddd6b-be6d-418c-ad21-898dccb54b02",
+                "ord": "a2"
+              }
+            ],
+            "id": "c4259fbe-3bbb-4263-9952-52e6ff40297b",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "6766e03a-ec0b-4304-a8d4-60535fb9b364",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Tidy Nest",
+      "seoDescription": "Who Tidy Nest is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "28e82f28-5dea-451e-8180-6a78f7818223",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1632829882891-5047ccc421bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBicmlnaHQlMjBsaXZpbmclMjByb29tfGVufDB8MHx8fDE3ODYzODkzMTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, freshly cleaned living room full of morning light",
+                      "loading": "lazy"
+                    },
+                    "id": "7c52901a-33d4-4c7d-ae2e-862c6c8c6dbb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Tidy Nest"],
+                        "id": "1dca995d-6777-45c3-a084-070e52dd0f8f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Tidy Nest for a simple reason: everyone deserves to come home to a clean house without the stress of finding — and trusting — someone to do it."
+                        ],
+                        "id": "a9930cfd-ab41-424f-acf4-3b362235ca84",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So we built a team we’d welcome into our own homes: vetted, insured, genuinely friendly, and backed by a guarantee. You get your evenings and weekends back, and a home that always feels cared for."
+                        ],
+                        "id": "7afef0f3-8e04-4be8-85b6-cc25bbcaa683",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a clean"],
+                            "id": "35a97f8c-1ebc-45f0-8ff5-d45d1f595165",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "958baf41-44b9-4566-9f5c-97c566a5f0d6",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "8f471ae9-c23d-40ca-9d5c-3d8de48635f3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ce606299-ee61-4299-b87b-1476853e8353",
+                "ord": "a0"
+              }
+            ],
+            "id": "3e4d16c2-0026-4b29-b8da-88b90d2a4ea5",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "1b27afc8-fd5a-46b8-9744-17c60a221af8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A price you can trust"],
+                            "id": "7f6d7398-b59d-4616-9764-1293a9d16d8f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A clear, upfront quote before we start — free estimates on bigger jobs. What we quote is what you pay."
+                            ],
+                            "id": "80bf3d41-c148-4fdc-9d03-713fc7ef4d6a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cddda2ca-edf8-4b13-9194-7af70dae9b42",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["People you can trust"],
+                            "id": "407004f1-d06c-48b6-9513-68c20a98ae9e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every cleaner is background-checked, trained and fully insured, and you get the same one on a recurring plan."
+                            ],
+                            "id": "aac207cb-f2c9-4dd6-8de4-0f82e2e56e7d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0e66980a-1f3f-4601-b8e1-85a1c97ba4b0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A guarantee behind it"],
+                            "id": "286b6d6f-f1c4-4253-bd0c-c7d6b5f416e2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "If anything’s not right, tell us within 24 hours and we’ll come back and re-clean it — free."
+                            ],
+                            "id": "e8375752-95fd-4f7e-b83a-92a552e597cc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8291405f-d074-4004-97ed-30e16094bc5e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ba4497c8-daf7-4ac9-b604-7277b6aaa1c7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "14e3477b-02f2-4fc2-9cdb-f3dfc6012427",
+                "ord": "a0"
+              }
+            ],
+            "id": "352c807d-5e9e-4d30-89ea-06fbe07416af",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Tidy Nest",
+      "seoDescription": "Where to find Tidy Nest, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "69f15059-efc2-4c93-be42-d980ad84f21f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Get in touch"],
+                        "id": "9a2c2332-3958-4aeb-aff1-55399459e337",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Tidy Nest"],
+                            "id": "59e7ffb1-9263-4913-8dae-f3345745c9e2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Maplewood Avenue"],
+                            "id": "6245dc8d-751e-4af9-9134-6f9ffcf08c0c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 5 · Austin, TX 78704"],
+                            "id": "fac5f4a9-6600-480b-913e-46752952e49d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5d9d14da-2496-4dfa-b256-160d9bb7c01c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "70c7af27-9c21-49df-b269-0741f618e0b3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "fc6ead71-2ce7-4bfd-933a-5a795b885b84",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a70970b4-b7e7-494c-9fc5-41122016e92b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "dda09a99-a854-4fe3-805b-230b708618a5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 4:00"],
+                                "id": "47b05333-6e40-419b-9fe4-ca823c9800a1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5f48244e-5c28-44b3-a18e-e20a9b4ddd1a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "fbfe832f-1c28-4a61-bf67-0615e44c5c31",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 3:00"],
+                                "id": "b92fc11a-f73a-4cb0-9d15-d4d93b619aa8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bb917497-611f-4153-9652-27646279132c",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Holidays"],
+                                "id": "1fca17c0-a818-429c-ad4c-28c32fccd780",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "bd2c5694-a784-4656-84c8-38d883bf6d10",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cb1a7d7d-3573-4a64-8851-3bde487a5ad9",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "31db53ec-8833-4f75-9b8d-fb418adeea6a",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "fb02c9e1-b68f-40e4-9e29-6f02fcbe5e3d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Maplewood Avenue, Austin, TX 78704",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "53c75795-2a60-4e1f-9c01-b2ff0933ccb1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b6eeba73-cd6f-4323-9bb1-85110395808b",
+                "ord": "a0"
+              }
+            ],
+            "id": "89590cde-bbee-4e70-88f1-410f28ce6e1b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "ce2039fe-e5cb-4e0b-9789-c9e2bfc1bd19",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your clean online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "f4ed59f7-b8ed-4d89-af96-877c97d307cd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "22054afb-42e0-45f1-9f34-e91c42229ac3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a318649d-926a-4b81-8e67-03f142f53bef",
+                "ord": "a0"
+              }
+            ],
+            "id": "7a83397c-c952-4552-92f6-ed567f1a4a81",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "tidynest",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98.5% 0.008 200)",
+      "--color-base-200": "oklch(96% 0.016 196)",
+      "--color-base-300": "oklch(90% 0.022 192)",
+      "--color-base-content": "oklch(30% 0.03 235)",
+      "--color-primary": "oklch(70% 0.135 192)",
+      "--color-secondary": "oklch(38% 0.03 235)",
+      "--color-accent": "oklch(71% 0.15 38)",
+      "--color-neutral": "oklch(32% 0.022 235)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Nunito\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 192)",
+      "--color-secondary-content": "oklch(98% 0.01 235)",
+      "--color-accent-content": "oklch(15% 0.02 38)",
+      "--color-neutral-content": "oklch(98% 0.01 235)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(71% 0.15 38)",
+      "--color-highlight-content": "oklch(15% 0.02 38)",
+      "--color-border": "oklch(90% 0.022 192)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Nunito\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(25% 0.022 235)",
+      "--color-base-200": "oklch(21% 0.02 235)",
+      "--color-base-300": "oklch(17% 0.016 235)",
+      "--color-base-content": "oklch(95% 0.01 196)",
+      "--color-primary": "oklch(78% 0.13 194)",
+      "--color-secondary": "oklch(80% 0.02 200)",
+      "--color-accent": "oklch(77% 0.14 40)",
+      "--color-neutral": "oklch(84% 0.015 200)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 194)",
+      "--color-secondary-content": "oklch(15% 0.02 200)",
+      "--color-accent-content": "oklch(15% 0.02 40)",
+      "--color-neutral-content": "oklch(15% 0.015 200)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.14 40)",
+      "--color-highlight-content": "oklch(15% 0.02 40)",
+      "--color-border": "oklch(17% 0.016 235)"
+    }
+  }
+}

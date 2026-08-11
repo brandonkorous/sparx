@@ -1,0 +1,587 @@
+{
+  "categories": [
+    {
+      "handle": "new-releases",
+      "name": "New releases",
+      "description": "Just landed on the front table.",
+      "featured": true
+    },
+    {
+      "handle": "fiction",
+      "name": "Fiction",
+      "description": "Novels and short stories.",
+      "featured": true
+    },
+    {
+      "handle": "nonfiction",
+      "name": "Nonfiction",
+      "description": "Ideas, science, nature and more.",
+      "featured": true
+    },
+    {
+      "handle": "kids",
+      "name": "Kids",
+      "description": "Picture books and chapter books.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "For the readers in your life.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-releases",
+      "name": "Just landed",
+      "description": "The freshest arrivals on the front table.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["the-glass-orchard", "northbound", "the-attention-diet"]
+    },
+    {
+      "handle": "staff-picks",
+      "name": "What we’re reading",
+      "description": "The team’s current favourites, read cover to cover.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "the-glass-orchard",
+        "static-and-signal",
+        "the-attention-diet",
+        "otto-and-the-midnight-library",
+        "volume-reading-subscription"
+      ]
+    },
+    {
+      "handle": "the-fiction-shelf",
+      "name": "The fiction shelf",
+      "description": "Novels and short stories we stand behind.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["the-glass-orchard", "northbound", "static-and-signal"]
+    },
+    {
+      "handle": "the-nonfiction-shelf",
+      "name": "The nonfiction shelf",
+      "description": "Ideas, science and nature worth your time.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["the-attention-diet", "deep-time-bright-water"]
+    },
+    {
+      "handle": "for-young-readers",
+      "name": "For young readers",
+      "description": "Picture books and chapter books for the kids’ corner.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["otto-and-the-midnight-library", "the-sock-robbers"]
+    },
+    {
+      "handle": "gifts-for-readers",
+      "name": "Gifts for readers",
+      "description": "Pins, a reading light and the monthly subscription.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "volume-enamel-pin-set",
+        "clip-reading-light",
+        "volume-reading-subscription"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "the-glass-orchard",
+      "title": "The Glass Orchard",
+      "description": "A luminous novel about three sisters who inherit a failing greenhouse and the secret their late father grew inside it. Sorensen writes like sunlight through glass — warm, exact, quietly dazzling. The new release the whole team fought over first, and our clearest pick of the season.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Ada Sorensen",
+      "tags": ["fiction", "literary", "new-release", "staff-pick"],
+      "categoryHandles": ["new-releases", "fiction"],
+      "collectionHandles": ["new-releases", "staff-picks", "the-fiction-shelf"],
+      "seoTitle": "The Glass Orchard by Ada Sorensen | Volume Books",
+      "seoDescription": "A luminous new novel about three sisters, a failing greenhouse and the secret inside it. A Volume staff pick.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-GLASS-PB",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-GLASS-HC",
+          "priceCents": 2800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-glass-orchard",
+          "isPrimary": true,
+          "alt": "The Glass Orchard by Ada Sorensen"
+        }
+      ]
+    },
+    {
+      "handle": "northbound",
+      "title": "Northbound",
+      "description": "A propulsive literary thriller about a night-train guard who realises the same passenger has boarded every run for a month. Merrin keeps the screws turning without ever cheating you — taut, atmospheric, and impossible to put down past chapter three. Clear your evening.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Cass Merrin",
+      "tags": ["fiction", "thriller", "new-release"],
+      "categoryHandles": ["new-releases", "fiction"],
+      "collectionHandles": ["new-releases", "the-fiction-shelf"],
+      "seoTitle": "Northbound by Cass Merrin | Volume Books",
+      "seoDescription": "A propulsive night-train thriller about a passenger who boards every run. Taut, atmospheric, unputdownable.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-NORTH-PB",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-NORTH-HC",
+          "priceCents": 2700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-northbound",
+          "isPrimary": true,
+          "alt": "Northbound by Cass Merrin"
+        }
+      ]
+    },
+    {
+      "handle": "static-and-signal",
+      "title": "Static & Signal",
+      "description": "Twelve stories about connection in a wired world — a help-line worker, a viral stranger, a marriage conducted mostly in read receipts. Anand is funny and precise and never cruel, and this is the collection we hand to people who claim they don’t read short stories.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Priya Anand",
+      "tags": ["fiction", "short-stories", "staff-pick"],
+      "categoryHandles": ["fiction"],
+      "collectionHandles": ["staff-picks", "the-fiction-shelf"],
+      "seoTitle": "Static & Signal by Priya Anand | Volume Books",
+      "seoDescription": "Twelve funny, precise stories about connection in a wired world. For people who claim they don’t read short stories.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-STATIC-PB",
+          "priceCents": 1700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-STATIC-HC",
+          "priceCents": 2600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-static-signal",
+          "isPrimary": true,
+          "alt": "Static & Signal by Priya Anand"
+        }
+      ]
+    },
+    {
+      "handle": "the-attention-diet",
+      "title": "The Attention Diet",
+      "description": "A clear, refreshingly un-preachy look at what our attention is actually worth and how to spend it better — grounded in real research, written like a good conversation. No shame, no ten-step app detox, just a smarter way to think about the thing everyone’s selling. The nonfiction we keep re-ordering.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Rowan Vesper",
+      "tags": ["nonfiction", "ideas", "new-release", "staff-pick"],
+      "categoryHandles": ["new-releases", "nonfiction"],
+      "collectionHandles": ["new-releases", "staff-picks", "the-nonfiction-shelf"],
+      "seoTitle": "The Attention Diet by Rowan Vesper | Volume Books",
+      "seoDescription": "A clear, un-preachy look at what our attention is worth and how to spend it better. Grounded in real research.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-ATTN-PB",
+          "priceCents": 2300,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-ATTN-HC",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-attention-diet",
+          "isPrimary": true,
+          "alt": "The Attention Diet by Rowan Vesper"
+        }
+      ]
+    },
+    {
+      "handle": "deep-time-bright-water",
+      "title": "Deep Time, Bright Water",
+      "description": "A geologist’s love letter to rivers — how they carve deep time into a landscape, and what they carry of us downstream. Osei braids field science with memoir so gracefully you barely notice you’re learning, and you’ll never look at a stream the same way. Genuinely readable science at its best.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Malik Osei",
+      "tags": ["nonfiction", "science", "nature"],
+      "categoryHandles": ["nonfiction"],
+      "collectionHandles": ["the-nonfiction-shelf"],
+      "seoTitle": "Deep Time, Bright Water by Malik Osei | Volume Books",
+      "seoDescription": "A geologist’s love letter to rivers — field science braided with memoir. Readable science at its best.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-DEEP-PB",
+          "priceCents": 2500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-DEEP-HC",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-deep-time",
+          "isPrimary": true,
+          "alt": "Deep Time, Bright Water by Malik Osei"
+        }
+      ]
+    },
+    {
+      "handle": "otto-and-the-midnight-library",
+      "title": "Otto and the Midnight Library",
+      "description": "A gorgeous picture book about a small bear who discovers the library comes alive after closing time — and that the quietest reader can be the bravest hero. Brightwater’s art glows, and the read-aloud rhythm is a bedtime dream. For ages 3–7, and for any grown-up who loves a library.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Lena Brightwater",
+      "tags": ["kids", "picture-book", "staff-pick"],
+      "categoryHandles": ["kids"],
+      "collectionHandles": ["for-young-readers", "staff-picks"],
+      "seoTitle": "Otto and the Midnight Library by Lena Brightwater | Volume Books",
+      "seoDescription": "A glowing picture book about a small bear, a library that wakes at midnight, and quiet bravery. Ages 3–7.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-OTTO-PB",
+          "priceCents": 1500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-OTTO-HC",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-otto",
+          "isPrimary": true,
+          "alt": "Otto and the Midnight Library by Lena Brightwater"
+        }
+      ]
+    },
+    {
+      "handle": "the-sock-robbers",
+      "title": "The Sock Robbers",
+      "description": "The funniest chapter book on our kids’ shelf: a gang of sock-stealing gremlins, one determined nine-year-old, and a mystery that unravels one odd sock at a time. Short chapters, big laughs, and just enough heart to sneak past a reluctant reader. For ages 7–10.",
+      "status": "active",
+      "productType": "Book",
+      "vendor": "Dax Pell",
+      "tags": ["kids", "chapter-book", "funny"],
+      "categoryHandles": ["kids"],
+      "collectionHandles": ["for-young-readers"],
+      "seoTitle": "The Sock Robbers by Dax Pell | Volume Books",
+      "seoDescription": "A very funny kids chapter book about sock-stealing gremlins and one determined nine-year-old. Ages 7–10.",
+      "options": [
+        {
+          "name": "Format",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Paperback"
+            },
+            {
+              "value": "Hardcover"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-SOCK-PB",
+          "priceCents": 1300,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Paperback"
+          }
+        },
+        {
+          "sku": "VOL-SOCK-HC",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Format": "Hardcover"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sock-robbers",
+          "isPrimary": true,
+          "alt": "The Sock Robbers by Dax Pell"
+        }
+      ]
+    },
+    {
+      "handle": "volume-enamel-pin-set",
+      "title": "Volume Reader Pin Set",
+      "description": "Three hard-enamel pins for the shelf-proud reader — a tiny stack of books, an open cover, and our little \"V\" mark — on a printed backing card that’s a small gift in itself. Bright, sturdy, and cheerfully collectable. The easy add-on that makes any order feel like a treat.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Volume Books",
+      "tags": ["gift", "pin", "accessory"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers"],
+      "seoTitle": "Volume Reader Pin Set — three enamel pins | Volume Books",
+      "seoDescription": "Three bright hard-enamel pins for the shelf-proud reader, on a printed backing card. A cheerful little gift.",
+      "variants": [
+        {
+          "sku": "VOL-PINS",
+          "priceCents": 1400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pins",
+          "isPrimary": true,
+          "alt": "A set of three enamel reading pins on a card"
+        }
+      ]
+    },
+    {
+      "handle": "clip-reading-light",
+      "title": "Clip Reading Light",
+      "description": "A slim, rechargeable clip-on light that warms up or cools down to suit the page — bright enough to read by, dim enough not to wake anyone. Clamps onto a paperback or a hardcover without marking it, folds flat, and runs for weeks on a charge. The gift every night-owl reader secretly wants.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Volume Books",
+      "tags": ["gift", "reading-light", "accessory"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers"],
+      "seoTitle": "Clip Reading Light — warm/cool rechargeable book light | Volume Books",
+      "seoDescription": "A slim rechargeable clip-on reading light, warm or cool, bright enough to read by and dim enough not to wake anyone.",
+      "variants": [
+        {
+          "sku": "VOL-LIGHT",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-light",
+          "isPrimary": true,
+          "alt": "A slim clip-on reading light on an open book"
+        }
+      ]
+    },
+    {
+      "handle": "volume-reading-subscription",
+      "title": "Volume Reading Subscription",
+      "description": "One hand-picked book on your doorstep every month — tell us what you’re into and we choose something we’d actually press on you, wrap it, and post it with a note on why. Fiction, nonfiction, or a bit of both; pause, swap or cancel any time. The gift that keeps someone reading widely all year.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Volume Books",
+      "tags": ["subscription", "gift", "book-club"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-for-readers", "staff-picks"],
+      "seoTitle": "Volume Reading Subscription — a hand-picked book, monthly | Volume Books",
+      "seoDescription": "A hand-picked book on your doorstep every month, wrapped with a note on why we chose it. Pause or cancel any time.",
+      "options": [
+        {
+          "name": "Reading",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fiction"
+            },
+            {
+              "value": "Nonfiction"
+            },
+            {
+              "value": "Surprise me"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "VOL-SUB-FIC",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Fiction"
+          }
+        },
+        {
+          "sku": "VOL-SUB-NON",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Nonfiction"
+          }
+        },
+        {
+          "sku": "VOL-SUB-MIX",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Reading": "Surprise me"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A monthly reading subscription parcel"
+        }
+      ]
+    }
+  ]
+}

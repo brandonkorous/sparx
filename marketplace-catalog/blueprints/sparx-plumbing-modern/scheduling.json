@@ -1,0 +1,258 @@
+{
+  "policies": [
+    {
+      "handle": "standard-visit",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Booked a standard visit? We’ll text your arrival window the morning of, then a heads-up when your tech is on the way. Reschedule free with 24 hours’ notice."
+    },
+    {
+      "handle": "same-day-priority",
+      "name": "Same-day priority",
+      "depositType": "none",
+      "cancellationWindowHours": 4,
+      "reminderOffsetsMin": [240, 60],
+      "policyText": "Same-day and emergency visits are dispatched to the next available tech. We text a tighter arrival window and call before we roll. Please give us 4 hours’ notice to release the slot."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Vale",
+      "kind": "staff",
+      "skillTags": ["repair", "drain", "install"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "dwayne",
+      "name": "Dwayne Ellis",
+      "kind": "staff",
+      "skillTags": ["repair", "water-heater", "gas"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 420,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "sofia",
+      "name": "Sofia Reyes",
+      "kind": "staff",
+      "skillTags": ["emergency", "repair", "remodel"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1260
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-quote",
+      "name": "Free in-home quote",
+      "description": "We come out, look at the job and hand you a flat-rate price in writing — no charge, no obligation.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "same-day-repair",
+      "name": "Same-day repair visit",
+      "description": "The everyday fix — a running toilet, a dripping valve, a fixture that quit. Priced flat before we start.",
+      "durationMinutes": 60,
+      "priceCents": 14900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "same-day-priority"
+    },
+    {
+      "handle": "drain-clear",
+      "name": "Drain clearing",
+      "description": "A slow or backed-up sink, tub or main line, cleared and tested — one flat price whether it takes ten minutes or an hour.",
+      "durationMinutes": 75,
+      "priceCents": 19900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["drain"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "same-day-priority"
+    },
+    {
+      "handle": "water-heater-swap",
+      "name": "Water-heater replacement",
+      "description": "Out with the old, in with a new tank or tankless — haul-away, hookup and a working hot shower the same day.",
+      "durationMinutes": 120,
+      "priceCents": 189900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["water-heater"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "toilet-faucet-install",
+      "name": "Toilet or faucet install",
+      "description": "You bought the fixture, we set it right — clean install, no leaks, old one hauled away. Flat labor price.",
+      "durationMinutes": 90,
+      "priceCents": 24900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["install"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "leak-detection",
+      "name": "Leak detection",
+      "description": "A mystery drip, a spiking water bill, a damp wall — we find the source and give you the fix and the price in one visit.",
+      "durationMinutes": 60,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "emergency-callout",
+      "name": "Emergency callout",
+      "description": "Burst pipe, no water, water where it shouldn’t be. We confirm a tech, text a tight window and roll fast.",
+      "durationMinutes": 90,
+      "priceCents": 29900,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["emergency"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "same-day-priority"
+    }
+  ]
+}

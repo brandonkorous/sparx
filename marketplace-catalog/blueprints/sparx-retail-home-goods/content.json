@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "why-we-wash-our-linen",
+    "status": "published",
+    "body": {
+      "title": "Why we wash our linen",
+      "excerpt": "New linen can feel stiff and look flat. Ours doesn’t — because we put it through a stone wash before it ever reaches you. Here’s what that does, and why it matters.",
+      "featuredImage": {
+        "$asset": "post-linen"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Linen is one of the oldest fabrics we still make, spun from the fibres of the flax plant. It’s naturally strong, breathable and temperature-regulating — cool against the skin in summer, insulating in winter. But new, unwashed linen has a reputation for being stiff and a little scratchy, and that reputation is fair. The softness people love takes time to arrive on its own."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What a stone wash actually does"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So we don’t make you wait. Before it’s cut and sewn, our linen is tumbled in a wash with natural stones, which breaks down the stiffness in the fibres and relaxes the weave. The result is fabric that’s soft and supple from the very first night — with the gently lived-in, slightly crumpled look that’s the whole point of linen, rather than a crisp hotel finish that fights you."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It only gets better"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Unlike synthetics, which degrade with washing, linen improves. Each trip through the machine relaxes it a little further, so the sheets you sleep in this year will be softer next year and softer still the year after. Treated simply — a warm wash, a low tumble or a line dry — a good linen set will outlast almost everything else in the cupboard. That’s why we start with the wash: it’s the difference between homeware you tolerate and homeware you love from day one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "styling-a-table-you-will-use",
+    "status": "published",
+    "body": {
+      "title": "Styling a table you’ll actually use",
+      "excerpt": "A beautiful table is no good if you’re afraid to eat off it. Here’s how we set one that looks considered and still works for a Tuesday night.",
+      "featuredImage": {
+        "$asset": "post-styling"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best-looking tables aren’t the most matched ones. A table set entirely from a single boxed service can read as stiff — like a showroom rather than a home. The trick to a table that looks gathered and relaxed is to build it in layers, and to lean on pieces that are handsome enough to leave out and sturdy enough to use every day."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with the everyday pieces"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Begin with your hard-working ceramics — the dinner plates and bowls you reach for without thinking. Hand-thrown stoneware in a soft, reactive glaze does a lot of the work here, because the small variations from piece to piece give a table warmth that a flawless, machine-made set never will. Keep the palette calm — oat, ash, clay — and let the food bring the colour."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Layer in texture, not clutter"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "From there, add texture rather than more objects: a washed-linen runner instead of a full cloth, a wooden board down the middle for bread or cheese, a couple of speckled mugs already out. Skip the tightly-folded napkins and the centrepiece that blocks the conversation. The aim isn’t a photograph — it’s a table that looks like people are about to sit down and enjoy themselves, because they are."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "caring-for-wool-and-linen",
+    "status": "published",
+    "body": {
+      "title": "Caring for wool and linen",
+      "excerpt": "Natural materials are far easier to look after than people fear — and cared for simply, they’ll outlast anything synthetic. A short, honest guide.",
+      "featuredImage": {
+        "$asset": "post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There’s a myth that natural materials are precious and high-maintenance. In our experience it’s the opposite: wool and linen are forgiving, self-cleaning to a degree, and built to last decades if you treat them kindly. The main thing is to be gentle with heat and honest about how little they actually need."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Wool likes air more than water"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wool naturally resists dirt and odour, so a throw or a cushion rarely needs washing — a good airing outside will freshen it more effectively than a machine. When something does need cleaning, use a cool, gentle wool cycle or hand wash, never hot water, and always dry flat rather than hanging, so the weight of the water doesn’t stretch it out of shape. Never wring it; press the water out instead."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Linen just gets softer"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Linen is even simpler. Wash it warm rather than hot, with a mild detergent and no fabric softener — softener coats the fibres and stops them breathing, which is the whole reason you bought linen. A low tumble leaves it with that relaxed, lived-in look; a line dry is gentler still. Skip the ironing unless you like it crisp. Do that much and both will reward you for years — which, after all, is the point of buying them once and buying them well."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

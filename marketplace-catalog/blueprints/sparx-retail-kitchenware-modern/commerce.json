@@ -1,0 +1,539 @@
+{
+  "categories": [
+    {
+      "handle": "cookware",
+      "name": "Cookware",
+      "description": "Ceramic nonstick pans and the precision kettle.",
+      "featured": true
+    },
+    {
+      "handle": "tools",
+      "name": "Tools",
+      "description": "Knives and utensils, cleanly made.",
+      "featured": true
+    },
+    {
+      "handle": "prep",
+      "name": "Prep",
+      "description": "Bowls, boards, scales and storage.",
+      "featured": true
+    },
+    {
+      "handle": "sets",
+      "name": "Sets",
+      "description": "Pieces that fit together from day one.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The newest additions to the range.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "ceramic-nonstick-pan-set",
+        "precision-kettle",
+        "precision-knife-set",
+        "modular-storage-set"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces most kitchens start with.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "ceramic-nonstick-pan-set",
+        "ceramic-frypan",
+        "precision-kettle",
+        "nesting-prep-bowls"
+      ]
+    },
+    {
+      "handle": "the-essentials",
+      "name": "The essentials",
+      "description": "A whole working kitchen in a handful of pieces.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "ceramic-nonstick-pan-set",
+        "precision-knife-set",
+        "precision-kettle",
+        "digital-kitchen-scale"
+      ]
+    },
+    {
+      "handle": "cookware-edit",
+      "name": "The cookware edit",
+      "description": "Even-heat pans for every job on the stove.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ceramic-nonstick-pan-set", "ceramic-frypan", "precision-kettle"]
+    },
+    {
+      "handle": "prep-edit",
+      "name": "The prep edit",
+      "description": "The quiet tools that speed up every dinner.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "nesting-prep-bowls",
+        "digital-kitchen-scale",
+        "silicone-tool-set",
+        "composite-cutting-board",
+        "modular-storage-set"
+      ]
+    },
+    {
+      "handle": "gift-ready",
+      "name": "Gift ready",
+      "description": "The ones worth wrapping — for new homes and good cooks.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "nesting-prep-bowls",
+        "silicone-tool-set",
+        "composite-cutting-board",
+        "modular-storage-set",
+        "digital-kitchen-scale"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ceramic-nonstick-pan-set",
+      "title": "Ceramic Nonstick Pan Set",
+      "description": "The three pans that cover almost everything — an 8-inch frypan, a 10-inch skillet and a 3-quart sauté with a glass lid, all with our mineral-ceramic nonstick and a fully clad aluminium body for fast, even heat. No PFAS, no flaking, oven-safe, and light enough to flip. The set to build a kitchen around.",
+      "status": "active",
+      "productType": "Cookware set",
+      "vendor": "Edge",
+      "tags": ["cookware", "ceramic", "nonstick", "pan-set", "pfas-free"],
+      "categoryHandles": ["cookware", "sets"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "the-essentials", "cookware-edit"],
+      "seoTitle": "Ceramic Nonstick Pan Set — 3 piece, PFAS-free | Edge",
+      "seoDescription": "A three-piece ceramic nonstick pan set with a clad aluminium body for even heat — frypan, skillet and lidded sauté.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Chalk"
+            },
+            {
+              "value": "Sage"
+            },
+            {
+              "value": "Clay"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EDGE-PANSET-GRA",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Graphite"
+          }
+        },
+        {
+          "sku": "EDGE-PANSET-CHK",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Chalk"
+          }
+        },
+        {
+          "sku": "EDGE-PANSET-SAG",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        },
+        {
+          "sku": "EDGE-PANSET-CLY",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Clay"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-pan-set",
+          "isPrimary": true,
+          "alt": "A matched set of ceramic nonstick pans on white"
+        }
+      ]
+    },
+    {
+      "handle": "ceramic-frypan",
+      "title": "Ceramic Nonstick Frypan",
+      "description": "The everyday pan, on its own. Mineral-ceramic nonstick over a clad aluminium base, so eggs slide and a sear still browns, with a balanced stay-cool handle and a flared lip that pours clean. PFAS-free and oven-safe to 450°F. Start here, and add the set later.",
+      "status": "active",
+      "productType": "Cookware",
+      "vendor": "Edge",
+      "tags": ["cookware", "ceramic", "nonstick", "frypan", "pfas-free"],
+      "categoryHandles": ["cookware"],
+      "collectionHandles": ["best-sellers", "the-essentials", "cookware-edit"],
+      "seoTitle": "Ceramic Nonstick Frypan — PFAS-free | Edge",
+      "seoDescription": "A mineral-ceramic nonstick frypan on a clad aluminium base — even heat, clean pour, oven-safe to 450°F.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8-inch"
+            },
+            {
+              "value": "10-inch"
+            },
+            {
+              "value": "12-inch"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EDGE-FRYPAN-8",
+          "priceCents": 5500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8-inch"
+          }
+        },
+        {
+          "sku": "EDGE-FRYPAN-10",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "10-inch"
+          }
+        },
+        {
+          "sku": "EDGE-FRYPAN-12",
+          "priceCents": 7500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12-inch"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-frypan",
+          "isPrimary": true,
+          "alt": "A single ceramic nonstick frypan on white"
+        }
+      ]
+    },
+    {
+      "handle": "precision-kettle",
+      "title": "Precision Pour Kettle",
+      "description": "A gooseneck electric kettle you can set to the exact degree — from a gentle 130°F for delicate tea to a full boil — with a hold setting that keeps it there. The thin, curved spout gives you a slow, controlled pour for coffee or matcha, and the whole thing sits on a slim digital base that stays out of the way.",
+      "status": "active",
+      "productType": "Appliance",
+      "vendor": "Edge",
+      "tags": ["appliance", "kettle", "gooseneck", "variable-temperature"],
+      "categoryHandles": ["cookware"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "the-essentials"],
+      "seoTitle": "Precision Pour Kettle — variable-temperature gooseneck | Edge",
+      "seoDescription": "A gooseneck electric kettle with to-the-degree temperature control and a hold setting for coffee and tea.",
+      "variants": [
+        {
+          "sku": "EDGE-KETTLE",
+          "priceCents": 9500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-kettle",
+          "isPrimary": true,
+          "alt": "A precision gooseneck kettle with a digital base"
+        }
+      ]
+    },
+    {
+      "handle": "precision-knife-set",
+      "title": "Precision Knife Set",
+      "description": "The three knives that do the work of a whole block — an 8-inch chef’s, a 5-inch utility, and a paring knife, in a single high-carbon stainless steel with a clean, handle-less bolster and a comfortable oval grip. Laser-checked edges, a full tang, and a magnetic walnut stand that shows them off instead of hiding them.",
+      "status": "active",
+      "productType": "Knife set",
+      "vendor": "Edge",
+      "tags": ["tools", "knives", "knife-set", "stainless-steel"],
+      "categoryHandles": ["tools", "sets"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "the-essentials"],
+      "seoTitle": "Precision Knife Set — 3 piece with stand | Edge",
+      "seoDescription": "A three-piece high-carbon stainless knife set — chef’s, utility and paring — with a magnetic walnut stand.",
+      "variants": [
+        {
+          "sku": "EDGE-KNIFESET",
+          "priceCents": 17500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-knife-set",
+          "isPrimary": true,
+          "alt": "A three-piece modern knife set on a light board"
+        }
+      ]
+    },
+    {
+      "handle": "nesting-prep-bowls",
+      "title": "Nesting Prep Bowls",
+      "description": "A set of five prep bowls that nest down to almost nothing and come in a calm, matte finish — from a tiny spice bowl to a big mixing bowl. Silicone bases so they don’t skate on the counter, pour spouts on the larger sizes, and snap-on lids so a prepped bowl goes straight into the fridge. The set that quietly speeds up every dinner.",
+      "status": "active",
+      "productType": "Prep",
+      "vendor": "Edge",
+      "tags": ["prep", "bowls", "mixing", "nesting"],
+      "categoryHandles": ["prep"],
+      "collectionHandles": ["best-sellers", "prep-edit", "gift-ready"],
+      "seoTitle": "Nesting Prep Bowls — 5 piece with lids | Edge",
+      "seoDescription": "A five-piece nesting prep-bowl set in a matte finish — non-slip bases, pour spouts and snap-on lids.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Chalk"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EDGE-BOWLS-GRA",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Graphite"
+          }
+        },
+        {
+          "sku": "EDGE-BOWLS-CHK",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Chalk"
+          }
+        },
+        {
+          "sku": "EDGE-BOWLS-SAG",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-bowls",
+          "isPrimary": true,
+          "alt": "A nesting set of prep bowls in muted tones"
+        }
+      ]
+    },
+    {
+      "handle": "digital-kitchen-scale",
+      "title": "Digital Kitchen Scale",
+      "description": "A slim scale that reads to the gram under a single seamless glass top — no seams to trap flour, no buttons to gum up. It weighs up to 5 kilos, tares with a tap, and switches between grams and ounces, then wipes clean and slides into a drawer. The quiet upgrade that makes baking and coffee actually repeatable.",
+      "status": "active",
+      "productType": "Prep",
+      "vendor": "Edge",
+      "tags": ["prep", "scale", "digital", "baking"],
+      "categoryHandles": ["prep"],
+      "collectionHandles": ["the-essentials", "prep-edit", "gift-ready"],
+      "seoTitle": "Digital Kitchen Scale — 5 kg, gram-accurate | Edge",
+      "seoDescription": "A slim gram-accurate kitchen scale with a seamless glass top, tap tare and a 5 kg capacity.",
+      "variants": [
+        {
+          "sku": "EDGE-SCALE",
+          "priceCents": 3900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-scale",
+          "isPrimary": true,
+          "alt": "A slim digital kitchen scale with a glass top"
+        }
+      ]
+    },
+    {
+      "handle": "silicone-tool-set",
+      "title": "Silicone Utensil Set",
+      "description": "The five tools you actually use — a spoon, a slotted spoon, a spatula, a turner and a ladle — in one seamless piece of heat-safe silicone over a solid steel core, so nothing scratches your nonstick and nothing traps grime in a joint. Firm enough to lift a full ladle, soft enough to fold egg whites. Dishwasher-safe and good to 500°F.",
+      "status": "active",
+      "productType": "Tool",
+      "vendor": "Edge",
+      "tags": ["tools", "utensils", "silicone", "heat-safe"],
+      "categoryHandles": ["tools"],
+      "collectionHandles": ["prep-edit", "gift-ready"],
+      "seoTitle": "Silicone Utensil Set — 5 piece, nonstick-safe | Edge",
+      "seoDescription": "A five-piece seamless silicone utensil set over a steel core — nonstick-safe, heat-safe to 500°F, dishwasher-safe.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Chalk"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EDGE-TOOLS-GRA",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Graphite"
+          }
+        },
+        {
+          "sku": "EDGE-TOOLS-CHK",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Chalk"
+          }
+        },
+        {
+          "sku": "EDGE-TOOLS-SAG",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-tools",
+          "isPrimary": true,
+          "alt": "A set of silicone cooking utensils in a caddy"
+        }
+      ]
+    },
+    {
+      "handle": "composite-cutting-board",
+      "title": "Composite Cutting Board",
+      "description": "A board that’s kind to your knives and easy on you — a dense wood-fibre composite that’s gentler than bamboo, won’t split or warp, and goes in the dishwasher when a wooden board can’t. A juice groove around the edge, a slim profile, and grippy feet so it stays put. Handsome enough to serve on, tough enough to prep on all week.",
+      "status": "active",
+      "productType": "Prep",
+      "vendor": "Edge",
+      "tags": ["prep", "cutting-board", "composite", "dishwasher-safe"],
+      "categoryHandles": ["prep"],
+      "collectionHandles": ["prep-edit", "gift-ready"],
+      "seoTitle": "Composite Cutting Board — dishwasher-safe | Edge",
+      "seoDescription": "A dense wood-fibre composite cutting board — knife-friendly, warp-proof, dishwasher-safe, with a juice groove.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EDGE-BOARD-S",
+          "priceCents": 3500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small"
+          }
+        },
+        {
+          "sku": "EDGE-BOARD-L",
+          "priceCents": 4900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-board",
+          "isPrimary": true,
+          "alt": "A minimal composite cutting board on a counter"
+        }
+      ]
+    },
+    {
+      "handle": "modular-storage-set",
+      "title": "Modular Storage Set",
+      "description": "A ten-piece set of borosilicate glass containers on one footprint — the same base size in three depths, so they stack square in the fridge and nest flat in the cupboard. Airtight bamboo-and-silicone lids, oven- and freezer-safe glass, and a lid that comes clean without a scrub. The upgrade that finally makes your leftovers look like a plan.",
+      "status": "active",
+      "productType": "Storage set",
+      "vendor": "Edge",
+      "tags": ["prep", "storage", "glass", "modular", "sets"],
+      "categoryHandles": ["prep", "sets"],
+      "collectionHandles": ["new-arrivals", "prep-edit", "gift-ready"],
+      "seoTitle": "Modular Storage Set — 10 piece borosilicate glass | Edge",
+      "seoDescription": "A ten-piece modular glass storage set — one footprint, three depths, airtight lids, oven- and freezer-safe.",
+      "variants": [
+        {
+          "sku": "EDGE-STORAGE",
+          "priceCents": 6900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ek-prod-storage",
+          "isPrimary": true,
+          "alt": "A set of modular glass storage containers with lids"
+        }
+      ]
+    }
+  ]
+}

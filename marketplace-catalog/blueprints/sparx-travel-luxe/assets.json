@@ -1,0 +1,42 @@
+[
+  {
+    "id": "travel-luxe-hero",
+    "url": "https://images.unsplash.com/photo-1743356174397-d6da6f014f8f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bHV4dXJ5JTIwdHJhdmVsJTIwZGVzdGluYXRpb258ZW58MHwwfHx8MTc4NjM5NTE0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An infinity pool overlooking a turquoise coastline at golden hour"
+  },
+  {
+    "id": "travel-luxe-planning",
+    "url": "https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhdmVsJTIwcGxhbm5pbmclMjBtYXB8ZW58MHwwfHx8MTc4NjM5NTE0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A travel advisor mapping a route over open guidebooks and a world map"
+  },
+  {
+    "id": "travel-luxe-dest1",
+    "url": "https://images.unsplash.com/photo-1580502304784-8985b7eb7260?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FudG9yaW5pJTIwZ3JlZWNlfGVufDB8MHx8fDE3ODYzOTUxNTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "White cliffside villages above the Aegean Sea"
+  },
+  {
+    "id": "travel-luxe-dest2",
+    "url": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWZyaWNhJTIwc2FmYXJpJTIwbGFuZHNjYXBlfGVufDB8MHx8fDE3ODYzOTUxNTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elephants crossing a golden savanna at dusk"
+  },
+  {
+    "id": "travel-luxe-dest3",
+    "url": "https://images.unsplash.com/photo-1578469645742-46cae010e5d4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8a3lvdG8lMjBqYXBhbiUyMHRlbXBsZXxlbnwwfDB8fHwxNzg2Mzk1MTU3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet temple garden framed by autumn maples in Kyoto"
+  },
+  {
+    "id": "travel-luxe-dest4",
+    "url": "https://images.unsplash.com/photo-1521292270410-a8c4d716d518?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3dpc3MlMjBhbHBzJTIwbW91bnRhaW5zfGVufDB8MHx8fDE3ODYzOTUxNjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A chalet terrace facing snow-capped alpine peaks"
+  },
+  {
+    "id": "travel-luxe-dest5",
+    "url": "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFsZGl2ZXMlMjBiZWFjaCUyMHJlc29ydHxlbnwwfDB8fHwxNzg2Mzk1MTYyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An overwater villa on a still lagoon at sunrise"
+  },
+  {
+    "id": "travel-luxe-dest6",
+    "url": "https://images.unsplash.com/photo-1583844056361-4418a8f2a985?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YW1hbGZpJTIwY29hc3QlMjBpdGFseXxlbnwwfDB8fHwxNzg2Mzk1MTY1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pastel coastal town tumbling toward the Mediterranean"
+  }
+]

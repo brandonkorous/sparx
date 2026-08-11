@@ -1,0 +1,247 @@
+{
+  "policies": [
+    {
+      "handle": "pool-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Need to move a visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised — and you never have to be home for us to service the pool."
+    },
+    {
+      "handle": "recurring-plan",
+      "name": "Weekly plan & first service",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Weekly plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically and we send a quick recap when the pool’s done."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "tech-carlos",
+      "name": "Carlos Mendez",
+      "kind": "staff",
+      "skillTags": ["cleaning", "chemicals", "recurring"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "tech-jasmine",
+      "name": "Jasmine Park",
+      "kind": "staff",
+      "skillTags": ["opening", "closing", "cleaning"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "tech-tyler",
+      "name": "Tyler Brooks",
+      "kind": "staff",
+      "skillTags": ["filter", "cleaning", "recurring"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-quote",
+      "name": "Free pool quote",
+      "description": "We stop by, look at your pool and equipment, and send a clear flat-rate quote for weekly service — no pressure, no obligation. The fastest way to get started.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["recurring"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "recurring-plan"
+    },
+    {
+      "handle": "weekly-service-setup",
+      "name": "Weekly pool service — first visit",
+      "description": "Sets up your weekly plan: skim, brush and vacuum, empty baskets, test and balance the water, then we keep it sparkling on the same schedule automatically.",
+      "durationMinutes": 45,
+      "priceCents": 6500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["recurring"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "recurring-plan"
+    },
+    {
+      "handle": "one-time-cleaning",
+      "name": "One-time cleaning",
+      "description": "A full single-visit clean: skim, brush, vacuum, empty the baskets and balance the chemistry — perfect before a party or to see the difference for yourself.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["cleaning"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pool-standard"
+    },
+    {
+      "handle": "pool-opening",
+      "name": "Pool opening",
+      "description": "The spring reset: cover off and cleaned, equipment reconnected and started, water topped off and balanced, and the pool brought clear so you’re ready to swim.",
+      "durationMinutes": 120,
+      "priceCents": 28000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["opening"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pool-standard"
+    },
+    {
+      "handle": "pool-closing",
+      "name": "Pool closing",
+      "description": "End-of-season winterizing: lines blown out and plugged, equipment drained and stored, chemistry set for the off-season, and the cover on tight to protect it.",
+      "durationMinutes": 120,
+      "priceCents": 28000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["closing"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pool-standard"
+    },
+    {
+      "handle": "filter-service",
+      "name": "Filter clean & service",
+      "description": "A deep filter clean — cartridges rinsed or the D.E./sand element serviced — so water flows freely and your pump isn’t working overtime. Recommended a few times a season.",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["filter"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pool-standard"
+    },
+    {
+      "handle": "green-to-clean-treatment",
+      "name": "Green-to-clean treatment",
+      "description": "A green, cloudy pool brought back to blue — heavy skim, brush and vacuum, a shock and balance, and follow-up until it’s crystal clear and safe to swim again.",
+      "durationMinutes": 90,
+      "priceCents": 32000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["chemicals"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pool-standard"
+    }
+  ]
+}

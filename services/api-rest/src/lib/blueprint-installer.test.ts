@@ -15,6 +15,7 @@ function fakeResult(over: Partial<InstallResult> = {}): InstallResult {
     emails: [],
     sequences: [],
     content: [],
+    scheduling: null,
     counts: {},
     ...over,
   };

@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "dialling-in-for-your-cafe",
+    "status": "published",
+    "body": {
+      "title": "Dialling in a house espresso for a busy bar",
+      "excerpt": "A repeatable way to set up an espresso and keep it there through service — the version we run when we install a new account.",
+      "featuredImage": {
+        "$asset": "post-dialling"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A café does not need a competition recipe; it needs an espresso that tastes right on the first shot of the morning and the two-hundredth of the afternoon. When we install a new wholesale account, this is the process we run with the team, and it is the one we leave behind on a card by the machine."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start from a target, not a number"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Pick a dose your basket is built for — say 18 grams in, 36 out — and a shot time in the high twenties of seconds. Those are starting points, not laws. Pull a shot, taste it in milk (because that is what you sell), and adjust ONE thing: grind finer if it is sour and thin, coarser if it is bitter and dry. Change grind, not dose, until the flavour lands; a bar that chases three variables at once never holds any of them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Hold it through the day"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Coffee grinds differently as the room warms and the beans age off roast, so the setting that was right at 7am drifts by lunch. Re-check at the two obvious inflection points — mid-morning and after the lunch rush — and nudge the grind a notch if the shot time has wandered. Log the setting each morning. Fresh, consistent beans roasted to order do most of the work here; a stable coffee is the difference between two grind tweaks a day and twenty."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If a shot ever tastes wrong and the grind looks right, check the basics before you chase the grinder: a clean group head, a dry basket, a firm level tamp, and beans that are within their window. Nine times out of ten it is one of those, not the recipe."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "getting-the-most-from-a-standing-order",
+    "status": "published",
+    "body": {
+      "title": "Getting the most from a standing order",
+      "excerpt": "A standing order is the quietest way to keep a bar stocked — here is how to set one that fits your real trade and never leaves you short.",
+      "featuredImage": {
+        "$asset": "post-standing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The most common supply problem we see is not price — it is running out mid-service on a Saturday, or a storeroom full of coffee going stale because someone over-ordered to be safe. A standing order fixes both when it is set to your real numbers, and it takes ten minutes to get right."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Size it to a week of cups"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Work back from how many drinks you actually pour. A rough rule: a kilo of espresso makes around 140 doubles, so a bar doing 200 coffees a day needs roughly ten kilos a week with a little headroom. Set the standing order a touch under your peak and top up with a one-off when a big week is coming, rather than carrying weeks of stock that ages on the shelf."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Use skip and adjust"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Trade is not flat, so your delivery should not be either. Going quiet for a public holiday or a slow January? Skip a cycle or drop the quantity from your account in a couple of taps — the schedule bends around your calendar instead of the other way round. Catering a big event? Add the extra to the next delivery so it arrives freshly roasted, not pulled from a back-room hoard."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Because every cycle is roasted to order, what turns up is always fresh — the standing order is a schedule, not a stockpile. Your account manager can rebuild it any time your trade shifts; that is what it is there for."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "keeping-your-equipment-honest",
+    "status": "published",
+    "body": {
+      "title": "Keeping your equipment honest",
+      "excerpt": "A grinder and a machine that are clean and serviced make better coffee than an expensive setup that is neither. The routine that keeps a bar pouring.",
+      "featuredImage": {
+        "$asset": "post-equipment"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Great beans cannot rescue a dirty machine, and the fastest way to make a café’s coffee worse is to skip the cleaning. None of this is hard — it is a routine, and once it is a habit the equipment stops being a source of surprises."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Daily and weekly"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every day: backflush the espresso machine with water at close, wipe the group seals, empty and rinse the grinder hopper, and brush the grinds off the chute. Every week: backflush with detergent, soak the portafilters and baskets, and run a grinder clean through the burrs. Ten minutes a night and half an hour on a quiet morning is the whole cost, and it pays back in shots that taste the way they should."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "When to call us"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Burrs wear. When your grind setting keeps creeping finer to hold the same shot time, or the grind looks uneven and dusty, the burrs are near the end of their life and it is time for a service — not a bag of blame on the beans. On a wholesale account that service is booked through us, and if a machine has to come out we cover you with loan gear so the bar never goes dark."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Clean equipment, sharp burrs and coffee within its window: get those three right and the espresso looks after itself. Get any one wrong and no recipe will save it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

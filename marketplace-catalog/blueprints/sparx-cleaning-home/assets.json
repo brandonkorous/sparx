@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cleaning-home-hero",
+    "url": "https://images.unsplash.com/photo-1632829882891-5047ccc421bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBicmlnaHQlMjBsaXZpbmclMjByb29tfGVufDB8MHx8fDE3ODYzODkzMTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, freshly cleaned living room full of morning light"
+  },
+  {
+    "id": "cleaning-home-interior",
+    "url": "https://images.unsplash.com/photo-1724582586529-62622e50c0b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMG1vZGVybiUyMGhvbWUlMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2Mzg5MzE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A spotless kitchen with sparkling counters and tidy shelves"
+  },
+  {
+    "id": "cleaning-home-rosa",
+    "url": "https://images.unsplash.com/photo-1680631626569-d163da98ff40?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBjbGVhbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTMyMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rosa Delgado, lead cleaner"
+  },
+  {
+    "id": "cleaning-home-mateo",
+    "url": "https://images.unsplash.com/photo-1740657254989-42fe9c3b8cce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwY2xlYW5pbmclMjBzZXJ2aWNlfGVufDB8MHx8fDE3ODYzODkzMjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mateo Rivera, cleaner"
+  },
+  {
+    "id": "cleaning-home-aisha",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHNtaWxpbmd8ZW58MHwwfHx8MTc4NjM4OTMyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Aisha Bello, cleaner"
+  },
+  {
+    "id": "cleaning-home-grace",
+    "url": "https://images.unsplash.com/photo-1603712725038-e9334ae8f39f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aG91c2UlMjBjbGVhbmluZyUyMHBlcnNvbnxlbnwwfDB8fHwxNzg2Mzg5MzI5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Grace Lin, cleaner"
+  }
+]

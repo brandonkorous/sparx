@@ -1,0 +1,42 @@
+[
+  {
+    "id": "nail-luxe-hero",
+    "url": "https://images.unsplash.com/photo-1652869122685-c7792ef56ee2?w=1600&q=80",
+    "alt": "A calm, champagne-toned nail studio in soft light"
+  },
+  {
+    "id": "nail-luxe-interior",
+    "url": "https://images.unsplash.com/photo-1610992015836-7c249d75782d?w=1600&q=80",
+    "alt": "A single manicure table with warm natural light"
+  },
+  {
+    "id": "nail-luxe-elena",
+    "url": "https://images.unsplash.com/photo-1666226398826-5b7ae0111e9a?w=1600&q=80",
+    "alt": "Elena Marchetti, lead nail technician"
+  },
+  {
+    "id": "nail-luxe-sofia",
+    "url": "https://images.unsplash.com/photo-1699669646912-1593955f4424?w=1600&q=80",
+    "alt": "Sofia Reyes, nail technician"
+  },
+  {
+    "id": "nail-luxe-camille",
+    "url": "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=1600&q=80",
+    "alt": "Camille Laurent, gel and nail-art specialist"
+  },
+  {
+    "id": "nail-luxe-work1",
+    "url": "https://images.unsplash.com/photo-1628610726537-6e9d2799f871?w=1600&q=80",
+    "alt": "A soft, glossy nude manicure"
+  },
+  {
+    "id": "nail-luxe-work2",
+    "url": "https://images.unsplash.com/photo-1740138160889-29d711607d71?w=1600&q=80",
+    "alt": "A quiet French finish with a champagne tint"
+  },
+  {
+    "id": "nail-luxe-work3",
+    "url": "https://images.unsplash.com/photo-1585525975637-f32a3d2c2209?w=1600&q=80",
+    "alt": "Delicate, hand-painted nail art in warm gold"
+  }
+]

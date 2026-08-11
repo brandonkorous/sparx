@@ -1,0 +1,27 @@
+[
+  {
+    "id": "accounting-smallbiz-hero",
+    "url": "https://images.unsplash.com/photo-1713947503588-8ff8196dc4a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNjb3VudGFudCUyMHdvcmtpbmclMjBkZXNrfGVufDB8MHx8fDE3ODYzOTAwNDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A friendly, sunlit workspace with a laptop, a coffee and a small stack of paperwork"
+  },
+  {
+    "id": "accounting-smallbiz-desk",
+    "url": "https://images.unsplash.com/photo-1707157284454-553ef0a4ed0d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va2tlZXBpbmclMjBjYWxjdWxhdG9yJTIwZGVza3xlbnwwfDB8fHwxNzg2MzkwMDQ5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tidy desk with a calculator, notebook and a cup of coffee"
+  },
+  {
+    "id": "accounting-smallbiz-dana",
+    "url": "https://images.unsplash.com/photo-1484863137850-59afcfe05386?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBhY2NvdW50YW50JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDA1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dana Whitfield, tax and small-business lead"
+  },
+  {
+    "id": "accounting-smallbiz-marcus",
+    "url": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNjb3VudGFudCUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTAwNTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Bell, bookkeeping and payroll"
+  },
+  {
+    "id": "accounting-smallbiz-rosa",
+    "url": "https://images.unsplash.com/photo-1630939687530-241d630735df?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0JTIwc21pbGluZ3xlbnwwfDB8fHwxNzg2MzkwMDU4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rosa Nguyen, new-business setup and advisory"
+  }
+]

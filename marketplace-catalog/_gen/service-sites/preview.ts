@@ -1,0 +1,187 @@
+// PREVIEW machinery for the booking-backed service templates — the review aid + the
+// source the media screenshotter shoots (NOT the shipped payload). `writeServicePreview`
+// renders ONE template's HOME page, in its real frame + bespoke theme, to a self-contained
+// HTML file in `.preview/`, exactly as the storefront renders it — so it can be eyeballed
+// and screenshotted into `media/preview.png`. A lean sibling of template-sites/preview.ts
+// (no commerce/content sample host — a service site's home is static content + the pinned
+// scheduling core, which is placeholderized).
+//
+// WHY RELATIVE IMPORTS — see harness.ts (marketplace-catalog has no node_modules).
+
+import { execFileSync } from 'node:child_process';
+import { promises as fs, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import {
+  el,
+  type Node,
+  type Theme,
+} from '../../../packages/silica-catalog/node_modules/@wizeworks/silicaui-html/dist/index.js';
+
+import { renderSilicaBody } from '../../../packages/silica-catalog/src/render';
+import {
+  createSilicaResolver,
+  defaultSilicaFormat,
+} from '../../../packages/builder-schemas/src/silica-resolve';
+import { buildSilicaThemeCssFromTheme } from '../../../packages/site-themes/src/v2/silica-css';
+
+import { composeServiceSite, faces, type ServiceSiteSpec } from './harness';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const repoRoot = join(here, '..', '..', '..');
+
+/** The STANDARD preview dir (gitignored) every service template's preview HTML + screenshot
+ *  lands in. `media-service.mjs` reads `preview-<key>.html` from here. */
+export const PREVIEW_DIR = join(here, '..', '.preview');
+
+function runTailwind(
+  cli: string,
+  inputPath: string,
+  inputCss: string,
+  bodyPath: string,
+  bodyHtml: string,
+  outPath: string
+): string {
+  writeFileSync(bodyPath, bodyHtml, 'utf8');
+  writeFileSync(inputPath, inputCss, 'utf8');
+  try {
+    execFileSync('node', [cli, '-i', inputPath, '-o', outPath], { cwd: repoRoot, stdio: 'pipe' });
+    return readFileSync(outPath, 'utf8');
+  } finally {
+    rmSync(inputPath, { force: true });
+  }
+}
+
+/** Compile exactly the Tailwind + silicaui CSS the rendered markup needs (reuses the shared
+ *  tailwind-compile.mjs child process, keyed by slug so parallel runs can't collide). */
+function compilePreviewCss(slug: string, bodyHtml: string, scratchDir: string): string {
+  const bodyPath = join(scratchDir, `preview-${slug}.body.html`);
+  const inputPath = join(repoRoot, 'apps', 'site', `_preview-${slug}.css`);
+  const outPath = join(scratchDir, `preview-${slug}.util.css`);
+  const cli = join(here, '..', 'template-sites', 'tailwind-compile.mjs');
+  const input = `@import 'tailwindcss';
+@plugin '@wizeworks/silicaui' {
+  colors: primary, secondary, accent, neutral, info, success, warning, error, danger, highlight;
+}
+@import '../../packages/silica-catalog/src/builder-vocabulary.css';
+@source '${bodyPath.replace(/\\/g, '/')}';
+@source '../../packages/silica-catalog/src/**/*.{ts,tsx}';
+`;
+  return runTailwind(cli, inputPath, input, bodyPath, bodyHtml, outPath);
+}
+
+function fontsHref(heading: string, body: string): string {
+  const fam = (f: string) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700`;
+  const uniq = [heading, body].filter((v, i, a) => a.indexOf(v) === i);
+  return `https://fonts.googleapis.com/css2?${uniq.map(fam).join('&')}&display=swap`;
+}
+
+/** Swap the frame's LIVE host cores (brand / theme toggle / legal links) for static
+ *  stand-ins so the preview chrome reads like the storefront. Preview-only. */
+function staticizeHostNodes(node: unknown, brandName: string): unknown {
+  if (!node || typeof node !== 'object' || Array.isArray(node)) return node;
+  const n = node as { kind?: string; component?: string; children?: unknown[] };
+  if (n.kind === 'host') {
+    if (n.component === 'site.brand') {
+      return el('a', 'flex items-center text-lg font-semibold tracking-tight text-base-content', {
+        attrs: { href: '/' },
+        text: brandName,
+      });
+    }
+    return null; // theme toggle + legal links have nothing to render without the live host
+  }
+  if (Array.isArray(n.children)) {
+    n.children = n.children
+      .map((c) => staticizeHostNodes(c, brandName))
+      .filter((c) => c !== null);
+  }
+  return node;
+}
+
+/** Replace the LIVE scheduling core (a server-computed host node a static `toHtml` renders
+ *  as an empty mount) with a labeled placeholder, so the preview reads "the live booking
+ *  widget renders here". The bespoke masthead above it renders normally. Preview-only. */
+function placeholderizeCores(node: unknown): unknown {
+  if (!node || typeof node !== 'object' || Array.isArray(node)) return node;
+  const n = node as { kind?: string; component?: string; children?: unknown[] };
+  if (n.kind === 'host') {
+    const key = n.component ?? 'core';
+    return el(
+      'div',
+      'mx-auto my-8 w-full max-w-3xl rounded-box border border-dashed border-base-300 bg-base-200 px-6 py-16 text-center text-base-content',
+      { text: `▦ live "${key}" booking widget renders here on the storefront` }
+    );
+  }
+  if (Array.isArray(n.children)) {
+    n.children = n.children.map((c) => placeholderizeCores(c));
+  }
+  return node;
+}
+
+export interface WriteServicePreviewResult {
+  path: string;
+}
+
+/**
+ * Render ONE service template's HOME page, in its real frame + bespoke theme, to a
+ * self-contained HTML file in `scratchDir` — the branded chrome around the authored home
+ * body, exactly as the storefront renders it, for review + media screenshotting. The
+ * pinned scheduling core shows a labeled placeholder (it renders server-side live).
+ */
+export async function writeServicePreview(
+  spec: ServiceSiteSpec,
+  theme: Theme,
+  scratchDir: string = PREVIEW_DIR
+): Promise<WriteServicePreviewResult> {
+  await fs.mkdir(scratchDir, { recursive: true });
+  const site = composeServiceSite(spec);
+  const pages = site.pages as { name: string; root: Node }[];
+  const frameRoot = staticizeHostNodes(
+    (site.frame as { root: Node }).root,
+    spec.brand.businessName
+  ) as Node;
+
+  // A minimal resolver host — a service home binds nothing but the site identity.
+  const host = createSilicaResolver({
+    root: { site: { identity: { name: spec.brand.businessName } } },
+    format: defaultSilicaFormat,
+  });
+
+  const clone = (n: Node): Node => JSON.parse(JSON.stringify(n)) as Node;
+  const bodyHtml = renderSilicaBody(placeholderizeCores(clone(pages[0]!.root)) as Node, {
+    host,
+    frame: frameRoot,
+    html: { ids: false },
+  });
+
+  const utilCss = compilePreviewCss(spec.key, bodyHtml, scratchDir);
+  const themeCss = buildSilicaThemeCssFromTheme(
+    theme as Parameters<typeof buildSilicaThemeCssFromTheme>[0]
+  );
+  const { heading, body } = faces(theme);
+
+  const html = `<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${spec.brand.businessName} — ${spec.name} preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="${fontsHref(heading, body)}" />
+<style>${utilCss}</style>
+<style>${themeCss}</style>
+<style>
+  body { background: var(--color-base-100); color: var(--color-base-content); font-family: var(--font-sans, system-ui, sans-serif); }
+</style>
+</head>
+<body>
+${bodyHtml}
+</body>
+</html>
+`;
+  const out = join(scratchDir, `preview-${spec.key}.html`);
+  await fs.writeFile(out, html, 'utf8');
+  return { path: out };
+}

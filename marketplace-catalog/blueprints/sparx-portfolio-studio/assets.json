@@ -1,0 +1,32 @@
+[
+  {
+    "id": "atlas-hero",
+    "url": "https://images.unsplash.com/photo-1532888277436-2286814f0ee1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwY29uY3JldGUlMjBnbGFzcyUyMGJ1aWxkaW5nJTIwZHVzayUyMGFyY2hpdGVjdHVyZXxlbnwwfDB8fHwxNzg2Mzk5ODMyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A large-format concrete-and-glass building at dusk, seen from a low corner"
+  },
+  {
+    "id": "atlas-mirador",
+    "url": "https://images.unsplash.com/photo-1631645033513-15144f920557?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uY3JldGUlMjBob3VzZSUyMGhpbGxzaWRlJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlfGVufDB8MHx8fDE3ODYzOTk4MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hillside house of board-formed concrete opening to a terraced garden"
+  },
+  {
+    "id": "atlas-civic",
+    "url": "https://images.unsplash.com/photo-1627397159237-d2acb7f500af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2l2aWMlMjBidWlsZGluZyUyMGNvbG9ubmFkZSUyMGFyY2hpdGVjdHVyZXxlbnwwfDB8fHwxNzg2Mzk5ODM5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A civic hall with a deep colonnade and a wide public forecourt"
+  },
+  {
+    "id": "atlas-foundry",
+    "url": "https://images.unsplash.com/photo-1565610222536-ef125c59da2e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29udmVydGVkJTIwaW5kdXN0cmlhbCUyMGJ1aWxkaW5nJTIwZ2FsbGVyeSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTk4NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A converted industrial foundry, its steel roof trusses left exposed above a gallery"
+  },
+  {
+    "id": "atlas-meridian",
+    "url": "https://images.unsplash.com/photo-1556761175-4b46a572b786?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2ZmaWNlJTIwaW50ZXJpb3IlMjBvYWslMjBnbGF6ZWQlMjB3b3JrcGxhY2V8ZW58MHwwfHx8MTc4NjM5OTg0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A daylit workplace interior with oak joinery and a full-height glazed wall"
+  },
+  {
+    "id": "atlas-portrait",
+    "url": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJjaGl0ZWN0JTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MHwwfHx8MTc4NjM5OTg0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Portrait of Nadia Rehman, architect and spatial designer"
+  }
+]

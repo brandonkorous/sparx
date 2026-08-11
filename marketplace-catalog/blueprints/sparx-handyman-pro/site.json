@@ -1,0 +1,2207 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "ef1fb476-c14b-43bc-b39e-94b10fe24d67",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "3da049bb-5847-4484-9a4e-9e9627ddd024",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "315770a5-058c-4969-887f-68e6b1df4f01",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "a79dd92d-06fe-49c5-8bc3-db86f659566d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "03d7fc1a-57d3-4b23-a837-949a50fbce4b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "0a62b631-4bb4-4bbe-bec0-bded95358321",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "b586c1e2-780c-4850-abf2-a4d5cd7eae91",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "e144f0e8-2b41-47c8-98e7-a013478f8d9d",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "e9bbf210-422f-45c1-9ecf-5b7b69011c5f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "4726574a-8a2f-43fd-a1f5-26648c76b9cf",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "d8cdaf6d-2b5e-471b-b6f5-94df4812d034",
+                  "ord": "a2"
+                }
+              ],
+              "id": "4c86d7bc-9661-41e9-a710-1f59cf3f914c",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "1cc2fdac-10bb-424e-b4e3-59dc52659b24",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "f1eb7d6f-07ae-401d-9d77-9f6a948d525b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "992d1f05-e2bc-4def-9649-15be47f64120",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "31daef99-0049-470e-8c3e-791faf68ec3d",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "03a04573-9f9b-4a6a-9015-736ea75eafc3",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "0a5e18e0-02fa-4410-98fc-1a0b00368ae2",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "934725b6-0bba-4031-8caa-2962c036c06a",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6c046bf6-8f96-444c-b415-4f43de21761e",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "7c728117-7b80-4edb-b997-971b5df328c5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0ed021e7-7357-431e-abd5-8a5982a5d03f",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "41da647f-2778-429e-8226-d812aae5e5fd",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "e9757b55-5be1-4e75-bab0-d3f6532a7c03",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "e519fcba-0699-4352-8a6b-bad7d50a5b55",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "3ded9c3f-ceb9-488c-8fb0-ce2395bd96d4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b63d8890-9bc3-4602-ad2e-8cf41b06c6e8",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "7f605b60-0634-4c4f-b542-410bab950248",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a4a309d9-a9ea-4fde-8e9b-e18e905c0913",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "9d396b9d-913c-4cd8-8b71-a6b3b346e9e6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6e354174-ca33-48f6-919b-6fe7552b3d47",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "9ee5423f-20e0-4c23-8256-66b82699fbe6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0ce346ef-ad54-4256-bd58-30d662da610f",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "c712b239-a611-4cbe-9704-def110d9e075",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "251eef04-4ecd-4870-87e8-4c078e5302a4",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "bad5f2f8-145a-420d-8bdc-7bda6527e9d7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b2e35ee1-49bc-4f64-8401-fb88542d4397",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "fd3f385b-02a3-434a-add0-ee49ad11b26c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "239f55d7-c5f7-471c-a0ce-084e5c0e2eff",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "7d053150-fe95-4a5e-82c4-0f97817bd107",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "00acdc64-50f5-489a-b08f-a9b7f83d637a",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7c88b586-2104-46b6-9f55-236af8f83a86",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "b3083a5d-edf4-44ca-9d3b-16a11230f11b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4ae7298c-9245-4d2e-aa9c-1691685432a8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "7bee60ee-dbb9-4695-85c2-00a1b4b35724",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e53135fd-4ac8-4673-8968-5f937815861c",
+                  "ord": "a1"
+                }
+              ],
+              "id": "18aa5931-d3f2-4ae2-b792-ccc5cd9b7b3a",
+              "ord": "a0"
+            }
+          ],
+          "id": "284cc160-97a2-4c53-87fa-fbdbf002e827",
+          "ord": "a2"
+        }
+      ],
+      "id": "4338a3c4-0ce5-462d-9cf9-3a91f0aaf09e"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Ace & Able Handyman — home repairs & installs",
+      "seoDescription": "Ace & Able Handyman handles repairs, installs, drywall, mounting and honey-do lists — one skilled, licensed pro who shows up on time. Book a visit or a free estimate online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "29c5d106-2e9a-4a8a-bd41-3ec3e296ac57",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHltYW4lMjBob21lJTIwcmVwYWlyfGVufDB8MHx8fDE3ODYzOTI2MTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A handyman fitting a cabinet in a bright home kitchen",
+                  "loading": "eager"
+                },
+                "id": "94609670-669e-448b-8196-25db03fbc514",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "94216313-ce47-4b96-a2fe-6ae848f5327f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["One call fixes it all"],
+                    "id": "022a6691-2224-456b-b2f1-d07e6bc1496f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "The repairs, installs and half-finished projects piling up around the house — handled by one skilled pro who shows up on time and does it right the first time."
+                    ],
+                    "id": "606171c3-cbaa-4272-a781-98287d221ad3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a visit"],
+                        "id": "501c9414-5a76-4828-82bb-cf3501dd7e05",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get a free estimate"],
+                        "id": "36abef9f-0e28-4d0e-8b5a-9c86f6f70fd7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "dd9e1919-e67c-4f0d-abc4-1b539b9d20f3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c0a630aa-45d6-4924-87f9-f5a86606e711",
+                "ord": "a2"
+              }
+            ],
+            "id": "c3648333-8b5f-42d1-ae02-ae0ed878885d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One pro for any job"],
+                            "id": "3b453c7e-89a9-4222-89f4-0daf2ab18451",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No juggling three tradespeople for three small jobs. One skilled handyman handles the whole list in a single visit."
+                            ],
+                            "id": "23ef8910-defb-42bf-8ddc-02526109dedf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "87550ba3-05bf-4847-801e-df45ba2c89dc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Upfront pricing"],
+                            "id": "bc588e8e-44ae-4719-85cf-2ad4f8fc0129",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You get a clear price before we start, not a surprise at the end. What we quote is what you pay."
+                            ],
+                            "id": "f7d2c9e9-1021-45f5-98da-ccc66a6a3b6b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0ce0ec18-4690-4ec4-b890-626d6ee64cc2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed & insured"],
+                            "id": "4bcaff2f-c091-42fe-9f87-63594b5b1cab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Fully licensed and insured, so the person working in your home is covered — and so are you."
+                            ],
+                            "id": "4ee39a83-4e54-4b9b-aff9-d639117892ce",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9daaa450-86cd-4e95-94cf-5dcf24ba9158",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Work guaranteed"],
+                            "id": "363f5d9a-4035-43a8-adfe-b7e44b80796d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We stand behind every job. If something isn’t right, we come back and make it right. Simple as that."
+                            ],
+                            "id": "9f3c85a6-8b4a-4603-931d-90e5c6230bb0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a814db0d-b188-428c-aab4-bcbe3725ac92",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "cf7cd2a6-4bd5-4b8e-946f-29402f425519",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d675569b-5634-44f5-95b0-70c066f3393c",
+                "ord": "a0"
+              }
+            ],
+            "id": "f9b64c2c-8e64-4553-a0f9-a4a153773026",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we come out for"],
+                        "id": "57d6aa0c-8a52-48c2-a303-d582a09f539f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The jobs we get called for most. Every price and live availability is on the booking page — and the first estimate is always free."
+                        ],
+                        "id": "245a8c67-5306-457f-b966-edfcb286d8c4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "445f4c70-01f2-4741-a690-a25c6a23c16b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free estimate"],
+                                "id": "157e0503-0437-4e61-a175-2f290a557dc6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "f1410686-9aad-4060-8e65-cbef0b6ac746",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0b1f508b-c424-497e-a43e-38d9f1208e92",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "2f9220d5-e307-4421-b089-3edb7c5e0c86",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An honest, written price before any work starts."],
+                            "id": "49d3b606-cc2b-4be3-b1a3-69db463f874a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9c049da2-6a0c-4c0d-bc85-0b50854fb451",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Handyman hour"],
+                                "id": "297bb44d-e674-44a4-a3f4-07d2f08dbd4a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "065c5a88-a077-42f9-a639-023b0fc24532",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e7cae22b-7743-47fd-8822-406785fedab4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "b8653d84-f9bc-4399-8fda-6c1ee5e8d041",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A skilled pro for an hour of small fixes."],
+                            "id": "a05d771e-d980-4c67-b108-2cd30e253daa",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d6b88f39-565a-4e65-a192-74c05cce38aa",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["TV mounting"],
+                                "id": "6d93ebde-7303-4b3c-bd87-7e2037363a20",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$149"],
+                                "id": "36afe03b-589b-420f-ad18-d5eab08b017b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fcd77b04-333d-4ea2-9f42-118a61aeecc5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "ed36d524-2be3-489e-a5d5-50edfe42f341",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Level, solid, cables tucked away."],
+                            "id": "cb7566f4-a424-4127-87e7-ffacfc08fcd5",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "41f8751b-2d9e-459b-a330-508e6cac8ada",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Drywall repair"],
+                                "id": "2bdd12fc-155d-4bb8-a216-f584e176b658",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$199"],
+                                "id": "c3ed0895-220c-4e4c-bbbd-ed75f42799ed",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "42765704-e56c-4d3c-a0e6-98976d254d92",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "9cddfaf2-6bae-4fa5-ac15-4dc834719ee4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Holes and cracks patched and blended in."],
+                            "id": "39309267-502c-4077-9471-2f72a7befb99",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bb0050a5-f1d8-410e-afc3-2e672b06e1fd",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Furniture assembly"],
+                                "id": "f28c0499-abd0-4e20-a871-e7589399e177",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$89"],
+                                "id": "c5067465-8cf0-4cf2-b46d-e42c35e41b39",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bb4af95d-8a77-4787-957e-0a74222d14df",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "c6ff0d98-f68a-4ce4-a23a-e1ea3a264cc5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Flat-pack built right and anchored."],
+                            "id": "9aaab944-2121-43a4-a0dc-e9f6a0a3e4c0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f4ca5d4b-e180-428d-bb07-d94964e7ba5d",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Honey-do half day"],
+                                "id": "960b36b6-e2b7-4a69-b9df-06fbac2a4675",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$349"],
+                                "id": "fa2e451c-a9ff-488e-9ef6-36800f0339c1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8c85aab2-48ae-4f07-b8c8-1edab1c38721",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["4 hr"],
+                            "id": "54a32f1a-8e13-4082-b4d5-9ae19ac5adff",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The whole list, knocked out in one go."],
+                            "id": "a3fbe9f5-2e53-492b-bcb6-db516c554eda",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bc1dcc84-a837-471f-9ebc-6ca3aee2c7fe",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "0fa95ad8-e04b-4926-be76-e54fa96ed8bb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "f2bf65c7-fa9b-467d-b0bf-7be8cb65502f",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "8abb6092-cc44-4051-9296-7df2e3af7fc9",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "99e61a26-1003-4905-a3a2-745e030408e7",
+                "ord": "a0"
+              }
+            ],
+            "id": "0f360871-73de-4094-902d-815791db4990",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1426927308491-6380b6a9936f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dG9vbHMlMjB3b3Jrc2hvcCUyMHdvb2R8ZW58MHwwfHx8MTc4NjM5MjYxOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A tidy van and tool wall ready for the day’s jobs",
+                      "loading": "lazy"
+                    },
+                    "id": "2c2eef8e-b5df-4e47-a149-00e58a16d429",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["No job too small"],
+                        "id": "b0e31e37-f943-4d5e-8171-673f078865d3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A lot of pros won’t bother with a loose hinge or a single shelf. We will. The small stuff is exactly what piles up — and exactly what we’re here for."
+                        ],
+                        "id": "7e8daf0f-377f-4eaa-882f-f736c638dabd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Ace & Able has been fixing homes in this town for years. Same faces, same trucks, same promise: we show up when we say we will, we clean up after ourselves, and we don’t leave until it’s done right."
+                        ],
+                        "id": "c4a7907b-e4c5-444f-8429-cb841358f8ba",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "3608a518-0841-47ac-968f-94808c1e3401",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "cf2a5be9-db7f-45ae-86f3-fe0b8184b4c2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "f30335f1-c377-4616-9404-140ee54375de",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8b43ff40-58b8-4bdc-8a80-156c6f70e3b6",
+                "ord": "a0"
+              }
+            ],
+            "id": "66800911-c51f-49cb-84a6-68d45b828114",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The crew you’ll meet"],
+                        "id": "36382492-300b-455c-a87d-81c886613f92",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book the visit and one of these three shows up — every one of them a seasoned, background-checked pro."
+                        ],
+                        "id": "b5b43dd8-f37f-4de4-b359-765620f1d6d7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a66682ea-cbfd-409e-987c-0ffb151f1fbb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1461938337379-4b537cd2db74?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHltYW4lMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkyNjIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Mike Alvarez, lead handyman",
+                              "loading": "lazy"
+                            },
+                            "id": "677da560-b3f6-49d7-af78-e3cc997c9c53",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Mike Alvarez"],
+                                "id": "150a9216-6e18-4821-b6e0-41c7b33fbc47",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead handyman"],
+                                "id": "b4f5e545-250a-4308-9717-6df31eccdc72",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twenty years of repairs and carpentry. If it can be fixed, Mike’s fixed one before."
+                                ],
+                                "id": "90eff068-b07b-41e4-a028-6a8431fe5642",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "a915c96a-ac3b-4709-ad22-1c2f2a61b143",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6ee7b17c-1667-4a4a-becb-23093d3f59ee",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/reserve/oIpwxeeSPy1cnwYpqJ1w_Dufer%20Collateral%20test.jpg?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB0b29sc3xlbnwwfDB8fHwxNzg2MzkyNjI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Carlos Reyes, drywall & paint specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "cc32b29f-da4a-43aa-aaf0-2524828e3c63",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Carlos Reyes"],
+                                "id": "b3e27d9a-2172-4190-91d8-f2cd91aff70e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Drywall & paint"],
+                                "id": "675f6e72-e971-4c08-9495-f201f9af9298",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Patches you can’t find afterward and paint lines you could measure with a level."
+                                ],
+                                "id": "187c3da1-7c4b-44f6-9082-6b34d809296d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c3992160-dd4d-4b47-bbe0-0ec3efd98fc5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "99dcbbc5-b0db-4068-a47c-2e7c177a1435",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29udHJhY3RvciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTI2Mjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dave Whitfield, install & mounting specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "b955b4f0-c66b-480f-90b6-eddf1570ed54",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dave Whitfield"],
+                                "id": "fc66955a-01e5-4900-ae20-105edd299cd9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Installs & mounting"],
+                                "id": "ebca1c1a-5549-4917-a12d-1d53661b8e81",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "TVs, shelves, fixtures and flat-pack — mounted solid and dead level, every time."
+                                ],
+                                "id": "6130946e-ac01-40e8-9c75-80d6219c7849",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "06f59e10-57d0-48e6-93e6-cf6f99ea59c3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "855a01df-ddc4-4af0-b479-e48fb9ded6be",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "cd2f072e-e558-4f4e-b74f-7fe73bee9889",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f4153ce2-917d-41ae-b045-63c3c68f643a",
+                "ord": "a0"
+              }
+            ],
+            "id": "d0c251ba-52b5-4aa6-93a2-c5fec138c856",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They mounted our TV, fixed two doors and hung a gallery wall in one afternoon — and swept up before they left. First time in years the honey-do list is actually empty.”"
+                    ],
+                    "id": "5e238d11-c5d8-410c-a464-785b76cf2238",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Dana R., homeowner since 2022"],
+                    "id": "76f9c148-cf90-4456-a3e2-c1d7f33cc436",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "735506c4-ebfc-4dc5-aa78-c066097c4216",
+                "ord": "a0"
+              }
+            ],
+            "id": "31a3d4b4-2e02-4406-af4c-170a3022d1ab",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Got a list? We’ve got a van."],
+                    "id": "b8caeeb0-2645-4560-8cba-2ab34e9c2c6a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick what you need, see live times and book in about a minute. Not sure what it’ll cost? Start with a free estimate."
+                    ],
+                    "id": "2122af73-8509-4927-8ffb-5dc85033c41d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "2f38bea8-4e83-416d-85a1-309c25ee98a7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f0a73abf-a152-40d0-9a8b-c2430eecfe70",
+                "ord": "a0"
+              }
+            ],
+            "id": "58104fc7-95ab-4ec9-8c18-34e8fafd8b2f",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Ace & Able Handyman",
+      "seoDescription": "See what Ace & Able Handyman offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "624c7b91-cd74-4189-8a9b-771f03fcbd32",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1426927308491-6380b6a9936f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dG9vbHMlMjB3b3Jrc2hvcCUyMHdvb2R8ZW58MHwwfHx8MTc4NjM5MjYxOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A tidy van and tool wall ready for the day’s jobs",
+                  "loading": "eager"
+                },
+                "id": "95b1e335-f812-4db9-9f92-d6f968fd841b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "0b662eee-9592-4bea-ac57-5b9298b074d9",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your visit"],
+                    "id": "fba01ba8-c575-435c-99df-f5bbb8b5eabe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose what you need to see the price and live availability, then pick your day and time. First estimate’s on us."
+                    ],
+                    "id": "1595b83b-d67b-47b6-8305-0ad04ace69ab",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See visit types below"],
+                        "id": "6b99f790-fd78-445e-a0b3-d6ecc86e0fca",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "a5380390-3493-4216-b535-7254e0ddf0f3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c0326e8a-1c07-463c-801f-70b3172067ae",
+                "ord": "a2"
+              }
+            ],
+            "id": "f9f9696b-7d43-4a51-bfc4-2f6763efeb28",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "a3fa453a-0baa-40f7-9a4d-d9f7d50fd090",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Ace & Able Handyman",
+      "seoDescription": "Who Ace & Able Handyman is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "61cd5fd1-2bfa-40e4-bee8-91aef4c1a7e7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHltYW4lMjBob21lJTIwcmVwYWlyfGVufDB8MHx8fDE3ODYzOTI2MTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A handyman fitting a cabinet in a bright home kitchen",
+                      "loading": "lazy"
+                    },
+                    "id": "c06a54b7-48fc-49f8-a7af-168e38f49f33",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Ace & Able"],
+                        "id": "ea9ca4e9-a946-4a19-9d5e-bcdf88b59c07",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Ace & Able Handyman on a simple idea: most people don’t need a specialist for every little thing — they need one reliable pro who can do a bit of everything and actually turns up."
+                        ],
+                        "id": "20d54a2a-9115-4865-83a1-f41b83db071e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That’s us. Repairs, installs, drywall, carpentry, mounting, the endless honey-do list — one call, one trusted crew, one price you agreed to up front. No run-around, no mess left behind."
+                        ],
+                        "id": "c06a4299-d292-4547-bfb7-769d0460875c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "407c48c6-7cae-43b3-b945-320a9d9c6ac3",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "ed2ff2d7-c543-4dc9-9590-325a28b77e20",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9bef5ce0-970d-4aea-849d-ef95cd21e4ce",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f73f29ee-64c9-4798-ae25-123e3a111c8f",
+                "ord": "a0"
+              }
+            ],
+            "id": "f5705d16-4ecd-4434-bd43-607557dee8ef",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "54474b46-9642-422b-8555-40fa15785cb5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A real estimate first"],
+                            "id": "7a3dc891-d573-44d3-b268-083dbe7e7fb8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We look at the job in person and give you a clear, written price before we pick up a tool — and the estimate is always free."
+                            ],
+                            "id": "21505b96-df1e-4f0a-a826-2ac66c7fe2b1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "18f8ef7f-102a-47f4-aec1-17e6467c18cd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["The right pro for the job"],
+                            "id": "e45492a2-9307-49af-afcb-0fd02264f9c2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Repairs, drywall or installs, we send the person who does that work every day. You always get a skilled hand, not a guess."
+                            ],
+                            "id": "d10b6f6b-f9ca-4e95-87a5-13eccfa1f6fb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2ebed225-902c-4419-b638-5af81d2e7c83",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Cleaned up and guaranteed"],
+                            "id": "3ad23139-ceee-4af5-a4e3-f437aac5ca83",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We tidy up before we go and stand behind the work. If something’s not right, we come back and fix it — no argument."
+                            ],
+                            "id": "71ab3933-13df-4f57-82da-9e141a0cbcd8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a6456e52-a29e-492b-8578-20ec81e668da",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "416c3423-1d6d-4b7f-859d-e830a7c19ed1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "13f1bfae-3f11-4694-a487-a52628ed6695",
+                "ord": "a0"
+              }
+            ],
+            "id": "8f161ae8-f2ba-43c0-a2cd-b3d2c32b0178",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Ace & Able Handyman",
+      "seoDescription": "Where to find Ace & Able Handyman, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "52ccedbf-e545-45f5-ab58-d682d0001e87",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Where to find us"],
+                        "id": "1a8042b8-4f6e-4306-8bb9-35d8e43a357a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Ace & Able Handyman"],
+                            "id": "2e35d609-8f78-4494-89ea-be320576a89d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Maple Avenue"],
+                            "id": "bd7443a6-a07e-43d6-92d2-c52a0f5f6433",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Bay 3 · Springfield, OR 97477"],
+                            "id": "2555fb51-20bb-4335-8071-31829eea80c7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "edbe7b38-dcc9-40ca-9f27-0b96a7c2b18d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "5183e876-d012-4ff7-8fb0-278c418aec29",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00"],
+                                "id": "6f3b00c7-a6e4-4379-bab8-1ff5dfdf42db",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5b2da4c8-faba-4fff-bb1e-9578d3e5d210",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "55234a7a-a6ae-40bf-af7a-d1aaac555964",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "a4eb5d04-d023-446f-b797-f266565ce921",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ed8046d5-9f5b-4bd4-929c-9b45d0985b2e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "539240e6-fd88-49c1-bfb6-3bd70e3a1b6f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "c6f03687-8514-43af-9494-3c16d98b213e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "58deeea1-1fd2-4d6c-8a9a-f53cc64a4e28",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "72c8873a-1fa7-4022-9782-9351128554c5",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5b59b7a2-f562-4e04-8a79-6754b6bbe663",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Maple Avenue, Springfield, OR 97477",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "42279b14-6015-4a90-8a0c-aeab203990d3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e1391db1-0006-41d0-91a9-08af18f68e49",
+                "ord": "a0"
+              }
+            ],
+            "id": "10af2941-7aae-4f00-8ac8-027713b44ecc",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "1caac40c-cbda-4657-8cbd-fc25eba986fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and lock in your visit online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "d0029b9b-1417-4a30-be84-e355f3ca1ac3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "d5632f61-acdd-444c-a606-86666afeee40",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "014065a7-5f80-4a42-b387-610b74166221",
+                "ord": "a0"
+              }
+            ],
+            "id": "ddd274a8-e005-41eb-9549-30484be8c21b",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "aceable",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(95% 0.006 252)",
+      "--color-base-300": "oklch(90% 0.009 252)",
+      "--color-base-content": "oklch(24% 0.02 255)",
+      "--color-primary": "oklch(45% 0.13 255)",
+      "--color-secondary": "oklch(34% 0.02 255)",
+      "--color-accent": "oklch(70% 0.16 55)",
+      "--color-neutral": "oklch(28% 0.015 255)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Archivo\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 255)",
+      "--color-secondary-content": "oklch(98% 0.01 255)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 255)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.16 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(90% 0.009 252)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Archivo\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 255)",
+      "--color-base-200": "oklch(18% 0.016 255)",
+      "--color-base-300": "oklch(14% 0.012 255)",
+      "--color-base-content": "oklch(95% 0.005 250)",
+      "--color-primary": "oklch(72% 0.11 255)",
+      "--color-secondary": "oklch(82% 0.015 255)",
+      "--color-accent": "oklch(76% 0.15 58)",
+      "--color-neutral": "oklch(85% 0.01 255)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 255)",
+      "--color-secondary-content": "oklch(15% 0.015 255)",
+      "--color-accent-content": "oklch(15% 0.02 58)",
+      "--color-neutral-content": "oklch(15% 0.01 255)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.15 58)",
+      "--color-highlight-content": "oklch(15% 0.02 58)",
+      "--color-border": "oklch(14% 0.012 255)"
+    }
+  }
+}

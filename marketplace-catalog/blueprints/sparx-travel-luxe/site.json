@@ -1,0 +1,1988 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "4f2a6817-3692-44d9-8149-979e58603a4c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "2a56d91f-b6ef-456e-9ccb-7a951ba00382",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "743660ea-3865-4b06-8917-646ee7316950",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "f907a8ea-8bd1-4125-86be-2b6e883ac796",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "2be65413-5569-4229-930f-f86c4f6e8316",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "796a295a-9f6d-4d51-8d24-22ea12a50d3d",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "9fa4f5cc-a0a1-4f12-ad3a-1368f4ded71d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "ba427bb0-4ad7-455e-a103-873e6bd477cc",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "d8fdafd4-1943-4a01-a207-10597ae15019",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "36c7b8a7-f274-4dd2-b02a-9e186efd5764",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7152a8d8-74f6-479f-9c1c-fab840490112",
+                  "ord": "a2"
+                }
+              ],
+              "id": "814f3d26-5997-4e1a-800b-b7ac91cd7624",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "5f4d6cb0-1730-4cae-95ce-ff74de221ac9",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9f92a94c-1b05-4d13-b4bf-522c5e5c3634",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "31ce2a6f-3392-46d6-bda1-e26e0c612612",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "3510a32b-36b2-40c2-902e-9b32a6e85853",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "2f07d1e1-80c0-4d76-82bf-ae0ccff51ac1",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "48ced9ea-5451-495e-a969-8fbbff9eae0d",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "1316f5c3-a154-4954-9511-9c0063477db0",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "9b999370-b76f-46f8-a9b3-26578c565bb1",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "997c3419-497e-4e0e-8d3a-cf6f80fcd680",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "55561bf6-ade7-4dbb-b027-5a83880baf46",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "00f5b535-6481-4972-945a-e3228d780644",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "88dcfe04-5087-4903-ab03-31f4a0426fb8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "da19da81-2abb-4f07-863a-b2e5f3d5cb26",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "8a89d72e-63c0-4269-bba9-253f7bd3969e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c8954cf3-ee7a-4a59-bb6a-40e94ed8af53",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "9ac39139-d8c3-4f2b-94e1-c6bbca6479f0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9694f8b0-8df4-4f68-91ef-8b35ee18649b",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "68f29f53-8c9d-4d03-ab57-a166fe352d64",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c7d23c03-1919-4804-bc5f-fb503d8f2f59",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "560e7405-a5a8-45fd-9e44-545fdde36296",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "19710bce-56af-4f87-a150-e57d34e75d10",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "a0d186cd-a565-41e5-a987-3893e9f2811d",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "578c07e2-6bf0-4334-ac93-f24d4b57b267",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "054a810c-bc83-490e-b90e-0949b444a6e6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "79be5cf9-60ed-40cd-b5b7-910e0224faa7",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "0219985a-aaf4-4a48-8d86-6441e4f26470",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6904e9f4-2af2-47b7-b5cf-5da2b0711bfd",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "c84a3bc2-e747-49d5-873b-7a9c74b13dbb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b69c3c29-0ff0-4906-bcc2-53c01542210a",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "32937ce8-2c34-4408-80f6-85a45eeb726f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "92e42a28-0936-4b31-8ba1-c97c07ef281d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4cb90e9e-fda9-4a99-b455-1bc6a17825e0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "f6864405-8805-4017-b5c3-a41a5372fa67",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "b2905d74-f6b5-4da9-8cea-4e9f1d2110d6",
+                  "ord": "a1"
+                }
+              ],
+              "id": "47a19821-41a1-41ee-8fd2-9ae8309f75f8",
+              "ord": "a0"
+            }
+          ],
+          "id": "dbd91f4f-fff9-4422-a1f2-90926302806c",
+          "ord": "a2"
+        }
+      ],
+      "id": "fa5fa361-9015-4d67-8a4c-04e975bc99cf"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Wander & Co. Travel — a luxury bespoke travel advisory",
+      "seoDescription": "Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, honeymoons, luxury trips and VIP access. Book a consultation online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8f33d222-aaa5-4e25-86c2-cd3f58d2ba7b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1743356174397-d6da6f014f8f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bHV4dXJ5JTIwdHJhdmVsJTIwZGVzdGluYXRpb258ZW58MHwwfHx8MTc4NjM5NTE0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An infinity pool overlooking a turquoise coastline at golden hour",
+                  "loading": "eager"
+                },
+                "id": "0a8101dc-0afe-4ec6-83de-eec9ecf531ce",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "a41b0659-4be3-4b87-b47d-bdec448d87d2",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["The world, planned around you"],
+                    "id": "e13f4a4e-87c4-4e8d-8185-6ed62356098a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, quiet luxury and access you can’t book yourself, all handled by one advisor who knows your name."
+                    ],
+                    "id": "d653dbf2-e26d-4a6c-bb3a-e8e9c2bfd8fd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "841d67b8-9888-4f99-82b6-83dc92ed3c1c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See how we work"],
+                        "id": "38429ed9-2caf-4d5f-9d9a-5737b6d49c51",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e59e65a9-24b6-4fea-9122-c7f7b04c73b5",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "923ebc2d-d3d4-41ca-a0ec-f31aa6a4255d",
+                "ord": "a2"
+              }
+            ],
+            "id": "8b91dcbd-747f-4331-9059-e88454204e7b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Your personal travel advisor"],
+                            "id": "b6f18b69-b9fb-456a-8e78-0d9dfcedf342",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One dedicated advisor who learns how you like to travel and plans every trip with you — not a call centre, not a booking site."
+                            ],
+                            "id": "6823464c-bfcc-43ce-b3cf-ee6305c6880b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9fb3a982-16f5-41e4-81b6-82191619f965",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Bespoke itineraries, start to finish"],
+                            "id": "949b0cfe-0b37-4310-9887-477fa42e2003",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every journey is built from scratch around you — the stays, the routes, the tables and the timing, considered down to the detail."
+                            ],
+                            "id": "dd2f5a1d-5d81-4558-9871-c80db34aacad",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b1491a48-2845-4731-b4b1-2ead3793816c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["VIP access & perks"],
+                            "id": "d353de9c-1e95-4830-974c-d1ff579da4ff",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Room upgrades, private guides and reservations most travelers never reach, through relationships built over years."
+                            ],
+                            "id": "088060f0-55bc-4f48-91e1-c802490c186b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "31d8ec79-32b0-4453-85dd-2a46ce856340",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["24/7 support while you travel"],
+                            "id": "0e97034d-251a-4900-a9da-8b6f82fe4faf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A missed connection, a change of plan, a late-night question — we’re a message away, wherever you are in the world."
+                            ],
+                            "id": "69009fb9-c378-46eb-bb28-47346d25c753",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "66803fb8-5339-4163-9421-64653373d215",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b31d5f94-ec94-4e5c-a654-70fe15217505",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a65a4dbd-11af-45a1-84fd-0abed68f84a4",
+                "ord": "a0"
+              }
+            ],
+            "id": "02614aa1-3bb2-4ff6-aa8e-161fa0ea58e4",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways we can help"],
+                        "id": "14e1eee2-e962-4414-a4b3-e94c4bab74f2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Start with a complimentary discovery call, or go straight to the planning session that fits your trip. Full details and live availability are on the booking page."
+                        ],
+                        "id": "a161da9d-e61a-4aa4-ba0a-3201eec468fc",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "24b71d51-3704-4232-8bf6-822efa86e51d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Discovery call"],
+                                "id": "48359beb-b270-4d99-aa33-a665fa8a50e4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "6495a408-c05c-420a-8103-dd6f58314ca5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4c3c28b0-7225-4816-9e24-638e053a520b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "c7219d2c-3a3c-4bd6-be67-8a594e28a49d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A no-obligation call to talk through your travel dreams."
+                            ],
+                            "id": "330f4612-d8eb-41f1-8c46-fc98cc8bd256",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "85041c5b-55a9-47a2-9cc2-674f078a394d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Custom itinerary consultation"],
+                                "id": "dc8fab74-e714-47db-9551-86488a1b0828",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$250"],
+                                "id": "c90f59ad-b2ff-494e-ba38-b4825db4b8f0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c89fe83d-6484-482a-8f4d-30739ef73b63",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "cc3d759b-4c33-4147-8c4c-893ff398a395",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A full session to shape your bespoke, day-by-day trip."],
+                            "id": "e1837b1b-9ac2-4be5-a70a-1f6d9c1fa9f6",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8a1f7156-eba3-43a8-852d-9efe23c5b366",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Honeymoon consultation"],
+                                "id": "d82a1701-f805-44f0-bb7c-b25fece55a2b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$250"],
+                                "id": "6daac5a7-3168-4123-b477-340dca9e6d62",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "10e3097e-e0b2-485f-aa17-14e3e348ad61",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "84e6ebd0-ec73-48b2-a713-c764f4667d38",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The trip of a lifetime for two, handled end to end."],
+                            "id": "0364334a-8b00-4161-b1e8-f008a603064f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a484a53b-4362-417f-9247-1bd3061edf81",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Luxury trip consultation"],
+                                "id": "c322320c-8ecb-48e3-813f-28088fec8944",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$350"],
+                                "id": "630d9045-0302-40ef-8285-8effadde27ec",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8d44f783-784c-4214-b797-594f8934aa39",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "b772413d-a6b2-48b1-9e3f-a69f5483bd6f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The once-in-a-decade journey, planned to perfection."],
+                            "id": "84bd4db0-fd07-49f7-99cf-69aa757688db",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bc1db40d-2583-4771-80fa-5d7a94927aee",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a0f775d5-5bd7-4a9c-85b1-532fa52a6cb0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "68b0cb9d-8769-487b-bf27-284205b6679a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "827d3e95-2bde-4311-992e-4e7468aa2e82",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d1587341-b761-44c0-ae1e-071bd2a83cd1",
+                "ord": "a0"
+              }
+            ],
+            "id": "59d702ef-7ab6-42ef-8d1f-1ac88ed87e30",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Where we send our travelers"],
+                    "id": "45472ffd-82d1-4c4b-ac87-33a3799e64b7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1580502304784-8985b7eb7260?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FudG9yaW5pJTIwZ3JlZWNlfGVufDB8MHx8fDE3ODYzOTUxNTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "White cliffside villages above the Aegean Sea",
+                          "loading": "lazy"
+                        },
+                        "id": "341ad28d-3673-4915-b9f6-3dab93d36b75",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWZyaWNhJTIwc2FmYXJpJTIwbGFuZHNjYXBlfGVufDB8MHx8fDE3ODYzOTUxNTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Elephants crossing a golden savanna at dusk",
+                          "loading": "lazy"
+                        },
+                        "id": "b6719413-2060-457d-b1cf-4ebd6e9ab568",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1578469645742-46cae010e5d4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8a3lvdG8lMjBqYXBhbiUyMHRlbXBsZXxlbnwwfDB8fHwxNzg2Mzk1MTU3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A quiet temple garden framed by autumn maples in Kyoto",
+                          "loading": "lazy"
+                        },
+                        "id": "229e1c59-cf0a-49b1-ae7d-1d57efcdf6dc",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1521292270410-a8c4d716d518?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3dpc3MlMjBhbHBzJTIwbW91bnRhaW5zfGVufDB8MHx8fDE3ODYzOTUxNjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A chalet terrace facing snow-capped alpine peaks",
+                          "loading": "lazy"
+                        },
+                        "id": "a4e754f6-5779-4b01-a175-e9fc124129e3",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFsZGl2ZXMlMjBiZWFjaCUyMHJlc29ydHxlbnwwfDB8fHwxNzg2Mzk1MTYyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "An overwater villa on a still lagoon at sunrise",
+                          "loading": "lazy"
+                        },
+                        "id": "b628a82b-cfe0-406a-ac67-327e2561a32c",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1583844056361-4418a8f2a985?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YW1hbGZpJTIwY29hc3QlMjBpdGFseXxlbnwwfDB8fHwxNzg2Mzk1MTY1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A pastel coastal town tumbling toward the Mediterranean",
+                          "loading": "lazy"
+                        },
+                        "id": "5c4847ee-250c-42d7-905f-0de704c145be",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "7c94b8e0-d028-4031-b014-80057f7657a4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "33ed4f3e-227b-4105-81cb-69744d16e77d",
+                "ord": "a0"
+              }
+            ],
+            "id": "208991a6-5905-4c4b-9c04-3811c76c0939",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1516738901171-8eb4fc13bd20?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhdmVsJTIwcGxhbm5pbmclMjBtYXB8ZW58MHwwfHx8MTc4NjM5NTE0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A travel advisor mapping a route over open guidebooks and a world map",
+                      "loading": "lazy"
+                    },
+                    "id": "3a43c23a-1687-417a-a353-074844cf1cbb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Bespoke, from the first conversation"],
+                        "id": "e6864c70-7bbd-43c5-a855-92b693f92dfd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We don’t sell packages. Every trip begins with a conversation — how you like to move, what you want to feel, the pace that suits you — and grows into an itinerary built entirely around you."
+                        ],
+                        "id": "9db53b95-174f-4868-ae3d-dd5ab5813b97",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Then we handle it all: the flights and transfers, the right rooms, the reservations worth having and the small touches waiting when you arrive. You travel; we take care of the rest."
+                        ],
+                        "id": "d104c6c0-6c50-465b-8cc6-50d847699d90",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start planning"],
+                            "id": "199829da-6a17-4248-8e5c-29509d63acd2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "eaccf718-dd27-4205-a51e-b8d23dfdffb4",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "092a9ec8-327e-42aa-9dd9-b3ebb82ca800",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0895d19f-5325-41f8-a7b0-a33d581a4b7e",
+                "ord": "a0"
+              }
+            ],
+            "id": "504a17c3-296d-4033-b327-6242e8faeb9e",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Elena planned three weeks across Japan for our anniversary and it was flawless — the ryokan, a private tea ceremony, a table we could never have got ourselves. It was the trip of a lifetime, and we never once had to worry.”"
+                    ],
+                    "id": "aed32c68-dfaf-4395-b12f-c7e4a5df58e6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Catherine & David, traveled 2025"],
+                    "id": "d79e1532-3dd4-4b27-8a19-3f2dcd7f4f02",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6c3b8728-15ec-4807-bd64-1f27887171e2",
+                "ord": "a0"
+              }
+            ],
+            "id": "0dd1c43a-c506-4c9b-a857-88420cf6560e",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s plan somewhere unforgettable"],
+                    "id": "25bf33f3-cebd-4d5a-929e-cfbe6b845362",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a complimentary discovery call. Pick an advisor and a time that suits you — it takes about a minute."
+                    ],
+                    "id": "5423d9aa-af47-4c37-8053-79bdcab7ae10",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "ebef32b8-0172-4fdf-adf4-f78d5349b421",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c5d9eb3b-e3c3-4b35-a36f-ffb7ffcc6794",
+                "ord": "a0"
+              }
+            ],
+            "id": "f631e492-d232-49b0-9583-e74d9628e1d2",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Wander & Co. Travel",
+      "seoDescription": "See what Wander & Co. Travel offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cf9aa813-34a0-4de3-8fe3-a12062ff59eb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFsZGl2ZXMlMjBiZWFjaCUyMHJlc29ydHxlbnwwfDB8fHwxNzg2Mzk1MTYyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An overwater villa on a still lagoon at sunrise",
+                  "loading": "eager"
+                },
+                "id": "d1c20d09-eaf8-40e9-8534-9eebaeaa8549",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "ee38d197-b1d7-4acd-a0d5-9047eb3c25fd",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a consultation"],
+                    "id": "8149c142-9fbf-41c5-8261-e6192cd6e716",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose the conversation that fits your trip, pick your advisor and see live availability. Discovery calls are always complimentary."
+                    ],
+                    "id": "b0384e90-4147-4f79-96b8-194d6906273e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See consultations below"],
+                        "id": "8fd32050-0e76-4697-af5e-be56072d2de3",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "9d42e1c5-1efa-409d-86c8-6aea5bc72999",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "74178817-37db-43ff-b063-e94e655b8082",
+                "ord": "a2"
+              }
+            ],
+            "id": "8ed1c872-843d-43c1-8315-b13e56fc0905",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "78a9aa04-55b8-43f9-a7da-109dd1ad135c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Wander & Co. Travel",
+      "seoDescription": "Who Wander & Co. Travel is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7de5643d-3f4f-4d3a-b7a6-226c0ef7ef8d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1743356174397-d6da6f014f8f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bHV4dXJ5JTIwdHJhdmVsJTIwZGVzdGluYXRpb258ZW58MHwwfHx8MTc4NjM5NTE0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "An infinity pool overlooking a turquoise coastline at golden hour",
+                      "loading": "lazy"
+                    },
+                    "id": "5c8443b7-b1cf-4894-98be-3056395f75c0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Wander & Co."],
+                        "id": "fe71ed1b-3fbe-4e1f-acb3-c0589685a20b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Wander & Co. began with a simple belief: the best trips aren’t booked, they’re planned — by someone who listens, knows the world first-hand, and cares how it turns out."
+                        ],
+                        "id": "082011ea-543c-4f66-afae-a4fc9f39737c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a small advisory by design. Fewer travelers, more attention, and the kind of relationships with hotels and guides that quietly open doors. Every journey we plan is bespoke, and every traveler is someone we come to know."
+                        ],
+                        "id": "b7f050cb-5f57-447d-9971-daf2a5898cf7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "28908eb2-83aa-4bcc-b67d-fc9f8ffadba4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "7c253b3e-6618-4da6-bd60-941fe9abf900",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2c0e52aa-b964-4fe9-bf91-85da5bc5905d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3c9e21d9-8a95-46a7-b1ec-dd3985a4886a",
+                "ord": "a0"
+              }
+            ],
+            "id": "d5f652c2-2de3-4aa8-9f7c-b05b418fea90",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "d7a63f1b-175d-441e-adff-0e88219a5bb6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We listen first"],
+                            "id": "3fb56437-29a8-4a7b-915f-e351d3f78799",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every plan starts with your story — where you’ve been, what moved you, and what you’re dreaming of next."
+                            ],
+                            "id": "2a3ee3ff-2f15-4d7f-aff8-61578059e01d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d42dd5d5-38cc-4548-8bba-1142cd11ccfd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We design it around you"],
+                            "id": "a0823156-d849-4b34-93d7-fdffc9bba70f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A bespoke itinerary built from scratch, refined with you until every day feels right."
+                            ],
+                            "id": "0baa3917-b6a9-4d25-947a-583813131c5e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "100158de-ecfc-40eb-b4eb-8c742ff5e03c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We’re with you throughout"],
+                            "id": "3413e1d4-fadd-4907-bbc1-83b891cbb339",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From the first idea to the trip home, one advisor and round-the-clock support have you covered."
+                            ],
+                            "id": "309b2e4a-f3f6-47c7-a12f-7424a0acae0e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5e3ba9fa-1be7-4ff1-9bce-cbf85f51cf9e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "484fb791-b5b2-43e1-8d7e-a634b611b31f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2e95c6d7-f422-4417-b2bc-b0810b8bbb42",
+                "ord": "a0"
+              }
+            ],
+            "id": "b89cc684-7817-45c3-bf36-0c60ccd49e18",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Wander & Co. Travel",
+      "seoDescription": "Where to find Wander & Co. Travel, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3d40673e-2656-4b96-b341-b093042f1f3b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Reach the studio"],
+                        "id": "bb7f2657-1d30-49d7-92c9-0e7d68ea3817",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Wander & Co. Travel"],
+                            "id": "af0a0c61-1573-4d9a-b22c-d582bbd531bc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Harbour View"],
+                            "id": "65984202-93b0-430c-9c92-1dd92a2a0f71",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 30 · Charleston, SC 29401"],
+                            "id": "fe5a1af1-e1fc-432d-9b44-5b5a04c40c74",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f5cc0fa8-3bab-4d28-906f-bcac790dc8be",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "f9ef4f41-f7c5-428f-b512-bec542ec266c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "c44036af-e587-4ace-a9e5-4b831271ec4d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "44877fae-d80c-4fcb-a2b4-7fb62fcf7b38",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "23a15463-5c58-4596-a16d-075f1520052f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "dce8705f-7e1d-4343-9a52-1b5f63a246e7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bd018eb9-0105-4f52-9cfd-7c12274d12b0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "08250e2c-5573-4235-8cf3-7e056bdb0e32",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "6203ca8c-ca34-4643-96bf-ea99d8e144e4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "35f01c0c-987f-4a5e-b0bf-6d33be8b12e4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e8e78a0f-dff0-4ab6-9176-b7894aa51b2f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "349a3f2a-9111-4d45-8cc5-e3dbf3316a94",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Harbour View, Charleston, SC 29401",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "b4cf47a0-90c3-4637-91cd-a12f535f3d7c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9376c372-6e4c-460a-9c19-76e49ab60930",
+                "ord": "a0"
+              }
+            ],
+            "id": "a674fa76-fcf1-422d-8cfe-7885368a62c9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather begin online?"],
+                    "id": "bf1e62cc-4e8c-4215-bf8a-c58b2a4064ef",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a complimentary discovery call and see live availability — no phone tag, no pressure."
+                    ],
+                    "id": "4c2e4f69-944f-4f12-bdfe-be9602cbebad",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "9bdb68c5-272e-4db2-9431-4e0fc5a51eb6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "92dba59d-1919-4de2-97e1-4a02fbd9f26e",
+                "ord": "a0"
+              }
+            ],
+            "id": "3ee05ec5-c275-4559-95d4-1e712b132299",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "wander",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.006 90)",
+      "--color-base-200": "oklch(93% 0.008 88)",
+      "--color-base-300": "oklch(87% 0.012 86)",
+      "--color-base-content": "oklch(24% 0.03 235)",
+      "--color-primary": "oklch(40% 0.06 225)",
+      "--color-secondary": "oklch(34% 0.02 240)",
+      "--color-accent": "oklch(72% 0.095 82)",
+      "--color-neutral": "oklch(28% 0.02 235)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(98% 0.01 225)",
+      "--color-secondary-content": "oklch(98% 0.01 240)",
+      "--color-accent-content": "oklch(15% 0.02 82)",
+      "--color-neutral-content": "oklch(98% 0.01 235)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(72% 0.095 82)",
+      "--color-highlight-content": "oklch(15% 0.02 82)",
+      "--color-border": "oklch(87% 0.012 86)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(21% 0.02 235)",
+      "--color-base-200": "oklch(17% 0.018 235)",
+      "--color-base-300": "oklch(13% 0.014 235)",
+      "--color-base-content": "oklch(95% 0.006 90)",
+      "--color-primary": "oklch(72% 0.08 215)",
+      "--color-secondary": "oklch(80% 0.014 88)",
+      "--color-accent": "oklch(80% 0.1 84)",
+      "--color-neutral": "oklch(82% 0.012 88)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 215)",
+      "--color-secondary-content": "oklch(15% 0.014 88)",
+      "--color-accent-content": "oklch(15% 0.02 84)",
+      "--color-neutral-content": "oklch(15% 0.012 88)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.1 84)",
+      "--color-highlight-content": "oklch(15% 0.02 84)",
+      "--color-border": "oklch(13% 0.014 235)"
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-portfolio-studio",
+  "name": "sparx — Studio / Architect Portfolio",
+  "version": "1.0.0",
+  "tagline": "A facts-driven portfolio for an architect & spatial designer.",
+  "description": "A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "content",
+    "industry": "Architect & spatial designer"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "cms", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Studio / Architect Portfolio icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Studio / Architect Portfolio — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#a05000",
+  "sortWeight": 85
+}

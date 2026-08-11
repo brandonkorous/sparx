@@ -1,0 +1,47 @@
+[
+  {
+    "id": "tattoo-dark-hero",
+    "url": "https://images.unsplash.com/photo-1608666599953-b951163495f4?w=1600&q=80",
+    "alt": "A dimly lit tattoo studio with a single artist at work"
+  },
+  {
+    "id": "tattoo-dark-studio",
+    "url": "https://images.unsplash.com/photo-1605647533135-51b5906087d0?w=1600&q=80",
+    "alt": "A private tattoo station under a warm work lamp"
+  },
+  {
+    "id": "tattoo-dark-silas",
+    "url": "https://images.unsplash.com/photo-1595747644932-abb68f85f419?w=1600&q=80",
+    "alt": "Silas Roan, blackwork and traditional artist"
+  },
+  {
+    "id": "tattoo-dark-del",
+    "url": "https://images.unsplash.com/photo-1561432868-931a1373efa7?w=1600&q=80",
+    "alt": "Del Marrow, fine-line and colour artist"
+  },
+  {
+    "id": "tattoo-dark-june",
+    "url": "https://images.unsplash.com/photo-1542744383-8c330d91f4b1?w=1600&q=80",
+    "alt": "June Okonkwo, realism and blackwork artist"
+  },
+  {
+    "id": "tattoo-dark-work1",
+    "url": "https://images.unsplash.com/photo-1758404255679-9afd847ede1c?w=1600&q=80",
+    "alt": "A bold blackwork sleeve, freshly finished"
+  },
+  {
+    "id": "tattoo-dark-work2",
+    "url": "https://images.unsplash.com/photo-1583213261205-63258746ed4c?w=1600&q=80",
+    "alt": "A fine-line botanical piece on a forearm"
+  },
+  {
+    "id": "tattoo-dark-work3",
+    "url": "https://images.unsplash.com/photo-1557130641-1b14718f096a?w=1600&q=80",
+    "alt": "A traditional bold-line design in heavy black"
+  },
+  {
+    "id": "tattoo-dark-work4",
+    "url": "https://images.unsplash.com/photo-1758404255679-9afd847ede1c?w=1600&q=80",
+    "alt": "A detailed black-and-grey realism portrait"
+  }
+]

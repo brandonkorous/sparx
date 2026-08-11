@@ -1,0 +1,32 @@
+[
+  {
+    "id": "optometry-family-hero",
+    "url": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXllJTIwZXhhbSUyMG9wdG9tZXRyeXxlbnwwfDB8fHwxNzg2MzkyMTE2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves"
+  },
+  {
+    "id": "optometry-family-interior",
+    "url": "https://images.unsplash.com/photo-1615468822882-4828d2602857?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0aWNhbCUyMHNob3AlMjBleWVnbGFzc2VzfGVufDB8MHx8fDE3ODYzOTIxMTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, welcoming eye-care exam room with a phoropter and soft daylight"
+  },
+  {
+    "id": "optometry-family-elena",
+    "url": "https://images.unsplash.com/photo-1757386320806-e3f03c9f41e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBvcHRvbWV0cmlzdCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTIxMjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Elena Reyes, optometrist, smiling warmly"
+  },
+  {
+    "id": "optometry-family-marcus",
+    "url": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0b21ldHJpc3QlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkyMTI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Marcus Bell, optometrist, in the exam room"
+  },
+  {
+    "id": "optometry-family-nadia",
+    "url": "https://images.unsplash.com/photo-1610013598025-8e6562cefc4e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0aWNpYW4lMjBwb3J0cmFpdCUyMHdvbWFufGVufDB8MHx8fDE3ODYzOTIxMjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Nadia Okafor, licensed optician, helping choose frames"
+  },
+  {
+    "id": "optometry-family-kids",
+    "url": "https://images.unsplash.com/photo-1593194777536-e155e6d100b2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBnbGFzc2VzJTIwZXllJTIwZXhhbXxlbnwwfDB8fHwxNzg2MzkyMTMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A young child trying on new glasses and grinning"
+  }
+]

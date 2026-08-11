@@ -1,0 +1,388 @@
+{
+  "policies": [
+    {
+      "handle": "kald-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead. Arrive ten minutes early to settle in."
+    },
+    {
+      "handle": "bathhouse-deposit",
+      "name": "Private bathhouse deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "The private bathhouse holds a $50 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over to your next visit."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "eir",
+      "name": "Eir Halvorsen",
+      "kind": "staff",
+      "skillTags": ["massage", "facial", "body"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "astrid",
+      "name": "Astrid Lund",
+      "kind": "staff",
+      "skillTags": ["massage", "body", "facial"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "kai",
+      "name": "Kai Sørensen",
+      "kind": "staff",
+      "skillTags": ["massage", "facial"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "thermal-pool",
+      "name": "Thermal soaking pool",
+      "kind": "space",
+      "skillTags": ["thermal", "soak"],
+      "capacity": 12,
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "sauna-circuit",
+      "name": "Sauna & cold-plunge circuit",
+      "kind": "space",
+      "skillTags": ["sauna", "plunge"],
+      "capacity": 8,
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "treatment-room",
+      "name": "Treatment room",
+      "kind": "space",
+      "skillTags": ["treatment", "massage", "facial", "body"],
+      "capacity": 3,
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "thermal-soak",
+      "name": "Thermal soak session",
+      "description": "An unhurried hour in the mineral-warm soaking pool. Come as you are — no treatment, no schedule, just warm water and quiet.",
+      "bookingType": "reservation",
+      "durationMinutes": 90,
+      "priceCents": 4500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pool",
+          "kind": "space",
+          "skillTags": ["thermal"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "sauna-plunge-circuit",
+      "name": "Sauna & cold-plunge circuit",
+      "description": "The full hot-and-cold ritual — dry sauna, cold plunge, rest, repeat. A guided first round if it’s new to you.",
+      "bookingType": "reservation",
+      "durationMinutes": 75,
+      "priceCents": 4000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "circuit",
+          "kind": "space",
+          "skillTags": ["sauna"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "massage-60",
+      "name": "Massage — 60 minutes",
+      "description": "A calm, pressure-to-taste massage in a still room. Book a therapist by name.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["massage"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "massage-90",
+      "name": "Massage — 90 minutes",
+      "description": "The longer session — full-body, unrushed, with time to actually let go.",
+      "durationMinutes": 90,
+      "priceCents": 16500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["massage"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "mineral-facial",
+      "name": "Mineral facial",
+      "description": "A clean, mineral-rich facial — cleanse, a warm-and-cool contrast, and a light finish. Nothing fussy.",
+      "durationMinutes": 60,
+      "priceCents": 13500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "body-treatment",
+      "name": "Mineral body treatment",
+      "description": "A full-body salt scrub and mineral wrap that leaves skin soft and the mind somewhere quieter.",
+      "durationMinutes": 75,
+      "priceCents": 15000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["body"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "kald-standard"
+    },
+    {
+      "handle": "private-bathhouse",
+      "name": "Private bathhouse hour",
+      "description": "The whole bathhouse to yourselves — pool, sauna and plunge, for up to eight. An hour that belongs to no one else.",
+      "bookingType": "reservation",
+      "durationMinutes": 60,
+      "priceCents": 22000,
+      "capacity": 8,
+      "bufferAfterMin": 30,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pool",
+          "kind": "space",
+          "skillTags": ["thermal"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "bathhouse-deposit"
+    }
+  ]
+}

@@ -1,0 +1,266 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "right-size-your-packaging",
+    "status": "published",
+    "body": {
+      "title": "Right-size your packaging and stop shipping air",
+      "excerpt": "The cheapest packaging decision is usually the box you didn’t oversize. Here’s how to match the carton to the product and cut cost twice.",
+      "featuredImage": {
+        "$asset": "pkg-post-rightsize"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An oversized box costs you three times over: you pay for the extra board, you pay for the void-fill to stop the product rattling around inside it, and — the big one — you pay the carrier for the air, because parcels are priced on dimensional weight as often as actual weight. A product that could ship in a 12x9x6 going out in an 18x14x10 can quietly double the shipping line on every order."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Measure the product, then add a little"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Take the real dimensions of the packed product — including any bubble or sleeve — and add roughly 2cm on each axis for the cushioning and an easy hand-pack. That target size is the box you want a bundle of. Most operations ship 80% of their volume in three or four sizes; find yours by looking at what you actually send, not the full range you could stock."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Fewer sizes, bought deeper"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is tempting to stock a size for every product. In practice, a tight range of three to five sizes bought in pallet volume beats a wide range bought in bundles: you hit the better price break, you hold less slow-moving stock, and the bench packs faster because there is less deciding. Round products up to the nearest stocked size rather than adding another SKU for the sake of a centimetre."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you are not sure where your range should land, send us a month of your order dimensions and your account manager will map it to the fewest sizes that cover it — usually saving more on carrier cost than on the boxes themselves."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "greener-packaging-that-still-protects",
+    "status": "published",
+    "body": {
+      "title": "Greener packaging that still protects",
+      "excerpt": "Recyclable doesn’t have to mean flimsy. The switches that lower your footprint without raising your damage rate.",
+      "featuredImage": {
+        "$asset": "pkg-post-eco"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Customers notice packaging, and increasingly they notice plastic. The good news is that the paper-based alternatives have caught up on protection — the question is no longer whether they work, but which switches are worth making first for your product mix."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The easy swaps"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Two changes cover most operations. Kraft void-fill paper replaces loose-fill and air pillows one-for-one at the bench, scrunches to fill any carton, and drops in the household recycling — no separate stream, no “check locally” asterisk. Padded kraft mailers replace plastic bubble mailers for small fragile items and carry the same self-seal convenience. Both are stocked lines here, in trade volume."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where plastic still earns its place"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Be honest about the exceptions. Poly mailers are waterproof and lighter than any paper equivalent, which for some products means a lower carrier weight band and genuinely less material by mass. Where you keep a plastic line, look for a recyclable-stream grade and say so on the parcel, so the customer knows what to do with it. Greener is a direction, not a purity test — the switch that lowers your damage rate and your footprint at once is the one to make."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ask your account manager for the recyclable equivalent of anything on your current order; where we stock one, we’ll price it alongside so you can compare cost per parcel, not just cost per case."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "cut-your-shipping-costs",
+    "status": "published",
+    "body": {
+      "title": "The packaging levers that actually cut shipping cost",
+      "excerpt": "Carriers price on dimensional weight, so your box is a shipping decision. Four levers that move the invoice, in order of impact.",
+      "featuredImage": {
+        "$asset": "pkg-post-shipcost"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most sellers try to cut shipping by negotiating the carrier rate, then stop. The rate matters, but the parcel itself is often the bigger lever — because it is one you control completely, and it compounds across every order you ship. Here are the four that move the number most, roughly in order."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "1. Dimensional weight"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Carriers bill on whichever is greater: the actual weight or the volumetric weight (length × width × height ÷ a divisor). For anything light and bulky, the box size sets the price, full stop. Right-sizing your cartons — see the right-sizing note — is almost always the single biggest saving available, and it costs nothing but a tighter box range."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "2. Weight bands and material mass"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The difference between the top of one weight band and the bottom of the next can be a few grams of packaging. Lighter mailers, thinner-but-adequate board, and paper fill instead of heavy alternatives can keep a parcel in the cheaper band. Weigh a typical packed order and see how close you are to a threshold — sometimes a lighter tape or mailer pays for itself immediately."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "3. Consolidation and format"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Two items going to one address should leave in one parcel; a mailer beats a box for anything that does not need the rigidity, both on dimensional weight and on material cost. Set the bench up so the smaller format is the default and the box is the exception, not the reverse."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "4. Buying volume"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of the above helps if the packaging itself is bought at retail. Trade pricing by the pallet, on the tight range you actually use, is what makes the per-parcel maths work — and it is exactly what a trade account here is for. Send us your volumes and we’ll show the landed cost per parcel, not just the case price."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

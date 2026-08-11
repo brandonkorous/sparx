@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-landscaping-lawncare",
+  "name": "sparx — Landscaping (Lawn Care)",
+  "version": "1.0.0",
+  "tagline": "A friendly lawn-care template — book a free quote and start service from day one.",
+  "description": "A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as \"GreenBlade Lawn Care\" — a lawn you’re proud of, handled.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Landscaping",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Landscaping (Lawn Care) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Landscaping (Lawn Care) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#40bb53",
+  "sortWeight": 53
+}

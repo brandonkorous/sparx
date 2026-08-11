@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-b2b-office-supply",
+  "name": "sparx — Office Supply (B2B / Wholesale)",
+  "version": "1.2.0",
+  "tagline": "A wholesale storefront built for trade buyers.",
+  "description": "A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "b2b",
+    "industry": "Office & workplace supplies"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Office Supply (B2B / Wholesale) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Office Supply (B2B / Wholesale) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#08569a",
+  "sortWeight": 85
+}

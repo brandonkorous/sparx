@@ -1,0 +1,2560 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ac08ee5d-fe40-4cee-bdf6-abd61a5b28ad",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "e3cb6d09-5dd0-41f4-92b1-fc5b8c9700f3",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0f38a4a9-b50a-46b2-a9a6-cb3216d73cfa",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "25a3f363-e7f2-4d27-813b-2b79fb858bd1",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "e63d3d97-edbe-471c-be99-907a38fee41a",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "2ff3fea7-cf92-4b57-bfa5-60fa2cc6bae5",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "87da826a-3c83-4071-8c31-493d5a33190f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "08d53dc0-5f87-431b-a097-c34a0d7861a7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "7d32a707-b76e-4f82-bfd9-e5a517c5f142",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "f24436cb-f1e4-49c0-9d3b-39a1b2a18492",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "35f5d69c-a4c3-4687-b538-2541bb4ba785",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bbb92add-11aa-48a8-a7d3-f69589e9c8da",
+                  "ord": "a2"
+                }
+              ],
+              "id": "813cf53d-d35a-4d3e-badc-2d5792485f68",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b9b4eac7-9de9-443a-9817-bd583aa861e3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "8a8962a3-24b7-4404-9c8f-1856683dc65e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "2a9e46a3-dda0-4d57-a72f-c380dc7971d2",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "4149442d-836a-4dc0-8579-92c178f66c63",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "caa0b1eb-996a-415e-8215-ee7eeed3ada4",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "e7a44e84-f789-4454-8cf5-668105ea2f39",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "fde8fcca-46c1-4116-8f88-60ce7c4a202c",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "652c2ff3-b8be-4c77-a4f7-27231f6946a0",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "f31e59a5-b3a4-4fa5-bf62-6d742a21d214",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "1a40a64a-2fc0-443f-b008-03f2d6dfd58f",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "f49218dd-9140-480c-9133-4f15ea20553f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "33594949-f779-4af9-b3a5-5bc45e721dcc",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "04f958dc-38c2-4f28-8605-76bdcfd60983",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "0e4a3541-0b67-4bd1-9219-76c02335ad62",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "19fa99f3-e193-4a69-b4c7-18815a3b4614",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "a2721a0f-0b91-4352-96da-7bbbb48406fc",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "e595a729-688a-45cf-b818-3cbc9cede155",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e84252fb-3b72-4c0f-a2d9-bf0248f639cc",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "e3851318-df0c-4ad7-a9c5-56c74c104231",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8c689d2f-7d32-49eb-9642-5772140eb196",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "7c50af17-41d0-4fb8-83f8-d9aa44c5b918",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8f26015a-1c14-465c-b4ed-d07ac8195dbd",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "f1eb2128-f6f8-4b23-8736-5dcf20aaf943",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "be846825-cdfe-4c29-bf0a-80b45d26b195",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "4a22ea1e-5cb5-4f13-92af-b15fb1abd592",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "9855dcdf-0056-4f52-bef7-901f1b35855f",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "b394295b-3199-4b79-8c72-9336ca8384ef",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "a4d020ed-8aa7-4a61-926e-2887741714af",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "65d64ca5-0103-4fda-9333-571edd2dd7ba",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "0abbe77c-6396-4f95-928d-bce8848b1341",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "11a349a8-234e-4417-b430-205953217de7",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "e47bbb08-1723-4c9f-aeb7-83df0beab215",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3edfbb15-f470-4f6b-ab41-5a48669c4a17",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "d882f08b-913a-4537-a6e8-92d27077e6a7",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "79729ebf-8227-452c-a681-a018eba5053b",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "2df02b5e-3b86-48fc-ad8c-447756f96395",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "72b1d033-3b41-419e-9a25-f8cec0cf0303",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "6d883512-596c-499f-8ee3-a09724d842e0",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9d1c33a6-0a6e-4adc-ab57-3f60f2f25798",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "cc0ca438-bcb3-4784-b53b-e50c72d9182b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b2512987-6c94-4f23-8755-7bc82faeb405",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "f448cab3-2f28-4cb1-8643-fbbbbf1fcaac",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e72ddf22-b7ac-4897-8a29-27f0dd96258e",
+                  "ord": "a1"
+                }
+              ],
+              "id": "ff1fec29-9400-42d1-90ae-c028d2623b3f",
+              "ord": "a0"
+            }
+          ],
+          "id": "117c2595-3077-4a27-8f9c-4a5885c7d6c7",
+          "ord": "a2"
+        }
+      ],
+      "id": "12a150b3-4970-4e79-ac84-02d504b0d4ed"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Pencil Club — bright notebooks, pens, stickers & gifts",
+      "seoDescription": "Pencil Club is a bright little shop of colourful notebooks, gel pens, stickers, pins and gifts — the fun, useful desk stuff that makes writing a list feel like a treat. Wrapped with a smile, posted fast.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "914b364c-c6f1-4525-b72c-1e46002c926e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl items-center gap-8 @3xl:grid-cols-2 @3xl:gap-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 rounded-box bg-primary p-8 @3xl:p-12",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-primary-content @3xl:text-7xl",
+                        "children": ["Make your desk a happier place."],
+                        "id": "42427e8b-3232-442b-8929-8cb7f836160a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg font-semibold leading-relaxed text-primary-content @3xl:text-xl",
+                        "children": [
+                          "Pencil Club is a bright little shop of notebooks, pens, stickers and gifts — the colourful stuff that makes writing a list feel like a good time. Loud on purpose, useful on purpose."
+                        ],
+                        "id": "498e5c9e-dcf2-40a7-8709-cef15848f5ab",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the fun stuff"],
+                            "id": "4a7e093e-c688-4dc5-a863-7f3cc4350584",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-bold text-primary-content underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/notebooks"
+                            },
+                            "children": ["Start with a notebook"],
+                            "id": "bc041395-5c20-4491-8c0f-8c2e6142e432",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4e87b24c-a146-4d6a-9189-839741dcf6e0",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6b5d6056-1a22-4329-82b0-e110a83be0e6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition hover:-rotate-2 hover:scale-105",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1566869112473-77c4fb94359c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwZGVzayUyMGNvdmVyZWQlMjBjb2xvdXJmdWwlMjBub3RlYm9va3MlMjBwZW5zJTIwc3RpY2tlcnN8ZW58MHwwfHx8MTc4NjQwNjMyMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright desk covered in colourful stationery",
+                      "loading": "lazy"
+                    },
+                    "id": "b1498b5e-96b0-412e-bed2-cab52264cb2a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b65db3d9-366c-47be-a099-8a3f7740cf6e",
+                "ord": "a0"
+              }
+            ],
+            "id": "9ca48b5c-20f1-4a52-8a50-11ec68a6563b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["Pick your happy place"],
+                    "id": "39006630-d03e-4ed3-af45-29dae6be92e8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border-4 border-primary bg-base-200 object-cover transition group-hover:-rotate-2 group-hover:scale-105",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1636014692027-852e1e6702ee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmFuJTIwbm90ZWJvb2tzJTIwc3Vuc2hpbmUlMjBwaW5rJTIwbWludCUyMGdyYXBlfGVufDB8MHx8fDE3ODY0MDYzMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A fan of colourful notebooks",
+                              "loading": "lazy"
+                            },
+                            "id": "e6cce351-fcec-4417-b630-19a721f527cc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-bold text-base-content",
+                            "children": ["Notebooks"],
+                            "id": "e02485b3-a490-4e3c-af85-54da32bccad3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "da7d1458-62a4-4edc-979b-5bdf5b85e84c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border-4 border-accent bg-base-200 object-cover transition group-hover:-rotate-2 group-hover:scale-105",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1628621317388-6ebde0c18574?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmFpbmJvdyUyMGdlbCUyMHBlbnN8ZW58MHwwfHx8MTc4NjQwNjUwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A rainbow of gel pens and stickers",
+                              "loading": "lazy"
+                            },
+                            "id": "a6099a22-103b-4d52-a613-206bfcd46278",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-bold text-base-content",
+                            "children": ["Pens & stickers"],
+                            "id": "2482058d-eaaa-4887-9033-b2d23ce5a09e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1c33bc73-4add-4ec5-a679-47beda63530c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border-4 border-secondary bg-base-200 object-cover transition group-hover:-rotate-2 group-hover:scale-105",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1618143511698-c2ebcdabb11d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwZ3JlZXRpbmclMjBjYXJkcyUyMGZhbm5lZCUyMG91dCUyMGNvbmZldHRpfGVufDB8MHx8fDE3ODY0MDYzMzB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Bright greeting cards fanned out",
+                              "loading": "lazy"
+                            },
+                            "id": "ddde52d7-b8b3-413e-9afa-5cb44b3b01b0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-bold text-base-content",
+                            "children": ["Cards & gifts"],
+                            "id": "616018bf-a896-46ab-afbe-137677713e81",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d351f72f-3c84-43db-87b5-fda5c3771ea9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border-4 border-neutral bg-base-200 object-cover transition group-hover:-rotate-2 group-hover:scale-105",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1718815628185-2ff0f9332b32?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZXJmdWwlMjBkZXNrJTIwY2FsZW5kYXIlMjBzdGlja3ktbm90ZSUyMGN1YmV8ZW58MHwwfHx8MTc4NjQwNjMzM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A cheerful desk calendar and sticky notes",
+                              "loading": "lazy"
+                            },
+                            "id": "b8561553-9594-4d05-9fa2-9955b9388ca1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-lg font-bold text-base-content",
+                            "children": ["Desk"],
+                            "id": "6ee4b242-9581-4d01-911a-5b7ae5b42296",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "63bc9bf5-c6a0-48a8-a355-d4f748807d67",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "61625f44-0c31-40aa-aef6-2ff94e8902ee",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3b304399-34b8-45a4-b483-6c23a5449702",
+                "ord": "a0"
+              }
+            ],
+            "id": "d45b1e76-aed1-4313-bd68-d67276bc09aa",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["Small things, big grin"],
+                    "id": "c8816f32-4fe3-4fff-ac56-b1e523956ad7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @3xl:grid-cols-3 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box bg-primary p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold text-primary-content",
+                            "children": ["Colour on tap"],
+                            "id": "104dfdff-7fbc-4673-b6f4-fbd69d4a68b8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-semibold leading-relaxed text-primary-content",
+                            "children": [
+                              "Everything here comes in a colour worth reaching for. Pick a mood, not a boring black one."
+                            ],
+                            "id": "1762fff4-dace-49f2-a4d7-2a65f0b00746",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2e43f8e6-763f-493c-b357-fa0682a30720",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box bg-secondary p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold text-secondary-content",
+                            "children": ["Actually useful"],
+                            "id": "c5d0899d-105a-4947-8b35-8988f7dda762",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-semibold leading-relaxed text-secondary-content",
+                            "children": [
+                              "Fun to look at, real to use — paper that takes a gel pen, pens that don’t skip, stickers that stick."
+                            ],
+                            "id": "64a378fd-0a3e-4866-9a55-921ca793af75",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "566a3d40-b84a-4f39-9cf7-deb07e6ba8b6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box bg-accent p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold text-accent-content",
+                            "children": ["Made to be given"],
+                            "id": "2ddbb8c1-6f8e-4205-8906-57371133b05d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-semibold leading-relaxed text-accent-content",
+                            "children": [
+                              "The little gift that always lands. Add a note at checkout and we’ll pop it in the box."
+                            ],
+                            "id": "ac1482a3-836c-4616-b8e1-e2a1463a1b1a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a2af17ec-18dc-4a2c-8f26-534a19f3f87f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "890c846a-36f6-4432-a4c3-2e85cfe86b23",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ed00b0fc-a2a8-40e7-a17d-ab4cdd0c485d",
+                "ord": "a0"
+              }
+            ],
+            "id": "100db5bb-e556-4b6b-8e1d-332fc6560755",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Fresh drops"],
+                    "id": "66d6fbc7-4885-481a-850b-b566cb01a9a8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "ace10b81-e1f0-4d61-a626-37fa4971b58f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "ac4019a2-ee64-4a15-b2a5-2c5760efaa50",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cd797ff7-e6a7-4921-b264-0bdf98427f5f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "2186086d-6a2b-44e1-b159-033ade04f422",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8b0ddc87-c8ff-4a97-bafb-0bfac51409e0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "12798be3-c88a-48b8-b6bf-14440f6051a7",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "34a0e4e0-c8bc-4068-b435-dc43b02380a6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f9129887-59cc-48cd-85ba-a5a1bf959c2d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "bfb59d88-cde7-4601-a78c-673ee69be766",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "67bfe656-7b2f-4b9c-bc99-1e2b98e21910",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "bce32383-b218-4139-8610-c1e17a39c7d4",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "bd0d3cda-9db9-4778-ac08-4f89104be30b",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "786b1d04-b6bf-48cd-ada0-d2ec5a7a464e",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-accent @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-bold leading-none tracking-tight text-accent-content @3xl:text-6xl",
+                    "children": ["Writing a list should feel like a treat"],
+                    "id": "8359f66d-5512-4dc2-9af0-1c5ac8ab6b66",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-accent-content @3xl:text-xl",
+                    "children": [
+                      "A good notebook and a pen you like turn “ugh, admin” into ten happy minutes. We keep the desk cheerful so the boring stuff gets done — and the fun stuff gets started."
+                    ],
+                    "id": "24835f4b-7637-404b-b39d-d979e83caf2c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/blog/a-happy-desk-in-five-minutes"
+                    },
+                    "children": ["Read our desk notes"],
+                    "id": "5ef07a12-11da-4d66-9b80-cabd38eb2fff",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1f0c6476-d7a9-4226-9abe-40ef418dc1e0",
+                "ord": "a0"
+              }
+            ],
+            "id": "9c295a82-57e7-4d8e-aacf-71b9fbaa9355",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Notebooks in every colour"],
+                    "id": "5fbba049-0113-46b5-a5c3-99a23e33fd68",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "8ec7f6e7-6676-4aef-84fe-022def497a09",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "3c47f2ed-da9f-479c-abff-c6ac2894d3ea",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "3d935eb2-88e0-49f0-8adb-58a42a2bc3d7",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "d60c254a-aac5-49bb-a512-a8a1f4098b13",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "28986b8e-299c-42f3-96b2-666c48535393",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8db9db32-becf-4e4a-9501-c341189a90ab",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "41b5ed3b-0c65-48f0-9317-8bfcf61a57fb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "586f3e59-c36e-4a73-9045-0a5cd605055b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "17489c9b-5613-4a6a-a08f-2f05f670b599",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "86f1a801-0609-4141-94b8-55495b5fa2cd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "874f1d01-fd43-49b0-89e6-af2cec3edb0e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.notebooks"
+                },
+                "id": "8d8119db-5bac-43fc-b10b-857ba31a424f",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "a7f39f0b-c5dc-42bb-accc-0f1645b1b5c9",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-secondary @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-bold leading-none tracking-tight text-secondary-content @3xl:text-6xl",
+                    "children": ["The easiest gift you’ll ever give"],
+                    "id": "61c93de8-d38b-4ba9-90a5-82decde69be2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-secondary-content @3xl:text-xl",
+                    "children": [
+                      "Stuck on what to get someone? A bright bundle of notebook, pens and stickers is the small, thoughtful present that never misses. Wrapped, noted, and ready to make someone’s day."
+                    ],
+                    "id": "6a289f68-e0c3-4d5a-8bb5-5b617093a5e9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/collections"
+                    },
+                    "children": ["Shop gifts"],
+                    "id": "b2e1cf8b-cde7-4293-b96e-43bf7b2abbc0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "bbabfb47-2734-473b-98c4-3bbc71f78a59",
+                "ord": "a0"
+              }
+            ],
+            "id": "178905f0-ec31-4169-aad2-0bc57fb51127",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Pencil Club",
+      "seoDescription": "Browse everything Pencil Club makes, with prices and options at a glance. Stationery & gifts.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "eacafe01-bb61-48c0-9fbe-a4f7b7ce43fd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The whole happy shelf"],
+                    "id": "11040aff-34e3-4bcb-acdc-41e903b390cd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
+                    "children": [
+                      "Every bright thing we make — notebooks in four colours, gel-pen sets, sticker packs and pins, a desk calendar, cards, washi and gift bundles. Filter by category or sort however you like; everything ships within two days, wrapped with a smile."
+                    ],
+                    "id": "2eeb0538-02e6-4ac6-975c-3ee76e678f0c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "84b3b8e8-022e-4bc1-a35d-194934e61aa8",
+                "ord": "a0"
+              }
+            ],
+            "id": "ec7f3ce3-3e7b-4017-9dfd-d341330b3c16",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "03bb6f06-965c-41ec-9288-02c759d177e7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Pencil Club",
+      "seoDescription": "Explore the collections at Pencil Club, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7686c5f1-6a0b-456e-98e3-473a77008332",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "f0992f7f-91ba-4347-a10b-5a695dbad8f2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
+                    "children": [
+                      "The shop grouped the way people actually shop — the fresh drops, the desk basics, the colour crew, and the gifts that always land. Find your thing, or find one for a friend."
+                    ],
+                    "id": "37051bd1-1345-4462-be61-bbb6864137d4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "40acfe9c-cc08-4309-9e8d-e2b5589562ad",
+                "ord": "a0"
+              }
+            ],
+            "id": "b9632d8a-23c8-4f39-a8f7-e669d4cd19df",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "46f498bc-fe90-48cc-a969-6a1109d1f3f3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Pencil Club",
+      "seoDescription": "Review what is in your cart and check out securely at Pencil Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "15053cc7-30da-43b5-94c9-7a3d77181a42",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "4902ebec-f58e-4055-a940-624f8d8dd61f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping over $35, gift wrap on request, and a handwritten note if you ask. Changed your mind when it lands? Send it back within 30 days — no fuss, no frowns."
+                    ],
+                    "id": "af4dd297-e7ee-4c09-81c9-00c284492b83",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e240ed92-3669-4336-ad9e-0f8b08799c0d",
+                "ord": "a0"
+              }
+            ],
+            "id": "734738d2-97da-420c-baa6-9830ae3c6d45",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "0a2606f1-d541-4141-84d2-6ec8fd04c1ca",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Pencil Club",
+      "seoDescription": "Search Pencil Club for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "804628e3-3579-464b-b6a2-4de36ca117d1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Pencil Club"],
+                    "id": "a06de4f8-9d1c-481a-bb02-eab56eae5589",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
+                    "children": [
+                      "After a colour, a sticker theme or a gift idea? Search the whole shop and the journal below."
+                    ],
+                    "id": "07c32b4c-507e-49ef-a0fc-e87976612f46",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "de4653ef-3620-4d2d-8027-5afdabd26750",
+                "ord": "a0"
+              }
+            ],
+            "id": "ce72facf-63b5-45c7-a187-f2328cf25dd6",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "8c3ddb11-5726-432a-9b32-a04d2608926d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Pencil Club",
+      "seoDescription": "Stories, guides and notes from Pencil Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1e63e2a4-bcb0-49b0-9ae8-533a5a16d249",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-secondary @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-secondary-content @3xl:text-6xl",
+                    "children": ["The Doodle"],
+                    "id": "d39ecd69-8629-4fb3-884b-1a1cd573c998",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg font-semibold leading-relaxed text-secondary-content",
+                    "children": [
+                      "Notes from the shop — how to set up a desk you actually want to sit at, gift ideas that never miss, and little ways to keep a creative habit going. Cheerful, practical, zero snobbery."
+                    ],
+                    "id": "5ab9e7b7-a804-4f5d-9b7c-62318bb665c7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1cb316b5-c1ae-4666-b5cd-aabceaf38169",
+                "ord": "a0"
+              }
+            ],
+            "id": "315800d2-35a0-43fa-8084-dbf48c1935ac",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "50a0c6da-2fac-4334-868d-5a79f2c83614",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "c2984484-7220-46c9-9399-5be071533a49",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ce30bdbe-a2e6-471c-8dda-6a122a95a6a5",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "d06573b5-d900-4d98-a518-c4614099b04f",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "5d4fafe7-939d-45af-a9ce-7cea2071a736",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "f976c1a1-e833-4249-a17d-afffbfe0a458",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4d3d4dbe-66b8-40aa-8a8e-ac37820e8ca4",
+                "ord": "a0"
+              }
+            ],
+            "id": "a27c6a7e-6d6c-4371-b2d2-19050f3683b1",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Pencil Club",
+      "seoDescription": "How Pencil Club chooses its stationery — bright, well-made desk things that pass two tests: they have to make us grin, and they have to actually work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "66bb2685-9085-4ca4-acd1-7072b327239c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Pencil Club"],
+                    "id": "dda51a65-2f1a-47f3-b30b-3cbb90b859c8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Pencil Club started with a shoebox of gel pens and a simple hunch: the boring jobs get done faster when the desk is a place you like being. So we made a little shop of the cheerful stuff — colourful notebooks, pens that write like butter, stickers for no reason at all — the things that turn “I have to” into “ooh, I get to”."
+                    ],
+                    "id": "a42c5810-46d1-4f02-b6ad-655cb4be2e5e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything here has to pass two tests: it has to make us grin, and it has to actually work. Paper that takes a wet pen without bleeding. Colours that don’t look sad in real life. Stickers that stay stuck. Fun and useful aren’t opposites — the best stationery is both at once, and that’s the only kind we stock."
+                    ],
+                    "id": "107c9772-118c-4264-ad67-11f14e7291b8",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We’re a small team who pack every order by hand, tuck in a sticker when we can, and post it fast. No mystery “luxury” markups, no throwaway rubbish — just bright, well-made desk things for people who never really stopped loving a fresh notebook."
+                    ],
+                    "id": "1ccbbb03-a53d-4af3-9fcd-a00254c09d4a",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "392de6a1-3ff8-4c2e-ae62-2d0a959576c8",
+                "ord": "a0"
+              }
+            ],
+            "id": "21e0913f-04ee-4830-ba99-71e4b4abb586",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Pencil Club",
+      "seoDescription": "Get in touch with Pencil Club — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "defcf7ad-1db0-4773-b790-0ed063206a3c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hi!"],
+                    "id": "8a8d1b85-cfde-4674-a4c6-3d5b534d1832",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a colour, a big gift order for the office, or a stockist enquiry? Tell us what you’re after and a real, cheerful human at the shop will write straight back — usually the same day."
+                    ],
+                    "id": "d358a9c6-5cbb-454e-895f-e2c7c461fcea",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@pencilclub.example"
+                    },
+                    "children": ["Email the club"],
+                    "id": "83a4fa23-8a24-4657-8766-a99ebf3a18af",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "939cbc76-4f65-4aa4-aeb5-79c5fc65bbb7",
+                "ord": "a0"
+              }
+            ],
+            "id": "c61e4a3e-8aed-498f-8912-bc4dc38f1b61",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Pencil Club",
+      "seoDescription": "Product details at Pencil Club — stationery & gifts, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box border-4 border-primary bg-base-200 object-cover transition hover:-rotate-2 hover:scale-105",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "6d27b563-c08a-489f-8adb-49bf7bdd7811",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-bold uppercase tracking-widest text-secondary",
+                            "children": ["Pencil Club"],
+                            "id": "f3e16cd0-8de8-40ac-8bcc-3dcdf38c21db",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "de87c969-55a7-42d6-ab60-561bb227fe74",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "d2e40bbc-cb7c-4bc8-8cc4-004f7394d087",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "a1fa842e-65bf-4554-becb-77e93af573a9",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "11f56711-417c-40e6-a75d-b7eb8a03de8c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fb1690c1-0df1-4e82-a581-6223645eedd5",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent-content",
+                            "children": ["Almost gone"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "eca8db09-29af-466e-ac60-ba94dcabb9e5",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "a159a4c4-efd0-4971-b525-6fc5f4f7a2c9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "d1b16acc-5633-4bc4-931a-507e7b52b737",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "bfa2da99-7818-41cd-909e-831a9b1ef79b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "3fcbb52c-9fb7-4cbd-a3a4-91a4ba4d1115",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "46341879-dc7a-468c-a7ca-dbfc54ac1680",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "06387db0-41d2-48d4-b996-8b4d505aa230",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "00906ad6-562a-4f97-9b44-fc99055d3d91",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "d1b8a599-162a-4d27-9bc6-d434a4b89861",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box bg-secondary p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-bold uppercase tracking-widest text-secondary-content",
+                            "children": ["Packed with a smile"],
+                            "id": "bef7865d-ed46-42f8-b85f-365f63d22bd3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-semibold leading-relaxed text-secondary-content",
+                            "children": [
+                              "Every order is checked by hand, tucked into recycled tissue, and posted within two working days. Sending it as a gift? Add a note at checkout and we’ll write it in and leave the price off."
+                            ],
+                            "id": "63f0fd1c-4065-4348-9a1e-bbdd462d5fcf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2b2b0ce0-e633-475d-a317-e49373cc6c5f",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-bold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "bd43f1d3-eb11-4895-abf9-a2db9bf84c8b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "7d30a5a0-7d4e-445d-a274-dc4d3ea97584",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2dd9a7a0-6dd4-4329-8cb3-c5039a0264ff",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "309d257c-13ca-4df7-af0f-136173a4dc51",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "23477a5f-0944-47d1-acb0-7f93445e5ff5",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "93986be0-68fa-470b-8b86-037ae4e87020",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Add these to the box"],
+                    "id": "df652a19-437e-4ad4-9408-7a4791fd39f0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0cf17cf5-cdc5-44b2-8b31-bbfd2b95b54c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "53ca3f23-ac77-4647-b81b-8e7f3bf7b620",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "d2b76c21-4c81-4fcc-9b3c-634e07f00640",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "8d31bb90-7d4f-4322-9c56-cf75757965b1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0bd3bb6d-bf7c-424f-a2d8-af8435b299fe",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "56bb27ed-4977-42cc-ab96-4fb3c37d5748",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "f6f5351d-6a81-4d78-a00c-91e0465dffad",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "744ba04c-89ec-4e4f-b280-b33084c714d5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "5b39a4d3-b072-4746-b289-18280459a9e9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "69bccece-6643-42fb-98dc-9fdbe3ea16bb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "34ddd882-614f-41eb-b4ea-6db14daebf9a",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "082abc9f-f72b-42e7-bfd2-a57f9e1aac41",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "d6de2ea2-87e6-4b82-8d22-eda679012c8e",
+            "ord": "a1"
+          }
+        ],
+        "id": "dbf8d518-dd1d-40b5-8434-4bc0df03aa30"
+      }
+    }
+  ],
+  "theme": {
+    "name": "pencilclub-pop",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.035 100)",
+      "--color-base-200": "oklch(94% 0.05 98)",
+      "--color-base-300": "oklch(89% 0.062 95)",
+      "--color-base-content": "oklch(24% 0.03 320)",
+      "--color-primary": "oklch(57% 0.21 352)",
+      "--color-secondary": "oklch(42% 0.1 215)",
+      "--color-accent": "oklch(47% 0.19 300)",
+      "--color-neutral": "oklch(26% 0.03 320)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "1rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1.5rem",
+      "--depth": "1",
+      "--font-sans": "\"Nunito\", sans-serif",
+      "--font-head": "\"Fredoka\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 352)",
+      "--color-secondary-content": "oklch(98% 0.01 215)",
+      "--color-accent-content": "oklch(98% 0.01 300)",
+      "--color-neutral-content": "oklch(98% 0.01 320)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(47% 0.19 300)",
+      "--color-highlight-content": "oklch(98% 0.01 300)",
+      "--color-border": "oklch(89% 0.062 95)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fredoka\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.03 320)",
+      "--color-base-200": "oklch(17% 0.03 320)",
+      "--color-base-300": "oklch(14% 0.03 320)",
+      "--color-base-content": "oklch(95% 0.03 100)",
+      "--color-primary": "oklch(74% 0.17 352)",
+      "--color-secondary": "oklch(78% 0.1 215)",
+      "--color-accent": "oklch(78% 0.16 300)",
+      "--color-neutral": "oklch(32% 0.03 320)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 352)",
+      "--color-secondary-content": "oklch(15% 0.02 215)",
+      "--color-accent-content": "oklch(15% 0.02 300)",
+      "--color-neutral-content": "oklch(98% 0.01 320)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(78% 0.16 300)",
+      "--color-highlight-content": "oklch(15% 0.02 300)",
+      "--color-border": "oklch(14% 0.03 320)"
+    }
+  }
+}

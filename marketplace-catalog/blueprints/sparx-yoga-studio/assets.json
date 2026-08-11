@@ -1,0 +1,37 @@
+[
+  {
+    "id": "yoga-studio-hero",
+    "url": "https://images.unsplash.com/photo-1651077837628-52b3247550ae?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8eW9nYSUyMHN0dWRpbyUyMHByYWN0aWNlfGVufDB8MHx8fDE3ODYzODc0MzN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warm, sunlit studio with mats laid out on a wood floor"
+  },
+  {
+    "id": "yoga-studio-studio",
+    "url": "https://images.unsplash.com/photo-1676496962536-d8ef110ff6f0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8eW9nYSUyMHN0dWRpbyUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzODc0MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm studio corner with plants, blankets and soft morning light"
+  },
+  {
+    "id": "yoga-studio-flow",
+    "url": "https://images.unsplash.com/photo-1588286840104-8957b019727f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8eW9nYSUyMGNsYXNzJTIwZ3JvdXB8ZW58MHwwfHx8MTc4NjM4NzQzOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small class moving through a gentle vinyasa flow"
+  },
+  {
+    "id": "yoga-studio-maya",
+    "url": "https://images.unsplash.com/photo-1717839419301-75b91d4b5f7e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8eW9nYSUyMGluc3RydWN0b3IlMjBwb3J0cmFpdCUyMHdvbWFufGVufDB8MHx8fDE3ODYzODc0NDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Maya Rivers, vinyasa and hot-yoga teacher"
+  },
+  {
+    "id": "yoga-studio-anjali",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMHdlbGxuZXNzfGVufDB8MHx8fDE3ODYzODc0NDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Anjali Rao, yin and restorative teacher"
+  },
+  {
+    "id": "yoga-studio-priya",
+    "url": "https://images.unsplash.com/photo-1602192509154-0b900ee1f851?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8eW9nYSUyMHRlYWNoZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg3NDQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Menon, foundations and prenatal teacher"
+  },
+  {
+    "id": "yoga-studio-sofia",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwb3J0cmFpdCUyMGNhbG18ZW58MHwwfHx8MTc4NjM4NzQ1MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sofia Lindqvist, vinyasa and gentle-flow teacher"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "vet-modern-hero",
+    "url": "https://images.unsplash.com/photo-1772081960353-2ca7b181440c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyeSUyMGNsaW5pYyUyMGRvZ3xlbnwwfDB8fHwxNzg2MzkwMTIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, sunlit veterinary studio with a relaxed dog resting on a soft mat"
+  },
+  {
+    "id": "vet-modern-clinic",
+    "url": "https://images.unsplash.com/photo-1644675272883-0c4d582528d8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwdmV0JTIwY2xpbmljJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM5MDA5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet, low-stress exam room in warm neutrals and greenery"
+  },
+  {
+    "id": "vet-modern-philosophy",
+    "url": "https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwd2l0aCUyMGNhdHxlbnwwfDB8fHwxNzg2MzkwMDk4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A vet gently examining a content cat on a towel-lined table"
+  },
+  {
+    "id": "vet-modern-wren",
+    "url": "https://images.unsplash.com/photo-1673865641073-4479f93a7776?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Wren Delgado, integrative & wellness veterinarian"
+  },
+  {
+    "id": "vet-modern-sol",
+    "url": "https://images.unsplash.com/photo-1700665537604-412e89a285c3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDEwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Sol Okafor, primary-care veterinarian"
+  },
+  {
+    "id": "vet-modern-marisol",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg5MzExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Marisol Reyes, wellness & telehealth veterinarian"
+  }
+]

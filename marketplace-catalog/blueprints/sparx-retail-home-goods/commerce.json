@@ -1,0 +1,686 @@
+{
+  "categories": [
+    {
+      "handle": "bed-bath",
+      "name": "Bed & Bath",
+      "description": "Bedding, towels and everything for a soft, restful room.",
+      "featured": true
+    },
+    {
+      "handle": "table",
+      "name": "Table",
+      "description": "Hand-made tableware, serving pieces and everyday ceramics.",
+      "featured": true
+    },
+    {
+      "handle": "living",
+      "name": "Living",
+      "description": "Throws, cushions, lighting and storage for the living room.",
+      "featured": true
+    },
+    {
+      "handle": "decor",
+      "name": "Decor",
+      "description": "Scent and finishing pieces that make a house feel like home.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The latest pieces to land in the collection.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "stonewashed-linen-duvet-set",
+        "lambswool-waffle-throw",
+        "ceramic-column-table-lamp",
+        "boucle-cushion-cover"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people keep coming back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "stonewashed-linen-duvet-set",
+        "lambswool-waffle-throw",
+        "hand-thrown-dinner-set",
+        "speckled-stoneware-mugs"
+      ]
+    },
+    {
+      "handle": "bedroom",
+      "name": "The bedroom",
+      "description": "Soft-washed linen and waffle cotton for a room you rest in.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["stonewashed-linen-duvet-set", "waffle-hand-towels"]
+    },
+    {
+      "handle": "the-table",
+      "name": "The table",
+      "description": "Hand-thrown ceramics and serving pieces for everyday meals.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "hand-thrown-dinner-set",
+        "olive-wood-serving-board",
+        "speckled-stoneware-mugs"
+      ]
+    },
+    {
+      "handle": "living-room",
+      "name": "The living room",
+      "description": "Wool, texture, warm light and good-looking storage.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "lambswool-waffle-throw",
+        "ceramic-column-table-lamp",
+        "seagrass-storage-basket",
+        "boucle-cushion-cover"
+      ]
+    },
+    {
+      "handle": "gifting",
+      "name": "Gifts",
+      "description": "Well-made pieces that are easy to give and better to keep.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "waffle-hand-towels",
+        "reed-diffuser",
+        "olive-wood-serving-board",
+        "speckled-stoneware-mugs"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "stonewashed-linen-duvet-set",
+      "title": "Stonewashed Linen Duvet Set",
+      "description": "A duvet cover and two pillowcases in pure French flax linen, washed until it’s soft the very first night — no breaking-in required. Breathable in summer, warm in winter, and it only gets better with every wash. The bed you look forward to.",
+      "status": "active",
+      "productType": "Bedding",
+      "vendor": "Hearth & Hollow",
+      "tags": ["linen", "bedding", "bedroom"],
+      "categoryHandles": ["bed-bath"],
+      "collectionHandles": ["new-arrivals", "bedroom", "best-sellers"],
+      "seoTitle": "Stonewashed Linen Duvet Set — pure French flax | Hearth & Hollow",
+      "seoDescription": "A soft-washed pure linen duvet set that’s cool in summer, warm in winter, and better with every wash.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Clay"
+            },
+            {
+              "value": "Fog"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-BED-LINEN-OAT",
+          "priceCents": 18900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Oatmeal"
+          }
+        },
+        {
+          "sku": "HH-BED-LINEN-CLA",
+          "priceCents": 18900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Clay"
+          }
+        },
+        {
+          "sku": "HH-BED-LINEN-FOG",
+          "priceCents": 18900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Fog"
+          }
+        },
+        {
+          "sku": "HH-BED-LINEN-SAG",
+          "priceCents": 18900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-linen-duvet",
+          "isPrimary": true,
+          "alt": "Stonewashed Linen Duvet Set"
+        }
+      ]
+    },
+    {
+      "handle": "lambswool-waffle-throw",
+      "title": "Lambswool Waffle Throw",
+      "description": "A generously sized throw woven from pure lambswool in an open waffle weave — light to drape but genuinely warm, with a soft fringe at each end. The one that lives on the arm of the sofa and gets pulled over you by seven every evening.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Hearth & Hollow",
+      "tags": ["wool", "throw", "living-room"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["new-arrivals", "living-room", "best-sellers"],
+      "seoTitle": "Lambswool Waffle Throw — pure wool blanket | Hearth & Hollow",
+      "seoDescription": "A light, warm waffle-weave throw in pure lambswool with a soft fringe. Made for the sofa.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Heather Grey"
+            },
+            {
+              "value": "Rust"
+            },
+            {
+              "value": "Ecru"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-LIV-THROW-HEA",
+          "priceCents": 11900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Heather Grey"
+          }
+        },
+        {
+          "sku": "HH-LIV-THROW-RUS",
+          "priceCents": 11900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rust"
+          }
+        },
+        {
+          "sku": "HH-LIV-THROW-ECR",
+          "priceCents": 11900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ecru"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-wool-throw",
+          "isPrimary": true,
+          "alt": "Lambswool Waffle Throw"
+        }
+      ]
+    },
+    {
+      "handle": "hand-thrown-dinner-set",
+      "title": "Hand-Thrown Dinner Set",
+      "description": "A four-place stoneware set — dinner plates, side plates and bowls — thrown by hand and finished in a soft reactive glaze, so no two pieces are exactly alike. Heavy in the right way, dishwasher-safe, and made to be used every day rather than saved for good.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Hearth & Hollow",
+      "tags": ["ceramic", "stoneware", "tableware", "dinnerware"],
+      "categoryHandles": ["table"],
+      "collectionHandles": ["the-table", "best-sellers"],
+      "seoTitle": "Hand-Thrown Stoneware Dinner Set for Four | Hearth & Hollow",
+      "seoDescription": "A hand-thrown four-place stoneware dinner set in a soft reactive glaze. Everyday tableware, made by hand.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oat"
+            },
+            {
+              "value": "Ash"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-TAB-DINNER-OAT",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oat"
+          }
+        },
+        {
+          "sku": "HH-TAB-DINNER-ASH",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dinner-set",
+          "isPrimary": true,
+          "alt": "Hand-Thrown Dinner Set"
+        }
+      ]
+    },
+    {
+      "handle": "ceramic-column-table-lamp",
+      "title": "Ceramic Column Table Lamp",
+      "description": "A substantial ceramic base turned in a single column and topped with a natural linen shade — the warm pool of light a room needs after dark. Fully wired with an in-line switch and rated for a standard bulb; the kind of lamp you move from house to house.",
+      "status": "active",
+      "productType": "Lighting",
+      "vendor": "Hearth & Hollow",
+      "tags": ["lighting", "ceramic", "lamp"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["living-room", "new-arrivals"],
+      "seoTitle": "Ceramic Column Table Lamp with Linen Shade | Hearth & Hollow",
+      "seoDescription": "A turned ceramic column table lamp with a natural linen shade — warm, substantial light for any room.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Chalk"
+            },
+            {
+              "value": "Clay"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-LIV-LAMP-CHA",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Chalk"
+          }
+        },
+        {
+          "sku": "HH-LIV-LAMP-CLA",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Clay"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-table-lamp",
+          "isPrimary": true,
+          "alt": "Ceramic Column Table Lamp"
+        }
+      ]
+    },
+    {
+      "handle": "waffle-hand-towels",
+      "title": "Waffle Hand Towels (Set of 2)",
+      "description": "A pair of waffle-weave cotton hand towels that dry fast and only get more absorbent with washing — none of the heavy, damp thickness of ordinary towelling. Long enough to fold properly over a rail, and finished with a simple hanging loop.",
+      "status": "active",
+      "productType": "Bath",
+      "vendor": "Hearth & Hollow",
+      "tags": ["cotton", "bath", "towels"],
+      "categoryHandles": ["bed-bath"],
+      "collectionHandles": ["bedroom", "gifting"],
+      "seoTitle": "Waffle Hand Towels, Set of Two | Hearth & Hollow",
+      "seoDescription": "Fast-drying waffle-weave cotton hand towels that grow softer and more absorbent with every wash.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "White"
+            },
+            {
+              "value": "Clay"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-BAT-TOWEL-WHI",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "White"
+          }
+        },
+        {
+          "sku": "HH-BAT-TOWEL-CLA",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Clay"
+          }
+        },
+        {
+          "sku": "HH-BAT-TOWEL-SAG",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-hand-towels",
+          "isPrimary": true,
+          "alt": "Waffle Hand Towels (Set of 2)"
+        }
+      ]
+    },
+    {
+      "handle": "seagrass-storage-basket",
+      "title": "Seagrass Storage Basket",
+      "description": "A hand-woven seagrass basket with sturdy side handles — the good-looking answer to the pile of blankets, the kindling, the kids’ toys. Holds its shape, softens a room, and hides the clutter you don’t want on show. Choose the size for the job.",
+      "status": "active",
+      "productType": "Storage",
+      "vendor": "Hearth & Hollow",
+      "tags": ["storage", "seagrass", "basket", "living-room"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["living-room"],
+      "seoTitle": "Hand-Woven Seagrass Storage Basket | Hearth & Hollow",
+      "seoDescription": "A hand-woven seagrass storage basket with side handles, in two sizes — good-looking storage that hides the clutter.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-LIV-BASKET-SMA",
+          "priceCents": 4400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small"
+          }
+        },
+        {
+          "sku": "HH-LIV-BASKET-LAR",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-basket",
+          "isPrimary": true,
+          "alt": "Seagrass Storage Basket"
+        }
+      ]
+    },
+    {
+      "handle": "reed-diffuser",
+      "title": "Reed Diffuser",
+      "description": "A quiet, steady scent for a hallway or a bathroom — natural rattan reeds in a hand-blown glass bottle, no flame, no fuss. Each fill lasts around three months; flip the reeds when you want it stronger. A grown-up alternative to anything synthetic and sweet.",
+      "status": "active",
+      "productType": "Home Fragrance",
+      "vendor": "Hearth & Hollow",
+      "tags": ["fragrance", "diffuser", "scent", "gift"],
+      "categoryHandles": ["decor"],
+      "collectionHandles": ["gifting"],
+      "seoTitle": "Reed Diffuser — natural home fragrance | Hearth & Hollow",
+      "seoDescription": "A flame-free reed diffuser in hand-blown glass — a quiet, natural scent that lasts around three months.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fig & Cedar"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Warm Amber"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-DEC-DIFFUSER-FIG",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fig & Cedar"
+          }
+        },
+        {
+          "sku": "HH-DEC-DIFFUSER-WIL",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage"
+          }
+        },
+        {
+          "sku": "HH-DEC-DIFFUSER-WAR",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Warm Amber"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-diffuser",
+          "isPrimary": true,
+          "alt": "Reed Diffuser"
+        }
+      ]
+    },
+    {
+      "handle": "olive-wood-serving-board",
+      "title": "Olive Wood Serving Board",
+      "description": "A single slab of olive wood, oiled and finished by hand, with the grain running wild the way only olive does — so every board is one of a kind. Big enough for a proper spread of bread and cheese, and handsome enough to leave out on the counter.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Hearth & Hollow",
+      "tags": ["wood", "serving", "board", "gift"],
+      "categoryHandles": ["table"],
+      "collectionHandles": ["the-table", "gifting"],
+      "seoTitle": "Olive Wood Serving Board — hand-finished | Hearth & Hollow",
+      "seoDescription": "A one-of-a-kind hand-finished olive wood serving board for bread, cheese and everything in between.",
+      "variants": [
+        {
+          "sku": "HH-TAB-BOARD",
+          "priceCents": 6800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-serving-board",
+          "isPrimary": true,
+          "alt": "Olive Wood Serving Board"
+        }
+      ]
+    },
+    {
+      "handle": "speckled-stoneware-mugs",
+      "title": "Speckled Stoneware Mugs (Set of 4)",
+      "description": "Four generously sized mugs in speckled stoneware, with a comfortable pull-handle and a matte-glazed body that keeps its warmth. The everyday cup you’ll reach for over any other — sturdy, stackable, and just as at home with morning coffee as evening tea.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Hearth & Hollow",
+      "tags": ["ceramic", "stoneware", "mugs", "gift"],
+      "categoryHandles": ["table"],
+      "collectionHandles": ["the-table", "gifting", "best-sellers"],
+      "seoTitle": "Speckled Stoneware Mugs, Set of Four | Hearth & Hollow",
+      "seoDescription": "A set of four generously sized speckled stoneware mugs with a matte glaze and a comfortable handle.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oat"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Moss"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-TAB-MUGS-OAT",
+          "priceCents": 5200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Oat"
+          }
+        },
+        {
+          "sku": "HH-TAB-MUGS-ASH",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ash"
+          }
+        },
+        {
+          "sku": "HH-TAB-MUGS-MOS",
+          "priceCents": 5200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Moss"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-mugs",
+          "isPrimary": true,
+          "alt": "Speckled Stoneware Mugs (Set of 4)"
+        }
+      ]
+    },
+    {
+      "handle": "boucle-cushion-cover",
+      "title": "Bouclé Cushion Cover",
+      "description": "A deeply textured bouclé cushion cover with a hidden zip and a plump feather-blend feel — the quick way to warm up a sofa or dress a bed. Made to a generous 20-inch square; add one for texture, or a pair for a considered, put-together look.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Hearth & Hollow",
+      "tags": ["cushion", "boucle", "textiles", "living-room"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["living-room", "new-arrivals"],
+      "seoTitle": "Bouclé Cushion Cover, 20-inch | Hearth & Hollow",
+      "seoDescription": "A deeply textured 20-inch bouclé cushion cover with a hidden zip — the quick way to warm up a room.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ecru"
+            },
+            {
+              "value": "Clay"
+            },
+            {
+              "value": "Moss"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "HH-LIV-CUSHION-ECR",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ecru"
+          }
+        },
+        {
+          "sku": "HH-LIV-CUSHION-CLA",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Clay"
+          }
+        },
+        {
+          "sku": "HH-LIV-CUSHION-MOS",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Moss"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cushion",
+          "isPrimary": true,
+          "alt": "Bouclé Cushion Cover"
+        }
+      ]
+    }
+  ]
+}

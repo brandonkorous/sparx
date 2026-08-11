@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-home-goods-modern",
+  "name": "sparx — Home Goods (Modern Design)",
+  "version": "1.2.0",
+  "tagline": "A crisp, modern storefront for a design-led homeware brand.",
+  "description": "A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Home goods & homeware"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Home Goods (Modern Design) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Home Goods (Modern Design) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#1b1f28",
+  "sortWeight": 85
+}

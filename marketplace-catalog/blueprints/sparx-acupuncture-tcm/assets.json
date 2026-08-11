@@ -1,0 +1,27 @@
+[
+  {
+    "id": "acupuncture-tcm-hero",
+    "url": "https://images.unsplash.com/photo-1598555763574-dca77e10427e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWN1cHVuY3R1cmUlMjB0cmVhdG1lbnR8ZW58MHwwfHx8MTc4NjM5MjA4NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A serene treatment room with warm wood, soft light and a made-up table"
+  },
+  {
+    "id": "acupuncture-tcm-philosophy",
+    "url": "https://images.unsplash.com/photo-1580913702955-6c3fcf6ddedc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbmVzZSUyMG1lZGljaW5lJTIwaGVyYnN8ZW58MHwwfHx8MTc4NjM5MjA4OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dried herbs and a set of fine acupuncture needles laid out on a linen cloth"
+  },
+  {
+    "id": "acupuncture-tcm-mei",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwcmFjdGl0aW9uZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyMDkyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mei Lin Zhao, licensed acupuncturist and herbalist"
+  },
+  {
+    "id": "acupuncture-tcm-daniel",
+    "url": "https://images.unsplash.com/photo-1549036483-80a2ba8dad65?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWN1cHVuY3R1cmlzdCUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTIwOTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Daniel Okafor, licensed acupuncturist"
+  },
+  {
+    "id": "acupuncture-tcm-priya",
+    "url": "https://images.unsplash.com/photo-1484863137850-59afcfe05386?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VsbG5lc3MlMjBwcmFjdGl0aW9uZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyMDk4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, licensed acupuncturist and fertility specialist"
+  }
+]

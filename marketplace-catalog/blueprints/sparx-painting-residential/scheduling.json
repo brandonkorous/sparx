@@ -1,0 +1,240 @@
+{
+  "policies": [
+    {
+      "handle": "painting-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a visit. We text a reminder the day before and confirm when your painter is on the way."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "maya",
+      "name": "Maya Okonkwo",
+      "kind": "staff",
+      "skillTags": ["interior", "trim", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "diego",
+      "name": "Diego Herrera",
+      "kind": "staff",
+      "skillTags": ["exterior", "general", "prep"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["cabinets", "interior", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free estimate",
+      "description": "We walk the space, talk through your colors and finishes, and give you a clear written price — no charge, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "interior-painting-estimate",
+      "name": "Interior painting estimate",
+      "description": "A room, a floor or the whole inside — we measure, check the prep and quote a flat, written price for the job.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "exterior-painting-estimate",
+      "name": "Exterior painting estimate",
+      "description": "Siding, trim, doors and eaves — we look at the surfaces and weather wear and give you a straight price to repaint.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "cabinet-refinishing-consult",
+      "name": "Cabinet refinishing consult",
+      "description": "A sit-down about your kitchen cabinets — color, finish and how we prep and spray for a factory-smooth result.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["cabinets"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "color-consultation",
+      "name": "Color consultation",
+      "description": "Stuck between swatches? We bring samples, look at your light, and help you land on colors you’ll love for years.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "drywall-repair-visit",
+      "name": "Drywall repair visit",
+      "description": "Cracks, dents, water stains or nail pops patched, sanded and blended smooth so the new paint sits flawless.",
+      "durationMinutes": 90,
+      "priceCents": 12900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    },
+    {
+      "handle": "trim-accent-estimate",
+      "name": "Trim & accent estimate",
+      "description": "Baseboards, crown, doors or a single feature wall — we quote the detail work that makes a room feel finished.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "painter",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "painting-standard"
+    }
+  ]
+}

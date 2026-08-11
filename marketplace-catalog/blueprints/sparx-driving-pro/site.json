@@ -1,0 +1,2171 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "9e8f608d-1162-4bf9-81cd-62f725e7dc78",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "813231c4-76e3-4bab-a397-3094b5c01359",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "126600fc-d495-4e8e-8bb2-f07a5e7d55f1",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "279b62e4-2044-440d-bc3b-599857da886a",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "c203d8b5-e4e3-4aeb-a33e-7e20be8ca4df",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "c9f43a65-e8b4-4c02-9560-e9602380a7c3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "7a735932-b2f2-4ee3-8490-315d1a7deef5",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "acb87d66-1a11-48ce-aed9-e9280a6e0366",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "9c23086e-a844-4793-bf09-e27f2c22ba88",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "655ff312-784a-4c31-9f69-7c8b96199daa",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "014a4899-bc82-4026-8404-8d14a1acce28",
+                  "ord": "a2"
+                }
+              ],
+              "id": "932e9e68-c867-4789-b191-27ce7893e7b5",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "84903c7f-a835-4ad1-bb81-8ec67c3f4337",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "df699c04-5c67-444f-8cd5-8614990c6481",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c9460fa2-bf1c-4a6d-8e8f-4fbcf28b30e3",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "40b21b3b-22f1-46c3-acef-0303132f651a",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "5180436e-f2fc-4e71-9f44-a915246b49dd",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "57be7fc8-aedf-43f6-9236-427f294663c9",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "2dc4eb68-eb4d-4441-bd17-850ffcd1fb43",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "1e6de6b6-ee9b-4bf0-9f4e-0aeed2cb72cc",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "3c6c6d6b-c194-4ecc-a32a-2619cc081853",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2620df64-4b86-4761-80b5-9c85d5f8b3dd",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "a7ee0bd4-b6ea-40c3-b4fe-68288f49fb86",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "25eda9b6-a90b-482a-96eb-1a7b55912940",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "5f26e831-edc2-420b-899d-e86d3f7644f3",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "e6f9ddf2-db20-42fa-a389-0e54c037e509",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0385d1ca-c1b1-42f1-9beb-f5774813a74e",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "57d0e047-b702-4aa1-b88c-2c6ca8ce8c74",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d72dd233-158c-43c8-a9f4-b4926895fb6d",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "bb864318-0a98-4499-86ca-4c21e6cfd124",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1ec0e635-8c34-478d-92b3-a967da61d441",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "41bfca11-0ee3-4f5d-8bae-e2358e8f576a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8fe7f0d4-5d65-4eb2-91de-5cdc1e5948af",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "2ffebe68-f9fd-4227-b5ef-2643d0feb863",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "718e2866-5387-47da-a236-fac0c53c6aeb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "7d71134a-0b0d-4c8b-9507-c596213bf2a9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "fa011cc1-2de4-4d61-bbf5-fd14d87b9d16",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "d87953de-4590-44ec-a334-67d52ebf530b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "20cb3881-5ad7-4613-a6b0-6bdda43dfa30",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "d2348d33-2b41-4e53-a820-08535453ae31",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "c0ec9fbd-30a6-44b9-9fe7-b0ab91294048",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "89b95c81-35c8-449c-9a85-731948858451",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "4d4fa21c-c0f7-4d6d-acc0-b987174b8a13",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ecef4bb8-9628-4a34-a349-a555f606c29f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "912e260b-3cfa-4fb0-9645-14a039b96e1c",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "0d9335e6-807d-4bd5-bff7-429e3a8afdba",
+                  "ord": "a1"
+                }
+              ],
+              "id": "f6fd2244-de7f-42ba-b57c-7e8788c6a2c2",
+              "ord": "a0"
+            }
+          ],
+          "id": "ac355acc-71d6-437b-8ffa-dcb8d1236620",
+          "ord": "a2"
+        }
+      ],
+      "id": "fa9c2aad-b197-4de0-9873-2296d3754958"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Apex Driving Academy — adult & advanced driving lessons",
+      "seoDescription": "Apex Driving Academy teaches adult and advanced drivers — defensive driving, nervous-driver coaching, senior refreshers, highway skills and license transfers. Book online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d5e1f409-cee6-4bb9-8bc3-054a2001c64f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Drive like you own the road"],
+                    "id": "28c107a7-8d9b-4f94-9ee1-e00635481353",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Professional lessons for adult and advanced drivers — defensive skills, nervous-driver coaching, senior refreshers and highway confidence. Book with a real instructor and see live times in about a minute."
+                    ],
+                    "id": "f9d8852e-5351-4c19-a6f0-11133273b01f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a lesson"],
+                        "id": "44d40d99-5878-42c1-8c90-a3cac719a327",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons"],
+                        "id": "07f45daa-2686-406a-a7fc-9105cc077612",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2ae21da1-3ce3-42fc-ba6e-429f0390d85f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "304cc453-267a-43d4-b336-4ecab09aa58e",
+                "ord": "a0"
+              }
+            ],
+            "id": "5fe26639-577f-4643-8409-afaa668e4249",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Instructors who coach adults"],
+                            "id": "8cf8605f-cc67-43ba-871c-10d4a15d754d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Calm, experienced professionals who teach grown-ups — no teen-driver-ed vibe, just clear feedback and steady progress."
+                            ],
+                            "id": "c98ccb79-90a3-4832-a816-97235f049f60",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ee5b9076-869f-41b3-8986-af1ab9552634",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Defensive & advanced skills"],
+                            "id": "50cafeb4-c03d-4371-9af8-6561e98ca4a7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Beyond passing a test: hazard awareness, space management and highway judgement that keep you safe for good."
+                            ],
+                            "id": "5529d474-4f7f-477f-a734-50e2c52421c8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "777dba05-8dce-40b8-95fb-a08686a77356",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Anxious-driver friendly"],
+                            "id": "1482458e-c41c-4a7a-9eb3-1c43112f3298",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Put it off for years? Lost your nerve? We start exactly where you’re comfortable and never rush you."
+                            ],
+                            "id": "d559d3e4-98ec-4c7d-9dbf-bca9f8c6a50a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4f31fae8-39d0-4b75-abbd-ef4c58cbfd07",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Book on your schedule"],
+                            "id": "565b0c98-36fc-47f1-a261-e6f67a70a50c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Live availability across our instructors and dual-control cars — pick a time that fits your week, not ours."
+                            ],
+                            "id": "5bbf6d06-7a6a-4ab7-8b47-34584f3a079d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3035fd85-2ed8-4b0d-aa3e-832f0830309c",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5949d3d0-125b-46d7-a977-f2564213db3b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "288e60a3-403f-4776-bfab-8f94bd4cc5de",
+                "ord": "a0"
+              }
+            ],
+            "id": "be4f3ec7-55ab-4112-a1fa-38d60a942b6d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Lessons & assessments"],
+                        "id": "0a9bdb04-e438-41fc-91ea-293fcb2ce577",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Start with a free assessment or jump straight into the lesson you need. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "0e129b5b-9548-4bd7-94e7-f9bafc955e45",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "70f67b34-2abb-4514-8ae7-26f474a83911",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Driving assessment & plan"],
+                                "id": "a095b793-1e4f-47ca-a8f9-1a410ac1c3cd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "5f109cf2-541b-441e-9e9a-364ed4c2448c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fe705775-cb6e-42b9-bb57-81ad5826c7ce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "54e1e734-be97-4cc6-a90d-aca779dd39ab",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A short drive so we can map exactly what you need. Free."
+                            ],
+                            "id": "3e761993-2201-4c16-9176-9f76758caabb",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "bee71fe3-41d2-49f5-ad03-5b94efa9d37d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Adult driving lesson"],
+                                "id": "804947e5-ddae-4b1d-8e4e-396e52801c84",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$85"],
+                                "id": "f11c699b-dc06-4f70-bc57-cdbee5bb8753",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "765584fd-1945-44c0-9417-6dc785fbb2f6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "f65c60fb-a5f2-4b72-a9b4-af229a174c06",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A focused hour building real road confidence."],
+                            "id": "9aab945e-b66f-4d53-af31-05daf94f5b0d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "76b90bd8-eef9-4793-a04a-ad64f17e3d86",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Defensive driving session"],
+                                "id": "b7adc477-e929-466f-965b-a62b95d70dbf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$135"],
+                                "id": "ead81fa7-0dc0-4eee-8a15-1f3f063c0dee",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d20e7f4b-87b0-4857-9b24-eddf6b3a18af",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "d3ad42dc-edd1-48b0-8848-74585e55d5d3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Hazard awareness and crash-avoidance technique."],
+                            "id": "8865e40e-2e62-43f9-bfb6-a652c1c22ab9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f902244f-8ab4-46e7-9344-ffc6df51b6e9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Nervous-driver coaching"],
+                                "id": "ca6c2b52-ffc3-4283-b788-b85d0a9264a0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "18d3c816-48e7-4e20-9da5-7d7cc7fa0893",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "29301041-a7f1-4cf4-8027-3304ebae8766",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "1fb60600-3345-4e44-b0fa-d9b9f321eee9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Patient, judgement-free, at your own pace."],
+                            "id": "7dfcb442-ec57-4b72-ba86-fb2fb5a3d42e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7103c0f9-ee23-4b53-8d15-e111176187b1",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Advanced & highway lesson"],
+                                "id": "92a3f78f-2b99-4cef-9e54-b78a26d9dcc5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$165"],
+                                "id": "45dcff7b-94de-445e-8756-6b85892f57e2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "27db0762-9fd0-4ecb-a531-4fb1a3bdfddd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "af4f92bd-c14e-496b-ad04-f31423baa975",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Merging, lane discipline and freeway confidence."],
+                            "id": "84b3f209-102e-4f95-a674-6ad776e33963",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "db345ceb-f86f-4a6c-8c73-b7b738159d6e",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["License-transfer lesson"],
+                                "id": "84b51964-3b7e-40c2-8e4e-6d5609c1821b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "bcf1c962-3c43-4513-9641-8aff419c3099",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5c1267a6-3392-4a74-9638-b9aaba7dca1c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "b0c9084f-4dae-40eb-8a07-715e426f3ee5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Local road rules so you pass the transfer first time."],
+                            "id": "59fad661-2cf6-4bbd-a4c0-3c6c6451ed3f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "58e4f779-8edf-4310-a6af-47d21840e98e",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "cf45389c-e2b8-49dc-8016-e12b75d8328a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "f5cf591e-d1a1-4c4c-9e8a-c68e17e683b4",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "bf5d5722-db28-4b06-b1b1-66202b476f62",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1ce4b6cf-616e-4b95-adf0-47d4b99913ba",
+                "ord": "a0"
+              }
+            ],
+            "id": "cdca2517-a57c-4ceb-b108-90f5ff773d65",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyc29uJTIwZHJpdmluZyUyMGNhcnxlbnwwfDB8fHwxNzg2Mzk0MjUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "An instructor coaching an adult learner from the passenger seat on a city street",
+                      "loading": "lazy"
+                    },
+                    "id": "fa74e0c0-1208-4d97-995b-910f70408618",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Confidence is a skill — we teach it on purpose"],
+                        "id": "8043504f-6a35-4fb9-852c-4fa6c4ee3b39",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most people don’t lack ability. They lack a calm plan and the reps to trust it. So every lesson starts with a clear goal, breaks the drive into moves you can actually feel yourself nailing, and ends knowing exactly what’s next."
+                        ],
+                        "id": "b9883068-866a-4c8b-b0b2-83cf9b59415e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Dual-control cars, unflappable instructors and honest feedback — that’s how a first-timer, a returning driver and a nervous one all leave steadier than they arrived."
+                        ],
+                        "id": "0b1b6e15-7015-4365-b612-2a744231a28b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Start with an assessment"],
+                            "id": "0d350790-c5c6-41c6-8a84-656a5d343154",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "120285a4-42cc-4e5e-a3ec-f74c392a0392",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "df4e5107-7eb4-40d5-8ccc-a2c4d65ad64d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4c8cdf9d-1bbb-4964-9c85-fd9e73df919a",
+                "ord": "a0"
+              }
+            ],
+            "id": "4b1b3cee-e2cb-49b7-9ecd-75a2fc7903eb",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your instructors"],
+                        "id": "0bfcad05-b417-49d7-bcdd-be58c79b961e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with someone who teaches your kind of driving."
+                        ],
+                        "id": "865b740e-619a-4ce1-9985-12588f9f7a59",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "26959eb6-5aa9-468f-a898-b8c6da48230a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aW5zdHJ1Y3RvciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTQyNTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Ricardo Vega, lead defensive-driving instructor",
+                              "loading": "lazy"
+                            },
+                            "id": "789a1b8a-06ce-4784-9976-08c87a1213b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Ricardo Vega"],
+                                "id": "3ca33cff-094d-4763-9161-611dfd916628",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead & defensive instructor"],
+                                "id": "3919e4e4-7b86-4115-a0fb-03c9123b330b",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twenty years on the road and a defensive-driving specialist. Ricardo runs the academy and its safety curriculum."
+                                ],
+                                "id": "da8c10d9-17e4-436e-b7b6-388c2bac8b6c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "2f9e7408-b555-467f-ae9b-b713ffb1d4af",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "513ecb6e-4c91-45b5-b6e2-7ddd8d8341f3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBpbnN0cnVjdG9yJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5NDI0Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dana Whitfield, anxious-driver coach",
+                              "loading": "lazy"
+                            },
+                            "id": "04942672-ff12-4777-8575-42a12548cf14",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dana Whitfield"],
+                                "id": "21232102-4fd3-4f61-92ad-687ff9a08b21",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Nervous-driver coach"],
+                                "id": "ee881e6e-8650-4b44-a6b0-7a25c2ccde56",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The person you want if driving makes you anxious. Endlessly patient, zero judgement, small wins that add up fast."
+                                ],
+                                "id": "bf928b54-7f03-428d-b197-e7b6d4218c13",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "1eeaf870-90b7-45c3-9018-0c23955ea2f2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "787aef03-2f0b-4fba-af7f-d4908eae0254",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4NzQxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Theo Marsh, advanced & highway instructor",
+                              "loading": "lazy"
+                            },
+                            "id": "bf5f95aa-4ee9-4a3b-b4a4-6215b4333341",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Theo Marsh"],
+                                "id": "afe3ed08-def2-48bc-b3fe-961a948bdb40",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Advanced & highway instructor"],
+                                "id": "5886420d-7f89-40b2-96ce-c1777c3ff475",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Freeways, interchanges and long-haul confidence. Theo takes good drivers and makes them genuinely sharp."
+                                ],
+                                "id": "09c03a44-7be6-4c3a-b77b-62023fc7dbba",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "b81e7587-c6e7-44de-9347-776867bd87e5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "983c214a-a1de-44ca-8f55-bb33da5f7486",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8f3c0a06-ba15-4b4a-ac26-d4a865a56db3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "44b6b2c9-356b-4c6e-8bd7-d6d82e3b8a06",
+                "ord": "a0"
+              }
+            ],
+            "id": "4de9f47a-656a-465c-9d1f-d5f883db589d",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I avoided the freeway for eleven years. Three lessons with Dana and I drove myself two hours to see my sister — first time ever. I still can’t quite believe it.”"
+                    ],
+                    "id": "d0d7161c-91e5-479f-859b-f2264285abf6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Marisol T., nervous-driver program"],
+                    "id": "efb2f84d-2c84-4b6d-a3f8-5e031ac77afd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "55cc2078-803f-49c1-a452-3f30a851c665",
+                "ord": "a0"
+              }
+            ],
+            "id": "4eaae0e5-b797-4799-8a4d-9aa4eb262cc3",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Book your first lesson"],
+                    "id": "e7f98440-1491-4bfc-973e-b01997065e10",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a lesson, choose your instructor and see live times. Start with a free assessment if you’re not sure where you stand."
+                    ],
+                    "id": "456affb6-5667-4ec6-a732-ba3aba1e3470",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a lesson"],
+                    "id": "1a4b9957-f79d-42da-a11b-a2e97e44f8d9",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4d69a961-c7db-449b-8020-69dfc6b9317f",
+                "ord": "a0"
+              }
+            ],
+            "id": "9faf5ffb-f6d0-42b3-b133-d353ff6f514f",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Apex Driving Academy",
+      "seoDescription": "See what Apex Driving Academy offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "42009699-257c-4826-9f68-c9b2c6bfa802",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Book a lesson"],
+                    "id": "36df7301-f55a-4f36-b53e-1ef7e219dac4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a lesson or a free assessment to see live availability, then pick your instructor and time."
+                    ],
+                    "id": "e82293b9-0ae5-48d3-aa94-179b4fc2a3eb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons below"],
+                        "id": "90522789-7206-452d-a4e9-5705c879527f",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "33910776-d64f-44ad-8af3-edfa14f1360f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "04f16895-4a2e-4313-a6bd-df891eb5d587",
+                "ord": "a0"
+              }
+            ],
+            "id": "b5d7f877-b4db-4e42-ad39-2055af74119c",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "25698789-3b6e-4430-81cb-84335fe1a455",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Apex Driving Academy",
+      "seoDescription": "Who Apex Driving Academy is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6b7b89c2-838f-41ee-b564-46cb8ed95a09",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1527593167147-e9c94a5883e6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FyJTIwc3RlZXJpbmclMjB3aGVlbCUyMGRyaXZpbmd8ZW58MHwwfHx8MTc4NjM5NDI1NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A dual-control training car on a quiet residential road at golden hour",
+                      "loading": "lazy"
+                    },
+                    "id": "5e110054-4c5b-415b-9b67-0b1d9066dce1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Apex Driving Academy"],
+                        "id": "32d61fa7-5eae-4bbd-b91a-8c9da40a7711",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We built Apex for the drivers other schools overlook — adults starting late, people getting their nerve back, newcomers transferring a license, and good drivers who want to be great. Not a teen driver-ed mill."
+                        ],
+                        "id": "fb3a5b10-3fc9-4fc9-b2c6-1ae3711bde12",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every instructor here is a professional who coaches grown-ups: clear, respectful, and genuinely invested in you leaving the car safer and more confident than you got in."
+                        ],
+                        "id": "b766b4e3-0a12-4e2e-8c7d-f915f14e3b6d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a lesson"],
+                            "id": "3bf6f2b5-1722-4ce5-88b1-5278a6e6c66a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b11fb3b8-36dc-4f0a-a4fe-264ebd496651",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9d2c68dc-6a03-48b3-9d8b-a4a7a90dd346",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "82230ea3-9e55-4c61-aa9f-f5af0222a16b",
+                "ord": "a0"
+              }
+            ],
+            "id": "4d84b13b-9711-4ef9-9eef-6e24aea98c69",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "561b3b28-5f3d-4370-9eb0-69f450403a0e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Assessment first"],
+                            "id": "1c16c658-8335-48fb-bf90-8e768066a797",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A free, no-obligation drive tells us where you are so we never sell you lessons you don’t need."
+                            ],
+                            "id": "d57f761e-de53-475b-a134-484801d73754",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "14426a1c-c2ae-4914-9a2f-a555d15372f2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A real plan"],
+                            "id": "b010f82b-922a-4ee5-aae4-36bd75c99f34",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You get a clear path — the specific skills to build and the order to build them in, not an open-ended meter running."
+                            ],
+                            "id": "4bdc20d0-f1c1-4768-804d-a476661d8693",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "db190ca4-c146-4941-bbd5-978b5378c288",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Skills that last"],
+                            "id": "be0c4ccf-95b9-493e-8982-43363efd850b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We teach defensive habits and judgement, so your confidence holds up long after the last lesson."
+                            ],
+                            "id": "cac5b009-1543-4010-ba29-503daf5511d6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7ae2252f-c91f-4932-a1c5-4092d0ef5a89",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b0568a0b-ae94-4fee-93e5-36a61200ab3d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f797190d-8463-47fc-bef9-399bdb28bbe6",
+                "ord": "a0"
+              }
+            ],
+            "id": "1827b76f-dfa2-42a6-b1a6-7dc175ea4448",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Apex Driving Academy",
+      "seoDescription": "Where to find Apex Driving Academy, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0496c288-027a-43ee-be54-e36e55e366eb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the academy"],
+                        "id": "9dd10c8e-136a-4eec-a515-5c604551bc5c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Apex Driving Academy"],
+                            "id": "69fa5014-508b-4dbb-b39b-5aa4a4bab410",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["4400 Corbett Avenue"],
+                            "id": "62709b53-0f84-4602-867f-1000fab9c200",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite B · Denver, CO 80211"],
+                            "id": "6c5c261a-ff39-4a58-bf49-4f8146485fb3",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "471784bd-5a36-4cd6-baec-fd9c2155fd44",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "f556f2c5-fbf8-4894-a30e-f0405c7e62ef",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 7:00"],
+                                "id": "065bbaee-661d-445b-812a-84619659e9bf",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4e859b8a-d51c-4f58-8761-99a47d771ee1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "9578296c-fbf5-46a7-a7a8-193acdee7c33",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "83b09511-512c-415b-b41c-bf9b3aa229a1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "68c92b4d-1145-43b7-b0b3-a221f83b1229",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "415626f6-fd22-419d-855d-017cc8e97f25",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "63fcdf3a-16b8-4264-924b-bf67199083d4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "07e33ba7-0ed5-4425-b0e4-de272e4b4913",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3872b94e-08c6-43ed-b53c-ffca4dfb3f02",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4ce97e86-9be1-427d-afdf-a4685393cd39",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "4400 Corbett Avenue, Denver, CO 80211",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "43127ec1-79e5-47d0-8d60-584372a7d9a4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "295fdaf8-8482-48ad-9cb1-639903087253",
+                "ord": "a0"
+              }
+            ],
+            "id": "5fe594f4-2132-4d3b-8f73-41153b934960",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "c945a760-da2e-4272-ae68-61e8f65378b0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability across our instructors and cars, and lock in your time online — no phone tag."
+                    ],
+                    "id": "95c850e8-d5a6-44bb-8edf-d1015031151d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a lesson"],
+                    "id": "34a1aa28-2f82-44f8-8676-bc6bca351c5e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9f721dea-b593-46fb-b686-eb4c20616e79",
+                "ord": "a0"
+              }
+            ],
+            "id": "ebdcf22a-3ae5-45a8-8e00-aa872fc1e541",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "apexdrive",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(95% 0.006 255)",
+      "--color-base-300": "oklch(90% 0.01 258)",
+      "--color-base-content": "oklch(22% 0.035 265)",
+      "--color-primary": "oklch(34% 0.095 264)",
+      "--color-secondary": "oklch(40% 0.03 262)",
+      "--color-accent": "oklch(74% 0.16 66)",
+      "--color-neutral": "oklch(26% 0.025 265)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 264)",
+      "--color-secondary-content": "oklch(98% 0.01 262)",
+      "--color-accent-content": "oklch(15% 0.02 66)",
+      "--color-neutral-content": "oklch(98% 0.01 265)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(74% 0.16 66)",
+      "--color-highlight-content": "oklch(15% 0.02 66)",
+      "--color-border": "oklch(90% 0.01 258)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.03 265)",
+      "--color-base-200": "oklch(16% 0.028 266)",
+      "--color-base-300": "oklch(13% 0.022 266)",
+      "--color-base-content": "oklch(96% 0.005 250)",
+      "--color-primary": "oklch(70% 0.12 260)",
+      "--color-secondary": "oklch(74% 0.025 260)",
+      "--color-accent": "oklch(80% 0.15 68)",
+      "--color-neutral": "oklch(82% 0.02 260)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 260)",
+      "--color-secondary-content": "oklch(15% 0.02 260)",
+      "--color-accent-content": "oklch(15% 0.02 68)",
+      "--color-neutral-content": "oklch(15% 0.02 260)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.15 68)",
+      "--color-highlight-content": "oklch(15% 0.02 68)",
+      "--color-border": "oklch(13% 0.022 266)"
+    }
+  }
+}

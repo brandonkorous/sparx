@@ -1,0 +1,248 @@
+{
+  "policies": [
+    {
+      "handle": "moving-standard",
+      "name": "Standard estimate",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning — estimates are always free and no-obligation."
+    },
+    {
+      "handle": "move-deposit",
+      "name": "Move-date deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you — no penalty, no lost deposit."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jordan",
+      "name": "Jordan Pierce",
+      "kind": "staff",
+      "skillTags": ["local", "packing", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "tasha",
+      "name": "Tasha Owens",
+      "kind": "staff",
+      "skillTags": ["furniture", "local", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "luis",
+      "name": "Luis Ferreira",
+      "kind": "staff",
+      "skillTags": ["packing", "loading", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free estimate",
+      "description": "Tell us what you’re moving and we’ll come out, look it over and hand you a flat, written price — free, with zero obligation and no pressure to book.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "moving-standard"
+    },
+    {
+      "handle": "in-home-estimate",
+      "name": "In-home estimate",
+      "description": "A full walkthrough of your place so nothing gets missed. We measure the big pieces, count the boxes and give you an accurate flat quote on the spot.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "moving-standard"
+    },
+    {
+      "handle": "local-move-consult",
+      "name": "Local move planning",
+      "description": "Lock in your moving day for a house or condo move across town. We map out the crew, the truck size and the timing, and hold your date with a small deposit.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    },
+    {
+      "handle": "apartment-move-consult",
+      "name": "Apartment move planning",
+      "description": "Stairs, elevators and tight parking, sorted ahead of time. We plan the details that make an apartment move fast, then hold your day with a deposit.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    },
+    {
+      "handle": "packing-service-consult",
+      "name": "Packing service planning",
+      "description": "Let us do the boxing. We’ll walk through what needs packing, bring the supplies, and give you a flat price to have it wrapped, boxed and labeled before moving day.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["packing"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "moving-standard"
+    },
+    {
+      "handle": "labor-only-consult",
+      "name": "Loading help planning",
+      "description": "Got the truck, just need the muscle? Book a crew to load or unload your rental or container. We’ll size the job and quote it flat by the hour.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "moving-standard"
+    },
+    {
+      "handle": "furniture-move-consult",
+      "name": "Single-item & furniture move",
+      "description": "One heavy, awkward piece — a piano, a gun safe, a sleeper sofa up three flights. We plan the lift, bring the gear to protect it, and hold your slot with a deposit.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "coordinator",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    }
+  ]
+}

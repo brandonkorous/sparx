@@ -1,0 +1,47 @@
+[
+  {
+    "id": "electrician-modern-hero",
+    "url": "https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXYlMjBjaGFyZ2VyJTIwZWxlY3RyaWMlMjBjYXJ8ZW58MHwwfHx8MTc4NjM4ODI5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A modern home at dusk with an EV charging in the driveway"
+  },
+  {
+    "id": "electrician-modern-panel",
+    "url": "https://images.unsplash.com/photo-1576446470246-499c738d1c8e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHBhbmVsJTIwbW9kZXJufGVufDB8MHx8fDE3ODYzODgyOTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A clean, labelled electrical panel and smart-home control hub"
+  },
+  {
+    "id": "electrician-modern-ev",
+    "url": "https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWMlMjB2ZWhpY2xlJTIwY2hhcmdpbmd8ZW58MHwwfHx8MTc4NjM4ODI5OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An electric car plugged into a wall-mounted home charger"
+  },
+  {
+    "id": "electrician-modern-nadia",
+    "url": "https://images.unsplash.com/photo-1581092570490-cc40829efaae?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBlbmdpbmVlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzODgyNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Nadia Okafor, master electrician"
+  },
+  {
+    "id": "electrician-modern-theo",
+    "url": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI2OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Theo Marsh, smart-home and solar specialist"
+  },
+  {
+    "id": "electrician-modern-ruben",
+    "url": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ruben Diaz, commercial electrician"
+  },
+  {
+    "id": "electrician-modern-work1",
+    "url": "https://images.unsplash.com/photo-1558002038-1055907df827?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hcnQlMjBob21lJTIwZGV2aWNlfGVufDB8MHx8fDE3ODYzODgzMDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A newly installed EV charger on a garage wall"
+  },
+  {
+    "id": "electrician-modern-work2",
+    "url": "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29sYXIlMjBwYW5lbCUyMGluc3RhbGxhdGlvbnxlbnwwfDB8fHwxNzg2Mzg4MzAzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A modernized breaker panel with tidy wiring"
+  },
+  {
+    "id": "electrician-modern-work3",
+    "url": "https://images.unsplash.com/photo-1660330589693-99889d60181e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHdvcmslMjBtb2Rlcm58ZW58MHwwfHx8MTc4NjM4ODMwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wall-mounted home battery beside solar equipment"
+  }
+]

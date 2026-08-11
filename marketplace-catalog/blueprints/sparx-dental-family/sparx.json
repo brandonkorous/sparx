@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-dental-family",
+  "name": "sparx — Dental (Family)",
+  "version": "1.0.0",
+  "tagline": "A warm, family template for dental practices — book online from day one.",
+  "description": "A warm, family-friendly dental site — a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as \"Maple Grove Dental\", a family dentist.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Dental",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Dental (Family) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Dental (Family) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#0088af",
+  "sortWeight": 70
+}

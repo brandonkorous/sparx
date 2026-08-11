@@ -1,0 +1,102 @@
+[
+  {
+    "id": "eyewear-hero",
+    "url": "https://images.unsplash.com/photo-1503796627019-324e68809dc3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UtdXAlMjBoYW5kcyUyMGhhbmQtcG9saXNoaW5nJTIwYWNldGF0ZSUyMGZyYW1lJTIwd29ya2JlbmNofGVufDB8MHx8fDE3ODY0MTYxOTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A close-up of hands hand-polishing an acetate frame at a workbench"
+  },
+  {
+    "id": "eyewear-tile-optical",
+    "url": "https://images.unsplash.com/photo-1724385135035-2ef26d30e549?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMHRvcnRvaXNlJTIwYWNldGF0ZSUyMG9wdGljYWwlMjBmcmFtZXMlMjBsaW5lbiUyMGNsb3RofGVufDB8MHx8fDE3ODY0MTYxOTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of tortoise acetate optical frames on a linen cloth"
+  },
+  {
+    "id": "eyewear-tile-sun",
+    "url": "https://images.unsplash.com/photo-1470526446583-d0fe2363d8cb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGhhbmQtcG9saXNoZWQlMjBzdW5nbGFzc2VzJTIwd2FybSUyMGxpZ2h0fGVufDB8MHx8fDE3ODY0MTYxOTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of hand-polished sunglasses in warm light"
+  },
+  {
+    "id": "eyewear-tile-reading",
+    "url": "https://images.unsplash.com/photo-1456081101716-74e616ab23d8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVhZGluZyUyMGdsYXNzZXMlMjByZXN0aW5nJTIwb3BlbiUyMGJvb2t8ZW58MHwwfHx8MTc4NjQxNjIwMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Reading glasses resting on an open book"
+  },
+  {
+    "id": "eyewear-tile-accessories",
+    "url": "https://images.unsplash.com/photo-1724927537639-a31846c7b94d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FkZGxlLWxlYXRoZXIlMjBnbGFzc2VzJTIwY2FzZSUyMGJlc2lkZSUyMHBvbGlzaGluZyUyMGNsb3RofGVufDB8MHx8fDE3ODY0MTYyMDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A saddle-leather glasses case beside a polishing cloth"
+  },
+  {
+    "id": "eyewear-band-craft",
+    "url": "https://images.unsplash.com/photo-1603578119639-798b8413d8d7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNldGF0ZSUyMGZyYW1lJTIwZnJvbnQlMjBiZWluZyUyMHNoYXBlZCUyMGZpbGVkJTIwYnl8ZW58MHwwfHx8MTc4NjQxNjIwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An acetate frame front being shaped and filed by hand"
+  },
+  {
+    "id": "eyewear-band-heritage",
+    "url": "https://images.unsplash.com/photo-1610850760052-edbc52ef7618?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2xkJTIwd29ya3Nob3AlMjBiZW5jaCUyMHZpbnRhZ2UlMjBmcmFtZS1tYWtpbmclMjB0b29sc3xlbnwwfDB8fHwxNzg2NDE2MjExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An old workshop bench with vintage frame-making tools"
+  },
+  {
+    "id": "prod-beaumont",
+    "url": "https://picsum.photos/seed/prod-beaumont/1600/1000",
+    "alt": "The Beaumont round panto acetate optical frame"
+  },
+  {
+    "id": "prod-ellsworth",
+    "url": "https://picsum.photos/seed/prod-ellsworth/1600/1000",
+    "alt": "The Ellsworth bold rectangular acetate optical frame"
+  },
+  {
+    "id": "prod-marguerite",
+    "url": "https://picsum.photos/seed/prod-marguerite/1600/1000",
+    "alt": "The Marguerite cat-eye acetate optical frame"
+  },
+  {
+    "id": "prod-whitfield",
+    "url": "https://picsum.photos/seed/prod-whitfield/1600/1000",
+    "alt": "The Whitfield small keyhole panto optical frame"
+  },
+  {
+    "id": "prod-riviera",
+    "url": "https://picsum.photos/seed/prod-riviera/1600/1000",
+    "alt": "The Riviera hand-polished acetate sunglasses"
+  },
+  {
+    "id": "prod-cassis",
+    "url": "https://picsum.photos/seed/prod-cassis/1600/1000",
+    "alt": "The Cassis round hand-polished sunglasses"
+  },
+  {
+    "id": "prod-study",
+    "url": "https://images.unsplash.com/photo-1764737707504-f1ce82f76a16?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8c3R1ZHklMjByZWFkZXIlMjBhY2V0YXRlJTIwcmVhZGluZyUyMGdsYXNzZXN8ZW58MHwwfHx8MTc4NjQxNjIyOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The Study Reader acetate reading glasses"
+  },
+  {
+    "id": "prod-1932",
+    "url": "https://images.unsplash.com/photo-1694010326811-53864439958d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8MTkzMiUyMGFubml2ZXJzYXJ5JTIwbGltaXRlZC1ydW4lMjBhY2V0YXRlJTIwZnJhbWV8ZW58MHwwfHx8MTc4NjQxNjIzMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The 1932 Anniversary limited-run acetate frame"
+  },
+  {
+    "id": "prod-case",
+    "url": "https://images.unsplash.com/photo-1514876708437-c1a520bbff01?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2FkZGxlJTIwY2FzZSUyMGhhbmQtc3RpdGNoZWQlMjBsZWF0aGVyJTIwZ2xhc3NlcyUyMGNhc2V8ZW58MHwwfHx8MTc4NjQxNjIzNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The Saddle Case — hand-stitched leather glasses case"
+  },
+  {
+    "id": "prod-kit",
+    "url": "https://images.unsplash.com/photo-1741253689523-68ff10ed8b56?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmVuY2glMjBraXQlMjBsZW5zJTIwY2xvdGglMjBhbGNvaG9sLWZyZWUlMjBzcHJheSUyMGhpbmdlfGVufDB8MHx8fDE3ODY0MTYyMzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The Bench Kit — lens cloth, alcohol-free spray and hinge oil"
+  },
+  {
+    "id": "post-acetate",
+    "url": "https://images.unsplash.com/photo-1642723877928-fc99e1bcfd27?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8c2hlZXRzJTIwdG9ydG9pc2UlMjBhY2V0YXRlJTIwc3RhY2tlZCUyMGZyYW1lLW1ha2luZyUyMHdvcmtzaG9wfGVufDB8MHx8fDE3ODY0MTYyNDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sheets of tortoise acetate stacked at a frame-making workshop"
+  },
+  {
+    "id": "post-fit",
+    "url": "https://images.unsplash.com/photo-1577410114274-ef015b5b6d29?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0aWNpYW4lMjBtZWFzdXJpbmclMjBmcmFtZSUyMGFnYWluc3QlMjBmYWNlfGVufDB8MHx8fDE3ODY0MTYyNDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An optician measuring a frame against a face"
+  },
+  {
+    "id": "post-1932",
+    "url": "https://images.unsplash.com/photo-1544722712-54c530e43ea1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJjaGl2YWwlMjBwaG90b2dyYXBoJTIwZm91bmRpbmclMjB3b3Jrc2hvcHxlbnwwfDB8fHwxNzg2NDE2MjQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An archival photograph of the founding workshop"
+  }
+]

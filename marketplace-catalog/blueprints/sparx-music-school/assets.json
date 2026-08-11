@@ -1,0 +1,27 @@
+[
+  {
+    "id": "music-school-hero",
+    "url": "https://images.unsplash.com/photo-1552422535-c45813c61732?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBwaWFubyUyMGxlc3NvbnxlbnwwfDB8fHwxNzg2MzkxNTI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A young student smiling at the piano during a lesson"
+  },
+  {
+    "id": "music-school-studio",
+    "url": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBsZXNzb24lMjByb29tJTIwcGlhbm98ZW58MHwwfHx8MTc4NjM5MTUyOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warm, light-filled lesson room with an upright piano and music stands"
+  },
+  {
+    "id": "music-school-mara",
+    "url": "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBtdXNpYyUyMHRlYWNoZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkxNTMxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mara Ellison, piano and voice teacher"
+  },
+  {
+    "id": "music-school-theo",
+    "url": "https://images.unsplash.com/photo-1636581563713-5ead3fb53a80?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjB0ZWFjaGVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MTUzM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Theo Nakamura, guitar teacher"
+  },
+  {
+    "id": "music-school-lena",
+    "url": "https://images.unsplash.com/photo-1725215956940-91f616b95443?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmlvbGluJTIwdGVhY2hlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1Mzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Lena Petrov, violin teacher"
+  }
+]

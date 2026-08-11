@@ -1,0 +1,520 @@
+{
+  "categories": [
+    {
+      "handle": "vinyl-htv",
+      "name": "Vinyl & HTV",
+      "description": "Cast sign vinyl, heat-transfer film and application tape.",
+      "featured": true
+    },
+    {
+      "handle": "media-board",
+      "name": "Media & board",
+      "description": "Banner media, overlaminate, foam board and kits.",
+      "featured": true
+    },
+    {
+      "handle": "inks",
+      "name": "Inks",
+      "description": "Eco-solvent and dye-sublimation ink sets.",
+      "featured": true
+    },
+    {
+      "handle": "blanks",
+      "name": "Blanks",
+      "description": "Polymer-coated sublimation blanks.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The lines shops reorder most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "cast-sign-vinyl-roll",
+        "heat-transfer-vinyl-roll",
+        "scrim-banner-media-roll",
+        "eco-solvent-ink-set",
+        "sublimation-blank-mugs-case"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "Lines just added to the catalog.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "overlaminate-film-roll",
+        "dye-sublimation-ink-set",
+        "shop-starter-media-kit"
+      ]
+    },
+    {
+      "handle": "print-shop-essentials",
+      "name": "Print-shop essentials",
+      "description": "The media no shop floor runs without.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "application-tape-roll",
+        "foam-board-pack",
+        "eco-solvent-ink-set",
+        "shop-starter-media-kit"
+      ]
+    },
+    {
+      "handle": "signage-supplies",
+      "name": "Signage supplies",
+      "description": "Vinyl, banner and laminate for the sign bench.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "cast-sign-vinyl-roll",
+        "application-tape-roll",
+        "scrim-banner-media-roll",
+        "overlaminate-film-roll"
+      ]
+    },
+    {
+      "handle": "sublimation-station",
+      "name": "Sublimation station",
+      "description": "Ink, HTV and blanks for the heat press.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "heat-transfer-vinyl-roll",
+        "dye-sublimation-ink-set",
+        "sublimation-blank-mugs-case"
+      ]
+    },
+    {
+      "handle": "bulk-media",
+      "name": "Bulk media",
+      "description": "Buy the case, reorder on a schedule.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["cast-sign-vinyl-roll", "scrim-banner-media-roll"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "cast-sign-vinyl-roll",
+      "title": "Cast Sign Vinyl — 30 in Roll",
+      "description": "Premium 2-mil cast vinyl for vehicle wraps, decals and long-term outdoor signage — conformable, 7-year outdoor durability, with an air-release adhesive that lays down bubble-free. 30\" x 50 yd roll. MOQ 1 roll. Pick gloss for pop or matte for a wrapped-satin finish.",
+      "status": "active",
+      "productType": "Vinyl",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["vinyl", "cast", "signage", "wrap", "roll"],
+      "categoryHandles": ["vinyl-htv"],
+      "collectionHandles": ["best-sellers", "signage-supplies", "bulk-media"],
+      "seoTitle": "Cast Sign Vinyl 30 in Roll, gloss or matte | Inkyard Trade Supply",
+      "seoDescription": "Premium 2-mil cast vinyl, 30 inch x 50 yd roll, air-release adhesive. Gloss or matte, 7-year outdoor durability.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Gloss"
+            },
+            {
+              "value": "Matte"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IYD-VIN-CAST-30-G",
+          "priceCents": 12900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Gloss"
+          }
+        },
+        {
+          "sku": "IYD-VIN-CAST-30-M",
+          "priceCents": 13400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Matte"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cast-vinyl",
+          "isPrimary": true,
+          "alt": "A roll of gloss cast sign vinyl"
+        }
+      ]
+    },
+    {
+      "handle": "heat-transfer-vinyl-roll",
+      "title": "Heat-Transfer Vinyl — 20 in Roll",
+      "description": "PU heat-transfer vinyl for garment decoration — thin, matte, and stretchable, with a hot-peel carrier that weeds clean and layers without bulk. 20\" x 5 yd roll. MOQ 3 rolls — buy the colours your jobs run and keep the press fed. Pick your colour.",
+      "status": "active",
+      "productType": "HTV",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["htv", "heat-transfer", "garment", "decoration", "roll"],
+      "categoryHandles": ["vinyl-htv"],
+      "collectionHandles": ["best-sellers", "sublimation-station"],
+      "seoTitle": "Heat-Transfer Vinyl 20 in Roll, PU hot-peel | Inkyard Trade Supply",
+      "seoDescription": "Thin matte PU heat-transfer vinyl, 20 inch x 5 yd roll, hot-peel carrier. Weeds clean and layers without bulk.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "White"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Red"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IYD-HTV-PU-20-W",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "White"
+          }
+        },
+        {
+          "sku": "IYD-HTV-PU-20-K",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Black"
+          }
+        },
+        {
+          "sku": "IYD-HTV-PU-20-R",
+          "priceCents": 3700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Red"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-htv",
+          "isPrimary": true,
+          "alt": "A roll of heat-transfer vinyl"
+        }
+      ]
+    },
+    {
+      "handle": "application-tape-roll",
+      "title": "Application Transfer Tape — 24 in Roll",
+      "description": "Medium-tack paper application tape for transferring cut vinyl to the surface clean and straight — lays flat, releases without lifting the graphic, and takes a squeegee without tearing. 24\" x 100 yd roll. MOQ 2 rolls. The consumable every sign job burns through.",
+      "status": "active",
+      "productType": "Application tape",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["application-tape", "transfer-tape", "signage", "consumable", "roll"],
+      "categoryHandles": ["vinyl-htv"],
+      "collectionHandles": ["signage-supplies", "print-shop-essentials"],
+      "seoTitle": "Application Transfer Tape 24 in Roll | Inkyard Trade Supply",
+      "seoDescription": "Medium-tack paper application transfer tape, 24 inch x 100 yd roll. Lays flat, releases clean, takes a squeegee.",
+      "variants": [
+        {
+          "sku": "IYD-VIN-APPTAPE-24",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-app-tape",
+          "isPrimary": true,
+          "alt": "Application Transfer Tape — 24 in Roll"
+        }
+      ]
+    },
+    {
+      "handle": "scrim-banner-media-roll",
+      "title": "Scrim Banner Media — 54 in Roll",
+      "description": "Matte scrim vinyl banner media for wide-format eco-solvent and latex printers — a tough polyester-reinforced base that takes ink sharp and grommets without cracking. 54\" x 164 ft roll. MOQ 1 roll. Pick the weight your job needs — 13oz for indoor and short runs, 15oz for outdoor and wind.",
+      "status": "active",
+      "productType": "Banner media",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["banner", "media", "wide-format", "signage", "roll"],
+      "categoryHandles": ["media-board"],
+      "collectionHandles": ["best-sellers", "signage-supplies", "bulk-media"],
+      "seoTitle": "Scrim Banner Media 54 in Roll, 13oz or 15oz | Inkyard Trade Supply",
+      "seoDescription": "Matte scrim vinyl banner media, 54 inch x 164 ft roll. 13oz indoor or 15oz outdoor, grommets without cracking.",
+      "options": [
+        {
+          "name": "Weight",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "13 oz"
+            },
+            {
+              "value": "15 oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IYD-MED-BANNER-54-13",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Weight": "13 oz"
+          }
+        },
+        {
+          "sku": "IYD-MED-BANNER-54-15",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Weight": "15 oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-banner",
+          "isPrimary": true,
+          "alt": "A roll of scrim banner media"
+        }
+      ]
+    },
+    {
+      "handle": "overlaminate-film-roll",
+      "title": "Overlaminate Film — 30 in Roll",
+      "description": "Cast overlaminate to protect printed wraps and decals from UV, abrasion and wash — optically clear, conformable to match the print vinyl, with an air-release adhesive for a clean lamination. 30\" x 50 yd roll. MOQ 1 roll. Match gloss to gloss or matte for a low-glare finish.",
+      "status": "active",
+      "productType": "Laminate",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["laminate", "overlaminate", "wrap", "protection", "roll"],
+      "categoryHandles": ["media-board"],
+      "collectionHandles": ["new-in", "signage-supplies"],
+      "seoTitle": "Cast Overlaminate Film 30 in Roll, gloss or matte | Inkyard Trade Supply",
+      "seoDescription": "Optically clear cast overlaminate, 30 inch x 50 yd roll, air-release adhesive. Gloss or matte, UV and abrasion protection.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Gloss"
+            },
+            {
+              "value": "Matte"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IYD-MED-LAM-30-G",
+          "priceCents": 11200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Gloss"
+          }
+        },
+        {
+          "sku": "IYD-MED-LAM-30-M",
+          "priceCents": 11600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Matte"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-laminate",
+          "isPrimary": true,
+          "alt": "A roll of gloss overlaminate film"
+        }
+      ]
+    },
+    {
+      "handle": "foam-board-pack",
+      "title": "Foam Board, 32 x 40 in — Pack of 25",
+      "description": "White-faced 3/16\" foam board for mounted prints, presentation signage and short-run point-of-sale — rigid, lightweight, and cuts clean on a plotter or a straightedge. Pack of 25 sheets, 32\" x 40\". MOQ 1 pack. The mount-and-display board a sign shop keeps on hand.",
+      "status": "active",
+      "productType": "Board",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["foam-board", "board", "mounting", "signage", "pack"],
+      "categoryHandles": ["media-board"],
+      "collectionHandles": ["print-shop-essentials"],
+      "seoTitle": "Foam Board 32 x 40 in, Pack of 25 | Inkyard Trade Supply",
+      "seoDescription": "White-faced 3/16 inch foam board, 32 x 40 inch, pack of 25 sheets. Rigid, lightweight, cuts clean for mounted prints.",
+      "variants": [
+        {
+          "sku": "IYD-BRD-FOAM-3240",
+          "priceCents": 8400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-foam-board",
+          "isPrimary": true,
+          "alt": "Foam Board, 32 x 40 in — Pack of 25"
+        }
+      ]
+    },
+    {
+      "handle": "eco-solvent-ink-set",
+      "title": "Eco-Solvent Ink — CMYK Set",
+      "description": "A four-colour CMYK set of eco-solvent ink for wide-format printers — bright, weatherproof, and profiled for banner, vinyl and film, in 440 mL cartridges that run clean without clogging heads. Set of 4 (C, M, Y, K). MOQ 1 set. Keep a spare set on the shelf so a colour-out never stops a job.",
+      "status": "active",
+      "productType": "Ink",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["ink", "eco-solvent", "wide-format", "cmyk", "set"],
+      "categoryHandles": ["inks"],
+      "collectionHandles": ["best-sellers", "print-shop-essentials"],
+      "seoTitle": "Eco-Solvent Ink CMYK Set, 440 mL | Inkyard Trade Supply",
+      "seoDescription": "Four-colour CMYK eco-solvent ink set, 440 mL cartridges. Weatherproof, profiled for banner, vinyl and film.",
+      "variants": [
+        {
+          "sku": "IYD-INK-ECO-CMYK",
+          "priceCents": 16800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-eco-ink",
+          "isPrimary": true,
+          "alt": "Eco-Solvent Ink — CMYK Set"
+        }
+      ]
+    },
+    {
+      "handle": "dye-sublimation-ink-set",
+      "title": "Dye-Sublimation Ink — CMYK Set",
+      "description": "A four-colour CMYK set of dye-sublimation ink for transfer printing onto polyester and coated blanks — high colour yield, sharp gradients, and a stable formula that sublimates evenly at press temperature. Set of 4 x 1 L bottles. MOQ 1 set. The ink behind every mug, tumbler and poly tee.",
+      "status": "active",
+      "productType": "Ink",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["ink", "sublimation", "dye-sub", "cmyk", "set"],
+      "categoryHandles": ["inks"],
+      "collectionHandles": ["new-in", "sublimation-station"],
+      "seoTitle": "Dye-Sublimation Ink CMYK Set, 1 L | Inkyard Trade Supply",
+      "seoDescription": "Four-colour CMYK dye-sublimation ink set, 1 L bottles. High yield, sharp gradients, even sublimation.",
+      "variants": [
+        {
+          "sku": "IYD-INK-SUBLI-CMYK",
+          "priceCents": 14200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subli-ink",
+          "isPrimary": true,
+          "alt": "Dye-Sublimation Ink — CMYK Set"
+        }
+      ]
+    },
+    {
+      "handle": "sublimation-blank-mugs-case",
+      "title": "Sublimation Blank Mugs — Case of 36",
+      "description": "White polymer-coated ceramic blanks for dye-sublimation, a case of 36 — an even coating that takes a full-wrap transfer edge to edge with bright, wash-durable colour. MOQ 1 case. Pick the size your line presses — the everyday 11oz or the roomier 15oz.",
+      "status": "active",
+      "productType": "Blank",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["blanks", "sublimation", "mugs", "ceramic", "case"],
+      "categoryHandles": ["blanks"],
+      "collectionHandles": ["best-sellers", "sublimation-station"],
+      "seoTitle": "Sublimation Blank Mugs, Case of 36 | Inkyard Trade Supply",
+      "seoDescription": "White polymer-coated ceramic sublimation blank mugs, case of 36. Even coating, full-wrap, wash-durable colour. 11oz or 15oz.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "11 oz"
+            },
+            {
+              "value": "15 oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IYD-BLK-MUG-11",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "11 oz"
+          }
+        },
+        {
+          "sku": "IYD-BLK-MUG-15",
+          "priceCents": 7200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "15 oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subli-blanks",
+          "isPrimary": true,
+          "alt": "A case of blank white sublimation mugs"
+        }
+      ]
+    },
+    {
+      "handle": "shop-starter-media-kit",
+      "title": "Shop Starter Media Kit",
+      "description": "A curated kit of the media a new sign or print shop runs out of first — a roll of cast vinyl, a roll of application tape, a roll of banner, and a set of HTV colours, packed together and priced below the sum of the rolls. MOQ 1 kit. The fastest way to stock a floor from empty.",
+      "status": "active",
+      "productType": "Kit",
+      "vendor": "Inkyard Trade Supply",
+      "tags": ["kit", "starter", "bundle", "media"],
+      "categoryHandles": ["media-board"],
+      "collectionHandles": ["new-in", "print-shop-essentials"],
+      "seoTitle": "Shop Starter Media Kit | Inkyard Trade Supply",
+      "seoDescription": "A curated starter kit of essential print-shop media — cast vinyl, application tape, banner and HTV, priced below the sum.",
+      "variants": [
+        {
+          "sku": "IYD-KIT-STARTER",
+          "priceCents": 26900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-starter-kit",
+          "isPrimary": true,
+          "alt": "Shop Starter Media Kit"
+        }
+      ]
+    }
+  ]
+}

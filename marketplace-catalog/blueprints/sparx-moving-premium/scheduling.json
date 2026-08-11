@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "whiteglove-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and two hours ahead."
+    },
+    {
+      "handle": "move-deposit",
+      "name": "Move reservation deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 25000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Reserving a move date holds a $250 deposit that is credited in full toward your move. Reschedule with 48 hours’ notice and it carries over to your new date."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["long-distance", "white-glove", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "celine",
+      "name": "Céline Ordóñez",
+      "kind": "staff",
+      "skillTags": ["fine-art", "white-glove", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "jonah",
+      "name": "Jonah Reyes",
+      "kind": "staff",
+      "skillTags": ["corporate", "long-distance", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 510,
+          "endMinute": 1050
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "In-home consultation",
+      "description": "A complimentary walk-through of your home — we take stock of what’s moving, talk timeline and options, and build a precise, honest estimate.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "whiteglove-standard"
+    },
+    {
+      "handle": "virtual-estimate",
+      "name": "Virtual video estimate",
+      "description": "A complimentary video call — walk us through your home on your phone and we’ll prepare a detailed written estimate, no visit required.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "whiteglove-standard"
+    },
+    {
+      "handle": "long-distance-consult",
+      "name": "Long-distance & interstate consultation",
+      "description": "For a cross-country or interstate move — we plan the route, the timeline and the logistics, and assign a dedicated manager for the whole journey.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    },
+    {
+      "handle": "white-glove-packing-consult",
+      "name": "White-glove packing consultation",
+      "description": "Plan full-service, room-by-room packing — every item wrapped, boxed and inventoried by our crew, so you never lift a thing.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "whiteglove-standard"
+    },
+    {
+      "handle": "fine-art-move-consult",
+      "name": "Fine-art & antiques consultation",
+      "description": "For paintings, sculpture, pianos and heirlooms — custom crating, climate care and a specialist manager who handles the irreplaceable.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["fine-art"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    },
+    {
+      "handle": "corporate-relocation-consult",
+      "name": "Corporate & executive relocation",
+      "description": "A managed relocation for an executive or a team — coordinated timelines, discreet handling and a single point of contact from start to finish.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["corporate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "move-deposit"
+    },
+    {
+      "handle": "storage-consult",
+      "name": "Storage & warehousing consultation",
+      "description": "Short- or long-term storage between moves — secure, climate-controlled and fully inventoried, with delivery on your schedule.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "manager",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "whiteglove-standard"
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "policies": [
+    {
+      "handle": "pest-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to move or cancel a visit. We send a reminder the day before and two hours ahead, and we’ll always tell you which technician is coming."
+    },
+    {
+      "handle": "recurring-plan",
+      "name": "Recurring plan",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Plan visits repeat on the schedule you choose — monthly, bi-monthly or quarterly — with the same technician each time. Skip or reschedule any single visit with 24 hours’ notice; nothing is locked in."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Ortiz",
+      "kind": "staff",
+      "skillTags": ["botanical", "general", "inspection"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "marco",
+      "name": "Marco Deyn",
+      "kind": "staff",
+      "skillTags": ["ipm", "general", "rodents"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["botanical", "recurring", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-inspection",
+      "name": "Free inspection",
+      "description": "A no-pressure visit to walk your home and yard, find where pests are getting in, and lay out a plan — with a clear, no-obligation quote. Always free, and always safe for kids and pets.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "botanical-pest-treatment",
+      "name": "Botanical pest treatment",
+      "description": "A targeted treatment using plant-derived, low-toxicity products for common household pests — ants, spiders, roaches — with no harsh fumes and no need to clear the house for hours.",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "natural-rodent-control",
+      "name": "Natural rodent control",
+      "description": "Humane, exclusion-first rodent control — sealing entry points and using tamper-resistant, pet-safe stations rather than loose poisons, so mice and rats leave and stay gone.",
+      "durationMinutes": 90,
+      "priceCents": 22000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "ipm-assessment",
+      "name": "IPM assessment",
+      "description": "A deeper integrated-pest-management review — habitat, moisture, entry points and food sources — with a prevention plan that stops pests coming back instead of just spraying what’s here now.",
+      "durationMinutes": 75,
+      "priceCents": 12000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "ant-treatment",
+      "name": "Ant treatment",
+      "description": "A focused treatment for an active ant trail or colony, using bait and botanical barriers placed where they matter — effective on the nest, gentle on the rest of your home.",
+      "durationMinutes": 45,
+      "priceCents": 11000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "mosquito-natural-treatment",
+      "name": "Mosquito natural treatment",
+      "description": "A yard treatment that knocks mosquito numbers down with plant-based products and larval-source control — so the garden is usable again without coating it in synthetics.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pest-standard"
+    },
+    {
+      "handle": "recurring-plan-setup",
+      "name": "Recurring plan setup",
+      "description": "Set up an ongoing prevention plan — monthly, bi-monthly or quarterly — with the same technician each visit. This first visit dials in your home; the rhythm keeps it pest-free from there.",
+      "durationMinutes": 60,
+      "priceCents": 13000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "recurring-plan"
+    }
+  ]
+}

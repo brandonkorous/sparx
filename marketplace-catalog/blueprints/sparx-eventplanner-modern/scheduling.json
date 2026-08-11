@@ -1,0 +1,238 @@
+{
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Please give us at least 48 hours’ notice to move or cancel a consultation. We send a reminder two days ahead and again two hours before."
+    },
+    {
+      "handle": "planning-deposit",
+      "name": "Planning-session deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 10000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 2880, 120],
+      "policyText": "Deep-dive planning sessions hold a $100 deposit that comes straight off your production quote. Reschedule with 72 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jordan",
+      "name": "Jordan Reyes",
+      "kind": "staff",
+      "skillTags": ["corporate", "production", "logistics"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "sana",
+      "name": "Sana Okafor",
+      "kind": "staff",
+      "skillTags": ["social", "design", "production"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Vale",
+      "kind": "staff",
+      "skillTags": ["brand", "activation", "production"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A free 30-minute call to talk through your event, your goals and your timeline — no obligation.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "corporate-event-consult",
+      "name": "Corporate event consultation",
+      "description": "A working session on your company event — offsites, summits, award nights and client experiences.",
+      "durationMinutes": 45,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "conference-production-consult",
+      "name": "Conference production consultation",
+      "description": "Scope the stage, run-of-show, AV and logistics for a multi-session conference or summit.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "product-launch-consult",
+      "name": "Product launch consultation",
+      "description": "Plan the reveal — venue, staging, press moment and the guest journey that makes it land.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "gala-consult",
+      "name": "Gala & fundraiser consultation",
+      "description": "Shape a black-tie gala or benefit — program, catering, entertainment and the room that wows.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-deposit"
+    },
+    {
+      "handle": "brand-activation-consult",
+      "name": "Brand activation consultation",
+      "description": "Design an experiential pop-up, launch stunt or festival footprint that gets people talking.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "private-party-consult",
+      "name": "Private party consultation",
+      "description": "A milestone birthday, anniversary or celebration, produced end to end so you can be a guest.",
+      "durationMinutes": 45,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "producer",
+          "kind": "staff",
+          "skillTags": ["production"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    }
+  ]
+}

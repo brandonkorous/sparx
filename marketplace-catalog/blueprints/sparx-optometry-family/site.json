@@ -1,0 +1,2207 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "7ab3c0b8-1b1b-4e4a-9c7a-a3d8cfacd8c3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "fd235038-2fdd-43c1-96cb-cd4f06e345b3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "71276e93-3875-41f3-82c8-04fc0e21b165",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "8fe016e9-4afc-4b47-88f1-3c270fae65ee",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "65937714-a325-484f-88e6-bfd367c71cc3",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "d9e1c0f4-b278-4590-8d93-f09af6e772d3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "9c187493-3b18-468f-a74e-c78e3a0cee7d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "091b2c04-421e-417d-b4b1-a86a9261e937",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "0f500b31-041f-4989-9eb9-b6619641fcb6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "855f8bf3-0930-46ba-9a91-a17025f8d1c0",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c88e4904-7953-4ab8-aba1-d5b771b9306e",
+                  "ord": "a2"
+                }
+              ],
+              "id": "52c56eb6-6ce4-4697-ab56-02a41908e8f7",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "c7a0d3a4-7e59-4b19-a474-47692cd9a5fd",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "8edd7371-9a5b-444a-8621-c04bdad0f375",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "f28224ae-6fd4-4485-b58f-e4777744aa5a",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "d0993af6-d1a1-4fd0-8a6d-4b7c1fc1a997",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "2305c269-1419-48b5-8143-06273738b3b3",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "fecf1f9c-483e-4d8b-8be1-e8de54ffdcec",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "7d42f88c-5fc8-4f89-94c0-49e2e41515bf",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "fc629cf9-d253-426d-9249-ffef1e29ea1f",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "71ad0963-3e7f-482b-9b28-f700114cb595",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "5f694ff1-bcb5-4756-9cb1-895e3ca6a1e0",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "9b31477f-9e5c-4e15-a6b0-f27fb70bad57",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "c2a7eefb-1ceb-4d73-bbbb-6afba8a13864",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "c30e002a-1c91-4212-bbea-7a894c47c6e5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "0c4fccb2-ff85-4781-9b78-d42a81e0dba1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d4e3e9b3-54d4-48b8-b938-581f02b93e53",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "2da9865c-9247-4279-b5ca-bc74f4733682",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "153ff87b-2833-45ea-b25d-3a800af932d3",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "7b005ceb-8d50-4cf7-8f96-9c49b2d0ea57",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8dcb0150-7f74-4c72-b9a7-be407f4618d7",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "e720aa48-d797-4ac8-9b8a-085ccea792f3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "88b0c359-e97a-4f65-98cd-710a085da577",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "bd20bdff-db85-4236-842c-c639a15960f5",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "52d296ae-2b86-4752-95cd-e69b6af7e21d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "2da45426-36f5-4342-bf5e-3e6d1c3c607b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "60d0c69b-7be2-4a91-b88d-7470ebef710c",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "e3e3e0e8-c349-4c90-a120-57aa61da34c7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0b093bf5-b4ae-4c99-b08c-60d42e52070c",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "a9bd10bb-5149-4e95-8fb9-cc3a7399a8fc",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "da938769-83b7-4a02-82be-7c533afff72b",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "a52fbace-c2b8-4042-aa00-91924375bf57",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "0e9b6208-d2e5-40bf-8d3a-9eab280a444b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "88f0bbee-e3fb-40df-9de3-103c4d982581",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "1c9788dd-b23b-40f3-b062-9cd85d7d1fa6",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "47b2902f-49ee-4889-8f9b-f52d743d68f3",
+                  "ord": "a1"
+                }
+              ],
+              "id": "02b18810-ef0a-4bce-b50e-94a9fd32ffef",
+              "ord": "a0"
+            }
+          ],
+          "id": "ad84652c-37bd-41bb-abf4-f1d29bfe352f",
+          "ord": "a2"
+        }
+      ],
+      "id": "c080c32a-01c3-4276-a714-6154cdbf9503"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Clearview Eye Care — a friendly family optometrist",
+      "seoDescription": "Clearview Eye Care is a warm, all-ages optometry practice for comprehensive eye exams, kids’ vision, contacts, dry-eye help, medical eye visits and glasses. New patients welcome — book an eye exam online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f3a4d23a-986e-42cb-b6db-ebe06535c9ae",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXllJTIwZXhhbSUyMG9wdG9tZXRyeXxlbnwwfDB8fHwxNzg2MzkyMTE2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves",
+                  "loading": "eager"
+                },
+                "id": "4954f050-7d91-4705-8de1-e6015056969d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "fd8324ea-71e3-428e-83d3-3fe317884f28",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Clear vision for the whole family"],
+                    "id": "feecff38-bd3a-43c1-93a4-4c2349dacf93",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Warm, unhurried eye care for every age — comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome."
+                    ],
+                    "id": "95eea228-a56c-46ca-848e-f3ba11b5362d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book an eye exam"],
+                        "id": "2aa24a9c-e878-4e35-bdb9-a600be697c8d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See appointments"],
+                        "id": "717bc4ed-12de-4adc-813f-06dc94f2f6a1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f45986ed-c200-463d-bcb5-fc9e7ed56cc3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4cd1ba3f-e0c7-4e2f-882a-6c40d7680a36",
+                "ord": "a2"
+              }
+            ],
+            "id": "4e13c2e9-978a-4dcc-9fae-24026b2ecaa9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Thorough, unhurried exams"],
+                            "id": "5557b7f5-8291-46bd-a643-520c3d37537e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We take the time to check your vision and the health of your eyes properly, explain what we see in plain language, and never rush you out the door."
+                            ],
+                            "id": "b325f5ea-a009-4709-9d49-b28d114f03d8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "55034946-f683-4333-ab11-b107b4b819b2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Most insurance accepted"],
+                            "id": "0d7d4bcd-beec-4b51-8b4f-f6a2210d91dd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We work with most major vision and medical plans and file the claim for you, so there are no surprises. No insurance? Ask about our simple in-house plan."
+                            ],
+                            "id": "2bec9758-9010-46be-9e75-6c3cb7f47c1d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "950c5255-0378-4695-a260-abbeb0f67b23",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Kids genuinely welcome"],
+                            "id": "cd655210-4efd-41b7-ab1a-8bebb85f1b6b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy — gentle doctors, no scary words, plenty of high-fives."
+                            ],
+                            "id": "f0c35c75-a828-4931-bdeb-c12aa3dd896b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b72a42df-f124-45b6-a690-2566a829b2c9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A huge frame selection"],
+                            "id": "7b97b1e8-4de4-419f-b823-58ad9c836499",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Hundreds of frames for every face and budget, and an optician who’ll happily help you find the pair you actually want to wear every day."
+                            ],
+                            "id": "f2cd6c70-31c0-47dd-8f95-e25b218e5900",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6fe471ad-58e1-4355-a2f8-1d4eedfd1114",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "8f4295b2-4960-4f87-82d9-d2988726a2cf",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "40edcbf9-ccdd-47cf-a5f7-fa90f6626f61",
+                "ord": "a0"
+              }
+            ],
+            "id": "94701911-b9d5-49d0-acbc-2f7332a9c34d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Appointments"],
+                        "id": "304da246-f9df-4cec-a326-e4b7b2d3afa1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the visits we see most. Full prices and live availability are on the booking page — and frame styling is always free."
+                        ],
+                        "id": "17224821-4bac-4e29-a649-8542e14923d5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "33a9c778-a1f7-4bee-83a6-f01d5485ac33",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Comprehensive eye exam"],
+                                "id": "2c85d9be-f733-4644-bc7e-d6b9036b6f74",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$129"],
+                                "id": "64c2080d-8fce-44c7-b288-31cd412b4de5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0cf1c48e-649a-4a8f-a5d6-35870fe0dcb7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["40 min"],
+                            "id": "babe5e39-c984-4bc4-b73f-0ece89d52484",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A full check of your vision and eye health."],
+                            "id": "3cf7a41b-fff0-43a7-ae64-84f0be8e9b39",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6c1de063-d705-42be-8e74-aeae8f42823c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Contact lens exam & fitting"],
+                                "id": "f4550187-6c08-4281-85e7-c57f4785437a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$159"],
+                                "id": "79817eb7-9121-496e-97ff-c0dc5f98cdb7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d9a478e3-55c4-4ce1-93d7-96959ad43564",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["50 min"],
+                            "id": "ba533940-1273-4a80-aab7-b9be7c7f9450",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An exam plus a proper contact-lens fitting."],
+                            "id": "f5d5dede-4ebc-4fd0-97d4-25964eb8f5b4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fb39ac7d-f7ad-428e-9f52-88d0d7044c9b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Kids’ eye exam"],
+                                "id": "1bdfd958-4961-4cca-a082-0ade605c691f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$99"],
+                                "id": "1ff8cb47-30de-443d-8909-1b82a052eafb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1aade2f5-4fba-47d3-a8aa-8a6f146d8ba2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "8c5e3ad2-eef4-475e-945b-1334cb379a88",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A friendly, playful check made for little ones."],
+                            "id": "a710d481-44d1-4113-bc45-f73f0cf26c76",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0283ea12-9182-4cc5-8510-dd4740f08353",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Dry-eye consultation"],
+                                "id": "23a5e045-c1aa-4126-966e-4fe4d931abd4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$89"],
+                                "id": "51cb0aee-7e50-449e-84db-a61b646990d7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b66b3ba6-a8e7-471e-b08c-ca62b1af7cbf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "df92e8cc-d024-4b4f-b8a6-64f929ab4db7",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Find out why your eyes bother you — and fix it."],
+                            "id": "d764135c-bd58-4a26-afc1-8f645c1439bd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4cf8212f-ee48-494b-9700-4cb5809fd01c",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Medical eye visit"],
+                                "id": "003d3a97-b578-44b4-b6ef-afb4365ec6f0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$119"],
+                                "id": "2903b5f9-da8b-48e0-be1a-ef02540f308f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d247b9c2-d6ea-4eb3-9104-1999d000194a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "689c71f5-200f-475e-b20d-b7e80c8e3a53",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Red, painful or blurry? Often seen the same day."],
+                            "id": "d52a26f6-ab53-418b-9d7c-82b0b1ef1acf",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8621d1ca-5a61-42c0-9c9d-71f9df4a3374",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Frame styling session"],
+                                "id": "2160b5bd-56d6-46de-bfb1-6b714e0626d3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "f235f2da-f078-4de6-a194-a0fc6a3e41f0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4eab73bc-6d0b-498e-9548-e8c8ca6fa1cb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "29decfe4-79ee-40ee-9470-b72a9235fe9e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Free, friendly help choosing frames you’ll love."],
+                            "id": "1812cab5-7d2e-4d01-a467-eb1b6300430f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3d5ddfc4-839e-4389-9da6-6e7fbe145085",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "44e8d321-7ff9-42a9-89d8-c3e304c9228f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "1453d653-28d8-46ed-8fb4-e83cd5e6fed1",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "c41ca230-f684-4b46-a650-6172ef412300",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6cb0e85c-38b4-4fcd-be1c-107a277151b0",
+                "ord": "a0"
+              }
+            ],
+            "id": "cc0629de-de64-4863-b0e1-0eaaeaac1e37",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1615468822882-4828d2602857?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0aWNhbCUyMHNob3AlMjBleWVnbGFzc2VzfGVufDB8MHx8fDE3ODYzOTIxMTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm, welcoming eye-care exam room with a phoropter and soft daylight",
+                      "loading": "lazy"
+                    },
+                    "id": "a761803d-d55b-470c-aad7-8ee402bfc556",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Family eye care, the warm way"],
+                        "id": "f1be6b06-4803-4b02-ab0a-67e1c8b41731",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Clearview is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold."
+                        ],
+                        "id": "afa87162-0bee-41e6-9eed-86fe3c921c4c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames — and leave seeing better and feeling looked after."
+                        ],
+                        "id": "de58f2da-3af8-44af-acba-28d029c01d2b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your visit"],
+                            "id": "8569f4bc-d0ba-44d9-930e-363a547d2b7b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "26215dd6-fa21-4b73-9f26-30365174c269",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "1455e8ba-ce39-40f1-8446-3f8334cf29b0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "58cbd15d-6c85-4ed7-99ff-6aa417af1ba0",
+                "ord": "a0"
+              }
+            ],
+            "id": "72ef1cee-a56d-4346-b7cd-6a656721f0c9",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet the team"],
+                        "id": "b79f6d26-cda3-43cf-9ba4-0465e63cee93",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll see friendly, familiar faces every visit."
+                        ],
+                        "id": "cd0ae0b3-390d-48e0-8703-f5acb6aa026f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "7978dcab-593d-4639-83d0-1211f74db541",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1757386320806-e3f03c9f41e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBvcHRvbWV0cmlzdCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTIxMjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Elena Reyes, optometrist, smiling warmly",
+                              "loading": "lazy"
+                            },
+                            "id": "68318d41-8ff5-4ac3-b4cc-42875f74c1a4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Elena Reyes"],
+                                "id": "1aa86425-0b2b-4954-9a2e-a090885a3a69",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Optometrist"],
+                                "id": "d9880ded-fd94-48c9-b4d4-6c0f9cb6454c",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Comprehensive exams, contacts and medical eye care — with a gentle, patient way about her. Elena founded the practice."
+                                ],
+                                "id": "1f9a2525-fb86-4cf6-a3c0-bb7d993a7c4a",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "71e1af72-3744-41b7-b778-8766a3e9fd7b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4d8212d9-cf23-4b00-a80f-d1796b22fc9a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0b21ldHJpc3QlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkyMTI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Marcus Bell, optometrist, in the exam room",
+                              "loading": "lazy"
+                            },
+                            "id": "996acc56-a7cc-4870-80e8-fa65fd83a79d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Marcus Bell"],
+                                "id": "6a268f3e-17aa-40d9-a311-5a1a3683f250",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Optometrist · kids & dry-eye"],
+                                "id": "a1d218a9-9459-4e27-8ae9-c024f315a105",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A favourite with little ones and anyone battling dry, tired eyes — Marcus makes first visits fun and fear-free."
+                                ],
+                                "id": "c2a06fac-f59c-40c6-9a1f-0d971a2e9e91",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "54e385e7-a292-4b57-905f-bb4af3dcd4ff",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "841eaa96-e7a2-48a2-bfa5-ea323bfc8a24",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1610013598025-8e6562cefc4e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b3B0aWNpYW4lMjBwb3J0cmFpdCUyMHdvbWFufGVufDB8MHx8fDE3ODYzOTIxMjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Nadia Okafor, licensed optician, helping choose frames",
+                              "loading": "lazy"
+                            },
+                            "id": "721752a4-c4db-4461-930e-bd6bfc9715bd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Nadia Okafor"],
+                                "id": "9be98f12-80e5-4362-b4b3-299a5d7b4f83",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Licensed optician"],
+                                "id": "f68d81e0-26ff-4d2b-9e7a-aa5072896ad6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The eye for frames — Nadia helps you find the pair that fits your face, your lenses and your life."
+                                ],
+                                "id": "3296b04f-fdf0-4e3c-8ad2-4b88e67812df",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "211d36fe-1d78-4f6f-ac20-d0175d780c87",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2fd389ef-3809-460a-9f7d-d6fd5eead23f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "fe37f05a-b89a-4b0c-924d-d9a412f609a6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3ca48211-c558-4b2a-a7de-d43e06e92ebe",
+                "ord": "a0"
+              }
+            ],
+            "id": "15017bb1-3639-4db8-b880-6286e6d2929f",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“My kids actually look forward to the eye doctor now — and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.”"
+                    ],
+                    "id": "7b7f9b33-08ba-416b-8513-53e7920356cf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Bianca, mum of two & patient since 2022"],
+                    "id": "40f4e1ca-378d-4964-b3d8-a3afdd8135a0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "df01af44-9c80-4fe9-aa2e-7123257f92e7",
+                "ord": "a0"
+              }
+            ],
+            "id": "8a24b7af-ff7b-4129-ae29-ad9376804a00",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["New patients always welcome"],
+                    "id": "304b777c-576f-41fc-9d60-c06fdb165f87",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a visit, choose your doctor and see live times. It takes about a minute — and we’ll take it from there."
+                    ],
+                    "id": "e8e0f1eb-f4e1-45c3-b9ae-bab658936d7d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book an eye exam"],
+                    "id": "f8f442b0-df20-46e6-81d2-994c10da5fcd",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "5a4a1f18-f70e-42c7-bcfd-c406a6f22925",
+                "ord": "a0"
+              }
+            ],
+            "id": "7cceeeef-27fa-4d83-a40d-ee0bd628558e",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Clearview Eye Care",
+      "seoDescription": "See what Clearview Eye Care offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cf4e851c-5d17-49c4-9d68-d6a0f20d7fa7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1593194777536-e155e6d100b2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBnbGFzc2VzJTIwZXllJTIwZXhhbXxlbnwwfDB8fHwxNzg2MzkyMTMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A young child trying on new glasses and grinning",
+                  "loading": "eager"
+                },
+                "id": "9aa972b6-cd55-4bc7-99cf-e784e7861c94",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "ccec9888-f2f2-4aa1-aafe-4a2576607a62",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your appointment"],
+                    "id": "e317566c-12d2-4020-afc7-026c6d5d4954",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a visit to see prices and live availability, then pick your optometrist and a time that suits the family."
+                    ],
+                    "id": "f167c795-5260-4789-a8cc-41f22c506633",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See appointments below"],
+                        "id": "826e416e-c29e-40ba-9aef-c7b8e8451257",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "a6a91ccb-b0c8-4860-8240-56bdbabb06bf",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f66a66b4-8ca7-42fe-b738-c52bbd4f3c3d",
+                "ord": "a2"
+              }
+            ],
+            "id": "d7e24f17-cf73-472b-b9f2-1906afe628b2",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "6fb5389d-8aac-410c-ae98-18575971279f",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Clearview Eye Care",
+      "seoDescription": "Who Clearview Eye Care is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "93b05f23-9075-46cb-a400-edbb14e254c4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1517948430535-1e2469d314fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXllJTIwZXhhbSUyMG9wdG9tZXRyeXxlbnwwfDB8fHwxNzg2MzkyMTE2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves",
+                      "loading": "lazy"
+                    },
+                    "id": "f440cf91-b058-442d-9082-c92f365882ea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Clearview Eye Care"],
+                        "id": "f50d38bb-2cc8-44a6-876f-f5a7dfa95218",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Clearview to be the kind of eye doctor we’d want for our own families — warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check."
+                        ],
+                        "id": "45018eb4-a724-42b9-87ad-88f9ce70533b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No upselling, no lectures, no confusing jargon. Just thorough exams, clear explanations, and a friendly team that treats you like a neighbour, because you probably are one."
+                        ],
+                        "id": "9480c258-b0be-4ddd-b702-cb0af64abee1",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "130e0aab-56d2-4da1-a871-a73c90eca1bb",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f600938a-e738-4a2f-ad20-1a65380ee5b0",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "18b31487-5b35-49ab-9c5a-efa08c743b7b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ff998265-fcfc-4f21-ae0e-7f1ee1272552",
+                "ord": "a0"
+              }
+            ],
+            "id": "650bb42d-f997-40ee-8638-286503eebd9a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we care for your eyes"],
+                    "id": "fd070719-38b5-42e6-9cda-e30cf3aa22c6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We listen first"],
+                            "id": "54b4fa6a-37b5-4943-9cb4-65ff65b988ba",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every visit starts with a real conversation about your eyes, your day and your budget — so the plan fits your life, not a sales target."
+                            ],
+                            "id": "b9a9acd3-5004-4c26-bb7a-21ccecdd9e71",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b7045621-d9e1-4020-974d-573022ca713a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Honest, clear pricing"],
+                            "id": "37632e1e-d784-4f9e-8c19-d58bcf165b67",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We’ll always tell you the cost before we start, file your insurance for you, and never push lenses or extras you don’t need."
+                            ],
+                            "id": "ea66fe82-9f32-4949-a916-e829709db05d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "894cad2f-7338-4389-a338-e10c3824374c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Gentle for every age"],
+                            "id": "be4f2518-c753-49ed-81c9-ac036ef7e512",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wriggly toddlers, nervous first-timers, busy teens and everyone after — we know how to make each one comfortable and glad they came."
+                            ],
+                            "id": "7eb3d5f7-cb4a-4556-bb5f-3330086b1bd2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a00ec6cd-aef0-4cee-927a-ff45df6694bf",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9fc3ea87-7507-40c4-a7ba-640c2a7dffc5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "265063fa-39d1-4ded-bbc8-b2140b67f0a0",
+                "ord": "a0"
+              }
+            ],
+            "id": "80d35473-bed9-419a-8132-859ba864d576",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Clearview Eye Care",
+      "seoDescription": "Where to find Clearview Eye Care, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f7e87e11-6a85-4f2a-841f-a6c4f7c7dc81",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the practice"],
+                        "id": "466006e2-51d1-4005-a477-e6ee5abdbb38",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Clearview Eye Care"],
+                            "id": "83af41fa-61b1-489c-934e-3da71c87b52b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["318 Cedar Park Avenue"],
+                            "id": "1547024c-a01f-47b4-8b94-e6adfd85ec6f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Portland, OR 97214"],
+                            "id": "55cfc2eb-8b4e-4c62-8fe4-71d9d67c79fd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0a91e830-9d7a-495b-802b-3fc18ff53150",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "c531237c-f213-4b60-9175-d61153faa1d5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "0c1bae91-6553-4b61-8100-82a633b8b1d7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6b795a8a-08ef-408e-8524-d309d50a801f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "f30e2233-f6bf-4c13-b5eb-e7fe1040bcbb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 3:00"],
+                                "id": "caca9d63-305f-4c48-83d0-348a25dc793e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "3d7d9e72-d0f0-4566-8bf4-493f6a63942b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "8b10480b-ff26-4a86-81cf-fab7bfc15a93",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "ee3f8826-878a-43f7-abe8-90ec28a43332",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ed7a19ef-6750-424b-b18b-c3bcd51fdad4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8e51016b-e067-4906-8bb5-d28c8f803081",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "abee5e80-8b5f-45d0-bb97-e194e4eb698a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "318 Cedar Park Avenue, Portland, OR 97214",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "10852976-2bc4-4eb2-b5dc-bdcae5f989e1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8541b789-86bc-4c3f-9bb8-d0396c53a44a",
+                "ord": "a0"
+              }
+            ],
+            "id": "36f0e864-93c1-491c-8297-f23f22d7ee5c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "e891330d-7723-4864-bd43-14bf07b0d088",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
+                    ],
+                    "id": "02981d8e-23e2-4c5e-a45a-a2f08796e6a5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "f4a13531-12c5-460c-a690-2fa754f77cea",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "26c25ec4-87cc-483e-83fb-eab860758992",
+                "ord": "a0"
+              }
+            ],
+            "id": "941bfe7d-5f3d-4e0b-b018-5a1776c9d7f3",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "clearview",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.008 200)",
+      "--color-base-200": "oklch(95% 0.016 200)",
+      "--color-base-300": "oklch(90% 0.022 205)",
+      "--color-base-content": "oklch(27% 0.03 245)",
+      "--color-primary": "oklch(60% 0.12 205)",
+      "--color-secondary": "oklch(37% 0.03 245)",
+      "--color-accent": "oklch(73% 0.13 45)",
+      "--color-neutral": "oklch(29% 0.02 245)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 205)",
+      "--color-secondary-content": "oklch(98% 0.01 245)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(98% 0.01 245)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(73% 0.13 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(90% 0.022 205)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(23% 0.02 245)",
+      "--color-base-200": "oklch(19% 0.018 245)",
+      "--color-base-300": "oklch(15% 0.015 245)",
+      "--color-base-content": "oklch(95% 0.008 200)",
+      "--color-primary": "oklch(74% 0.11 205)",
+      "--color-secondary": "oklch(80% 0.02 220)",
+      "--color-accent": "oklch(77% 0.12 45)",
+      "--color-neutral": "oklch(82% 0.015 220)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 205)",
+      "--color-secondary-content": "oklch(15% 0.02 220)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(15% 0.015 220)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.12 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(15% 0.015 245)"
+    }
+  }
+}

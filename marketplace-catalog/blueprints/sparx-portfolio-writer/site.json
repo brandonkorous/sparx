@@ -1,0 +1,1912 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container sticky top-0 z-20 bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center",
+                  "children": [
+                    {
+                      "kind": "host",
+                      "component": "site.brand",
+                      "class": "wordmark inline-flex items-center gap-2",
+                      "props": {
+                        "show": "both"
+                      },
+                      "id": "398a67b0-0796-4fbe-ae6f-eebf2d407899",
+                      "ord": "a0"
+                    }
+                  ],
+                  "id": "ca661e6e-b735-42f4-b3d2-5408bdcd42e5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center justify-center gap-8 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "eb0d9957-b022-4e8a-b7e5-705673e52228",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "50c967fa-11b4-4c47-bfdf-014817a60a72",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "ecd6698c-5daa-4295-8254-09c7512abdae",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "1ba342c7-3573-4605-84ee-282c9f928122",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-2",
+                  "children": [
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0d7d0535-6df3-4c38-b237-ae803a12d3be",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-ghost btn-sm hidden @sm:inline-block",
+                      "props": {
+                        "label": "Sign in",
+                        "href": "/account/login"
+                      },
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e4a642fb-e524-4be2-9ce3-bb7b86492084",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "991af9dd-e471-41f3-933c-60c030a3dc9b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "1b65275d-b549-4f71-81bc-b6b9abfaca33",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "f55a3c2a-070e-415f-898a-e1f666abe6d9",
+                  "ord": "a2"
+                }
+              ],
+              "id": "30032cfe-20bd-4b33-b099-1c66bd56ad12",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "3fbd4244-fccf-4948-beb3-c8434ca1633f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "103f6fd7-7c16-4674-8487-d34b4b269571",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "60003ada-9da6-468d-8580-4e09948a669f",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "cd127456-ec25-4fd2-b65f-e980613d15dc",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "15be6fdc-1431-4cdf-b20c-e078fc5270ae",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "b0033b20-6e3f-4884-b871-d9736a677c92",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "118d7d4d-6ad0-44dd-ab2c-d2c9eb23bb5f",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "cc448cd3-e39e-413e-9b38-f49ef0e02fcb",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "65258f62-e486-4495-8ebb-fefaba4fe410",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "2029fd87-7c3b-400c-bf6e-87889db226dc",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "54068421-41f0-4e2c-bf05-f58fe3234ea0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2781ee6e-3d36-479e-88f1-0db680bc6c4e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "66cf97e4-b65b-4214-84aa-43e775ae7a72",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "919d5599-7b3c-4450-9d27-0bc74a31efbc",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "e30cd83b-fbe6-495e-b55b-f9a79fcee782",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "bee95f44-98a0-49ba-9c86-568f746f506c",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "83ad45b1-1645-4a01-9771-9d183b5db334",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "7469b117-63ad-406b-81eb-f93332071256",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "88275b22-d59c-4512-abbd-b23efc14bfa1",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "2970f01a-6269-40dc-91d2-adc782adcf26",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "5a7db7a0-1e19-40f8-8250-540623392c56",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "2c491ae3-36a2-4100-8541-c6add199b24f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "a725539f-1249-4767-9f69-40628425eae9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a84934f1-1685-473b-b7f3-1c61b72f8657",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "4ccb443a-6491-4ac2-9f55-4f0a4ade32d1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "89813f67-292b-4590-a9e3-e3fcedeef2fb",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c31f1a5e-e850-464f-85d2-9080f9314825",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "b180753d-231d-4355-8df2-2a5c4d5bf11f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a04b4cb4-d71a-4443-a190-3c62efc1eb38",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "47d5de0f-8086-4207-9b1b-8d2b9f9005a4",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d550e62b-9c0b-47da-9e9f-33557919e862",
+                  "ord": "a1"
+                }
+              ],
+              "id": "915e1163-7e77-4de7-8df9-7ea654c02340",
+              "ord": "a0"
+            }
+          ],
+          "id": "3ebe17d9-cb4a-42df-a023-3af097fce0ab",
+          "ord": "a2"
+        }
+      ],
+      "id": "2d208889-6ce3-4d7c-981b-e339469822d1"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Iris Bellamy — writer",
+      "seoDescription": "Iris Bellamy is a writer on the coast — essays and reporting on work, cities and attention. Selected writing, a fortnightly newsletter, and how to commission her.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "311af743-cc47-4843-a890-ef99010a8d64",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-16 @3xl:pt-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-6xl font-medium leading-none tracking-tight text-base-content @2xl:text-8xl @3xl:text-9xl",
+                        "children": ["Iris Bellamy"],
+                        "id": "abc757dd-2478-408c-bae0-4911d3b39472",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-xl font-medium leading-snug text-primary @2xl:text-2xl",
+                        "children": ["Essays and reporting on work, cities, and attention."],
+                        "id": "f7f381bc-d224-4889-8d2e-324a655a2b8e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "37c1bea8-b56b-4560-ac10-2040e707acc2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                    "children": [
+                      "I write long and short — reported features, first-person essays, and a fortnightly newsletter — about how we spend our days: the work we do, the places we do it in, and the small daily fight to keep our attention our own. Fifteen years at it, most of them freelance, always following the question rather than the beat."
+                    ],
+                    "id": "af567473-0ffe-4ae1-b318-45a2eaaa9858",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3dfd86c3-efd8-4b1e-b86d-48f20e8bb7c3",
+                "ord": "a0"
+              }
+            ],
+            "id": "767d377d-8809-4995-81e5-0da228f9fb75",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-medium tracking-tight text-base-content @3xl:text-3xl",
+                    "children": ["Selected writing"],
+                    "id": "f226e8dc-7972-4315-81f1-38036b88aa6d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "grid gap-4 border-t border-base-300 pt-8 @2xl:grid-cols-3 @2xl:items-baseline @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 @2xl:col-span-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                "children": ["Essay"],
+                                "id": "701fc39d-6117-4ef6-ac20-7ddc38cbf51d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "block text-3xl font-medium leading-tight tracking-tight text-base-content transition-colors hover:text-primary @2xl:text-4xl",
+                                "attrs": {
+                                  "href": "/blog/the-long-way-to-the-desk"
+                                },
+                                "children": ["The Long Way to the Desk"],
+                                "id": "b1bdff58-7c82-4fc6-b98b-3c47c1087757",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                "children": [
+                                  "On the small, stubborn rituals we build around work — and what they quietly protect us from."
+                                ],
+                                "id": "105d8776-c676-4532-853a-76e07cd3816a",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "f198f85c-c2a7-4bb3-8aad-9691ca0ee383",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:items-end @2xl:text-right",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Meridian Quarterly"],
+                                "id": "01d9f0fe-60da-47ea-8824-d35e33d4d9d9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["March 2026"],
+                                "id": "c9d66ad2-645a-4cc1-a8dd-e3bb57531c16",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1dae79ae-1e37-4a66-aa70-ebe98854b357",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0995c297-12c8-4af7-a27d-454fc68b7953",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "grid gap-4 border-t border-base-300 pt-8 @2xl:grid-cols-3 @2xl:items-baseline @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 @2xl:col-span-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                "children": ["Reporting"],
+                                "id": "d8b70de7-b604-4997-a68f-68cd9047d746",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "block text-3xl font-medium leading-tight tracking-tight text-base-content transition-colors hover:text-primary @2xl:text-4xl",
+                                "attrs": {
+                                  "href": "/blog/what-the-night-shift-knows"
+                                },
+                                "children": ["What the Night Shift Knows"],
+                                "id": "7a554852-63b7-44eb-863a-10e62177ef96",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                "children": [
+                                  "Three months among the people who keep a city running while it sleeps, and the hours the daytime never sees."
+                                ],
+                                "id": "48fc5e6a-5530-4a6e-aa8e-245f2762341d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "00e61142-cf6e-40ad-80f5-a88f08046737",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:items-end @2xl:text-right",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["The Coastal Review"],
+                                "id": "9efe4ec7-9243-4759-a2cd-18ed0c2e9788",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["January 2026"],
+                                "id": "225cae1c-a249-4cdc-80eb-32474527c916",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "92ebbee3-a521-42ff-90b8-cbe870943f9f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "62d55fd0-1295-4819-9b2a-8b1223f8b28f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "grid gap-4 border-t border-base-300 pt-8 @2xl:grid-cols-3 @2xl:items-baseline @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 @2xl:col-span-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                "children": ["Newsletter"],
+                                "id": "5d0a45a9-8210-4d23-9e5a-8a03ac45d2a3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "block text-3xl font-medium leading-tight tracking-tight text-base-content transition-colors hover:text-primary @2xl:text-4xl",
+                                "attrs": {
+                                  "href": "/blog/notes-on-attention-14"
+                                },
+                                "children": ["Notes on Attention, No. 14"],
+                                "id": "4cabb853-d546-490e-9126-9247b9358ee3",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                "children": [
+                                  "A fortnightly letter — this issue, on the difference between being interrupted and being distracted."
+                                ],
+                                "id": "e982ff41-4a47-46d5-9bb8-4b84bb3042a2",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3ba2fa16-5db6-4ebc-a14f-166b7fb85e0e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:items-end @2xl:text-right",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["The Long Field"],
+                                "id": "9369d73b-0c56-4f8f-ad5c-75565d806eee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Issue 14 · 2026"],
+                                "id": "1a78cd4e-bdba-40df-9d34-abea7012fcd6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "49e8f076-a66d-426e-929d-aaf4b5dd3924",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cd9c4927-9f6b-4764-8075-ec67ae0a55fe",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "grid gap-4 border-t border-base-300 pt-8 @2xl:grid-cols-3 @2xl:items-baseline @2xl:gap-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 @2xl:col-span-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                "children": ["Criticism"],
+                                "id": "5c17f178-51ce-4da0-aa77-4785fcfe3bf8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "a",
+                                "class": "block text-3xl font-medium leading-tight tracking-tight text-base-content transition-colors hover:text-primary @2xl:text-4xl",
+                                "attrs": {
+                                  "href": "/blog/the-novel-that-refuses-to-end"
+                                },
+                                "children": ["The Novel That Refuses to End"],
+                                "id": "fc25d748-c4b8-41cb-baa8-5df5a8eca8a7",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                                "children": [
+                                  "On long books, slow reading, and why the best endings are the ones that decline to resolve."
+                                ],
+                                "id": "76827050-f27a-48c2-95d4-f262a047f91c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "1d157d9e-f016-49a0-b2a1-8775a92dfeea",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1 @2xl:items-end @2xl:text-right",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Ledger & Ink"],
+                                "id": "321eb3a0-38ab-4275-b500-d790ae95d5f2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["November 2025"],
+                                "id": "2c5ff3ed-bcd1-4ba5-a3c2-ee3432e762d5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "49116f21-847a-4f71-8bb8-c2f681a2b057",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c952cf1b-673a-44ec-b92d-2ade1e428214",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0a23efd8-7dcb-4859-b5ba-48b0c2dc0611",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "72a217bc-e98c-4c06-b487-8b20925482af",
+                "ord": "a0"
+              }
+            ],
+            "id": "e66e80c5-77ee-45fc-9016-82c1f2bf6372",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-4 border-t border-base-300 pt-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Iris Bellamy is a writer based on the coast. Her work has appeared in Meridian Quarterly, The Coastal Review and Ledger & Ink, and she writes The Long Field, a fortnightly newsletter on work and attention."
+                    ],
+                    "id": "7314df25-a0e9-4b8c-b1e7-3226c294c045",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["For commissions, pitches and the newsletter — "],
+                        "id": "ef4b5870-a427-446e-92c8-587b979e5b26",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-primary transition-colors hover:text-base-content",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": ["get in touch"],
+                        "id": "85f2f653-ef1d-4af0-8fac-a8133dc49426",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["."],
+                        "id": "e95af98e-083b-4633-8843-0fca2c62eb3d",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8b405021-b689-4f2b-bd86-4ba41e2a114e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c259fce0-480f-4afe-ad06-6d5b4ffca045",
+                "ord": "a0"
+              }
+            ],
+            "id": "1cd8bd08-35ef-4171-9087-a147ba0ff480",
+            "ord": "a2"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Iris Bellamy",
+      "seoDescription": "Selected projects and case studies by Iris Bellamy — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "17a7ad6f-de37-4276-8895-2e45187cc998",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-12 @3xl:pt-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col gap-5 border-b border-base-300 pb-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-medium leading-none tracking-tight text-base-content @3xl:text-8xl",
+                    "children": ["Writing"],
+                    "id": "94c2ef8d-733e-4194-a831-4fba256ec530",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Essays, reporting, criticism and the newsletter — the last few years of it, most recent first. Each piece opens to the full read."
+                    ],
+                    "id": "00c34c7c-d35c-4eae-8f29-d9f6e4ea9a38",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c189fd99-dacd-4cce-8100-d2cab496d338",
+                "ord": "a0"
+              }
+            ],
+            "id": "a193b109-96d3-49ef-a8e9-06957373d37f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "86b51174-8051-4983-a20f-c52cbd5f8919",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "a5cee62c-8150-43bb-a762-3c8d525ae68a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "31a1597a-1edb-4502-bd7c-3ad05320a5b8",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "49e5c474-5503-4cfb-851b-ba8557b5d92b",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "7f3df878-2c50-42f8-9450-7b4428800a3a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "b00c9940-c843-4d68-8dbd-bb618bc1bd2e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2a69f8e9-d6f3-4755-ac4f-273907afa2e4",
+                "ord": "a0"
+              }
+            ],
+            "id": "0b00ea6d-6f15-47b5-b73f-090de5d34761",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Iris Bellamy — essayist & reporter",
+      "seoDescription": "Fifteen years of essays and reported features on ordinary working life — from a coastal news desk to the magazines, plus The Long Field newsletter.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ec2630d9-e058-4c66-a7b8-fff0e659fde4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-12 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-medium tracking-tight text-base-content @2xl:text-7xl",
+                        "children": ["About Iris"],
+                        "id": "56959fc0-ed06-4f54-879c-3cf0b73f1841",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": [
+                          "I’m a writer, mostly of essays and reported features, and I’ve spent fifteen years trying to describe ordinary working life clearly enough that it stops looking ordinary."
+                        ],
+                        "id": "7ed7aa9a-74a0-4e11-92b1-3906cbf5e34c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I started on the local desk of a coastal paper, covering council meetings and closing shops, and I never quite left that world behind — the reporting I care about most is still close to the ground, spent with people doing the work that keeps a place standing. The essays grew out of the reporting: the questions that were too slow, or too personal, for a news page."
+                        ],
+                        "id": "27e15388-b42a-42cb-8d57-ad8e5dd37d0c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "These days I write to commission for a handful of magazines, review the occasional novel, and send The Long Field — a fortnightly newsletter about work, cities and the strange economics of attention — to a few thousand readers who put up with me. I write slowly, edit hard, and believe the second draft is where the writing actually happens."
+                        ],
+                        "id": "ec4ab176-d1bb-42dd-a14f-e06d901e2eb2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "d16ad891-c637-41a5-8b73-ba9c06af3722",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-8",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1600188769045-bc6026bfc8cd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d3JpdGVyJTIwcG9ydHJhaXQlMjB3aW5kb3clMjBkYXlsaWdodHxlbnwwfDB8fHwxNzg2Mzk5ODI4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Iris Bellamy, writer, at a window in even daylight",
+                          "loading": "lazy"
+                        },
+                        "id": "dbaa2515-7116-49aa-a9df-fd5983a1dc2b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-lg font-medium tracking-tight text-base-content",
+                            "children": ["Selected bylines"],
+                            "id": "16ca10ad-2c33-4ec6-8efc-3bc59bfb4c9c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-6 border-t border-base-300 py-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["Meridian Quarterly"],
+                                    "id": "18781e1c-855f-40e7-8bde-3f5ff1cf0d13",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-secondary",
+                                    "children": ["essays"],
+                                    "id": "1b715b4a-2663-46a4-906e-c9a255a4d15f",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "5b854269-fbbb-4e29-9cd9-17fb24c88fd6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-6 border-t border-base-300 py-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["The Coastal Review"],
+                                    "id": "3c6127ff-a624-4035-bc04-1f48ceb90e4d",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-secondary",
+                                    "children": ["reporting"],
+                                    "id": "0003c252-7d9a-40f6-8ec3-a90a6dde7510",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "7eb1b80f-48d1-43de-b7a0-b25bc0c5ade4",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-6 border-t border-base-300 py-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["Ledger & Ink"],
+                                    "id": "524a77ce-8cf5-4f8e-b6df-74117ab16196",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-secondary",
+                                    "children": ["criticism"],
+                                    "id": "f8794e7c-ca9c-440e-b05b-af6cced89427",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "ca010aa9-14c1-45a5-a3b7-4334041881f9",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-6 border-t border-base-300 py-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["Field & Harbor"],
+                                    "id": "e6225c7f-6d5f-406e-add9-4aed7ff36355",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-secondary",
+                                    "children": ["features"],
+                                    "id": "6aeda5a1-1f5c-407f-a919-9855d5cc5579",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "2def19d7-4785-4b8e-99fd-690a42726489",
+                                "ord": "a3"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-6 border-t border-base-300 py-3",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base font-semibold text-base-content",
+                                    "children": ["The Long Field"],
+                                    "id": "91402580-d929-4124-81b9-f3c56338f258",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm text-secondary",
+                                    "children": ["newsletter, hers"],
+                                    "id": "765dea90-a4a9-4997-a347-74af8a57afec",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "7b728647-0a74-4d05-b850-9a2c5378e53b",
+                                "ord": "a4"
+                              }
+                            ],
+                            "id": "4c9a69dc-6410-48ce-9d04-4a93cbb8adeb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e889cb15-7a9c-4c5d-94ae-597829dcc687",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "bf93aa8d-2402-4e45-befe-ff3ca5b3facc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a5edcd9e-5cf4-41e6-a039-3b196f65f28d",
+                "ord": "a0"
+              }
+            ],
+            "id": "925d3336-f691-48d1-ae6a-aa0c4887d4b7",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Iris Bellamy",
+      "seoDescription": "Start a project with Iris Bellamy — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6f80fb1b-c557-43e7-b219-e369b155621d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-medium tracking-tight text-base-content @2xl:text-7xl",
+                    "children": ["Get in touch"],
+                    "id": "73bf61b7-ba1c-4da8-97ca-a4d0764917e9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                    "children": [
+                      "I’m open to commissions and I read every pitch. Essays, reported features, criticism — if there’s a story you think I’m the right person to tell, write and tell me why."
+                    ],
+                    "id": "fe0375db-ae16-4fe5-ab17-00b2d7f0c211",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin — most of mine start that way."
+                    ],
+                    "id": "5f700cb6-710a-4945-9057-7058856af895",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-5 border-t border-base-300 pt-8",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:iris@irisbellamy.example"
+                        },
+                        "children": ["Email Iris"],
+                        "id": "0ba5f16c-0f86-460e-b73b-2b74ea99aed5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-primary transition-colors hover:text-base-content",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["Read the writing first"],
+                        "id": "3e8e6ac3-9d45-47a1-ab99-ff131c5f72c0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d84d55cf-4a1f-449b-a3df-72c6317e5c28",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "Or subscribe to The Long Field — a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing."
+                    ],
+                    "id": "f18c5342-5012-40d6-b5df-05b468af0d28",
+                    "ord": "a4"
+                  }
+                ],
+                "id": "72dd9ca7-0fb1-480a-8bad-3b9cefd7ed4f",
+                "ord": "a0"
+              }
+            ],
+            "id": "9db71164-e13a-4c0a-94e8-774812648295",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Iris Bellamy",
+      "seoDescription": "A project by Iris Bellamy — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary transition-colors hover:text-base-content",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "5ea0eb1c-806c-4474-b94b-09ed1e6baf6e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All writing"],
+                            "id": "a09d1f13-dc29-41c6-a637-8945fdc43d97",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0bdd8d8e-9f64-4a78-8201-ff14a1d89cdb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "bc54eab4-8e12-4149-9f64-afc04c5b42d6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "727925da-7161-47c0-9784-34fb0b8f5030",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "1a72d772-14ee-420c-904c-f1da1c18906f",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3 border-t border-base-300 pt-5",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "f8bcc6dc-d074-417f-8e89-242ec600687c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "4468a3f1-65b5-4a9d-b20e-03e6d2984c58",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "74c71f69-e7d4-42d2-9758-fdc6ffdb6bd7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6a2242af-f050-4e37-b4d6-3a6512670909",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "354aee65-3b77-4176-a2ce-f0a534475325",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "d296cd18-9c3a-40eb-a3a9-86e3fbf24a60",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a8935e05-cbba-4c42-9a16-7cdbf5105996",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-5xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "c4b7e8e1-215a-4ae1-bdf1-511a9c5ff6a5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "7ef35e87-58f5-4fe1-87b7-a254bd6f59e0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "98e10f00-2578-49bf-bb98-ef3d4994cc47",
+                "ord": "a1"
+              }
+            ],
+            "id": "f132c9bd-f135-43d8-a2a3-22c3fca42ffb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "abb5f349-6f0c-4866-8d16-571251d6f6d7",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dc39a47d-6a4c-4a3c-9bc4-ab9fa4027f05",
+                "ord": "a0"
+              }
+            ],
+            "id": "999b0391-36a1-4d9b-99dc-e1b8a44dfaf6",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 border-t border-base-300 pt-8 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "6f035cef-f0d4-4df8-b839-f818d2811c14",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "70a79697-4be3-48d4-9a29-29fab30e3815",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "4eec699a-0e59-4788-a475-8c04c17bc12f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ac461d2d-ca06-4b44-8769-b115ac748000",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "467a693f-8daa-42fd-9b50-b8de8dceb8b4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "13f90ee0-2710-4c75-beb1-835f7097c92a",
+                "ord": "a0"
+              }
+            ],
+            "id": "6adbf3f8-ee80-485b-8d13-2594ff6fc9da",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "44b9bf3d-80de-4367-a97a-b8353bd3898e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "45d49a09-ff9a-400a-ad40-49d6b1fc2b1e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "920dd649-5aec-43a7-9899-340648d2eb93",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "175d7a58-f41c-420b-bff8-4bc0b210545a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4cf58b7b-bc14-4883-ae65-3d942e2e12b7",
+                "ord": "a0"
+              }
+            ],
+            "id": "0e29f81e-fb5e-47fe-bea0-159a583d87c7",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "9cb34634-b43a-41d6-9e88-124a75b41e9d"
+      }
+    }
+  ],
+  "theme": {
+    "name": "manuscript",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.006 85)",
+      "--color-base-200": "oklch(95% 0.008 82)",
+      "--color-base-300": "oklch(90% 0.01 80)",
+      "--color-base-content": "oklch(20% 0.01 60)",
+      "--color-primary": "oklch(45% 0.13 32)",
+      "--color-secondary": "oklch(42% 0.03 60)",
+      "--color-accent": "oklch(45% 0.13 32)",
+      "--color-neutral": "oklch(23% 0.008 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(50% 0.19 12)",
+      "--radius-selector": "0rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Spectral\", serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 32)",
+      "--color-secondary-content": "oklch(98% 0.01 60)",
+      "--color-accent-content": "oklch(98% 0.01 32)",
+      "--color-neutral-content": "oklch(98% 0.008 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 12)",
+      "--color-danger": "oklch(50% 0.19 12)",
+      "--color-danger-content": "oklch(98% 0.01 12)",
+      "--color-highlight": "oklch(45% 0.13 32)",
+      "--color-highlight-content": "oklch(98% 0.01 32)",
+      "--color-border": "oklch(90% 0.01 80)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(17% 0.008 60)",
+      "--color-base-200": "oklch(14% 0.008 60)",
+      "--color-base-300": "oklch(11% 0.008 60)",
+      "--color-base-content": "oklch(95% 0.006 85)",
+      "--color-primary": "oklch(64% 0.13 32)",
+      "--color-secondary": "oklch(70% 0.03 60)",
+      "--color-accent": "oklch(64% 0.13 32)",
+      "--color-neutral": "oklch(30% 0.008 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(66% 0.18 12)",
+      "--color-primary-content": "oklch(15% 0.02 32)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 32)",
+      "--color-neutral-content": "oklch(98% 0.008 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 12)",
+      "--color-danger": "oklch(66% 0.18 12)",
+      "--color-danger-content": "oklch(15% 0.02 12)",
+      "--color-highlight": "oklch(64% 0.13 32)",
+      "--color-highlight-content": "oklch(15% 0.02 32)",
+      "--color-border": "oklch(11% 0.008 60)"
+    }
+  }
+}

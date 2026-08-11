@@ -28,6 +28,17 @@ import { emailService, pageService, siteService } from '@sparx/builder';
 import { createSequence, updateSequence, deleteSequence } from '@sparx/email-sequences';
 import { publishService, savedThemeService } from '@sparx/sitebuilder';
 import {
+  createBookingPolicy,
+  createResource,
+  createService,
+  setAvailabilityWindows,
+} from '@sparx/scheduling';
+import {
+  CreateBookingPolicyInput,
+  CreateResourceInput,
+  CreateServiceInput,
+} from '@sparx/scheduling-schemas';
+import {
   parseTypeSchema,
   resolveType,
   validateAndNormalizeBody,
@@ -67,6 +78,14 @@ export interface InstallResult {
   emails: { name: string; id: string }[];
   sequences: { name: string; id: string }[];
   content: { typeKey: string; slug: string | null; id: string }[];
+  /** Booking-backed service business (docs/79) — the id-map for the scheduling
+   *  slice. Null until an install with a `scheduling` decl runs it; `services` is
+   *  what the backfill's `isMaterialized` gate reads. */
+  scheduling: {
+    policies: Record<string, string>; // handle → BookingPolicy id
+    resources: Record<string, string>; // handle → SchedulingResource id
+    services: { handle: string; id: string }[];
+  } | null;
   counts: Record<string, number>;
 }
 
@@ -403,6 +422,7 @@ export async function installBlueprint(
     emails: [],
     sequences: [],
     content: [],
+    scheduling: null,
     counts: {},
   };
   const assetMap = new Map<string, string>();
@@ -456,6 +476,7 @@ export async function installBlueprint(
     // 5–10. Module-gated content slices — each installs only when its module is on.
     if (isOn('cms')) await installContentSlice(env);
     if (isOn('commerce')) await installCommerceSlice(env);
+    if (isOn('scheduling')) await installSchedulingSlice(env);
     if (isOn('builder')) await installSiteSlice(env);
     if (isOn('email')) await installEmailSlice(env);
 
@@ -468,6 +489,8 @@ export async function installBlueprint(
       pages: result.pages.length,
       emails: result.emails.length,
       sequences: result.sequences.length,
+      schedulingServices: result.scheduling?.services.length ?? 0,
+      schedulingResources: Object.keys(result.scheduling?.resources ?? {}).length,
     };
 
     // 10b. Baseline capture (docs/55 §4) — record the per-artifact merge ANCESTOR so
@@ -1109,6 +1132,147 @@ export async function installCommerceSlice(env: SliceEnv): Promise<void> {
 }
 
 /** 7. The authored silica site — frame + pages + theme + symbols. Builder module only. */
+/** 7. Scheduling — a working booking flow when the Scheduling module is on (else
+ *  skipped). Provisions the deposit/cancellation policies, the bookable resources
+ *  (staff/rooms/stations) with their weekly hours, and the service menu — the spine
+ *  the storefront `/book` widget renders live. Reconcile by natural key (NAME):
+ *  reuse an existing policy/resource/service, create only the genuinely-absent, and
+ *  set a resource's weekly windows ONLY on fresh create (setAvailabilityWindows is
+ *  replace-all, so a reinstall must never clobber a tenant's edited hours). Services
+ *  scope to the installed property; resources + services attach the
+ *  activation-seeded 'Main location' (bootstrapSchedulingDefaults), reused not
+ *  duplicated. Handle-based `resourceRequirements` route to resources by kind+skill
+ *  at booking time (no id wiring here). */
+export async function installSchedulingSlice(env: SliceEnv): Promise<void> {
+  const { tenantId, propertyId, blueprint, result, ctx } = env;
+
+  const sched = blueprint.scheduling;
+  if (!sched) return;
+
+  const idmap = result.scheduling ?? { policies: {}, resources: {}, services: [] };
+  result.scheduling = idmap;
+
+  // A resource/service image is a hot-linked URL on the scheduling row, not a
+  // MediaAsset ref — resolve the manifest asset id to its declared http(s) URL
+  // (skip data: URIs and anything over the column bound).
+  const assetUrlById = new Map(blueprint.assets.map((a) => [a.id, a.url]));
+  const imageUrlFor = (assetId?: string): string | undefined => {
+    if (!assetId) return undefined;
+    const url = assetUrlById.get(assetId);
+    return url && /^https?:\/\//i.test(url) && url.length <= 2048 ? url : undefined;
+  };
+
+  // The activation-seeded 'Main location' (bootstrapSchedulingDefaults) — reused, not
+  // recreated (there's no BusinessLocation CRUD in @sparx/scheduling). Null-safe: an
+  // install that somehow precedes the seed just leaves location unset.
+  const locationId = await withTenant(ctx, (tx) =>
+    tx.businessLocation.findFirst({
+      where: { tenantId, name: 'Main location' },
+      select: { id: true },
+    })
+  ).then((l) => l?.id ?? null);
+
+  // Policies — reconcile by name; attach seeded ones stay untouched.
+  const policyIds = new Map<string, string>();
+  for (const p of sched.policies) {
+    const existing = await withTenant(ctx, (tx) =>
+      tx.bookingPolicy.findFirst({ where: { tenantId, name: p.name }, select: { id: true } })
+    );
+    let id = existing?.id ?? null;
+    if (!id) {
+      const created = await createBookingPolicy(
+        tenantId,
+        CreateBookingPolicyInput.parse({
+          name: p.name,
+          depositType: p.depositType,
+          depositAmountCents: p.depositAmountCents ?? null,
+          depositPercent: p.depositPercent ?? null,
+          cancellationWindowHours: p.cancellationWindowHours,
+          policyText: p.policyText ?? null,
+          reminderOffsetsMin: p.reminderOffsetsMin,
+        })
+      );
+      id = created.id;
+    }
+    policyIds.set(p.handle, id);
+    idmap.policies[p.handle] = id;
+  }
+
+  // Resources — reconcile by name; set weekly windows only on fresh create.
+  for (const r of sched.resources) {
+    const existing = await withTenant(ctx, (tx) =>
+      tx.schedulingResource.findFirst({ where: { tenantId, name: r.name }, select: { id: true } })
+    );
+    let id = existing?.id ?? null;
+    if (!id) {
+      const created = await createResource(
+        tenantId,
+        CreateResourceInput.parse({
+          kind: r.kind,
+          name: r.name,
+          timezone: r.timezone,
+          capacity: r.capacity,
+          capacityMin: r.capacityMin ?? null,
+          capacityMax: r.capacityMax ?? null,
+          skillTags: r.skillTags,
+          bookableOnline: r.bookableOnline,
+          locationId,
+          imageUrl: imageUrlFor(r.imageAssetId) ?? null,
+        })
+      );
+      id = created.id;
+      if (r.windows.length > 0) {
+        await setAvailabilityWindows(tenantId, {
+          resourceId: id,
+          windows: r.windows.map((w) => ({
+            dayOfWeek: w.dayOfWeek,
+            startMinute: w.startMinute,
+            endMinute: w.endMinute,
+          })),
+        });
+      }
+    }
+    idmap.resources[r.handle] = id;
+  }
+
+  // Services — reconcile by name; attach policy + location; scope to the property.
+  for (const s of sched.services) {
+    const existing = await withTenant(ctx, (tx) =>
+      tx.schedulingService.findFirst({ where: { tenantId, name: s.name }, select: { id: true } })
+    );
+    let id = existing?.id ?? null;
+    if (!id) {
+      const created = await createService(
+        tenantId,
+        CreateServiceInput.parse({
+          propertyId,
+          name: s.name,
+          description: s.description ?? null,
+          bookingType: s.bookingType,
+          durationMinutes: s.durationMinutes,
+          bufferBeforeMin: s.bufferBeforeMin,
+          bufferAfterMin: s.bufferAfterMin,
+          priceCents: s.priceCents,
+          currency: s.currency,
+          capacity: s.capacity,
+          assignmentStrategy: s.assignmentStrategy,
+          resourceRequirements: s.resourceRequirements,
+          policyId: s.policyHandle ? (policyIds.get(s.policyHandle) ?? null) : null,
+          locationId,
+          minLeadMinutes: s.minLeadMinutes,
+          maxAdvanceDays: s.maxAdvanceDays,
+          slotIntervalMin: s.slotIntervalMin,
+          bookableOnline: s.bookableOnline,
+          requiresApproval: s.requiresApproval,
+          imageUrl: imageUrlFor(s.imageAssetId) ?? null,
+        })
+      );
+      id = created.id;
+    }
+    idmap.services.push({ handle: s.handle, id });
+  }
+}
+
 export async function installSiteSlice(env: SliceEnv): Promise<void> {
   const { propCtx, blueprint, result } = env;
 

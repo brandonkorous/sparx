@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "landscaping-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and again two hours ahead."
+    },
+    {
+      "handle": "design-deposit",
+      "name": "Design deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 15000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 2880, 120],
+      "policyText": "Full design engagements hold a $150 design deposit that is credited in full toward your finished plan. Reschedule with 72 hours’ notice and it carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marsh",
+      "kind": "staff",
+      "skillTags": ["design", "planting", "estimate"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Brandt",
+      "kind": "staff",
+      "skillTags": ["hardscape", "irrigation", "estimate"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["design", "outdoor-living", "estimate"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "design-consultation",
+      "name": "Design consultation",
+      "description": "A relaxed on-site walk-through of your property — your goals, your budget, and what’s possible. No charge, no pressure.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "landscaping-standard"
+    },
+    {
+      "handle": "full-property-estimate",
+      "name": "Full-property free estimate",
+      "description": "A complete measure-up and written estimate for a whole-yard transformation, covering design, build and planting.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "landscaping-standard"
+    },
+    {
+      "handle": "landscape-design-consult",
+      "name": "Landscape design engagement",
+      "description": "The start of a custom design: a detailed site survey and design brief that leads to scaled 2D and 3D plans for your build.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "design-deposit"
+    },
+    {
+      "handle": "hardscape-patio-consult",
+      "name": "Hardscape & patio consultation",
+      "description": "Patios, walls, walkways and fire features — we walk the space, talk materials and lay out a plan and estimate.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "landscaping-standard"
+    },
+    {
+      "handle": "planting-plan-consult",
+      "name": "Planting plan consultation",
+      "description": "A garden built for your light, soil and climate — four-season interest, sensible upkeep, and plants that thrive.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "landscaping-standard"
+    },
+    {
+      "handle": "irrigation-consult",
+      "name": "Irrigation & drainage consultation",
+      "description": "Smart, water-wise irrigation and drainage that keeps plantings healthy and the yard dry where it should be.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "landscaping-standard"
+    },
+    {
+      "handle": "outdoor-living-consult",
+      "name": "Outdoor living design engagement",
+      "description": "Kitchens, pergolas, lighting and living spaces — a design engagement for the yard you actually want to spend evenings in.",
+      "durationMinutes": 75,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["estimate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "design-deposit"
+    }
+  ]
+}

@@ -1,0 +1,2151 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "c152164e-ee90-4019-a6f0-da9b0bfe434a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "c2d1598b-0a7d-4cd5-b245-b92dc01e868f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "8610c813-7da7-463f-9bbf-a05fc96eddad",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "443f9a97-6ae3-4777-91e6-83f128b81c83",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "6789a71a-fd45-4aa0-a05f-7519c8ccf20e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "c23cca9e-47ef-451e-a9f1-c202aab23c84",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "9e90cfbe-735f-4eda-ba4e-1bc3029d7518",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "c3572e4e-feda-4118-8061-70065b7b3690",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "fdbbc8fb-79ab-4cd0-b890-ae3a4449fb23",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "ce4fe0d3-7327-42c1-ab54-07739d13bd19",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "4b4f8c79-6c62-4b76-8676-ce2f03cc5edc",
+                  "ord": "a2"
+                }
+              ],
+              "id": "bac73387-b679-40ea-8435-a7f4d3a175cb",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "3a95e38c-815e-4aeb-93e5-7ed19345f4ba",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "acf688e7-6855-4f52-a1db-a41244f9948e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "52294954-73b5-44bc-bc76-cf898e8bf4d9",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "8abeb4c9-67ae-447f-bbf9-69a4923bbad9",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "dbf9229c-7d62-4954-bba2-6aeb924e3cc7",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "55395015-e30a-48b3-9141-bc2989bdc882",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "d5f20c57-a69b-4577-b419-b65cae9c884f",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "2416184a-b8dc-4080-a5e5-71820a62bde6",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "bc438a0e-c706-44c7-bf7e-c63d159c9a16",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2849aa9f-cab0-4089-a149-c63e009db626",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "8532b33a-31d6-4aa6-ae7e-db5054b68ca3",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "6ea1d632-3b1f-461e-9ac0-14c8afedcefe",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "bdaa037a-dafe-427b-b8fc-1dc9ed055846",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "0ad2a736-e15e-4db0-bf2c-ac0c81a7293e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a22f997a-0198-4c3f-9c8d-bc8e6442aee2",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "558c8baf-e43c-4eb8-8458-2e37f5d84e1c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "09467700-56e3-48ce-8c3f-a67a79ce5e7a",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "29b683a2-0d79-4adc-9aec-134526d5476b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "27958eb2-d3e7-4ad9-a311-64341b4ce4eb",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "28ad4cfc-35a1-4baa-a6b6-0137138d5926",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ee252ce0-cdcf-44b7-91fe-cf80ebe0191a",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "1054db21-9e7f-48ee-a61f-899a8f46234a",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "af4a45e6-e418-4797-90ea-523900948d00",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "6b0bfd7f-46d4-426c-b010-9e3dafee926b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6ab53cba-2f01-4b4e-ae45-1639e994cc32",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "8ff683aa-d107-4c34-b8b9-a4fc5a131acf",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "bb3b8b5c-5a31-4183-9dc4-e828c3f7892a",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "a6520dca-9a16-4f7e-9c54-8bf01c389d38",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f1d5caca-e671-4e43-a683-84916efcf6fc",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5cb824c4-f272-4fe8-b689-0cc0c5b10df0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "0fa32b98-b217-4e2f-a701-eadad7156867",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d8bc8df5-555c-47bf-8112-6cbc872318ca",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "14ad3930-0a57-4bfe-a0d4-250140672cf2",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e9b37617-b51d-400b-b108-9fe48d65f195",
+                  "ord": "a1"
+                }
+              ],
+              "id": "44e70506-9766-4c8b-bd9d-d7d10a1183ba",
+              "ord": "a0"
+            }
+          ],
+          "id": "58df857d-4884-4f05-b9a5-b04e41e42833",
+          "ord": "a2"
+        }
+      ],
+      "id": "41342a07-c351-4928-9eb4-cc5fa571e4a2"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Voltline Electric — a modern electrical contractor",
+      "seoDescription": "Voltline Electric wires the modern home and business: EV chargers, smart-home, solar and battery hookups, and panel upgrades. Book a site assessment or free consult online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cb63825c-1451-43c9-8a60-062908f86726",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-start gap-6 ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
+                    "children": ["Wire your home for what’s next"],
+                    "id": "9aea57fd-c4e1-4a88-8704-20f5d509b457",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades — done by certified electricians, for homes and businesses. Book a site assessment and see exactly what your place needs."
+                    ],
+                    "id": "f0a364f4-653e-4f68-b5f7-1c842dca3426",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a site assessment"],
+                        "id": "112232fe-6dec-4e99-b884-f61ca384bd49",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See visit types"],
+                        "id": "92cab1c0-cd4f-4a68-9d4c-7cb8c8a6e05f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b5efbced-0f73-4ceb-9ae8-ee7431f7ddf4",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4e413b78-42d9-4deb-a31b-19909230c17f",
+                "ord": "a0"
+              }
+            ],
+            "id": "b9a0408b-b706-461f-aa8d-b87aec1d2c25",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Certified EV & panel specialists"],
+                            "id": "c80e100c-121c-43cd-aeaa-65a9a41c39dc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wall chargers and breaker-panel upgrades are our core work — sized right, permitted, and inspected, so your home keeps up with your car."
+                            ],
+                            "id": "c41d759f-9aa5-4a91-b276-9c8eeab38c43",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "06fd0dee-c258-4970-9558-1136acb23c97",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Smart-home & solar, done right"],
+                            "id": "6fc6917c-9e6c-4f3e-8075-b57bc82f5985",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Lighting, automation, solar and home batteries that actually work together. We handle the electrical side and explain it in plain language."
+                            ],
+                            "id": "9450e98d-0c2b-4e3f-b951-7637d9dd9df5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "302592d5-ab3c-41fd-92d9-594e7b194c3a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Rebates, permits & inspections handled"],
+                            "id": "61154f5e-bb6a-4b03-89b5-afbb62958dc9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We pull the permits, book the inspection, and walk you through the rebates you qualify for — residential or commercial, start to finish."
+                            ],
+                            "id": "cfd8765a-23e0-4b3d-9792-47195864d5a9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e0761ec5-951f-4a19-9cc9-3d38a10479aa",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "a0c5d671-ad6e-45fd-908e-cdcf9075d005",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b74fff94-ec20-494a-9908-5f85542b9512",
+                "ord": "a0"
+              }
+            ],
+            "id": "d5fb1ed7-3667-45e1-9568-369b05f51926",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Book a visit"],
+                        "id": "c9e0e0fa-54ef-41a4-a2d4-a77659bfbd53",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every project starts with someone on-site. Pick a visit type to see live availability — many are free, and none commit you to anything."
+                        ],
+                        "id": "821319fd-c4c4-4dba-adff-ca59006eae7e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5fd4b326-7013-4a1f-8562-75624d727642",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["EV charger install consult"],
+                                "id": "35a1cb12-51d6-46dd-b63f-d966e9f797f8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "12b1b5e2-4bbd-4554-a10f-165bdfb4f410",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "421ba084-a548-45be-8334-2ed5fb159ae4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "2b5bc4ae-5991-4016-b36c-da23b13068ed",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Right-sized home charger, quoted on-site — free."],
+                            "id": "0edda85e-c5ce-4f79-929b-06a7b43fa0c8",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "9d199a06-f12b-419c-84f4-43232e9ff9d3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Home site assessment"],
+                                "id": "14609ec4-704f-4a6e-97f4-5d0da7c48f8f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$99"],
+                                "id": "c4e45f44-bc7f-4844-8d56-5bbcbcf1255e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "104c1200-462b-403d-8a0d-79a6b17bac8d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "528239b0-75df-4803-8bad-d16a134f1b7c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A full walk-through and a plan for your project."],
+                            "id": "dda6b7ec-162a-4f79-a03a-5bca063dea9b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "48307634-a127-448d-9039-ce90f402f52c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Panel modernization consult"],
+                                "id": "de504901-fe72-403f-bef4-d03a90bb0959",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$49"],
+                                "id": "1f43443e-a0a2-4b2e-b74e-b8e16f32bc12",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a288ab01-2c65-4fa8-846b-d7064c1c6733",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "a72c3d46-e59f-4d93-be79-54a7346cb3a0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An upgrade path for an older or maxed-out panel."],
+                            "id": "60083122-b514-4c0e-b402-cd03285baf86",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b87f6d84-4467-4c39-b495-e22f67eea32c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Solar & battery hookup consult"],
+                                "id": "5049c7ee-5396-439c-87ce-2a87167ed277",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$49"],
+                                "id": "f9f31597-fc55-48ed-b3e7-964aba63214a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "af303053-6e6c-45b2-ad16-11dfa3d3793c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "c4820d03-97f8-4974-81c0-6954d1d48d6b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The electrical side of going solar, rebates included."],
+                            "id": "c2808868-a116-44e0-80ef-551469f3da9f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8a463f19-2201-4047-9bcb-01bb5857be5a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "d1e5bfe1-c012-4ba9-8f85-85590d2b1f3b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "64632e00-a66f-4ced-a258-5d533a84dc35",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "0ffd61ae-5532-433f-a43e-b4d90b8b3f4b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6b74ddfb-d760-4b78-86ac-eb7c1bddcb28",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f11ca43-64ca-4417-9ddd-d6520444145b",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWMlMjB2ZWhpY2xlJTIwY2hhcmdpbmd8ZW58MHwwfHx8MTc4NjM4ODI5OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "An electric car plugged into a wall-mounted home charger",
+                      "loading": "lazy"
+                    },
+                    "id": "cdc3956f-dafe-4ecf-96c0-8938fed5ad52",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Is your home ready for an EV?"],
+                        "id": "0b65afbe-9f8a-40e1-9d81-eaec9c9c61f9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most homes can charge an electric car overnight — but only if the panel has room and the charger is wired to match your vehicle. Guess wrong and you get slow charging or a tripped breaker."
+                        ],
+                        "id": "5773849f-6d63-4d5f-af5f-4d459542a25b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Our EV consult settles it in one visit: we check your panel’s spare capacity, measure the cable run to where you park, and quote a charger that fits. If the panel needs a little work first, you’ll know before you spend a cent."
+                        ],
+                        "id": "405e91f3-fbbe-4dac-b5a5-1e58d941b488",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book an EV consult"],
+                            "id": "f7d53c1f-1e41-47e8-a767-4a79f4d7173e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "88307ffc-0fa1-4c99-9128-8def6b8d896e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "f340ff5a-8c20-4487-843a-eda412032a99",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1e2fa8a8-8e5b-4935-b698-c6c510d32e19",
+                "ord": "a0"
+              }
+            ],
+            "id": "b284d547-f2c8-45c8-b06a-e373c820b0c9",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The electricians you’ll meet"],
+                        "id": "1df5ba67-ab6d-4a48-807a-64ee8fb56168",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Licensed, background-checked, and used to explaining the wiring, not just doing it. Book the specialist your job needs."
+                        ],
+                        "id": "329f22b9-cd50-431b-8650-fe8c5da9bc3a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b6d2c5d4-2078-42b7-b3d5-8be6b550e30a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1581092570490-cc40829efaae?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBlbmdpbmVlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzODgyNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Nadia Okafor, master electrician",
+                              "loading": "lazy"
+                            },
+                            "id": "d0b9946f-f4b2-443b-a6c7-d4cac8ba9d9d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Nadia Okafor"],
+                                "id": "576f2b03-0d47-45a3-a79c-363fcd4ee234",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Master electrician"],
+                                "id": "bbdb33b1-7a61-45ba-9d3c-4c95eecb2e34",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Leads EV installs and panel upgrades. Twelve years in the trade and every permit signed off first time."
+                                ],
+                                "id": "7d22552f-5b6e-4cbb-a12d-24e1ece88e39",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "21d6869e-9000-4e58-a3da-f14646ffe324",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f7fed57d-9ee4-4319-bba5-27e00e377a75",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI2OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Theo Marsh, smart-home and solar specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "78d63899-49aa-4478-99ae-a8cc790c8dca",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Theo Marsh"],
+                                "id": "be016657-8c7a-49e4-a6af-f22ba7e41880",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Smart-home & solar specialist"],
+                                "id": "3c89b0cb-3c49-4461-8ddf-95f623d89ce5",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Automation, solar tie-ins and home batteries — the connected-home side of the business."
+                                ],
+                                "id": "7a4e9128-ee71-4d80-8978-70753ed62ed8",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e6b1186d-5ce4-4a3f-9d5e-396483eb6164",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "71e21626-2d7d-4a2a-a7df-68aa1c09f6a3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Ruben Diaz, commercial electrician",
+                              "loading": "lazy"
+                            },
+                            "id": "c2f031fc-90f0-4dbe-bd72-1f8429fbeeb2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Ruben Diaz"],
+                                "id": "11020f9a-3414-4a0f-b0f5-d608d3fc0aac",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Commercial electrician"],
+                                "id": "8e153d44-e888-4087-85c2-d2727af6b82f",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fit-outs, tenant improvements and facility upgrades — the crewed commercial jobs."
+                                ],
+                                "id": "419a8122-c8bf-4d7e-9072-d51f5832175f",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "7dfcd77b-6a4f-4de5-b94b-1eca791ee46f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8ff3b72c-ec82-4b42-963d-3dafd1b1af4a",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9ea618a6-f4bf-410c-85b1-2d99034c0db8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ca740548-0910-43ec-961d-093baea08792",
+                "ord": "a0"
+              }
+            ],
+            "id": "4e2cd5aa-114d-4812-9bb2-439f051eaf0d",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Recent installs"],
+                    "id": "2021ab41-c792-49bd-9c1a-6dc7c6aedf50",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1558002038-1055907df827?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hcnQlMjBob21lJTIwZGV2aWNlfGVufDB8MHx8fDE3ODYzODgzMDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A newly installed EV charger on a garage wall",
+                          "loading": "lazy"
+                        },
+                        "id": "e7ee2ad6-74bb-44b6-b7ba-c327824259a9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1509391366360-2e959784a276?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29sYXIlMjBwYW5lbCUyMGluc3RhbGxhdGlvbnxlbnwwfDB8fHwxNzg2Mzg4MzAzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A modernized breaker panel with tidy wiring",
+                          "loading": "lazy"
+                        },
+                        "id": "6f0a0e4c-bae4-43da-b3fb-041306ba23d6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1660330589693-99889d60181e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHdvcmslMjBtb2Rlcm58ZW58MHwwfHx8MTc4NjM4ODMwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A wall-mounted home battery beside solar equipment",
+                          "loading": "lazy"
+                        },
+                        "id": "e2cc0a91-57e7-4c3d-b1af-919e37209d5e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4e5263c0-6478-46a7-9cc9-21759ce642ef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "40acc354-8312-4e1b-a6c6-d7d71143a110",
+                "ord": "a0"
+              }
+            ],
+            "id": "c4801bfd-2f21-43e1-bce5-808b3dc169d3",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They installed our EV charger and upgraded the panel in a day, explained every step, and the inspection passed on the first try. Finally an electrician who treats the house like the future, not the past.”"
+                    ],
+                    "id": "03d4637c-c94a-4826-91f0-09871a8554fb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Dana R., homeowner"],
+                    "id": "f027101b-7341-4b43-847a-6ebd87a562a7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "77f67d29-2b7e-4866-a55c-1692ac13ee1f",
+                "ord": "a0"
+              }
+            ],
+            "id": "5377d845-8cb0-4599-93dc-8acaf5ac728e",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to plan your project?"],
+                    "id": "0d64e3f3-e588-4b53-9081-9798af303a06",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a visit type, choose a day, and see live times. Most consults are free and take about a minute to book."
+                    ],
+                    "id": "e3f2a35f-a2fc-4bb5-b0bd-92bf0f7c4fec",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "3323f069-8d7c-46b8-97b2-bc0ad4498503",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ea55370d-5364-46f6-a87e-588546307c47",
+                "ord": "a0"
+              }
+            ],
+            "id": "8d2578b4-75c3-40f1-839a-ed609044d7b0",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Voltline Electric",
+      "seoDescription": "See what Voltline Electric offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bc963a08-cfd0-4b58-94ec-5c5a236df9b2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1576446470246-499c738d1c8e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHBhbmVsJTIwbW9kZXJufGVufDB8MHx8fDE3ODYzODgyOTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A clean, labelled electrical panel and smart-home control hub",
+                  "loading": "eager"
+                },
+                "id": "ddec3429-a444-4820-90e5-06036557e51f",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "2c3349fd-0aff-40e9-af3d-a870d6a99855",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a visit"],
+                    "id": "daa8a226-45d3-4358-a0fa-1c4cd7597068",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose the visit that fits your project to see live availability, then pick your electrician and time. Free consults are marked $0."
+                    ],
+                    "id": "6735f2ca-bee8-409c-b808-28582c5cdc6d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See visit types below"],
+                        "id": "5c153842-6afb-4e36-95fc-e2756fa4899b",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "18e6d269-473a-4d51-a11f-7ce714aa47bc",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1495798b-d51e-46da-9af2-67690fba84bc",
+                "ord": "a2"
+              }
+            ],
+            "id": "79104959-7709-4188-ad9b-0004836eaca8",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "30a66978-2330-4995-90f4-1bb6ba67ed4a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Voltline Electric",
+      "seoDescription": "Who Voltline Electric is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2f254312-7b8f-48b7-af6f-7c6f27438dd6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1593941707874-ef25b8b4a92b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXYlMjBjaGFyZ2VyJTIwZWxlY3RyaWMlMjBjYXJ8ZW58MHwwfHx8MTc4NjM4ODI5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A modern home at dusk with an EV charging in the driveway",
+                      "loading": "lazy"
+                    },
+                    "id": "630e9ffd-d548-4099-b3c6-eca99d9eeaec",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Voltline Electric"],
+                        "id": "a1b33d84-1e10-415a-a51f-45c4e98c6f80",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Voltline started with a simple frustration: too many homes and businesses were being wired for how things used to be, not for EVs, solar, batteries and everything now plugged into the wall. We built the kind of electrical company we wished we could hire."
+                        ],
+                        "id": "9f332eb8-40de-415c-88f8-9d0c40683035",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a small, certified crew that does the modern work well — chargers, panels, automation, solar tie-ins and commercial fit-outs — and we explain it in plain language, permits and inspections included. No jargon, no upsell, no surprises on the bill."
+                        ],
+                        "id": "c125cd61-12f9-46dd-8255-5453e5e61ddf",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "a7dc2d74-6dce-419a-b717-4e222eea9483",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b4cbd6e4-2462-4cfe-ba5e-008003eb50ff",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5a1b4e7c-b622-4c80-a1cd-008c9b48673c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b7df5903-63d8-4a66-8010-e6865de972ab",
+                "ord": "a0"
+              }
+            ],
+            "id": "ee4f7ee0-37cb-4a55-99da-5ae37f4a0b11",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "fa6b535c-f258-4d59-b882-97669354d97f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Assess before we quote"],
+                            "id": "61225ff8-0d7f-4c89-8553-f45bc7dda1ad",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every job starts with someone on-site looking at your actual panel and wiring — so the price you get is the price it costs."
+                            ],
+                            "id": "2e0d070c-9cb9-49db-ae2b-d3494d58d1ff",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fa670109-dc71-456b-88de-823ecf9a7031",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Code, permits & inspections"],
+                            "id": "be0f6477-dbae-44d0-918a-5c919e9a4ffa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We pull the permits and book the inspection as part of the job. You get work that’s done right and signed off, not a shortcut."
+                            ],
+                            "id": "641bab02-1236-49bb-a818-cf5ef215bae4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "19199577-1a8a-4b84-9a65-c60800d750ca",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Explained in plain language"],
+                            "id": "a3e3ce32-7305-421a-bee3-6043d34f6b08",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll understand what we’re doing and why, and what it means for your rebates and your bill. Questions are welcome, always."
+                            ],
+                            "id": "496156e4-5bb0-4f21-869f-1c084988cc0b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b9788570-072c-40f8-87d4-c652c1144d08",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6cbde8cd-5a0b-4b5e-8546-6c50cad681fe",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "332ebd23-d78c-4ec1-89e8-37fbd090365b",
+                "ord": "a0"
+              }
+            ],
+            "id": "67a6ff98-5a1f-45ef-aef3-7a3e7c238a14",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Voltline Electric",
+      "seoDescription": "Where to find Voltline Electric, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "dcf2686c-f439-4166-bc5f-f1faaec9f6a9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Reach the shop"],
+                        "id": "198fd717-795d-49d7-a2e6-cc6e293d6f70",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Voltline Electric"],
+                            "id": "d0f5986b-02f7-454d-9325-68c6544554a4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["2200 Current Avenue"],
+                            "id": "b9a66df1-b55d-4196-9331-73b143a295ae",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Unit 4 · Denver, CO 80216"],
+                            "id": "e3f18102-5783-4f72-b9a6-f967a2920700",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2dfbfb7d-029c-40c3-91cf-d5079f74efe7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "e1f6bb12-247d-4e37-862b-90e78dc34f1e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00"],
+                                "id": "a67b5f0d-409a-4180-a99a-5a6fca6db96c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "932be358-cd71-4fc9-b881-228fcd6a0819",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "f76e5ace-ec68-4819-9b13-bf6a8287fb44",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 2:00"],
+                                "id": "094526a5-0c4f-4403-839a-cf45dab7ca29",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ff62bc52-730c-4e84-8074-b20ec69d44f9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "679112eb-c930-4b32-ac8f-5f5a7034d27e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "ffc0feb1-225c-418e-9924-e8d0c525e026",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "70d44485-0642-4af3-b7ec-2d6ec4853573",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Emergencies"],
+                                "id": "6493f49e-237b-4260-828b-a7262cc51537",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Call the line"],
+                                "id": "7e39189c-5a5a-41bf-91e2-d186167f0e67",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f6bebdc2-e557-4024-b3f7-8bb6e28eec1e",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "ecb6843d-5223-4004-9c85-da29c87d6389",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e1045b1c-1111-43de-9a4e-4c8fb1f9be87",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "2200 Current Avenue, Denver, CO 80216",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "9561dddd-77e2-48ab-872b-1f264ce1f1aa",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0c0ddbdf-628b-4c26-83ce-ece7c4dfa4b2",
+                "ord": "a0"
+              }
+            ],
+            "id": "39e664a3-4901-4001-aa69-688bf879e53a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "6a2a3873-efba-4d5f-b22b-ff78d768a971",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve an electrician online — pick a visit type, a day and a time, no phone tag."
+                    ],
+                    "id": "b5eefe5a-7cea-4b70-947a-4e03ad91510a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "90ef5184-5ba4-4ba6-884e-944b1dc5c8ef",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "00c838e5-6a30-4ade-81a4-a2805532a149",
+                "ord": "a0"
+              }
+            ],
+            "id": "82ca5ea7-c2d0-4953-9981-9fe345020201",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "voltline",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(17% 0.018 255)",
+      "--color-base-200": "oklch(14% 0.016 255)",
+      "--color-base-300": "oklch(30% 0.02 255)",
+      "--color-base-content": "oklch(93% 0.01 250)",
+      "--color-primary": "oklch(68% 0.17 240)",
+      "--color-secondary": "oklch(82% 0.03 235)",
+      "--color-accent": "oklch(80% 0.14 200)",
+      "--color-neutral": "oklch(80% 0.012 250)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 240)",
+      "--color-secondary-content": "oklch(15% 0.02 235)",
+      "--color-accent-content": "oklch(15% 0.02 200)",
+      "--color-neutral-content": "oklch(15% 0.012 250)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.14 200)",
+      "--color-highlight-content": "oklch(15% 0.02 200)",
+      "--color-border": "oklch(30% 0.02 255)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(14% 0.016 255)",
+      "--color-base-200": "oklch(11% 0.014 255)",
+      "--color-base-300": "oklch(26% 0.02 255)",
+      "--color-base-content": "oklch(94% 0.01 250)",
+      "--color-primary": "oklch(72% 0.17 240)",
+      "--color-secondary": "oklch(84% 0.03 235)",
+      "--color-accent": "oklch(83% 0.14 200)",
+      "--color-neutral": "oklch(84% 0.012 250)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 240)",
+      "--color-secondary-content": "oklch(15% 0.02 235)",
+      "--color-accent-content": "oklch(15% 0.02 200)",
+      "--color-neutral-content": "oklch(15% 0.012 250)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(83% 0.14 200)",
+      "--color-highlight-content": "oklch(15% 0.02 200)",
+      "--color-border": "oklch(26% 0.02 255)"
+    }
+  }
+}

@@ -61,14 +61,80 @@ export const RECORD_TEMPLATES: Record<RoutedRecordType, () => Node> = {
   'cms.blog_post': blogPostPage,
 };
 
-/** A human label per record type, for the DTO the storefront wraps the tree in. */
+/**
+ * What this page is CALLED, in the page switcher and in the storefront DTO.
+ *
+ * These were internal DTO labels — `Product detail`, `Collection`, `Category detail` —
+ * written when nothing rendered them to a person. Giving record pages an address put them
+ * in the page switcher, which made them the first thing a business owner reads when
+ * deciding which page to open, and at that job the old set failed twice:
+ *
+ *   · `Collection` sat one letter from the `Collections` index page, in the same list. A
+ *     salon owner picking between them is guessing, and half the time they guess wrong and
+ *     edit the layout of the other one.
+ *   · `detail` is developer vocabulary, and it was on three of the five — so the list read
+ *     as if `Blog post` and `Collection` were a different KIND of thing, which they are not.
+ *
+ * `Each …` fixes both at once. It cannot be confused with an index page (`Shop`,
+ * `Collections`, `Journal` are all plainly one page; `Each product` is plainly not), it is
+ * the same shape across all five, and it states the actual contract in words nobody has to
+ * learn: this ONE layout is what every product uses. Non-technical owners are the audience
+ * for every string in this app, and "each" is a word they already own.
+ */
 export const RECORD_TEMPLATE_LABELS: Record<RoutedRecordType, string> = {
-  'commerce.product': 'Product detail',
-  'commerce.collection': 'Collection',
-  'commerce.category': 'Category detail',
-  'scheduling.service': 'Service detail',
-  'cms.blog_post': 'Blog post',
+  'commerce.product': 'Each product',
+  'commerce.collection': 'Each collection',
+  'commerce.category': 'Each category',
+  'scheduling.service': 'Each service',
+  'cms.blog_post': 'Each blog post',
 };
+
+/**
+ * Every name the PLATFORM has ever given a record page — and therefore the only names it
+ * may take back.
+ *
+ * Renaming the labels above fixes the switcher for sites seeded after the change and for
+ * nobody else, which is close to nobody: the confusing pair (`Collection` beside
+ * `Collections`) is sitting in the switcher of every tenant that already has these pages.
+ * Healing them is the difference between a fix and a note.
+ *
+ * But a rename on READ must never touch a name a PERSON chose. So the heal is gated on
+ * this list: if the row still carries a name the platform wrote, the platform may correct
+ * it; if it carries anything else — `Our products`, `Treatments` — someone made that
+ * decision and it stands, confusing neighbour or not. "Rename only what we named" is the
+ * whole rule, and it is why this list must never be pruned: an entry removed here is a
+ * legacy name that silently becomes un-healable.
+ *
+ * The current labels are included, which is what makes the heal idempotent — a healed row
+ * matches its target and plans no further change.
+ */
+export const PLATFORM_RECORD_PAGE_NAMES: ReadonlySet<string> = new Set([
+  // The current set.
+  ...Object.values(RECORD_TEMPLATE_LABELS),
+  // The DTO-era labels these replaced (`recordTemplate().label`, and what
+  // `ensureRecordPagesTx` wrote for every site it has already healed).
+  'Product detail',
+  'Collection',
+  'Category detail',
+  'Service detail',
+  'Blog post',
+  // `STARTER_PAGES` (@sparx/builder-schemas), the pre-silica seed for a fresh property.
+  'Product page',
+  'Blog post',
+  // What sparx's own blueprints ship in `site.json` — 10 packs each carry a `Product`
+  // and an `Article` record page. Missing these was not hypothetical: the dogfood tenant
+  // healed four of its five pages and kept a blueprint-installed `Product`, which is the
+  // single page a shop owner opens most.
+  'Product',
+  'Article',
+  // `seed.ts`'s silica template seed passes its own, already covered above.
+]);
+
+/** Is this name one the platform wrote, and therefore one it may correct? A name a person
+ *  chose is theirs — see {@link PLATFORM_RECORD_PAGE_NAMES}. */
+export function isPlatformRecordPageName(name: string | null | undefined): boolean {
+  return typeof name === 'string' && PLATFORM_RECORD_PAGE_NAMES.has(name.trim());
+}
 
 /** The default template for a record type, or null when the platform has none.
  *  Null stays a legal answer — an unknown type from a stale client must not throw —
@@ -185,6 +251,32 @@ export function isRecordAddress(slug: string | null | undefined): boolean {
  *  picked — a 404 on `/products/:handle` is not. */
 export function recordIndexPath(address: RecordAddress): string {
   return address.prefix.replace(/\/+$/, '');
+}
+
+/**
+ * Where Preview should actually open a record page: a REAL record when one is known,
+ * the route index when none is.
+ *
+ * `samples` is `recordType → live storefront path`, resolved server-side against the
+ * catalog under the storefront's own visibility rules (`recordSampleService`). It is
+ * partial by nature — a tenant with no published post has nothing for `cms.blog_post` —
+ * and a missing entry is NOT an error: the index is a real page listing the records this
+ * template renders, and it is where Preview landed before samples existed.
+ *
+ * A sample is trusted only if it is a path UNDER this address's prefix. The map is
+ * server-supplied and the check is cheap, but the failure it prevents is not: a stale or
+ * mismatched entry would send an author previewing their product page to a blog post, and
+ * they would read the wrong template as broken rather than the link as wrong.
+ */
+export function recordPreviewPath(
+  address: RecordAddress,
+  samples?: Readonly<Record<string, string>> | null
+): string {
+  const sample = samples?.[address.recordType];
+  if (sample && sample.startsWith(address.prefix) && sample.length > address.prefix.length) {
+    return sample;
+  }
+  return recordIndexPath(address);
 }
 
 /**

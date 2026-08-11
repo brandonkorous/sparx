@@ -26,6 +26,7 @@ export * from './catalog';
 export * from './themes';
 export * from './template-themes';
 export * from './content-themes';
+export * from './portfolio-themes';
 export * from './content-ink';
 export * from './resolve-sparx-theme';
 export * from './custom-colors';

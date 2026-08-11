@@ -1,0 +1,190 @@
+[
+  {
+    "name": "Welcome",
+    "publish": false,
+    "doc": {
+      "version": "1",
+      "subject": "Welcome to {{site.name}}",
+      "preheader": "So glad you found us — here’s where to start.",
+      "root": {
+        "id": "svc-welcome-body-8",
+        "kind": "body",
+        "width": 600,
+        "bg": "#f4f4f5",
+        "bgAuto": true,
+        "contentBg": "#ffffff",
+        "contentBgAuto": true,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "colorScheme": "light dark",
+        "children": [
+          {
+            "id": "svc-welcome-section-9",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "svc-welcome-text-1",
+                "kind": "text",
+                "html": "Welcome, {{customer.firstName}}",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 28,
+                "fontWeight": "bold",
+                "lineHeight": 36
+              },
+              {
+                "id": "svc-welcome-spacer-2",
+                "kind": "spacer",
+                "height": 10
+              },
+              {
+                "id": "svc-welcome-text-3",
+                "kind": "text",
+                "html": "Thanks for choosing {{site.name}}. Whether this is your first visit or your fifth, we’re glad you’re here.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "svc-welcome-spacer-4",
+                "kind": "spacer",
+                "height": 14
+              },
+              {
+                "id": "svc-welcome-text-5",
+                "kind": "text",
+                "html": "Whenever you’re ready, booking online takes about a minute — you’ll see live availability and pick the time that works for you.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "svc-welcome-spacer-6",
+                "kind": "spacer",
+                "height": 22
+              },
+              {
+                "id": "svc-welcome-button-7",
+                "kind": "button",
+                "label": "Book an appointment",
+                "href": "{{site.url}}/book",
+                "bg": "#111827",
+                "bgAuto": true,
+                "color": "#ffffff",
+                "colorAuto": true,
+                "radius": 6,
+                "align": "left",
+                "paddingX": 24,
+                "paddingY": 12
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "Time for your next visit",
+    "publish": false,
+    "doc": {
+      "version": "1",
+      "subject": "Time for your next visit, {{customer.firstName}}?",
+      "preheader": "Book your next appointment with {{site.name}}.",
+      "root": {
+        "id": "svc-rebook-body-8",
+        "kind": "body",
+        "width": 600,
+        "bg": "#f4f4f5",
+        "bgAuto": true,
+        "contentBg": "#ffffff",
+        "contentBgAuto": true,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "colorScheme": "light dark",
+        "children": [
+          {
+            "id": "svc-rebook-section-9",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "svc-rebook-text-1",
+                "kind": "text",
+                "html": "We’d love to see you again",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 28,
+                "fontWeight": "bold",
+                "lineHeight": 36
+              },
+              {
+                "id": "svc-rebook-spacer-2",
+                "kind": "spacer",
+                "height": 10
+              },
+              {
+                "id": "svc-rebook-text-3",
+                "kind": "text",
+                "html": "It’s been a little while, {{customer.firstName}}. Whenever you’re ready for your next visit, {{site.name}} is here for you.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "svc-rebook-spacer-4",
+                "kind": "spacer",
+                "height": 14
+              },
+              {
+                "id": "svc-rebook-text-5",
+                "kind": "text",
+                "html": "Pick a time that suits you — it only takes a minute, and you’ll always see the latest availability.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "svc-rebook-spacer-6",
+                "kind": "spacer",
+                "height": 22
+              },
+              {
+                "id": "svc-rebook-button-7",
+                "kind": "button",
+                "label": "Book your next visit",
+                "href": "{{site.url}}/book",
+                "bg": "#111827",
+                "bgAuto": true,
+                "color": "#ffffff",
+                "colorAuto": true,
+                "radius": 6,
+                "align": "left",
+                "paddingX": 24,
+                "paddingY": 12
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

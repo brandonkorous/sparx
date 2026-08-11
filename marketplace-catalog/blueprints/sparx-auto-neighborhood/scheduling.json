@@ -1,0 +1,360 @@
+{
+  "policies": [
+    {
+      "handle": "shop-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us a day’s notice to move or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nothing sneaks up on you."
+    },
+    {
+      "handle": "drop-off",
+      "name": "Drop-off job",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "For bigger jobs, drop the car and keys the evening before or first thing that morning. We’ll call with a plain-English estimate before we touch a thing, and you approve the work."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "ray",
+      "name": "Ray Sparrow",
+      "kind": "staff",
+      "skillTags": ["diagnostics", "engine", "brakes", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "danny",
+      "name": "Danny Sparrow",
+      "kind": "staff",
+      "skillTags": ["oil", "tires", "inspection", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "miguel",
+      "name": "Miguel Reyes",
+      "kind": "staff",
+      "skillTags": ["brakes", "suspension", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "bay-1",
+      "name": "Service bay 1",
+      "kind": "space",
+      "skillTags": ["bay"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "bay-2",
+      "name": "Service bay 2",
+      "kind": "space",
+      "skillTags": ["bay"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free estimate",
+      "description": "Not sure what’s wrong? Bring it by. We’ll look it over and tell you honestly what it needs — no charge, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "oil-change",
+      "name": "Oil & filter change",
+      "description": "Full-synthetic oil, a new filter and a quick once-over of belts, fluids and tires.",
+      "durationMinutes": 30,
+      "priceCents": 4500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["oil"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "diagnostic",
+      "name": "Diagnostic inspection",
+      "description": "A strange noise, a pull, a shudder? We track down what’s actually causing it before you spend a dime on parts.",
+      "durationMinutes": 60,
+      "priceCents": 9000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["diagnostics"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "brake-service",
+      "name": "Brake service",
+      "description": "Pads, rotors and a full brake inspection — so you stop the way you’re supposed to. Every job is warrantied.",
+      "durationMinutes": 120,
+      "priceCents": 28000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["brakes"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "drop-off"
+    },
+    {
+      "handle": "tire-rotation",
+      "name": "Tire rotation & balance",
+      "description": "Rotate, balance and set your pressures right — the cheapest way to make a set of tires last longer.",
+      "durationMinutes": 30,
+      "priceCents": 3500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["tires"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "safety-inspection",
+      "name": "Safety inspection",
+      "description": "The state check, done right the first time — plus an honest heads-up on anything that’ll need attention soon.",
+      "durationMinutes": 45,
+      "priceCents": 3000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["inspection"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "check-engine",
+      "name": "Check-engine light",
+      "description": "That light means something — we pull the codes, explain them in plain English and only fix what’s actually broken.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "mechanic",
+          "kind": "staff",
+          "skillTags": ["diagnostics"],
+          "count": 1
+        },
+        {
+          "role": "bay",
+          "kind": "space",
+          "skillTags": ["bay"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "drop-off"
+    }
+  ]
+}

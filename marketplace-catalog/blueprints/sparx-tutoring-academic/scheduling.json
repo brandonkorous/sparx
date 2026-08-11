@@ -1,0 +1,357 @@
+{
+  "policies": [
+    {
+      "handle": "session-standard",
+      "name": "Standard session",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel a session. We send a reminder the day before and two hours ahead, so a busy week never means a missed lesson."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marsh",
+      "kind": "staff",
+      "skillTags": ["math", "science", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["reading", "writing", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["math", "homework", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Learning Room 1",
+      "kind": "space",
+      "skillTags": ["learning-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Learning Room 2",
+      "kind": "space",
+      "skillTags": ["learning-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-assessment",
+      "name": "Free assessment",
+      "description": "A relaxed, no-pressure first visit — we get to know your child, find where they are and where they’re headed, and build a plan together. No cost, no commitment.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "math-tutoring",
+      "name": "Math tutoring",
+      "description": "One-to-one math for any grade — from times tables and fractions to algebra and geometry, at a pace that builds real understanding, not just right answers.",
+      "durationMinutes": 60,
+      "priceCents": 6500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["math"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "reading-tutoring",
+      "name": "Reading tutoring",
+      "description": "Warm, patient reading support — phonics and fluency for younger readers, comprehension and confidence for older ones. We meet every reader where they are.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["reading"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "writing-tutoring",
+      "name": "Writing tutoring",
+      "description": "From first sentences to essays and reports — structure, grammar and finding a voice, with kind feedback that makes writing feel a whole lot less scary.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["writing"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "science-tutoring",
+      "name": "Science tutoring",
+      "description": "Biology, chemistry, physics and everything in between — we make the tricky parts click with clear explanations and plenty of encouragement along the way.",
+      "durationMinutes": 60,
+      "priceCents": 6500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["science"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "homework-help",
+      "name": "Homework help",
+      "description": "A focused hour to get today’s homework done and understood. Great for busy weeks — your child leaves with the work finished and the concept actually learned.",
+      "durationMinutes": 30,
+      "priceCents": 4500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["homework"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "small-group-session",
+      "name": "Small-group session",
+      "description": "A friendly group of no more than four, working on the same subject. The social, motivating side of learning — and a gentler price than one-to-one.",
+      "durationMinutes": 60,
+      "priceCents": 4000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tutor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["learning-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    }
+  ]
+}

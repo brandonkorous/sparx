@@ -32,6 +32,7 @@ export type { BindingCatalog, SitePublishState, StoredSilicaSite, SiteSyncInput 
 export const SITE_KEY = ['builder', 'silica-site'];
 export const PUBLISH_STATE_KEY = ['builder', 'publish-state'];
 export const CATALOG_KEY = ['builder', 'binding-catalog'];
+export const RECORD_SAMPLES_KEY = ['builder', 'record-samples'];
 
 /**
  * The property's stored silica site (pages + frame + symbols + theme), or `null`
@@ -79,6 +80,30 @@ export function usePublishState() {
         lastPublishedAt: null,
         neverPublished: false,
       })),
+  });
+}
+
+/**
+ * A real storefront path per record detail page — `{'commerce.product':
+ * '/products/brake-kit'}` — so Preview on a product template opens an actual product
+ * rather than the product list.
+ *
+ * Degrades to `{}` on failure and omits any record type the tenant has no visible record
+ * of; `previewPath` then falls back to the route index, which is where Preview went
+ * before this existed. So the worst case is the old behaviour, never a 404.
+ *
+ * `staleTime` is generous because the answer only changes when the catalog gains its
+ * FIRST record of a kind — publishing a second product does not move it.
+ */
+export function useRecordSamplePaths() {
+  return useQuery({
+    queryKey: RECORD_SAMPLES_KEY,
+    queryFn: () =>
+      api
+        .get<{ paths: Record<string, string> }>('/v1/builder/site/record-samples')
+        .then((r) => r.paths)
+        .catch<Record<string, string>>(() => ({})),
+    staleTime: 300_000,
   });
 }
 

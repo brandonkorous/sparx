@@ -1,0 +1,32 @@
+[
+  {
+    "id": "landscaping-lawncare-hero",
+    "url": "https://images.unsplash.com/photo-1526392587392-d1627b6c134a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z3JlZW4lMjBsYXduJTIwbW93aW5nfGVufDB8MHx8fDE3ODYzOTE0NzB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A freshly mowed green lawn with clean, straight mowing stripes"
+  },
+  {
+    "id": "landscaping-lawncare-recurring",
+    "url": "https://images.unsplash.com/photo-1458245201577-fc8a130b8829?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3biUyMG1vd2VyJTIwZ3Jhc3N8ZW58MHwwfHx8MTc4NjM5MTQ3NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tidy, healthy front lawn edged neatly along the walkway"
+  },
+  {
+    "id": "landscaping-lawncare-about",
+    "url": "https://images.unsplash.com/photo-1734303023491-db8037a21f09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3biUyMGNhcmUlMjB3b3JrZXJ8ZW58MHwwfHx8MTc4NjM5MTQ3N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A GreenBlade crew mowing a wide back yard on a sunny morning"
+  },
+  {
+    "id": "landscaping-lawncare-diego",
+    "url": "https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTE0Nzl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Diego Alvarez, crew lead"
+  },
+  {
+    "id": "landscaping-lawncare-sofia",
+    "url": "https://images.unsplash.com/photo-1724556295090-a777d9a44fc0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBnYXJkZW5lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE0ODJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Sofia Reyes, lawn health technician"
+  },
+  {
+    "id": "landscaping-lawncare-marcus",
+    "url": "https://images.unsplash.com/photo-1772082177514-9c4470efe984?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjBvdXRkb29yfGVufDB8MHx8fDE3ODYzOTE0ODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Bell, crew lead"
+  }
+]

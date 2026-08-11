@@ -1,0 +1,268 @@
+{
+  "policies": [
+    {
+      "handle": "service-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 120],
+      "policyText": "Give us at least 48 hours’ notice to change or cancel a consultation. We send a reminder two days ahead and two hours before, with your crew lead’s name and arrival window."
+    },
+    {
+      "handle": "service-contract",
+      "name": "Scheduled service contract",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Recurring and contract visits are scheduled ahead and reminded before each service, so your property stays on cadence with no surprises. Reschedule any single visit with 48 hours’ notice."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "ray",
+      "name": "Ray Delgado",
+      "kind": "staff",
+      "skillTags": ["building", "storefront", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 360,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 360,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 360,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 360,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 360,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Hale",
+      "kind": "staff",
+      "skillTags": ["lot", "garage", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 300,
+          "endMinute": 900
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 360,
+          "endMinute": 720
+        }
+      ]
+    },
+    {
+      "handle": "devon",
+      "name": "Devon Pierce",
+      "kind": "staff",
+      "skillTags": ["fleet", "contract", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 360,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 360,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 360,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 360,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 360,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 1,
+          "startMinute": 300,
+          "endMinute": 660
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "site-assessment",
+      "name": "On-site assessment",
+      "description": "A crew lead walks your property, sizes up every surface — facade, glass, walkways, lot — and flags what needs attention and how often. You leave with a clear scope and a plan. Always free, no obligation.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "free-quote",
+      "name": "Free quote",
+      "description": "Already know what you need cleaned? We measure the job, confirm access and timing, and send a written, itemized quote — one-time or on a schedule. No pressure, and always free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "storefront-cleaning-consult",
+      "name": "Storefront cleaning consultation",
+      "description": "For retail fronts, restaurants and multi-tenant strips: an on-site scope with a small test wash so you see the result before you commit. The $49 fee is credited to your first service.",
+      "durationMinutes": 45,
+      "priceCents": 4900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "building-washing-consult",
+      "name": "Building washing consultation",
+      "description": "For low-rise offices, warehouses and apartment blocks: we assess the facade, choose the right soft-wash or pressure method for the material, and scope safe access. The $79 fee is credited to your first service.",
+      "durationMinutes": 60,
+      "priceCents": 7900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "parking-lot-consult",
+      "name": "Parking lot & garage consultation",
+      "description": "For lots, decks and multi-level garages: we scope the surface, gum and oil removal, drains and the after-hours window that keeps your traffic flowing. The $79 fee is credited to your first service.",
+      "durationMinutes": 60,
+      "priceCents": 7900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-standard"
+    },
+    {
+      "handle": "fleet-washing-consult",
+      "name": "Fleet washing consultation",
+      "description": "For trucks, vans and equipment: we scope your fleet, wash cadence and on-site power and water needs, then price a recurring route that keeps every unit presentable. The $99 fee is credited to your first service.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["fleet"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-contract"
+    },
+    {
+      "handle": "scheduled-contract-consult",
+      "name": "Scheduled contract planning",
+      "description": "A planning session for property managers and multi-site operators: we map every location, set a cleaning cadence, and put it all under one insured contract with one point of contact. Free, and no obligation.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "lead",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "service-contract"
+    }
+  ]
+}

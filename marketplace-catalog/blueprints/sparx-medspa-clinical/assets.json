@@ -1,0 +1,32 @@
+[
+  {
+    "id": "medspa-clinical-hero",
+    "url": "https://images.unsplash.com/photo-1704455306925-1401c3012117?w=1600&q=80",
+    "alt": "A bright, calm treatment room in clinical white and soft mint"
+  },
+  {
+    "id": "medspa-clinical-clinic",
+    "url": "https://images.unsplash.com/photo-1761718209694-70031ee64f82?w=1600&q=80",
+    "alt": "A clean, light-filled skin-clinic interior"
+  },
+  {
+    "id": "medspa-clinical-treatment",
+    "url": "https://images.unsplash.com/photo-1761718209794-e0588aafbcc4?w=1600&q=80",
+    "alt": "A provider performing a facial treatment"
+  },
+  {
+    "id": "medspa-clinical-elise",
+    "url": "https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?w=1600&q=80",
+    "alt": "Dr. Elise Warren, medical director"
+  },
+  {
+    "id": "medspa-clinical-jordan",
+    "url": "https://images.unsplash.com/photo-1678695972687-033fa0bdbac9?w=1600&q=80",
+    "alt": "Jordan Pierce, RN, aesthetic nurse"
+  },
+  {
+    "id": "medspa-clinical-simone",
+    "url": "https://images.unsplash.com/photo-1733685372841-0e8235350158?w=1600&q=80",
+    "alt": "Simone Alvarez, licensed aesthetician"
+  }
+]

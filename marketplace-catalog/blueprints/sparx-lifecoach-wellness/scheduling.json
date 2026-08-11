@@ -1,0 +1,227 @@
+{
+  "policies": [
+    {
+      "handle": "coaching-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Life happens — just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "no-show",
+      "name": "Missed-session policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "If a session is missed without notice, we count it as used so we can keep time open for everyone. Reach out ahead of time and we’ll always work with you."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Ross",
+      "kind": "staff",
+      "skillTags": ["life", "mindset", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["confidence", "habits", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["purpose", "balance", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Free discovery call",
+      "description": "A relaxed, no-pressure 30 minutes to talk through what’s on your mind and see if coaching is the right fit. Completely free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "life-coaching-session",
+      "name": "Life coaching session",
+      "description": "A focused one-on-one session to work through a change, a decision or a season of life — at your pace, with real support.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "mindset-session",
+      "name": "Mindset & resilience session",
+      "description": "Reframe the thoughts that hold you back and build a steadier, kinder inner voice you can carry into everyday life.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["mindset"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "confidence-session",
+      "name": "Confidence & self-worth session",
+      "description": "Practical, warm work on speaking up, setting boundaries and trusting yourself — so you show up as you, without apology.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "work-life-balance-session",
+      "name": "Work–life balance session",
+      "description": "Untangle the overwhelm and rebuild a week that has room for the things that matter — rest, people and you.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "purpose-clarity-session",
+      "name": "Purpose & clarity session",
+      "description": "A deeper session to reconnect with what you actually want, and map a next step that feels true to you.",
+      "durationMinutes": 60,
+      "priceCents": 13500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "coaching-package-consult",
+      "name": "Coaching package consult",
+      "description": "A 45-minute planning session to shape a multi-week coaching journey around your goals, pace and budget.",
+      "durationMinutes": 45,
+      "priceCents": 9000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    }
+  ]
+}

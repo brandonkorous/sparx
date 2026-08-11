@@ -1,0 +1,258 @@
+{
+  "policies": [
+    {
+      "handle": "fixlist-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Need to change your time? Reschedule or cancel with 24 hours’ notice, free. We text a reminder the day before and two hours ahead so a pro is never a surprise."
+    },
+    {
+      "handle": "fixlist-project",
+      "name": "Project booking",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Half-day projects hold a $50 deposit that comes straight off your total. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Reed",
+      "kind": "staff",
+      "skillTags": ["repair", "install", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "diego",
+      "name": "Diego Alvarez",
+      "kind": "staff",
+      "skillTags": ["assembly", "mounting", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "tasha",
+      "name": "Tasha Brooks",
+      "kind": "staff",
+      "skillTags": ["drywall", "paint", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-quote",
+      "name": "Free quote visit",
+      "description": "Not sure what it’ll take? A pro stops by, sizes up the job and gives you a straight, no-obligation price. Free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "quick-fix-hour",
+      "name": "Quick-fix hour",
+      "description": "One hour, one pro, your short list of small stuff — a wobbly handle, a running toilet, a door that won’t latch.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "tv-mounting",
+      "name": "TV mounting",
+      "description": "We find the studs, hang it level, hide the cables and clean up. Bring the bracket or add one on-site.",
+      "durationMinutes": 90,
+      "priceCents": 14900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "furniture-assembly",
+      "name": "Furniture assembly",
+      "description": "Flat-pack beds, shelves, desks and dressers built right the first time — packaging hauled out when we’re done.",
+      "durationMinutes": 120,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "smart-home-install",
+      "name": "Smart-home install",
+      "description": "Video doorbells, smart locks, thermostats and light switches wired, set up on your phone and tested.",
+      "durationMinutes": 90,
+      "priceCents": 13900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "pick-a-task-visit",
+      "name": "Pick-a-task visit",
+      "description": "Have one specific job in mind? Book a focused visit and a vetted pro shows up ready to knock it out.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-standard"
+    },
+    {
+      "handle": "half-day-project",
+      "name": "Half-day project",
+      "description": "Four hours of a dedicated pro for the bigger list — a gallery wall, a closet system, a room’s worth of small repairs.",
+      "durationMinutes": 240,
+      "priceCents": 34900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "pro",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fixlist-project"
+    }
+  ]
+}

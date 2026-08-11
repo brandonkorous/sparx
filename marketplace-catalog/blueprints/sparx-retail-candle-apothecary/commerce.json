@@ -1,0 +1,432 @@
+{
+  "categories": [
+    {
+      "handle": "candles",
+      "name": "Candles",
+      "description": "Hand-poured coconut-soy candles.",
+      "featured": true
+    },
+    {
+      "handle": "diffusers",
+      "name": "Diffusers & mists",
+      "description": "Flameless fragrance for every room.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Ready-to-give sets.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Trimmers and candle care.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "this-season",
+      "name": "Lit this season",
+      "description": "The scents we’re burning right now.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["cedar-smoke", "fig-amber", "sea-salt-driftwood", "gift-set"]
+    },
+    {
+      "handle": "signatures",
+      "name": "The signatures",
+      "description": "The four scents that define the house.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["cedar-smoke", "fig-amber", "sea-salt-driftwood", "black-fir-ash"]
+    },
+    {
+      "handle": "woodsmoke",
+      "name": "Woodsmoke",
+      "description": "The dark, woody, smoky end of the shelf.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["cedar-smoke", "black-fir-ash"]
+    },
+    {
+      "handle": "flameless",
+      "name": "Flameless",
+      "description": "Fragrance without a flame — diffusers, mists and melts.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["reed-diffuser", "room-mist", "wax-melts"]
+    },
+    {
+      "handle": "gifts",
+      "name": "Gift-ready",
+      "description": "Boxed, ribboned and ready to hand over.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["gift-set", "wax-melts"]
+    },
+    {
+      "handle": "accessories",
+      "name": "Candle care",
+      "description": "Keep every burn even.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["wick-trimmer"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "cedar-smoke",
+      "title": "Cedar & Smoke",
+      "description": "The signature. A woodshop at the end of the day — dry cedar and sawdust over a low curl of woodsmoke, warmed with a little vetiver and clove. Grounding without going heavy, the one we light first when the evenings turn.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Ember & Ash",
+      "tags": ["candle", "woody", "smoky", "signature"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["this-season", "signatures", "woodsmoke"],
+      "seoTitle": "Cedar & Smoke — hand-poured candle | Ember & Ash",
+      "seoDescription": "Dry cedar, sawdust and a low curl of woodsmoke, warmed with vetiver and clove. Hand-poured coconut-soy.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 oz tumbler"
+            },
+            {
+              "value": "12 oz jar"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EMBER-CEDAR-SMOKE-8",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8 oz tumbler"
+          }
+        },
+        {
+          "sku": "EMBER-CEDAR-SMOKE-12",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12 oz jar"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cedar-smoke",
+          "isPrimary": true,
+          "alt": "Cedar & Smoke"
+        }
+      ]
+    },
+    {
+      "handle": "fig-amber",
+      "title": "Fig & Amber",
+      "description": "Soft and golden — ripe fig and green fig leaf over a base of amber and warm musk, with a whisper of coconut. The room-filling one; sweet without being a dessert, and endlessly easy to live with.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Ember & Ash",
+      "tags": ["candle", "sweet", "amber", "signature"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["this-season", "signatures"],
+      "seoTitle": "Fig & Amber — hand-poured candle | Ember & Ash",
+      "seoDescription": "Ripe fig and fig leaf over amber and warm musk with a whisper of coconut. Hand-poured coconut-soy.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 oz tumbler"
+            },
+            {
+              "value": "12 oz jar"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EMBER-FIG-AMBER-8",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8 oz tumbler"
+          }
+        },
+        {
+          "sku": "EMBER-FIG-AMBER-12",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12 oz jar"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fig-amber",
+          "isPrimary": true,
+          "alt": "Fig & Amber"
+        }
+      ]
+    },
+    {
+      "handle": "sea-salt-driftwood",
+      "title": "Sea Salt & Driftwood",
+      "description": "A shoreline after rain — cool sea salt and mineral air over sun-bleached driftwood and a thread of sage. The bright one on the shelf; clean, open and a little melancholy, in the best way.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Ember & Ash",
+      "tags": ["candle", "fresh", "marine", "signature"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["this-season", "signatures"],
+      "seoTitle": "Sea Salt & Driftwood — hand-poured candle | Ember & Ash",
+      "seoDescription": "Cool sea salt and mineral air over sun-bleached driftwood and sage. Hand-poured coconut-soy.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 oz tumbler"
+            },
+            {
+              "value": "12 oz jar"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EMBER-SEA-SALT-8",
+          "priceCents": 3000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8 oz tumbler"
+          }
+        },
+        {
+          "sku": "EMBER-SEA-SALT-12",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12 oz jar"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sea-salt",
+          "isPrimary": true,
+          "alt": "Sea Salt & Driftwood"
+        }
+      ]
+    },
+    {
+      "handle": "black-fir-ash",
+      "title": "Black Fir & Ash",
+      "description": "The dark end of the shelf — black fir needles and cracked pepper over cooled embers and a dry, resinous smoke. Nearly a fireplace in a jar; the one for the coldest, quietest nights.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Ember & Ash",
+      "tags": ["candle", "woody", "smoky", "evergreen"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["signatures", "woodsmoke"],
+      "seoTitle": "Black Fir & Ash — hand-poured candle | Ember & Ash",
+      "seoDescription": "Black fir and cracked pepper over cooled embers and dry resinous smoke. Hand-poured coconut-soy.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 oz tumbler"
+            },
+            {
+              "value": "12 oz jar"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "EMBER-BLACK-FIR-8",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8 oz tumbler"
+          }
+        },
+        {
+          "sku": "EMBER-BLACK-FIR-12",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12 oz jar"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-black-fir",
+          "isPrimary": true,
+          "alt": "Black Fir & Ash"
+        }
+      ]
+    },
+    {
+      "handle": "reed-diffuser",
+      "title": "Cedar & Smoke Reed Diffuser",
+      "description": "The signature scent, always on. Natural rattan reeds draw the Cedar & Smoke blend up into the room for a low, constant throw that lasts three to four months — no flame, no fuss, ideal for a hallway or a bathroom that never gets a candle lit in it.",
+      "status": "active",
+      "productType": "Diffuser",
+      "vendor": "Ember & Ash",
+      "tags": ["diffuser", "flameless", "woody"],
+      "categoryHandles": ["diffusers"],
+      "collectionHandles": ["this-season", "flameless"],
+      "seoTitle": "Cedar & Smoke Reed Diffuser | Ember & Ash",
+      "seoDescription": "Natural rattan reeds and the Cedar & Smoke blend for a low, constant throw that lasts months.",
+      "variants": [
+        {
+          "sku": "EMBER-DIFF-CEDAR",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-diffuser",
+          "isPrimary": true,
+          "alt": "A reed diffuser in smoked glass"
+        }
+      ]
+    },
+    {
+      "handle": "room-mist",
+      "title": "Fig & Amber Room Mist",
+      "description": "A quick change of atmosphere in a spritz — the Fig & Amber blend in a fine linen-and-air mist for the room, the sofa, or the moment a guest is at the door. Water-based and light, so it freshens without hanging heavy.",
+      "status": "active",
+      "productType": "Room mist",
+      "vendor": "Ember & Ash",
+      "tags": ["mist", "flameless", "sweet"],
+      "categoryHandles": ["diffusers"],
+      "collectionHandles": ["flameless"],
+      "seoTitle": "Fig & Amber Room Mist | Ember & Ash",
+      "seoDescription": "The Fig & Amber blend in a fine linen-and-air room mist. Water-based and light.",
+      "variants": [
+        {
+          "sku": "EMBER-MIST-FIG",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-room-mist",
+          "isPrimary": true,
+          "alt": "A room mist in a matte amber bottle"
+        }
+      ]
+    },
+    {
+      "handle": "wax-melts",
+      "title": "Wax Melt Discovery Set",
+      "description": "All four signature scents in flameless soy melts — one cube in a warmer fills a room, and the set is the low-commitment way to find the blend you’ll want as a full candle. Six cubes of each scent, in a recycled kraft tray.",
+      "status": "active",
+      "productType": "Wax melts",
+      "vendor": "Ember & Ash",
+      "tags": ["wax-melts", "flameless", "sampler"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["flameless", "gifts"],
+      "seoTitle": "Wax Melt Discovery Set — all four scents | Ember & Ash",
+      "seoDescription": "All four signature scents in flameless soy wax melts. Six cubes of each, in a kraft tray.",
+      "variants": [
+        {
+          "sku": "EMBER-MELT-SET",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-wax-melts",
+          "isPrimary": true,
+          "alt": "A set of soy wax melts in a kraft tray"
+        }
+      ]
+    },
+    {
+      "handle": "wick-trimmer",
+      "title": "Brass Wick Trimmer",
+      "description": "The one accessory that actually matters. A weighted brass trimmer that snips the wick to the right length and catches the trimming, so every burn stays even and soot-free. The difference between a candle that lasts and one that tunnels.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Ember & Ash",
+      "tags": ["accessory", "brass", "care"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Brass Wick Trimmer — candle care | Ember & Ash",
+      "seoDescription": "A weighted brass wick trimmer that keeps every burn even and soot-free.",
+      "variants": [
+        {
+          "sku": "EMBER-ACC-TRIMMER",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-wick-trimmer",
+          "isPrimary": true,
+          "alt": "A brass wick trimmer"
+        }
+      ]
+    },
+    {
+      "handle": "gift-set",
+      "title": "The Signature Trio Gift Set",
+      "description": "The easy yes — Cedar & Smoke, Fig & Amber and Sea Salt & Driftwood in 8 oz tumblers, boxed in recycled kraft and tied in linen ribbon, with a card you can write on. The whole range in miniature, ready to hand over.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Ember & Ash",
+      "tags": ["gift", "set", "candle"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["this-season", "gifts"],
+      "seoTitle": "The Signature Trio Gift Set — three candles | Ember & Ash",
+      "seoDescription": "Cedar & Smoke, Fig & Amber and Sea Salt & Driftwood in 8 oz tumblers, boxed and ribboned.",
+      "variants": [
+        {
+          "sku": "EMBER-GIFT-TRIO",
+          "priceCents": 8400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gift-set",
+          "isPrimary": true,
+          "alt": "A three-candle gift set boxed in kraft"
+        }
+      ]
+    }
+  ]
+}

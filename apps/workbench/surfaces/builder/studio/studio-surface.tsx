@@ -39,7 +39,7 @@ import { THEME_PRESETS, type Node, type Site, type Theme } from '@wizeworks/sili
 import {
   ensureUniqueIds,
   recordAddressAt,
-  recordIndexPath,
+  recordPreviewPath,
   starterSite,
   upgradeFrameChrome,
   upgradePageBody,
@@ -73,6 +73,7 @@ import {
   useSiteCheck,
   useActiveProperty,
   useBindingCatalog,
+  useRecordSamplePaths,
   useBrand,
   useBuilderSite,
   usePreviewToken,
@@ -320,6 +321,10 @@ function StudioEditor({
   const updatePageSettings = useUpdatePageSettings();
   const previewToken = usePreviewToken();
   const siteOrigin = useSiteOrigin(propertyId);
+  // One real record per record address, so Preview on a product template opens a product.
+  // Read once and read early: it must already be in hand when Preview is pressed, and
+  // pressing Preview should never wait on a lookup that exists to improve the destination.
+  const recordSamples = useRecordSamplePaths();
 
   const pageIdParam = typeof ctx.params.pageId === 'string' ? ctx.params.pageId : null;
   // Which editing surface the author LANDS on (silicaui 0.36's `initialMode` — docs/silicaui/01
@@ -985,14 +990,14 @@ function StudioEditor({
       // `extraQuery` is empty in every deployed environment; in local dev it carries the
       // `?tenant=`/`?property=` the storefront needs to know which site this is, because
       // there is no per-tenant DNS on a developer's machine.
-      const url = `${target.origin}${previewPath(activeSlugRef.current)}?sparxSitePreview=${encodeURIComponent(token)}${target.extraQuery}`;
+      const url = `${target.origin}${previewPath(activeSlugRef.current, recordSamples.data)}?sparxSitePreview=${encodeURIComponent(token)}${target.extraQuery}`;
       if (tab) tab.location.href = url;
       else window.open(url, '_blank', 'noopener,noreferrer');
     } catch {
       tab?.close();
       toast.add({ title: 'Could not open preview', type: 'error' });
     }
-  }, [unsaved, doSync, previewToken, siteOrigin, toast]);
+  }, [unsaved, doSync, previewToken, siteOrigin, recordSamples.data, toast]);
 
   const status = liveStatus(publishState, unsaved);
   const validPageIds = useMemo(() => new Set(site.pages.map((p) => p.id)), [site]);
@@ -1162,14 +1167,21 @@ function StudioEditor({
  *
  *  A RECORD PAGE HAS A ROUTE BUT NOT A URL. `/products/:handle` is where the page lives;
  *  a browser sent there gets a 404, because `:handle` is a literal segment as far as the
- *  router is concerned and no product has that handle. So preview opens the route's
- *  INDEX — `/products`, `/blog` — which is a real page showing the records this template
- *  renders, one click from any of them. (This used to say a collection template "has no
- *  route of its own" and land on the home page; it has one now, it just needs a record
- *  to point at.) */
-function previewPath(slug: string | null | undefined): string {
+ *  router is concerned and no product has that handle. So the record page previews at a
+ *  REAL record — `samples` carries one live path per record type, resolved server-side
+ *  under the storefront's own visibility rules (`recordSampleService`).
+ *
+ *  Falling back to the route INDEX (`/products`, `/blog`) when the tenant has no record of
+ *  that kind yet is the honest answer, not a defect: there is no detail page to show, and
+ *  the index is a real page one click from every record. It is also where Preview always
+ *  landed before samples existed, so a failed lookup costs nothing. (Before THAT, this
+ *  said a collection template "has no route of its own" and opened the home page.) */
+function previewPath(
+  slug: string | null | undefined,
+  samples: Record<string, string> | undefined
+): string {
   const address = recordAddressAt(slug);
-  if (address) return recordIndexPath(address);
+  if (address) return recordPreviewPath(address, samples);
   const bare = (slug ?? '').trim().replace(/^\/+/, '');
   if (bare === '') return '/';
   return `/${bare}`;

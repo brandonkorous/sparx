@@ -1,0 +1,2011 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "7f5cb14f-653a-4ff4-9755-253d8993bbfa",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "b67fa134-6308-4430-b071-64a24db33db3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "608423a8-4725-4c69-a0dd-c8a0afc77d20",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "151ba3fc-58a7-40c4-b0d2-aecc85a4d52d",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "e9b04cc7-1b08-4523-9a08-dbbca0265830",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "8b97e0a9-ae93-4714-8955-b1f39ad14c77",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0795f22e-8ca2-4407-9018-9afd39164fa8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "4cf97fce-bdf3-43a7-a8e0-b40b6a57efc0",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "cceaf1e2-0928-4805-b329-4d18ce966b25",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "c078f22c-caf2-49d5-ba35-354e1be46f1c",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "0da85798-cc17-43dd-8947-d084aed018ee",
+                  "ord": "a2"
+                }
+              ],
+              "id": "eb9b4a23-4c9c-4994-9c8a-f4d9203c2b13",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "ff3f1f29-ecc8-4b66-8ffe-305776795dbd",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "d3a3dde5-c0f9-4c12-9bde-e9672e53ac0f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "03cb1671-e639-426c-9d49-8662a091590a",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "513e03e1-5054-449b-acfd-9a8ca1105ffa",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "df784200-b59e-4fed-990f-1f22a6f00435",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "5ca71934-c8f5-48d3-a30d-3171dab91f9f",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "5c74816d-5598-4760-9743-cccb7ea318b6",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "83060392-1368-4d20-b5c7-750434a60765",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "df783cb0-edaa-4ccd-854f-8095faad6627",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "d07ee619-47d7-4140-bab5-d1eee2048ced",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "048579c7-688f-45df-9742-061027e5d8d0",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "e265ab70-de3f-4094-a19f-c005d6dbf5c3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "59b281a0-ecb2-4af8-b266-72047d5849ac",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "d20e03b0-7b5b-420b-9648-a8756992ed4b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e854752c-dda5-4c71-86e8-d11299c1465d",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "cbefd2ba-a703-4da7-bd1f-5d4282cbc32d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "616a330c-2fb6-4467-8284-eb51a456558e",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "8d686605-1e8c-4c5e-b8c1-e0f4d7722425",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0fbd2e30-da38-4940-a222-08e7eb41bf7e",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "9af8302e-5e41-4aca-9e9b-f86a2072a010",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "422cb0ab-b4f3-44af-b18c-13e9fe9527c1",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "06d6aff4-b200-4ffe-824d-e683fd736d83",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "31458e06-ccf7-4d37-9d3f-1da354eaf6c9",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "06497217-c257-40b9-b066-d4a6122ad068",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8ce5cc2b-93de-423a-8198-933c69388348",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "56f895bc-6d68-4eda-baea-b3a901105b30",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "edb9c40a-2782-44d4-9df7-252c555e4b2a",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "479b02c2-8a3a-4ac3-8865-6dac0058a8d6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b91c33dc-b9b3-4188-9509-5d5014330bd1",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c0ceee40-933f-4f92-b17b-aca42b99179c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "472ed263-20ae-4a2b-b63e-12c91a9dbce7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d0f2ae71-4d83-4d94-9123-da24d4cff23c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "bc04bc3f-66c7-4f03-ba0f-a088168d0dbd",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "441c2303-c34f-498b-ba56-2acf2337c750",
+                  "ord": "a1"
+                }
+              ],
+              "id": "8c56faed-5f6d-4fb7-a479-760e4983ddfe",
+              "ord": "a0"
+            }
+          ],
+          "id": "85a945bb-4afa-45c4-bb13-dc0c68991bca",
+          "ord": "a2"
+        }
+      ],
+      "id": "2501623e-157b-4173-92a4-2bd7df9fc124"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Saffron & Sage Catering — events & wedding catering",
+      "seoDescription": "Saffron & Sage is a from-scratch seasonal caterer for weddings, private dinners and corporate events in Portland. Book a tasting or consultation online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2c128616-c502-44f7-b7f4-b5152c60ca39",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGNhdGVyaW5nJTIwdGFibGUlMjBzZXR0aW5nfGVufDB8MHx8fDE3ODYzOTA2NzJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A candlelit dinner table set for a seasonal plated event",
+                  "loading": "eager"
+                },
+                "id": "fcb20daf-3671-49b2-9c12-d4ddece85e20",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "90004551-ad6a-4a18-9b99-e809e5b8bfac",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Dinners worth dressing up for"],
+                    "id": "fbab66c3-0a32-46a4-9ba5-f8e920e42b7a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Plated dinners, cocktail receptions and full-service weddings — seasonal menus, cooked from scratch and served like it matters."
+                    ],
+                    "id": "007c42bc-b137-4456-a62c-fd4807541f93",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a tasting"],
+                        "id": "d890edb5-bf5f-454e-99de-4adcf0a2e3f1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our services"],
+                        "id": "4a8f8f21-3755-4b1a-83e6-47adca1d6612",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c66c4ffb-85d0-4c0a-9b77-395052f833a2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "b8928729-4ad3-4cf7-9119-041880f5873c",
+                "ord": "a2"
+              }
+            ],
+            "id": "0cc986d8-135f-47e4-b8e6-678190df75e0",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Seasonal & locally sourced"],
+                            "id": "364e29b1-ea11-4b6e-abfa-6630dab37754",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Menus built around what’s at its peak that week, from farms and growers we actually know by name."
+                            ],
+                            "id": "d293119b-79f8-4922-b476-ffdfbef43732",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f6783721-46fd-4479-8e0f-5bf4a96bc611",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Full-service, start to finish"],
+                            "id": "8b2641a5-94b3-400d-8f47-8f2326ca2d77",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Chefs, servers, bar, rentals and cleanup — you host and enjoy your own party, we handle the rest."
+                            ],
+                            "id": "286865e1-1edc-439e-ade7-eb5f144d88e2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "653cb2ca-3177-4298-b093-4390cbbe94e2",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Every guest looked after"],
+                            "id": "9e745292-13a9-4b6b-b798-8446622ed76b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Vegetarian, vegan, gluten-free and allergy-aware plates, planned in from the start — never an afterthought."
+                            ],
+                            "id": "d4390d91-8e10-4220-9914-edbaef6c0eac",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "31c4e92e-ecde-4249-ad74-280ceff9d5dd",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Weddings & corporate"],
+                            "id": "fedd063c-65ed-41e0-a60f-2637aec666af",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From a forty-seat wedding dinner to a company gala, scaled up without ever losing the small details."
+                            ],
+                            "id": "62af8275-31a4-4ac3-8505-10631f102055",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b9a685e9-bab9-4a08-acae-c747b71b5605",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2b39c994-0606-4901-b746-5c0e879b87e9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "1903c5d9-70c7-41ca-8624-abad194bc903",
+                "ord": "a0"
+              }
+            ],
+            "id": "b24e7d91-132e-4434-8caa-51fc3e06720d",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Tastings & consultations"],
+                        "id": "d2c2c802-c69e-4340-b123-2416c5b8b14b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every event starts here. Book a tasting or a consultation and we’ll build your menu together — the catering is quoted after, once it’s exactly right."
+                        ],
+                        "id": "c9cd14a5-ed7d-48b7-bac2-d9d78dd2980a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d62c5b42-2445-4173-94c4-fa00600ec81d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Event consultation"],
+                                "id": "f929b159-89ca-4f37-b2e2-febcdab766a9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "adc7570e-f89b-4033-be1a-e5792d23f6b2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7d650bd9-6e37-4983-b044-07dbf59cce66",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "d4b69442-cc0c-4c36-b469-8800f203fd9b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Shape your menu, style and budget — no charge."],
+                            "id": "23dd497a-e713-42ab-a7c7-85c5908d24a2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b735ee60-7610-4bb3-82e0-bfcf9d1a49ab",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Wedding tasting"],
+                                "id": "79177518-91e7-48f1-a344-84b9f94addbd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$50"],
+                                "id": "a5627d6f-c0f0-4aff-a7e2-3befcde55a44",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e9812023-6d92-4a46-bb42-e0b101f52cd0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "098df559-2beb-4e34-babd-6167466c03ca",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Taste your wedding menu, course by course."],
+                            "id": "2afee96a-b8db-4cf9-bd7f-bd7597dc9dd0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6c2b1a9c-5729-46d9-871f-9f0fb515ec9a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Seasonal menu tasting"],
+                                "id": "9fb116e1-efef-417b-823e-fff95564937d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$50"],
+                                "id": "b9d8a470-20c5-4a2b-942a-1289da60d9fe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f6218cb2-521a-4a97-b9b4-cf8a6f29791a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "0ded0c4e-5888-4aa8-bfe5-696d67d77bf8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Sample the season’s dishes at their peak."],
+                            "id": "76dfa2a1-a8e9-4c21-be05-8bdce5233c78",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b6e02db6-fb92-48e0-83c3-0817c202d284",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Cocktail reception consult"],
+                                "id": "fc7460af-7d9c-4bf2-b070-33ea7a8f300b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "975e5c9a-a7bd-4f3a-a9c4-7a2165ed2dce",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a2970c4b-db39-4fc1-8d2c-0e274eb33faf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "b42bccbd-86b9-459e-a600-164bb204b588",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Design canapés, stations and the bar."],
+                            "id": "57c085e6-bda4-41ed-9301-29d81e757615",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c4603a09-ccc0-4579-8ca1-302e7013e187",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b4be4ddc-6f02-434c-b6d4-f3fdf895a6f6",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "766aa6f1-49e3-4e06-9638-0ba52ce1f96c",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "a2934d52-0906-426e-bf48-5c3fdf768a29",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "81964882-64fa-4803-a070-a68d0bd165f7",
+                "ord": "a0"
+              }
+            ],
+            "id": "58e09a07-b24f-4930-beea-5b33716ff220",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1577106263724-2c8e03bfe9cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZiUyMHBsYXRpbmclMjBkaXNofGVufDB8MHx8fDE3ODYzOTA2NzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A chef finishing a plate with fresh herbs in the kitchen",
+                      "loading": "lazy"
+                    },
+                    "id": "6e1f73fb-4f00-4835-911b-01e68773f2d7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Cooked from scratch, in season"],
+                        "id": "dcab9371-8e1c-4426-bd99-7712496c37a3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Saffron & Sage started in a home kitchen with one rule we’ve never broken: cook with what’s in season, from people we know, and make it taste like someone cared."
+                        ],
+                        "id": "8662c007-e0a8-481e-846b-3c950d6cccdd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Nothing arrives pre-made. We build each event’s menu around the week it happens — so a spring wedding and an autumn gala never taste the same, and both taste like the moment they’re in."
+                        ],
+                        "id": "031057c2-30be-4149-9f23-ded5c9254d2b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a tasting"],
+                            "id": "946abcf6-acbb-4a6a-b657-ce811398ccf3",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "af899d1f-6b2e-41a8-bc09-1b77873f3c81",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "09b2d64f-6768-40ea-8fde-023bb27be4bb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5bd57695-dbae-4565-a0cc-8c5f803578cd",
+                "ord": "a0"
+              }
+            ],
+            "id": "c60b3ad2-9219-4a1a-8cd0-6a8e77774bf2",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["From recent events"],
+                    "id": "75f21206-c4d6-4b8f-979c-6b3f3df0d527",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1641834992266-0524e539220a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhdGVkJTIwZ291cm1ldCUyMGRpbm5lcnxlbnwwfDB8fHwxNzg2MzkwNjgxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A plated first course with seasonal vegetables",
+                          "loading": "lazy"
+                        },
+                        "id": "c859d37b-3202-4dce-840a-8ecd97f8bbce",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1536392706976-e486e2ba97af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHJlY2VwdGlvbiUyMGRpbm5lcnxlbnwwfDB8fHwxNzg2MzkwNjg0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A cocktail reception spread with canapés and glassware",
+                          "loading": "lazy"
+                        },
+                        "id": "2055d97a-8011-4a2f-8c38-0c95f6344067",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1527751171053-6ac5ec50000b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuYXBlJTIwYXBwZXRpemVyfGVufDB8MHx8fDE3ODYzOTA2ODd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A tiered dessert and grazing table at a celebration",
+                          "loading": "lazy"
+                        },
+                        "id": "99ddaa4a-e05b-4705-a2fb-4db9bb377d33",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1555244162-803834f70033?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGJ1ZmZldCUyMGZvb2R8ZW58MHwwfHx8MTc4NjM5MDY5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A roasted main course carved for family-style service",
+                          "loading": "lazy"
+                        },
+                        "id": "2a3ed612-3c7f-4779-9441-413f8f71cebe",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1705948730553-3ea0c89ae6fb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluZSUyMGRpbmluZyUyMHBsYXRlfGVufDB8MHx8fDE3ODYzOTA2OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Servers plating in a candlelit reception hall",
+                          "loading": "lazy"
+                        },
+                        "id": "33862617-093e-4f26-b9e7-461b18ae20ed",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXZlbnQlMjB0YWJsZSUyMGRlY29yfGVufDB8MHx8fDE3ODYzOTA2OTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A garden table set with linen, florals and warm light",
+                          "loading": "lazy"
+                        },
+                        "id": "802e50f7-2e75-44c1-a961-5b5c36e192fb",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "609086ec-d797-4c18-b566-27650c7386b9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c0252cbe-3e64-49a2-998d-91aec01ba397",
+                "ord": "a0"
+              }
+            ],
+            "id": "3c6ed90c-5155-4ab9-a844-1fbe47b0d933",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They tasted our whole wedding menu with us months ahead, remembered every allergy at our table of ninety, and the food was the thing our guests still bring up. We just got to be at our own party.”"
+                    ],
+                    "id": "3cd2de05-2a91-4488-aaf9-e7066234f405",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Dana & Theo, married September 2025"],
+                    "id": "75d572e3-9aba-4fd4-b8a9-d90ee22d1053",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "eb61d752-f088-4932-83c2-109bd957be30",
+                "ord": "a0"
+              }
+            ],
+            "id": "1a4f9aad-3de0-47ff-b25e-03355f833013",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s plan something worth remembering"],
+                    "id": "e883abd1-b6b5-4982-808e-f920836f4453",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a tasting or a consultation, choose your coordinator and see live times. It takes about a minute."
+                    ],
+                    "id": "73b29001-2a3d-41fc-b736-70bcf7fa9378",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a tasting"],
+                    "id": "6f006093-ae15-4d48-90c8-ff7834128f81",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7e7822f1-b52a-4a4f-b79a-61c1e96d68e8",
+                "ord": "a0"
+              }
+            ],
+            "id": "c5ae1d05-e50e-4dbf-9b6d-8de4673a1be2",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Saffron & Sage Catering",
+      "seoDescription": "See what Saffron & Sage Catering offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5979ad36-dbca-4880-b13b-e37c6c9bb195",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1622021142947-da7dedc7c39a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2F0ZXJpbmclMjBraXRjaGVuJTIwY2hlZnxlbnwwfDB8fHwxNzg2MzkwNjc4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A long harvest table dressed for a wedding reception",
+                  "loading": "eager"
+                },
+                "id": "bc1306ea-dffc-40cf-bfa7-3436bdd11caf",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "40602207-ab1a-423f-b0aa-1b53b1e39c61",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a tasting or consultation"],
+                    "id": "1c275272-9c09-425e-9988-8a4e9c00468c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a tasting or consultation to see live availability, then pick your coordinator and time. We’ll quote the full event afterward."
+                    ],
+                    "id": "df5b45ef-5fdb-4e51-b7ed-20f6f6022b72",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "684efa32-bcde-45a5-b7e8-2e5d200636e6",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "9d5e599a-3676-4fe8-9309-a8bce8993809",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "727a96d0-4468-4c41-a597-21aeeb8fc30f",
+                "ord": "a2"
+              }
+            ],
+            "id": "a28960db-c754-4fb7-bec4-e1a1db7a43c7",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "764f2604-56ae-476f-8ce6-4337bbee6d00",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Saffron & Sage Catering",
+      "seoDescription": "Who Saffron & Sage Catering is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4f31f617-2aea-4d21-abd7-41bf1041bdcb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1622021142947-da7dedc7c39a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2F0ZXJpbmclMjBraXRjaGVuJTIwY2hlZnxlbnwwfDB8fHwxNzg2MzkwNjc4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A long harvest table dressed for a wedding reception",
+                      "loading": "lazy"
+                    },
+                    "id": "2b424066-e0a2-4ba0-9050-ebb3103e84ef",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Saffron & Sage"],
+                        "id": "b64bacd4-a557-46a3-b691-7685816300cf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re an events kitchen built for the occasions that matter — weddings, milestones, launches and the quiet private dinners in between. Warm, seasonal food, served with the kind of care you’d give your own guests."
+                        ],
+                        "id": "aada2f67-4ccb-486e-8aae-c3fe508df3f8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every event begins with a real conversation. We learn who’s coming, what they love and what they can’t eat, then design a menu around your day and the season it lands in. No packages off a shelf."
+                        ],
+                        "id": "a4c9a0ff-48bc-4702-a79b-98ef0ebe4e13",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a tasting"],
+                            "id": "e9dd4aa7-96b6-42d4-a25d-40ed5809bdc8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "28383658-f110-4bdb-9eec-91ad793b9c99",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "548e0fc3-f1ce-4df1-9a84-1225a2ce6447",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "18320525-644d-4dca-8214-b073d28b22ed",
+                "ord": "a0"
+              }
+            ],
+            "id": "2068ddc9-1066-4c17-8058-847f5f3e13f4",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "0399849b-6963-4325-854e-b47778a05140",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A tasting first"],
+                            "id": "e44d7f81-745d-4fdb-bd54-9ea2eae47b69",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You taste before you commit. We sit down, sample the menu and shape it together until it’s exactly your event."
+                            ],
+                            "id": "1fc333f0-07c5-4e93-a8f7-0c3ed37885d1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0889ee39-c677-4421-8dd2-94bd759d6358",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Sourced with intention"],
+                            "id": "bf27a3b6-4362-43e2-a103-ba76ad70bbfb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Seasonal produce, local farms and honest ingredients — the short list of things worth building a menu around."
+                            ],
+                            "id": "ae72c8a8-4ae5-45dc-aa6c-5512a8a81239",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d4316f98-6dbe-43cf-a49c-a404bc2625ee",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Handled end to end"],
+                            "id": "e775516b-3e1a-4c26-b9f2-c13bedda5bfb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Staffing, rentals, timing and cleanup are ours to manage, so on the day you get to be a guest at your own table."
+                            ],
+                            "id": "ec617dfe-572d-4eaa-bc36-98128978f658",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d839fa7-71aa-4a59-a5c7-57cb79bdb8e1",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "57eb63a1-3295-44c0-b4d3-f2f722149e30",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "656dff74-bc0b-4ca5-9f2d-3a7ec525e750",
+                "ord": "a0"
+              }
+            ],
+            "id": "4d825bfb-5a65-42d6-9921-c82f5ead1b36",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Saffron & Sage Catering",
+      "seoDescription": "Where to find Saffron & Sage Catering, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "24f1b074-f42a-464a-9e4c-0a71e76cb5fe",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the kitchen"],
+                        "id": "59c70220-94a7-4ea5-8197-9e255424cffa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Saffron & Sage Catering"],
+                            "id": "b86665f6-c83c-41c8-b9df-ca67479cfc28",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["47 Marigold Lane"],
+                            "id": "e74cbc5a-7d56-42f0-be73-899c4f97e521",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Studio B · Portland, OR 97214"],
+                            "id": "98fe16a0-28f5-4d96-8b5d-d25b546211df",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "80fadb2c-7683-43e9-8ed5-72c9b6d4c104",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "d486fb28-8efd-4d79-8f77-1bddd7b5ec58",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "debc5eb5-811d-4e29-9b1c-ac576c1ab6c0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cea9b579-4fae-4aa2-be0a-e3cab2743b5c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "72c935cd-71ac-43a1-bcda-5fd0971fa6ef",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "55250708-791d-4056-a78a-ae8442e8ea04",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e07b79f5-7884-497d-a248-e0b6c4dcb56f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "0de1cc33-3b12-41dd-b9f7-eee018ce2a71",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "919e3c74-6b60-4dfb-b697-c71ebeeaee39",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bb9c4ec5-4da7-4132-957a-172bdff442cd",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Events"],
+                                "id": "a4ac4a8d-1161-49c3-96c5-4fba2219f6fd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Evenings & weekends"],
+                                "id": "dc98a68b-0cda-46b6-a44f-42aa5eec3ad3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d839cc90-b628-4ef8-bc0c-dc96c024ed70",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "19836f9d-75e6-4b7f-b44d-39058f321065",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d276a124-5441-4dae-9823-5637a342c76f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "47 Marigold Lane, Portland, OR 97214",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "1974fb34-4531-4f0a-8b3d-acf412e17306",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f1fdc800-e498-4163-9c95-70b1231a7e13",
+                "ord": "a0"
+              }
+            ],
+            "id": "bf2f0e5f-9ed7-4196-98ff-bd696331551c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "ce5f4f3a-933e-41b9-b9ed-22107316904d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your tasting or consultation online — no phone tag."
+                    ],
+                    "id": "4ad982a9-97fd-4a25-8d3c-21b2e7191163",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a tasting"],
+                    "id": "75b90cf3-f7ab-416d-acf1-780fec7e3e8d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "63cb420d-91fe-48df-9ef3-a6ec2308d53e",
+                "ord": "a0"
+              }
+            ],
+            "id": "c45b4976-4963-4cbc-835f-e0de6ea2ea45",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "saffronsage",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.016 88)",
+      "--color-base-200": "oklch(93% 0.022 84)",
+      "--color-base-300": "oklch(87% 0.026 80)",
+      "--color-base-content": "oklch(25% 0.02 45)",
+      "--color-primary": "oklch(64% 0.14 62)",
+      "--color-secondary": "oklch(34% 0.025 40)",
+      "--color-accent": "oklch(58% 0.06 135)",
+      "--color-neutral": "oklch(28% 0.016 45)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(15% 0.02 62)",
+      "--color-secondary-content": "oklch(98% 0.01 40)",
+      "--color-accent-content": "oklch(15% 0.02 135)",
+      "--color-neutral-content": "oklch(98% 0.01 45)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(58% 0.06 135)",
+      "--color-highlight-content": "oklch(15% 0.02 135)",
+      "--color-border": "oklch(87% 0.026 80)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.016 45)",
+      "--color-base-200": "oklch(18% 0.013 45)",
+      "--color-base-300": "oklch(14% 0.01 45)",
+      "--color-base-content": "oklch(94% 0.014 88)",
+      "--color-primary": "oklch(75% 0.13 66)",
+      "--color-secondary": "oklch(80% 0.02 80)",
+      "--color-accent": "oklch(72% 0.07 135)",
+      "--color-neutral": "oklch(82% 0.016 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 66)",
+      "--color-secondary-content": "oklch(15% 0.02 80)",
+      "--color-accent-content": "oklch(15% 0.02 135)",
+      "--color-neutral-content": "oklch(15% 0.016 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.07 135)",
+      "--color-highlight-content": "oklch(15% 0.02 135)",
+      "--color-border": "oklch(14% 0.01 45)"
+    }
+  }
+}

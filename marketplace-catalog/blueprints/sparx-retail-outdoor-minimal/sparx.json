@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-outdoor-minimal",
+  "name": "sparx — Outdoor Essentials (Minimal)",
+  "version": "1.2.0",
+  "tagline": "A clean, working storefront for a design-led outdoor label.",
+  "description": "A complete, working shop for a clean, design-led urban-outdoor label: a real catalogue of a packable shell, a merino tee, technical trousers, a commuter pack, a packable tote, a cap, an insulated bottle and merino socks — with categories, collections, a minimal PDP and a fully merchandised home page. Design-studio theme — a cool near-white ground, a near-black primary and a single restrained blue accent, under a crisp grotesk. Shipped as Tarn.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Outdoor & technical essentials"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Outdoor Essentials (Minimal) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Outdoor Essentials (Minimal) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#242931",
+  "sortWeight": 83
+}

@@ -1,0 +1,233 @@
+{
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel. We’ll send a reminder two days before, the day before, and two hours ahead so nothing slips."
+    },
+    {
+      "handle": "engagement-deposit",
+      "name": "Engagement deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 25000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer working sessions hold a $250 deposit that comes off your final bill. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "eleanor",
+      "name": "Eleanor Stone",
+      "kind": "staff",
+      "skillTags": ["consult", "estate", "wills", "probate", "trusts"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Hearth",
+      "kind": "staff",
+      "skillTags": ["consult", "family", "divorce", "custody", "guardianship"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 570,
+          "endMinute": 1050
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["consult", "estate", "business", "trusts"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-consultation",
+      "name": "Free consultation",
+      "description": "A relaxed, no-pressure first conversation. Tell us what’s on your mind and we’ll explain your options in plain English — no bill, no commitment.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["consult"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "estate-planning-consult",
+      "name": "Estate planning consultation",
+      "description": "Sit down with us about wills, trusts and a plan for the people you love. We’ll walk you through what you actually need — and what you don’t.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["estate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "will-trust-review",
+      "name": "Will & trust review",
+      "description": "Already have documents? We’ll read them closely and tell you honestly whether they still do what you want — a flat fee, no surprises.",
+      "durationMinutes": 45,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["wills"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "probate-consult",
+      "name": "Probate consultation",
+      "description": "Lost someone and unsure what happens next? We’ll explain the probate process gently, step by step, and what we can take off your plate.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["probate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "family-law-consult",
+      "name": "Family law consultation",
+      "description": "Divorce, custody and support, handled with care and without the drama. A calm first meeting to understand where you stand and what’s ahead.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["family"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "business-formation-consult",
+      "name": "Business formation session",
+      "description": "Starting or restructuring a family business? A working session to set it up right — the entity, the paperwork and how it fits your estate plan.",
+      "durationMinutes": 60,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["business"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "guardianship-consult",
+      "name": "Guardianship consultation",
+      "description": "When someone you love needs protecting — a child or an aging parent — we’ll explain guardianship and conservatorship in words that make sense.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["guardianship"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    }
+  ]
+}

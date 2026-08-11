@@ -1,0 +1,42 @@
+[
+  {
+    "id": "weddingplanner-luxe-hero",
+    "url": "https://images.unsplash.com/photo-1524824267900-2fa9cbf7a506?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMHdlZGRpbmclMjByZWNlcHRpb258ZW58MHwwfHx8MTc4NjM5MjY0Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A candlelit garden wedding reception at golden hour"
+  },
+  {
+    "id": "weddingplanner-luxe-studio",
+    "url": "https://images.unsplash.com/photo-1785123059195-13accd32839b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHBsYW5uZXIlMjBkZXNrfGVufDB8MHx8fDE3ODYzOTI2NDV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright design studio with mood boards, swatches and florals"
+  },
+  {
+    "id": "weddingplanner-luxe-work1",
+    "url": "https://images.unsplash.com/photo-1630527152680-500b5453fb04?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHRhYmxlJTIwc2V0dGluZ3xlbnwwfDB8fHwxNzg2MzkyNjQ4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An elegant tablescape with taper candles and soft blush florals"
+  },
+  {
+    "id": "weddingplanner-luxe-work2",
+    "url": "https://images.unsplash.com/photo-1595467959554-9ffcbf37f10f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGZsb3dlcnMlMjBib3VxdWV0fGVufDB8MHx8fDE3ODYzOTI2NTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bride and groom beneath a floral arch at sunset"
+  },
+  {
+    "id": "weddingplanner-luxe-work3",
+    "url": "https://images.unsplash.com/photo-1529636798458-92182e662485?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNlcmVtb255JTIwYXJjaHxlbnwwfDB8fHwxNzg2MzkyNjU1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ceremony aisle lined with petals and greenery"
+  },
+  {
+    "id": "weddingplanner-luxe-work4",
+    "url": "https://images.unsplash.com/photo-1524777313293-86d2ab467344?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMHJlY2VwdGlvbiUyMGRlY29yfGVufDB8MHx8fDE3ODYzOTI2NTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A romantic reception under warm string lights"
+  },
+  {
+    "id": "weddingplanner-luxe-work5",
+    "url": "https://images.unsplash.com/photo-1549488497-94b52bddac5d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZGUlMjB3ZWRkaW5nJTIwZHJlc3N8ZW58MHwwfHx8MTc4NjM5MjY2MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A destination wedding overlooking the coast"
+  },
+  {
+    "id": "weddingplanner-luxe-work6",
+    "url": "https://images.unsplash.com/photo-1604702433171-33756f3f3825?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2VkZGluZyUyMGNha2UlMjBlbGVnYW50fGVufDB8MHx8fDE3ODYzOTI2NjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A close detail of the bridal bouquet and rings"
+  }
+]

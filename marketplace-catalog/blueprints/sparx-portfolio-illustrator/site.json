@@ -1,0 +1,1939 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ace408ea-2b30-4237-8691-9b7ac765b65a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "fed371d6-4425-4f14-a16d-2eebcde3aaa1",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "6024c3ee-6538-461c-8c9f-a02eac0c4f50",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "7b15f581-12ad-452a-8417-91a75a6a33ad",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "b8779362-8be6-4dfa-9e3f-0459242a5ebf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f324da11-dc1e-4b50-bf82-e7a823323b6a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "7ff4d3c2-3b70-4dd8-87e5-82af44a2dea7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "9e703f19-3770-4204-a0a1-2c1bf170637e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "fa4f3786-e441-45a9-aa9b-04ae0a590a8f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "ae1d58bb-cea3-4cc2-931f-8d12e0eb8f35",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "2fd30144-8976-46e7-afba-bb9cebe8ae48",
+                  "ord": "a2"
+                }
+              ],
+              "id": "9ae54186-5177-4072-baa8-a333814565db",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "d71276e8-fa81-4ee7-b062-19f103f416b0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "f99cab62-a134-465e-a7b1-ad2e48f33fb9",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "f28f959d-9f8b-4bcb-952b-01496dc39fc5",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "42788e4f-307d-465d-a1a0-f3359bfb60f9",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "fa106b9a-af83-4ee2-8e05-9ef087f778a7",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "ac069d1d-5c8f-415d-b432-8adfe2b1fa4d",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "02f2bdad-155b-410d-a336-3e4cc172b299",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "1ba73fc3-8aba-4760-8afb-cd9161bf4741",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ea82b5ff-87a9-4434-b6c1-aeaa69cdef39",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "b9c29db4-1f5a-414b-950e-75d114a09662",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "22fc3469-783f-4d81-ade9-404a2e8ffe77",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "3ed75cfd-e0cb-4c64-864c-ab7611998be4",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "ba461cea-c09c-4266-8f75-49ee649e3e19",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "dd71ba40-de6c-482d-804f-184daa8ffc0b",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "8f955377-7157-4dfa-bbd7-b98e26e04de4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "76f4cfea-6ab4-43c9-bbca-b67ee90ccff5",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "93770ff4-ccd8-4716-90b6-f28d3cc14af4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "14365e3e-6922-48de-855b-ff1c001ca404",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "d6718a41-b578-482c-ae45-b8281c95bfb5",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "c6725da3-3277-42eb-a92d-2199955c5d52",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "df5c75e7-c200-4210-894b-25046ac572d2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7e405ff3-9bd9-471b-abf2-1e8cb07b05c4",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "cb563614-508a-4444-9cfe-34c46ec3e2ca",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "559eb53c-0b9f-4304-9754-6fcbe46a1507",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "688fd914-d429-420d-9a17-8d9ceaf44bd7",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d9fb4503-7129-410b-8739-f18f8dd559d0",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "2d9f7943-49d1-49d0-9f3a-b593ec96fe3d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "e2c8f39b-2a9b-45bb-a244-34b904d2066a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e78826a1-d06b-4d0e-89a1-62e5127767b0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "952bf4e1-0ebd-4509-83e1-04b1422f99f8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e9244fd7-b7a8-43e7-88c8-d7b852bb706a",
+                  "ord": "a1"
+                }
+              ],
+              "id": "0d9fa53e-4010-47f3-a9a7-71b27807edf3",
+              "ord": "a0"
+            }
+          ],
+          "id": "5a84e396-869c-4bc5-b832-b9718364508d",
+          "ord": "a2"
+        }
+      ],
+      "id": "8f92196d-3f03-430f-9a67-602e28503298"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Pilar Ortega — illustrator",
+      "seoDescription": "Pilar Ortega is an illustrator working across editorial, character design and motion — loud, saturated pictures. Selected work, commissions, and how to start one.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cadf477b-eeea-42f9-aaff-c94f7976187b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-16 @3xl:pt-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "max-w-4xl text-6xl font-bold leading-none tracking-tight @2xl:text-8xl @3xl:text-9xl",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-primary",
+                            "children": ["Loud pictures "],
+                            "id": "0d6dc2eb-94b3-4bff-98f6-c1df7886a9b6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-accent",
+                            "children": ["for good stories."],
+                            "id": "f69b4c80-d418-407d-8ea8-60224558d8e2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3ae53949-94f9-497a-bdcf-ed06b2bc6c8e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": [
+                          "I’m Pilar Ortega — an illustrator drawing editorial covers with a pulse, characters you’d recognise on the street, and pictures that move. Big colour, big feeling, no beige."
+                        ],
+                        "id": "99cd9533-8da6-411d-b8cd-5a0ebb3b11a0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9c47663b-bff2-4894-ac99-ff1c0cfbaaa6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the work"],
+                        "id": "10749d11-f885-491e-b7d9-38b62ec2042e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-accent btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": ["Commissions"],
+                        "id": "868d91fc-346d-4859-98e3-43c7bf200ab7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e5df37ac-606a-4e39-8549-2cfb046ee436",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "span",
+                    "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                    "children": [
+                      "Taking commissions for autumn 2026 · editorial · character · motion"
+                    ],
+                    "id": "a9682725-d904-42c0-90a4-8a515d24ffac",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "79430f4a-28e9-4937-a77c-39c84c57eaf9",
+                "ord": "a0"
+              }
+            ],
+            "id": "615bf934-cc7c-48e4-b4b5-15d288cf76ae",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-primary @3xl:text-6xl",
+                        "children": ["The work wall"],
+                        "id": "5b41730f-b8c9-4856-8dac-783ee02af536",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Recent commissions and personal pieces. Give one a poke — they open to the whole story."
+                        ],
+                        "id": "500f055d-9c23-4ebf-8336-0cc374d7c9e0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "398243e3-a2e1-47f9-a4a4-5f1a01b13005",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-3 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative block aspect-square overflow-hidden rounded-box border border-base-300 bg-base-200 transition hover:-rotate-2 hover:scale-105",
+                        "attrs": {
+                          "href": "/blog/nightjar-cover"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1739476478915-8646a5f88d0d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29sb3JmdWwlMjBpbGx1c3RyYXRpb24lMjBhcnQlMjBwcmludCUyMGJvbGR8ZW58MHwwfHx8MTc4NjM5OTc5Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A riso-printed editorial cover of a nightjar mid-flight",
+                              "loading": "lazy"
+                            },
+                            "id": "c1ac34c1-1836-401a-aae4-7c07a13a4442",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 top-0 flex justify-start p-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-content",
+                                "children": ["Editorial"],
+                                "id": "d05b0851-6f0e-4104-8117-a1781f4d5c1b",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "1876042c-12e4-4594-8ca1-e9f4b7db4121",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-base-100 px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold tracking-tight text-base-content",
+                                "children": ["Nightjar"],
+                                "id": "a4861d5e-ce7a-4495-b3be-2dd3eab91800",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold text-primary",
+                                "children": ["→"],
+                                "id": "7227451b-0cf7-4450-aad3-175cb2eb6da1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5aa4e203-0ed0-48b7-9b4b-74e875d0bc2a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "26a7ef08-883c-4d0b-94d7-3fbb67c86b2a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative block aspect-square overflow-hidden rounded-box border border-base-300 bg-base-200 transition hover:-rotate-2 hover:scale-105",
+                        "attrs": {
+                          "href": "/blog/brass-hollow-cast"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1779967413999-d3813064b8b0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hhcmFjdGVyJTIwaWxsdXN0cmF0aW9uJTIwYXJ0JTIwY29sb3JmdWx8ZW58MHwwfHx8MTc4NjM5OTc5Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A character design sheet of a brass automaton",
+                              "loading": "lazy"
+                            },
+                            "id": "fcd097b1-0a24-47e2-be06-85f85d5bad72",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 top-0 flex justify-start p-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-content",
+                                "children": ["Character"],
+                                "id": "8d0d0c62-a064-495b-80ad-64351099dde3",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "449955ab-4db3-4c90-85f0-fae1bdb0f795",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-base-100 px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold tracking-tight text-base-content",
+                                "children": ["Brass Hollow"],
+                                "id": "8b884807-df8f-4a03-b035-f8b0fc5104a9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold text-primary",
+                                "children": ["→"],
+                                "id": "05b64631-dc54-475a-80b1-18e76e7a5ebe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c7a43f1c-2ab6-44a9-a2c2-0bab7e5da938",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "413f32fb-dd09-4250-8832-3bff55548e83",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative block aspect-square overflow-hidden rounded-box border border-base-300 bg-base-200 transition hover:-rotate-2 hover:scale-105",
+                        "attrs": {
+                          "href": "/blog/kinetic-supper"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1532640331846-d2da5987c3ee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29sb3JmdWwlMjBhYnN0cmFjdCUyMHBhaW50aW5nJTIwYm9sZHxlbnwwfDB8fHwxNzg2Mzk5ODk3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Animation frames of a dancing figure printed in coral and blue",
+                              "loading": "lazy"
+                            },
+                            "id": "7d699b4e-6708-43ae-a506-bd4ab555a598",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 top-0 flex justify-start p-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full bg-accent px-3 py-1 text-sm font-bold text-accent-content",
+                                "children": ["Motion"],
+                                "id": "f9432885-35de-4eaf-96c6-38807f48cbf8",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "88cd0e75-a02c-47af-9533-bdf3126e10c8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-base-100 px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold tracking-tight text-base-content",
+                                "children": ["Kinetic Supper"],
+                                "id": "a3577a9f-dfdc-4df5-a052-f464a3abcdf2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold text-primary",
+                                "children": ["→"],
+                                "id": "dd2c66fc-9781-4bc2-bca8-d57c9d3e5ed6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "425eeb90-6f37-477a-a123-a8acd7ee1232",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "06a1a072-37f2-4fb9-90b4-78cfb10375ba",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative block aspect-square overflow-hidden rounded-box border border-base-300 bg-base-200 transition hover:-rotate-2 hover:scale-105",
+                        "attrs": {
+                          "href": "/blog/pulp-orchard"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1781110966661-22ad953a1b6a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFja2FnaW5nJTIwZGVzaWduJTIwY29sb3JmdWwlMjBpbGx1c3RyYXRpb258ZW58MHwwfHx8MTc4NjM5OTgwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Hand-drawn juice labels for an orchard brand",
+                              "loading": "lazy"
+                            },
+                            "id": "f2828389-9011-4b41-aceb-cc1c8a4b538e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 top-0 flex justify-start p-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-content",
+                                "children": ["Packaging"],
+                                "id": "5a34c06a-7714-4eb3-a93c-3d7df2a6fe23",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "c8dd3b26-4917-40d7-af1b-1e21b3162f90",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-base-100 px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold tracking-tight text-base-content",
+                                "children": ["Pulp Orchard"],
+                                "id": "e20313e1-4fd8-4636-b06b-436eac5c6a9a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold text-primary",
+                                "children": ["→"],
+                                "id": "f53cf6f0-f1d9-4509-adbc-24a7961eb160",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6a4f05d7-cf95-4e2e-9048-bfb3f0f9fadc",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c0faa378-9e16-4b5f-99d1-50bca6d7f054",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "928a3609-4016-45ed-b091-6e860ab7fcb2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "64bc645a-1861-407c-8c21-b9a1fccb39e1",
+                "ord": "a0"
+              }
+            ],
+            "id": "ea1c8662-7a59-486d-92f4-305889503830",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2 @3xl:items-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-primary @3xl:text-5xl",
+                        "children": ["Hi, I’m Pilar."],
+                        "id": "8df8022f-eefe-4efa-b495-1d4d6df45d91",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’ve been drawing for magazines, studios and stubborn small brands for ten years, out of a print-cluttered studio where the risograph is always warm and the coffee is always cold."
+                        ],
+                        "id": "c93e02e8-bcb6-46c3-87e8-804bb08a0616",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I make editorial illustration, character design, short motion pieces, and the occasional very large wall. If it needs a picture with an opinion, I’m your maker."
+                        ],
+                        "id": "ffb71283-b43b-4f70-8f29-dd14042b2d4d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-bold text-accent",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["More about me"],
+                            "id": "8ec2d02c-6820-4bd1-91b9-8f461483a24d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["→"],
+                            "id": "bcd4ff9a-6847-4109-b06e-e9217678b257",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "02be9477-8469-435a-9411-632a05deccc0",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "46dbf10f-fd05-4e7a-9eb7-6d5e548a26e5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "overflow-hidden rounded-box border border-base-300 rotate-1",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1601913463731-cfba9fd31ed3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVyYWwlMjBzdHJlZXQlMjBhcnQlMjBjb2xvcmZ1bHxlbnwwfDB8fHwxNzg2Mzk5ODA2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A large painted wall mural in coral, cobalt and cream",
+                          "loading": "lazy"
+                        },
+                        "id": "e1615b37-91a8-4bd5-a4b4-50b2504402c4",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "afda169c-d1cb-4280-ac00-37a1baf7dc80",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b9777c75-92e8-44a2-b900-cb2f6380c3f7",
+                "ord": "a0"
+              }
+            ],
+            "id": "290b14e0-6ad7-4764-a67d-b23917697866",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-bold tracking-tight text-primary-content @3xl:text-5xl",
+                    "children": ["Got a story that needs pictures?"],
+                    "id": "a15bd290-bb74-4b3e-9feb-5597be1f2010",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-primary-content",
+                    "children": [
+                      "I take on a handful of commissions a season — editorial, covers, characters, packaging, motion. Tell me what you’re making and roughly when, and I’ll tell you how I’d draw it."
+                    ],
+                    "id": "c8acf6ac-c2f2-45d0-b386-360469397bcc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-lg mt-2 bg-base-100 text-base-content",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Start a commission"],
+                    "id": "206ab62f-f0ec-40bc-9156-08eea93ff652",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "508c7a1f-4e55-40d7-9e62-bea9a7fbfe3b",
+                "ord": "a0"
+              }
+            ],
+            "id": "a95a7cb5-be20-4a04-9e2f-449542ba811d",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Pilar Ortega",
+      "seoDescription": "Selected projects and case studies by Pilar Ortega — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0b2ffc1e-576d-46bf-988d-095a0512023a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold leading-none tracking-tight text-primary @3xl:text-8xl",
+                    "children": ["Work"],
+                    "id": "6fd5ce41-1894-4ebf-aaa4-6c7869113bb9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every commission and personal piece, loudest first. Each one opens to the whole story — the brief, the making, and where it ran."
+                    ],
+                    "id": "7ca03476-874f-4cb3-bfb5-f9245e97a1a4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5253d565-4194-443e-b787-c94e24dfb9d8",
+                "ord": "a0"
+              }
+            ],
+            "id": "9a496159-371d-496b-ad32-0b34f4a6910d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "594687ae-4e6c-4be9-bc8b-33a90d986ac8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "2e57585e-09d8-4c8b-8f1b-9fc316165add",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "491412a5-9ba7-4da0-9329-839b25e68462",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "e5e3ad3a-de21-439e-9c8d-be5ca9f6a9b1",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "03913b45-17e5-4f40-a005-e90e17188b4a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "1f52aaf8-adb1-4425-b161-415481f8fa13",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "048a7443-6df0-4fd8-b277-2cb0de7f90b8",
+                "ord": "a0"
+              }
+            ],
+            "id": "9b9e9bbd-b4c3-46a6-9ff1-c2e6d979c363",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Pilar Ortega — illustrator",
+      "seoDescription": "Ten years of loud, saturated illustration across editorial, character design, motion and murals — for magazines, labels and brands who’d rather look like themselves.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "31bfe56c-004d-4740-bb85-6778aff2070a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-6xl font-bold leading-none tracking-tight text-primary @2xl:text-7xl",
+                        "children": ["About Pilar"],
+                        "id": "899d0cb1-218d-4089-bdfd-441873511541",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m an illustrator working out of a studio full of risograph prints and half-finished characters. For ten years I’ve drawn for magazines, record labels, publishers, and small brands who’d rather look like themselves than like everyone else."
+                        ],
+                        "id": "72d4489e-e7bc-4d4c-bfd1-9c2581621a70",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "My work is loud on purpose — saturated colour, heavy line, real feeling. I’d rather a picture take a swing and miss than sit there being tasteful. Most jobs start as a scribble and a stubborn idea, and I love the part where a client’s vague brief turns into a face nobody expected."
+                        ],
+                        "id": "7fd2d33e-8659-4685-80b1-280d63a31f0b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "When I’m not drawing to a deadline you’ll find me pulling prints, painting the odd very large wall, or teaching a colour workshop and getting ink on everything."
+                        ],
+                        "id": "3ed2a482-6731-4fd9-9096-e41fc77999f6",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "d4c38680-716c-424c-a738-0cb97a894af2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full rounded-box border border-base-300 object-cover rotate-1",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1655175480367-13985c5ca96d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJ0aXN0JTIwc3R1ZGlvJTIwcG9ydHJhaXQlMjBwcmludHN8ZW58MHwwfHx8MTc4NjM5OTgwOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Pilar Ortega, illustrator, in her studio",
+                          "loading": "lazy"
+                        },
+                        "id": "b0a5d35e-441c-4823-ba5c-e3196743714d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-bold uppercase tracking-wide text-accent",
+                            "children": ["What I make"],
+                            "id": "f00a89c1-0fca-4db7-afcf-c6a5bf2210aa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "ul",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Editorial illustration"],
+                                "id": "578b492e-1069-4153-af36-1b699fb4f2d6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Character design"],
+                                "id": "70c6b435-68e7-4cb7-bfea-164e73fc3e13",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Short motion & GIFs"],
+                                "id": "af95d0aa-e8c3-4d1c-8441-233a11b8b8e1",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Packaging & covers"],
+                                "id": "41ffb16f-4165-40a6-86af-9a22910b073b",
+                                "ord": "a3"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "li",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Murals & live drawing"],
+                                "id": "c606f373-0d57-4658-91b4-ce180c7ef1f1",
+                                "ord": "a4"
+                              }
+                            ],
+                            "id": "c0d231b1-ee0a-4c84-8a1d-37dcab977bd8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5a26ef1d-f786-40f9-9191-90ed7456b2e7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d85546dd-9207-4759-98bb-87f91cb3cbca",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "effe129c-c11e-404e-9bf5-b91b33f25502",
+                "ord": "a0"
+              }
+            ],
+            "id": "89b39c2d-82a0-4264-9342-6f4c4e6e3a89",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Pilar Ortega",
+      "seoDescription": "Start a project with Pilar Ortega — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ff5b4d74-cd49-4351-992b-003142dd0d08",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold leading-none tracking-tight text-primary @2xl:text-7xl",
+                    "children": ["Let’s make something loud"],
+                    "id": "ed0a26a6-07a7-46f9-a026-0d4b5ea825bd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I take on editorial, covers, character design, packaging and short motion — commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs."
+                    ],
+                    "id": "3d4ee87e-f96b-4c5e-9474-9652709dd206",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:hello@pilarortega.example"
+                        },
+                        "children": ["Email me"],
+                        "id": "af87cb8c-0a6f-4486-8887-14e9e0113fcb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-accent btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the work first"],
+                        "id": "0c337902-3bf9-4486-9fd3-67a5b635365e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e0eb93fa-7977-4558-ac3c-fdcf5caf6954",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "70ea8eba-8a7f-4ab7-a2e4-bf996ecb4369",
+                "ord": "a0"
+              }
+            ],
+            "id": "e11d263b-2a21-48e6-9807-6526e94058ac",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Pilar Ortega",
+      "seoDescription": "A project by Pilar Ortega — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-bold text-accent",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "b1a363bd-ccfb-4f6a-a44b-6eaf59eed7c7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All work"],
+                            "id": "2ece7bf6-b158-4203-bea5-89b7f3ba00e2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "57704c1d-73f9-4422-8253-d444492849c7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-bold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "256c564b-7286-48ba-95f8-9be7ad733e6c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @2xl:text-7xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "52b0f2cc-bbce-4a54-9f15-dba8c32602a3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "0e650ab8-408a-4a29-87b0-02aaae864f1d",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "00d31fad-aee4-40a1-af9e-16ad97ad3517",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-bold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "d43f1b44-cc88-436f-9a46-d47e67cdb92e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "129abffc-77f2-4fa5-84cd-41c4ba10a9d5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b517e845-1427-4cbb-9c67-cd1a1aaf6960",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e78eb396-25be-493b-9a59-61ca5af54546",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "4d60e6c2-cc17-4a9f-b384-d3a04b3d4326",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "0f071833-e490-4e7b-92c7-b42297d68798",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-5xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "341ba93c-7c8c-4175-b027-de9ccbae277a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "20d95018-502c-4330-8134-0ba91d3d5373",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "0d612d0d-e72d-49fb-a9e6-a5ad37c22e0f",
+                "ord": "a1"
+              }
+            ],
+            "id": "c01784de-b000-4e90-9a11-104ca65bb293",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "18b9aeb1-3fbe-458d-a65a-e72e876a0b1d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8d37310a-f02c-476f-83d7-13218b2e6c05",
+                "ord": "a0"
+              }
+            ],
+            "id": "c7767657-8742-4988-813f-d444ec4b0bbc",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "7794f503-506f-418a-8fb7-ca83e364b95f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "43a15f76-82f7-488a-aa44-34e41728b7b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "c7b8b6f9-3a1e-4c8d-a8b1-cf1dcd745d14",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6883147e-1c25-4d7f-a274-8afe6d48a057",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "bbab55aa-d809-429b-8197-48f18e169053",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e9a78466-8507-4473-8a78-a4d4ff505b85",
+                "ord": "a0"
+              }
+            ],
+            "id": "ae39c5a4-07d8-476b-a1bd-3b2f979d3749",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "49f11d9e-3860-48a5-86de-df981d0a49cf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "a11e11fa-2abc-468f-a3be-f829c84f59e6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "6aef7583-ad59-447f-8487-f8560e8bb372",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "eb50fdb6-c0e4-475c-936b-b0b7235f87a3",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "9bf1421d-f8b8-42a2-8e49-1f4281cc40c4",
+                "ord": "a0"
+              }
+            ],
+            "id": "2ae56cd0-7328-455c-9ce0-aafcb8c6aaff",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "37fe7d5d-664c-4e10-b9d5-2aea0231486f"
+      }
+    }
+  ],
+  "theme": {
+    "name": "riso",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.028 85)",
+      "--color-base-200": "oklch(94% 0.038 80)",
+      "--color-base-300": "oklch(89% 0.05 76)",
+      "--color-base-content": "oklch(22% 0.06 285)",
+      "--color-primary": "oklch(55% 0.2 28)",
+      "--color-secondary": "oklch(40% 0.08 285)",
+      "--color-accent": "oklch(47% 0.18 262)",
+      "--color-neutral": "oklch(24% 0.05 285)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "1rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Work Sans\", sans-serif",
+      "--font-head": "\"Syne\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 28)",
+      "--color-secondary-content": "oklch(98% 0.01 285)",
+      "--color-accent-content": "oklch(98% 0.01 262)",
+      "--color-neutral-content": "oklch(98% 0.01 285)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(47% 0.18 262)",
+      "--color-highlight-content": "oklch(98% 0.01 262)",
+      "--color-border": "oklch(89% 0.05 76)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Syne\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(19% 0.04 285)",
+      "--color-base-200": "oklch(16% 0.04 285)",
+      "--color-base-300": "oklch(13% 0.04 285)",
+      "--color-base-content": "oklch(95% 0.03 85)",
+      "--color-primary": "oklch(66% 0.2 28)",
+      "--color-secondary": "oklch(78% 0.06 285)",
+      "--color-accent": "oklch(72% 0.15 258)",
+      "--color-neutral": "oklch(30% 0.04 285)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 28)",
+      "--color-secondary-content": "oklch(15% 0.02 285)",
+      "--color-accent-content": "oklch(15% 0.02 258)",
+      "--color-neutral-content": "oklch(98% 0.01 285)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.15 258)",
+      "--color-highlight-content": "oklch(15% 0.02 258)",
+      "--color-border": "oklch(13% 0.04 285)"
+    }
+  }
+}

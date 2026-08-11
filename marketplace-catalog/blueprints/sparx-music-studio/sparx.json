@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-music-studio",
+  "name": "sparx — Music Studio (Contemporary)",
+  "version": "1.0.0",
+  "tagline": "A modern, creative template for music-lessons studios — book trials online from day one.",
+  "description": "A cool, creative music-lessons studio site — a dark charcoal-violet palette, an electric-violet primary and a modern sharp sans. Installs a working online booking flow: a free trial lesson plus guitar, vocals, bass, production, songwriting and performance lessons; three working-musician instructors booked by name; and two studio rooms — one a production suite — as bookable resources. Ships as \"Amp Room\", a contemporary lessons studio.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Music lessons",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Music Studio (Contemporary) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Music Studio (Contemporary) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#9e57f9",
+  "sortWeight": 49
+}

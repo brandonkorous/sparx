@@ -1,0 +1,96 @@
+[
+  {
+    "name": "Welcome",
+    "publish": false,
+    "doc": {
+      "version": "1",
+      "subject": "Thanks for subscribing to {{site.name}}",
+      "preheader": "A quick hello, and where to see the work.",
+      "root": {
+        "id": "folio-welcome-body-8",
+        "kind": "body",
+        "width": 600,
+        "bg": "#f4f4f5",
+        "bgAuto": true,
+        "contentBg": "#ffffff",
+        "contentBgAuto": true,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "colorScheme": "light dark",
+        "children": [
+          {
+            "id": "folio-welcome-section-9",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "folio-welcome-text-1",
+                "kind": "text",
+                "html": "Hello, {{customer.firstName}}",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 28,
+                "fontWeight": "bold",
+                "lineHeight": 36
+              },
+              {
+                "id": "folio-welcome-spacer-2",
+                "kind": "spacer",
+                "height": 10
+              },
+              {
+                "id": "folio-welcome-text-3",
+                "kind": "text",
+                "html": "Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "folio-welcome-spacer-4",
+                "kind": "spacer",
+                "height": 14
+              },
+              {
+                "id": "folio-welcome-text-5",
+                "kind": "text",
+                "html": "In the meantime, have a look through the selected work. If something sparks an idea for a project, I’d love to hear about it.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "folio-welcome-spacer-6",
+                "kind": "spacer",
+                "height": 22
+              },
+              {
+                "id": "folio-welcome-button-7",
+                "kind": "button",
+                "label": "See the work",
+                "href": "{{site.url}}/work",
+                "bg": "#111827",
+                "bgAuto": true,
+                "color": "#ffffff",
+                "colorAuto": true,
+                "radius": 6,
+                "align": "left",
+                "paddingX": 24,
+                "paddingY": 12
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

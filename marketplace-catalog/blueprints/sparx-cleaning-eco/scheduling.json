@@ -1,0 +1,242 @@
+{
+  "policies": [
+    {
+      "handle": "clean-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to move or cancel a clean. We send a reminder the day before and two hours ahead, and we’ll always confirm who’s coming."
+    },
+    {
+      "handle": "recurring-care",
+      "name": "Recurring care",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Recurring cleans repeat on the schedule you set — weekly, fortnightly or monthly — with the same cleaner each visit. Skip or reschedule any single clean with 24 hours’ notice; nothing is locked in."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rosa",
+      "name": "Rosa Vela",
+      "kind": "staff",
+      "skillTags": ["green", "standard", "deep"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "mara",
+      "name": "Mara Quinn",
+      "kind": "staff",
+      "skillTags": ["green", "deep", "move-out"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "tavi",
+      "name": "Tavi Okafor",
+      "kind": "staff",
+      "skillTags": ["green", "recurring", "standard"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "home-walkthrough",
+      "name": "Home walkthrough",
+      "description": "A free, no-pressure visit — in person or over video — to see your home, talk through what matters to you, and quote your first clean. Sensitive to allergies, pets and little ones.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    },
+    {
+      "handle": "green-standard-clean",
+      "name": "Green standard clean",
+      "description": "Our everyday clean, done entirely with plant-based, non-toxic products — kitchen, bathrooms, floors and living spaces left fresh, with nothing harsh left behind.",
+      "durationMinutes": 120,
+      "priceCents": 14000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    },
+    {
+      "handle": "green-deep-clean",
+      "name": "Green deep clean",
+      "description": "A top-to-bottom reset — inside appliances, skirting, tile, the spots that get missed — using the same gentle, low-fume products, ideal for a first visit or a seasonal refresh.",
+      "durationMinutes": 180,
+      "priceCents": 24000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    },
+    {
+      "handle": "recurring-setup",
+      "name": "Recurring clean setup",
+      "description": "Set up an ongoing green clean — weekly, fortnightly or monthly — with the same trusted cleaner each time. This first visit gets your home dialled in; the rhythm carries on from there.",
+      "durationMinutes": 120,
+      "priceCents": 13000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "recurring-care"
+    },
+    {
+      "handle": "move-out-clean",
+      "name": "Move-out clean",
+      "description": "An empty-home deep clean for the end of a lease or a handover — thorough enough for an inspection, still fully plant-based and safe for the next family to walk into.",
+      "durationMinutes": 240,
+      "priceCents": 32000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    },
+    {
+      "handle": "new-baby-nursery-clean",
+      "name": "New-baby nursery clean",
+      "description": "A gentle, fragrance-free clean of the nursery and shared spaces before a baby comes home — no residues, no harsh smells, just a soft, safe room ready for them.",
+      "durationMinutes": 90,
+      "priceCents": 12000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    },
+    {
+      "handle": "office-green-clean",
+      "name": "Office green clean",
+      "description": "A boutique clean for a small studio or office — desks, kitchens and shared surfaces done with low-fume products your whole team can breathe easy around.",
+      "durationMinutes": 150,
+      "priceCents": 20000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["green"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clean-standard"
+    }
+  ]
+}

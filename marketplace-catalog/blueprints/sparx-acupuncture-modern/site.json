@@ -1,0 +1,2101 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "166678f9-85cc-443d-ad3b-472e94ad7523",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "115dd888-779f-42b5-9978-68d365aeb735",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "e0c51446-232c-4104-a283-3173017467b8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "4a50c9fa-52a8-4141-9e39-7065d6ed81f5",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "da00e2dd-a350-4d83-9750-e0239f86adb2",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "a6605f2e-df1a-439b-87db-448141a890c0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "e3923430-fa54-4523-ad0d-e16c1b34f979",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "f6f6b5ad-a781-4c0f-8b76-758144cb43ae",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "6fe99b81-b95a-4367-aeda-813f960b49d1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "2f02f43b-00eb-4330-a18e-b493bbca52a7",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "0f6908a3-70f2-4167-9724-1e8c722d37d1",
+                  "ord": "a2"
+                }
+              ],
+              "id": "57bfceaa-e6ff-42ef-9424-20b15b19fa28",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "55025d08-d7e9-4d03-a3ca-34950019e266",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "73e1168b-4fd9-494f-b10e-2167c66523d2",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "77766a24-ec94-47b9-b445-50a18ed4efec",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "6a79a104-3720-4e8c-90a1-087a7f8f9915",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "3710d073-867f-45cd-b73a-28ae041a02a5",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "368ac06e-094d-41d9-992f-7af49dfd1941",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "7697c3f2-0356-4e09-8080-39fc08e78afb",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "9f4deac4-6e7d-44e8-aeab-47aa530c1678",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "40257aa3-2d65-409e-994d-e9f9bff12637",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "2cd5bd9d-0ac9-4b59-9008-bc89ea1eac9c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "0aec3614-d483-4d60-806b-7bfbb4796ce3",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "47b985a1-dd97-4f00-a92e-fe47056138b5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "87f8c83d-88f7-4643-b11a-b2ea637099ef",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "0c649063-2597-4fd1-94ff-8c2aa9c7bcce",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "db77b9de-9a2b-4da8-818f-91be53ebf4fa",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "fd71a007-5b36-41ff-bdc2-1d85d52b28cc",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "beb7d9b4-b67f-4b8a-a14a-62c1c1d2a198",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "c4aca363-26cb-4042-b3ca-cc4a5527174c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b1bff364-1610-4e13-a812-048f7b8ee320",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "14452d05-bbdc-4737-a0f6-fe1ca21a3bca",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "fef01b0b-a67b-4517-acba-b445f06a9d30",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "06b774c5-3f19-435f-a2ce-b9a1f065cbf4",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "d3b4c0e6-d49f-4d59-980f-7baad8496464",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "4b3dfb30-4349-4e01-8656-393b2876a95b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7c3a97cb-8a8c-4aba-bcd4-1405990c78e5",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "0bf0659a-9a21-464f-8ebb-000b6e946736",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "75942801-94da-40c8-bee0-247c6511a27c",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "70d9fae5-9a3a-4c1c-aeaf-995bbc37b959",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "1d37404a-e6b3-44b5-90e4-9a101d7d821c",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "719d6edc-f1f2-4b99-af04-266202718adc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "6f3a735e-6075-4bda-af84-bfd407d9926f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b9a13cc3-6e8c-4f95-8948-d397ce822576",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "8a25039c-e124-4fab-bb4e-19093789fe2e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e41f2e15-c736-4235-9fba-33251e38cf29",
+                  "ord": "a1"
+                }
+              ],
+              "id": "f0cdfc91-d172-43ee-99c5-181057dff39c",
+              "ord": "a0"
+            }
+          ],
+          "id": "1e46e7d2-4c05-472b-9b56-cb7a5cc3ea6d",
+          "ord": "a2"
+        }
+      ],
+      "id": "3db965d4-cf40-45d2-90b3-cf282ef34019"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Meridian Wellness — modern acupuncture & wellness",
+      "seoDescription": "Meridian Wellness is a calm, modern acupuncture studio for pain, stress, sleep and facial acupuncture. Book your practitioner online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8e4724cf-3e46-427e-91f5-abd4d0f7c81f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1598555763574-dca77e10427e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWN1cHVuY3R1cmUlMjBuZWVkbGVzJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM5MjEwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, minimal treatment room with a single clean table and soft daylight",
+                  "loading": "eager"
+                },
+                "id": "2ce34d2a-da94-41ef-b0b0-ad35fb5631bb",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "e1acd7c8-7696-4abf-a3e3-599c41010fbf",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Calm, evidence-informed acupuncture"],
+                    "id": "ea1e2a31-fbab-48f5-a2cd-aacc48dd15d9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A modern studio for acupuncture, facial acupuncture and stress & sleep support — gentle, considered care that meets you where you are."
+                    ],
+                    "id": "dea70214-e348-46da-a5ad-6f17a8f15fc1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a session"],
+                        "id": "e4c021e0-bc64-4ba6-b8ff-204d518d3d5b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See sessions"],
+                        "id": "a5408cd2-5de9-4d51-8ff9-d71e2c2a5de9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d7921a8f-b5ed-428e-ab02-0767e585f274",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c1f42f9e-2c8e-4d28-9ae3-1c3e80793875",
+                "ord": "a2"
+              }
+            ],
+            "id": "9cefac08-efd9-4b46-a360-acae24e4afef",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Evidence-informed care"],
+                            "id": "6675f48a-64ae-4ead-8738-50804cdf8dc1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Licensed practitioners who blend acupuncture with modern clinical understanding — no mysticism, just careful, personalised treatment."
+                            ],
+                            "id": "f1ccbb30-f251-4894-a189-2644a3141b85",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6e260a25-8887-440c-a792-40c2fe327eac",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A calm, modern space"],
+                            "id": "d1cd0517-2ca9-4add-bd82-4d7084899d0d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Clean, quiet rooms and unhurried appointments. Every session gets a real intake, a proper treatment and time to rest."
+                            ],
+                            "id": "e50c5747-f637-4784-b1a1-44578bf6eff6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f2cf05bd-22f3-4044-b91f-d6a4c556ab87",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Facial & cosmetic acupuncture"],
+                            "id": "1f023b43-8a01-49a6-bc8d-03f61ff265db",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A gentle, needle-based approach to skin and glow — a natural, low-intervention alternative to injectables."
+                            ],
+                            "id": "ca9d5140-45a9-4800-884e-a2c7947234ee",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "34ae79f5-897d-4e92-afe9-a983891dbaaa",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Easy online booking"],
+                            "id": "125f4aa1-5029-4de4-810b-ce67602ff425",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Choose a session, pick your practitioner and see live times. Reschedule in a tap if life gets in the way."
+                            ],
+                            "id": "43415e30-13da-408f-9222-f97406266053",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5143dcd7-2ab3-47e7-84e7-1e1817229476",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "d321dfa2-8ca9-4d6c-8156-4f2238d0f799",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "81717074-b6bb-4dd3-a886-8823dd2b7846",
+                "ord": "a0"
+              }
+            ],
+            "id": "bed6a3f9-a495-4d21-a203-4a86bed53121",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Sessions"],
+                        "id": "dbc1675f-c046-467c-8a06-48607eea5b86",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the things we do most. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "d112c640-9f8f-46ca-82c7-08125ecd19f2",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c65a8282-4abc-498e-baab-ea54ae6b208c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["New-client session"],
+                                "id": "9c7f5490-c91c-4854-8dda-acb5b2f5cbbc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "351cd3c0-1d08-4474-bb41-9825fb6ab322",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e89b99e2-d21e-4958-adc4-92e7fe7292d8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "d017ad4a-5dd5-44cf-bdb9-92ac8aa041c8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A full intake and a gentle first treatment."],
+                            "id": "2f2b9e83-400b-452c-aa00-31fa509cc29f",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4d29da0e-353e-4189-90e5-765c4217394d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Acupuncture session"],
+                                "id": "cafa6f28-7a86-4f7b-8a98-868d4c9cac92",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "c89819f4-4e84-495c-98d2-ff04a7271fce",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7313cf2c-3e16-47b9-84c8-66341c9d49b2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "0a69feef-e434-43fb-9d7a-b597ac2b857a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Focused care for pain, tension or balance."],
+                            "id": "e7c9df25-b72d-4d1c-b33c-4a21c94ce4ac",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8075e495-92a3-4157-9b78-c2c586744e79",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Facial & cosmetic acupuncture"],
+                                "id": "cbda0820-5583-44f4-ac55-8cab536c030c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$155"],
+                                "id": "d6011bef-d701-44f2-bb7f-55092002320e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "197afd7b-7092-4efc-a326-801c77bf663d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 15 min"],
+                            "id": "07429dac-3c46-4f6d-8b69-7e7f5433e631",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A natural approach to skin and glow."],
+                            "id": "eab39aca-f80c-43d9-a45e-938d1a0365e8",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c3ff1554-8dce-4b12-b3cf-1e5afbe9af52",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Stress & sleep session"],
+                                "id": "2e6b89b6-c1b3-4f70-8a99-6acc5ed4bff2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "d77b36e5-e11c-4d81-8673-31552777f05a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6340aca7-7058-486d-b160-a08141fc75a6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "4cf998a2-be19-441a-b66f-f9b215625aa2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Restorative care to calm and settle you."],
+                            "id": "f3d7d54e-ce2f-4b24-b799-311c2b75214b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "cc833d2a-57c2-4a86-bb89-73f0240cf577",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0cff27b3-6175-4b6e-9dd2-d6581009ec7c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "ed9af250-ff8d-40d2-a3f7-9f73b236fa87",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "df0847a6-b284-420e-8b35-81662ad57788",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "be68196d-f5f0-422c-9e1f-b7b1a4b5f7b8",
+                "ord": "a0"
+              }
+            ],
+            "id": "da7c889f-7a05-4eaa-b604-46d355f802f1",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1676496962536-d8ef110ff6f0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMHdlbGxuZXNzJTIwc3R1ZGlvJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM5MjEwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm modern reception with sage-toned walls and simple wood details",
+                      "loading": "lazy"
+                    },
+                    "id": "126edc45-286c-4118-9836-82cdac3ae6b3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["An integrative approach"],
+                        "id": "54dac250-d76b-4770-a1ee-42d53cd33d43",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Meridian Wellness sits where traditional acupuncture meets modern clinical care. We take a full history, listen properly, and build a plan around your body and your goals — not a one-size protocol."
+                        ],
+                        "id": "595f370c-3c22-417b-b367-ce08806a7974",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That means honest expectations, gentle technique, and treatment you can actually feel working — session by session, without the mystique."
+                        ],
+                        "id": "6784d33f-f9ba-40d3-813b-ac4b1c972e47",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a session"],
+                            "id": "937a1c77-7af4-4eb2-b7c9-6a22b0446ec9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "5f6670ca-e7d9-4004-902e-21ccad97661a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "248534cf-0627-4189-9236-08320fe92769",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "60c0c2a4-c99c-4685-abe7-6f639dc3843d",
+                "ord": "a0"
+              }
+            ],
+            "id": "3851c2c9-12a6-46e1-85ab-709995264c50",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your practitioners"],
+                        "id": "08499028-c8c7-4593-8852-072fbcfe6e81",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll see the same practitioner as your plan progresses."
+                        ],
+                        "id": "9bf74120-f032-4f2f-9164-c7ddaa6cc603",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "626eaa2c-2705-4883-9806-1c7585b0c18f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1526080652727-5b77f74eacd2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3ZWxsbmVzcyUyMHByYWN0aXRpb25lciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTIxMDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Lena Osei, licensed acupuncturist",
+                              "loading": "lazy"
+                            },
+                            "id": "1467f451-09e9-4078-85ba-8a85e6eaa8d9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Lena Osei, L.Ac."],
+                                "id": "750286c9-8903-4f9d-89ad-6e7d95d193bd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Founder · Facial & wellness"],
+                                "id": "42bfae17-a53d-40b4-a7b4-9b9fcc866358",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Cosmetic acupuncture and whole-body wellness. Lena leads the studio."
+                                ],
+                                "id": "e7f89895-c4f5-4e50-8e81-a9cddc5de040",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "ac19f5f1-793a-4737-8831-bda8b1d882fc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d39bee7-92b9-49b2-a9d8-e7bbd7054998",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJhY3RpdGlvbmVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MjExMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Feld, licensed acupuncturist",
+                              "loading": "lazy"
+                            },
+                            "id": "0a6d29b6-7997-441f-82c7-f9cfecf92a8d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Feld, L.Ac."],
+                                "id": "2ac7a599-6e00-4ee2-90b1-798cb8d45443",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Pain & dry needling"],
+                                "id": "a2fff8c7-e479-4d1b-b205-d90078652a61",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Sports recovery, dry needling and hands-on pain relief."
+                                ],
+                                "id": "538e2156-8d7e-4269-b9cb-67a3f8e3c4ef",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "19029889-eb67-472b-ac01-f1757202d335",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c200145d-006e-4f69-aec5-4d82f202d8cd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBoZWFsdGhjYXJlJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Nair, licensed acupuncturist",
+                              "loading": "lazy"
+                            },
+                            "id": "d1cecad3-efc2-4cd8-9310-a041a588abe9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Nair, L.Ac."],
+                                "id": "14bece42-2ab9-48be-afd3-f99a45118a53",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Stress & sleep"],
+                                "id": "a8b61919-b859-4414-888c-26a23c87629c",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Calming, restorative sessions for anxiety, burnout and sleep."
+                                ],
+                                "id": "31121a07-9439-4e86-8bfd-f6c12967fa57",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "b03e582b-f474-4fd7-a012-0fcfcf189e56",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "624ce769-f01a-45c2-b3ae-4bfcfba3e143",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "7bf0fbfe-64aa-49e2-a0c0-1423d2049e21",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e82775c5-041a-40eb-9b1f-4dbeb4ccbe87",
+                "ord": "a0"
+              }
+            ],
+            "id": "a8c3bd24-6156-417e-8a2f-587644ee9c38",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I came in skeptical and sceptical about needles. Three sessions later my shoulder pain is gone and I sleep through the night. The whole place just feels calm.”"
+                    ],
+                    "id": "b2291453-d123-4a1c-826b-a711a3c17c8d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Devon, client since 2024"],
+                    "id": "11b42d01-acdb-4d68-aa1f-04ce0035df79",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3a3c7197-25f4-49ba-8468-bb446daa51c7",
+                "ord": "a0"
+              }
+            ],
+            "id": "26833e9b-a33d-4749-97e8-89e3f9215111",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready when you are"],
+                    "id": "86d89eb6-6e7d-4e63-96a4-e1eaae5cc75c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick a session, choose your practitioner and see live times. It takes about a minute."
+                    ],
+                    "id": "a1371a6e-63a3-4026-a4f4-55d860dad880",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a session"],
+                    "id": "39d5b31a-5b7e-4a54-80ec-67948bd62366",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7af9feb0-cbc4-4f8d-bea4-dae2fb0287b1",
+                "ord": "a0"
+              }
+            ],
+            "id": "38f8dfa2-24bf-4381-ad30-86d559792f7d",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Meridian Wellness",
+      "seoDescription": "See what Meridian Wellness offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3f43ca3b-1ec0-4c5d-aff9-84ecdd7d9845",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://picsum.photos/seed/meridianwell-treatment/1600/1000",
+                  "alt": "Fine acupuncture needles laid out on a calm neutral surface",
+                  "loading": "eager"
+                },
+                "id": "c0872fff-1d08-4efb-b0c3-04076db9e02d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "a02631e2-f697-4773-840a-897f39a78ac4",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a session"],
+                    "id": "da7fb1a8-ec26-46e0-93a0-b7a3f89fa36b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a session to see prices and live availability, then pick your practitioner and time."
+                    ],
+                    "id": "9d0cb7a2-0149-4561-a394-df925250526b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See sessions below"],
+                        "id": "e935c247-1847-4b73-88f3-80e46dde70a1",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d6689e54-2a56-460c-a9a3-5d6fb629b751",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "69466ecc-ee2a-446b-9f75-fe876198430f",
+                "ord": "a2"
+              }
+            ],
+            "id": "a1dbbf06-ce26-4092-a71c-a6d1692f673b",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "4d92e616-a370-4558-bd6a-252acb34bff9",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Meridian Wellness",
+      "seoDescription": "Who Meridian Wellness is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a8e447e2-7c6c-433d-9d89-0e0251f2b8d6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1598555763574-dca77e10427e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWN1cHVuY3R1cmUlMjBuZWVkbGVzJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM5MjEwMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, minimal treatment room with a single clean table and soft daylight",
+                      "loading": "lazy"
+                    },
+                    "id": "13baf35d-cc4a-40dc-952f-ac6c9dd80b8b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Meridian Wellness"],
+                        "id": "8412387d-63f5-4e68-b5a0-3faa609782cd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Meridian Wellness to make acupuncture feel modern, calm and genuinely useful — grounded in careful practice, free of jargon and pressure."
+                        ],
+                        "id": "bfc01917-6c67-4d5a-b66d-8151991dcec8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No rushing, no upselling, no vague promises. Just licensed practitioners, clean quiet rooms, and treatment planned around the real you."
+                        ],
+                        "id": "c1ba0d22-b854-4ea9-ae0d-ede648a9206f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a session"],
+                            "id": "9fe3b33f-83e3-4f77-89a1-26ef3e1625a8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "6afdf3c5-be37-4cf7-8da5-a865e1c30bac",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "a2154adc-9129-4f97-a7d1-c5bdc5e88c65",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "fc69dc4a-8222-4790-bab9-a52f44056b20",
+                "ord": "a0"
+              }
+            ],
+            "id": "f5f3b258-e138-43e3-bca6-d6d5e9cf35b2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "8a927d9a-8805-46b9-adf0-872358e889d1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A real intake first"],
+                            "id": "b2b2d70e-1de3-4122-bfc0-b98cbf3a1288",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every plan starts with a full conversation about your history, your goals and how you actually feel day to day."
+                            ],
+                            "id": "c4122855-660e-40bc-b857-ce588bd75270",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cb0a57a1-3a2f-4d07-b539-7ac12039dcc1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Gentle, considered technique"],
+                            "id": "97f208b9-7803-4f19-9994-dece418d9cb5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Fine needles, careful placement and unhurried sessions — comfortable enough that most people simply rest and unwind."
+                            ],
+                            "id": "4d2541ed-71f4-463d-9200-cad190570c91",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7c443514-2e48-4901-b22a-f6902270d18f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A plan you can keep"],
+                            "id": "70c53508-29ba-4946-9bf1-7f88a67e6779",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We’re honest about what to expect and how often to come, and we’ll help you fold sessions into a routine that lasts."
+                            ],
+                            "id": "7514fe90-d247-41cf-99c5-6823e3dbfd29",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bd82e780-45f4-45ea-a300-de763331d3d9",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "60670874-6e5d-412d-b658-d537fc707305",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5f9e23ed-e000-4bb2-ba97-f6f7f9e0b044",
+                "ord": "a0"
+              }
+            ],
+            "id": "15544c77-f9cc-44e2-b3c4-4df82f5a99c9",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Meridian Wellness",
+      "seoDescription": "Where to find Meridian Wellness, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "616ed302-8178-4291-9ba7-ea0d00f7c648",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the studio"],
+                        "id": "fba5fc16-9aae-4227-9ca5-a50e4b823b36",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Meridian Wellness"],
+                            "id": "8a0693b8-15f4-4de4-81c3-3ee67f822bf4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Cypress Avenue"],
+                            "id": "e1d71267-8e29-4c44-a262-d1067baa7446",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 3 · Austin, TX 78702"],
+                            "id": "e8965508-0029-4e7f-8e6c-0633d1665e90",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "63ae4ee0-865b-4b9f-a0b2-581e6733e337",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "4370e4dd-28c4-42f6-a5db-9bfb0a6620f0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 7:00"],
+                                "id": "67818937-7314-4088-9e76-4bcacaa2540c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4a30039b-729f-40f9-8218-0ae71fe1a698",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "e048b216-cdf4-4b73-81fb-a154c11027ad",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "0ac0781b-1c70-40f0-8228-4f77d26907d0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "308284d4-adf3-4b00-8d7c-57f653d8974b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "f9ec89a4-6d6f-4edc-a5dc-119c4260c5fd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "279c6967-3691-49de-b675-eaaa94f25fb4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c36e3016-9339-4932-90fa-f5f234a8f30c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2fb95529-c28c-46ce-85c2-080a7df20e83",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "aafbc122-29d0-497d-9e4b-90fcf2a17fed",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Cypress Avenue, Austin, TX 78702",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "7e692fb5-04a0-4826-a1e4-f49ffa882ce3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "aab61cf2-3a9b-40be-bea7-b99633b7fdd3",
+                "ord": "a0"
+              }
+            ],
+            "id": "5a8383dd-56a0-4a07-adaa-fe4e1014812c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "4835f21d-6c9b-4809-bfe2-9d6ec387c418",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your session online — no phone tag."
+                    ],
+                    "id": "5c049c10-36ba-487b-8faf-1fc1b2f05c0c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a session"],
+                    "id": "55cf4496-eb9a-45cc-b4ca-2635e32b23ec",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d030f7e5-80a6-4660-beba-d7121c4adef0",
+                "ord": "a0"
+              }
+            ],
+            "id": "660ea96b-e73e-4873-8ff2-f50ce2d4f6fd",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "meridian",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.005 150)",
+      "--color-base-200": "oklch(95% 0.012 152)",
+      "--color-base-300": "oklch(90% 0.016 154)",
+      "--color-base-content": "oklch(27% 0.02 165)",
+      "--color-primary": "oklch(68% 0.062 155)",
+      "--color-secondary": "oklch(37% 0.022 166)",
+      "--color-accent": "oklch(80% 0.045 68)",
+      "--color-neutral": "oklch(30% 0.016 165)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.625rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "0.875rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 155)",
+      "--color-secondary-content": "oklch(98% 0.01 166)",
+      "--color-accent-content": "oklch(15% 0.02 68)",
+      "--color-neutral-content": "oklch(98% 0.01 165)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(80% 0.045 68)",
+      "--color-highlight-content": "oklch(15% 0.02 68)",
+      "--color-border": "oklch(90% 0.016 154)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.014 165)",
+      "--color-base-200": "oklch(18% 0.012 165)",
+      "--color-base-300": "oklch(14% 0.01 165)",
+      "--color-base-content": "oklch(95% 0.006 150)",
+      "--color-primary": "oklch(78% 0.07 156)",
+      "--color-secondary": "oklch(80% 0.015 160)",
+      "--color-accent": "oklch(82% 0.05 66)",
+      "--color-neutral": "oklch(84% 0.012 160)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 156)",
+      "--color-secondary-content": "oklch(15% 0.015 160)",
+      "--color-accent-content": "oklch(15% 0.02 66)",
+      "--color-neutral-content": "oklch(15% 0.012 160)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(82% 0.05 66)",
+      "--color-highlight-content": "oklch(15% 0.02 66)",
+      "--color-border": "oklch(14% 0.01 165)"
+    }
+  }
+}

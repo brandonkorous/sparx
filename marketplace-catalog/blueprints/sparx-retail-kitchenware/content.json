@@ -1,0 +1,227 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "season-and-keep-a-carbon-steel-pan",
+    "status": "published",
+    "body": {
+      "title": "How to season and keep a carbon-steel pan",
+      "excerpt": "A raw carbon-steel pan is a blank slate. Here’s how to build the slick, near-non-stick seasoning that makes it a joy — and how to keep it that way.",
+      "featuredImage": {
+        "$asset": "kw-post-season"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A carbon-steel pan arrives raw and a little grey, and that’s the point: you’re going to build its surface yourself, and it’ll be better than anything that comes out of a factory. Seasoning is just thin layers of oil baked onto the steel until they turn to a hard, slick, dark polymer. Do it once properly, then keep it up by cooking, and the pan becomes the most non-stick thing in your kitchen."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The first seasoning"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Scrub off the factory wax with hot soapy water and dry the pan completely — carbon steel will flash-rust if you leave it wet. Set it over medium heat until it darkens and any bluing appears, then take it off, add half a teaspoon of a high-smoke-point oil (grapeseed or flax), and wipe it around with a paper towel until the pan looks almost dry. Almost dry is the whole trick — a puddle of oil bakes to a sticky mess, a whisper of it bakes to glass. Return it to the heat until it stops smoking, let it cool, and repeat two or three times. You’ll watch it go from grey to bronze to black."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Keeping it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Cook fatty things early on — bacon, sausages, a steak — and the seasoning deepens with every use. To clean it, wipe it out hot, or use a splash of water and a soft brush; skip long soaks and the dishwasher. Dry it on the heat and wipe a trace of oil over the inside before it goes away. If a patch ever sticks or shows rust, don’t panic — scrub it back, re-season that spot, and carry on. A carbon-steel pan isn’t fragile; it’s just alive, and it rewards a little attention with decades of service."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "choosing-your-first-good-knife",
+    "status": "published",
+    "body": {
+      "title": "Choosing your first good knife",
+      "excerpt": "You don’t need a block of fifteen. You need one knife that fits your hand and holds an edge — here’s how to pick it, and why forged beats stamped.",
+      "featuredImage": {
+        "$asset": "kw-post-knife"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The knife block is a marketing invention. Most cooks do almost everything with one chef’s knife and reach for a paring knife for the small stuff — two knives, not fifteen. Spend the block money on one knife you’ll actually enjoy using, and the difference in your cooking is immediate: less effort, cleaner cuts, and a lot more pleasure at the board."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Forged versus stamped"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A stamped knife is punched from a sheet of steel like a cookie cutter — light, cheap, and fine for a while. A forged knife is heated and hammered into shape, which aligns the steel’s grain and lets it carry a full tang and a bolster. The result is heavier, better balanced, and it takes and holds a keener edge. You feel the difference in the first ten seconds of use, and you keep feeling it for twenty years."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What to check in your hand"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Weight and balance are personal, so if you can, hold it: the knife should feel like an extension of your arm, balanced right where your fingers pinch the blade, not nose-heavy or handle-heavy. Look for a full tang running the length of the handle and high-carbon steel for the edge. Then commit to learning to sharpen — a cheap knife kept sharp cuts better than an expensive one gone dull. A good knife and a whetstone will outlast every gadget in the drawer."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "carbon-steel-cast-iron-or-stainless",
+    "status": "published",
+    "body": {
+      "title": "Carbon steel, cast iron or stainless: which pan for what",
+      "excerpt": "Three materials, three jobs. A plain-English buying guide to what each pan is genuinely best at, so you buy the right one instead of all three.",
+      "featuredImage": {
+        "$asset": "kw-post-cookware"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Walk into a cookware shop and the choices blur together, but the three materials that matter each have a clear job. Buy for the cooking you actually do and a small collection covers everything; buy by the brochure and you end up with a cupboard of pans you never reach for."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Carbon steel — the everyday searer"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Light enough to flip, it heats fast and gets screaming hot, which makes it the best pan for searing, sautéing, eggs and stir-fries. It seasons like cast iron but responds quickly to the burner, so you have real control. If you buy one pan, buy this — it becomes the one on the stove every night."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cast iron — the heat reservoir"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Heavy and slow to change temperature, cast iron holds heat like nothing else, which is exactly what you want for a deep sear, cornbread, or anything that goes into the oven. An enamelled Dutch oven adds a non-reactive interior, so it also does braises, stews, bread and Sunday sauce. Slow to heat, slow to let go — its weight is the feature."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Stainless — the precise one"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Non-reactive and easy to read, tri-ply stainless is the pan for sauces, reductions, blanching and anything acidic that would strip a seasoning. It won’t build a non-stick surface, but it browns beautifully and deglazes into a proper pan sauce. Between a carbon-steel skillet, a stainless saucepan and a cast-iron pot, there’s almost nothing you can’t cook."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

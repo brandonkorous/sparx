@@ -1,0 +1,2126 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "c21a12aa-cd7f-4338-8e95-ef12e55f3552",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "6df1f4bf-3625-4638-82ba-247031820d27",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "0a9f71ce-9881-44da-8230-95b1d232a305",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "08e5167d-2f55-4448-b639-51c441a8538e",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "e7de688e-4dd4-4203-9976-213d8f078895",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "0187c558-fee4-400c-9794-7ef95302b340",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "5e96b1d4-5622-4edd-8f6d-7590aa3585e1",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "94072323-57c4-4efb-ae76-6270a1477351",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "36de4be7-0feb-4154-ad96-d8d4316c8687",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "f2c31368-1726-4d59-b2c8-9d16f83b44b3",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5e425d75-2fb1-46fa-9779-04ce5a920e40",
+                  "ord": "a2"
+                }
+              ],
+              "id": "01da192a-6edd-4810-81db-8acff29ee9d1",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "9751bed4-c8b8-4c14-93f9-ec0cee9f945e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "d1178904-c8d9-48e8-a9dd-c18ebe5057cf",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "a9262df3-ba40-46ad-9749-cda8cf31f0b4",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "11bf0481-b2e6-4e7f-8f9e-ae3667ac7919",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "4e210b23-6e23-4248-a865-4ee3627078c5",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "9313e572-2a85-414a-892a-540c3a647425",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "969ba746-7c6e-4aac-acf7-322ae6115534",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "62d1ed9e-f8e1-4cdd-9bca-d8dc85f4aadd",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "f77bb82c-55eb-435e-934e-319c0127ed95",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "6f4f1bd3-5df4-4b18-adc8-7f7ff67836d6",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "d314b434-cd74-4eaa-8151-3e7284b833d4",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "a95b9580-ecde-4fa8-9e81-6c218a380ed6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "8f04d14c-78da-4f3a-8734-867d1c55bed0",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "be483713-04da-4ba8-abe1-3bdfbc9d2347",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4660bc43-4a6b-444f-89fc-2bc850ca0570",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "07efc2e4-b94c-4bcf-9c48-ccbed833a73c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c6e6a440-619a-410f-8bd5-ffc170b4c481",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "1e787dae-7c2e-41e8-a904-37a1d3703b7c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "637bc248-0be5-4838-b4de-f82518e25ad1",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "9b9eb1f0-8116-4d44-8f4d-d319b29f3311",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "846acd77-fad5-41f9-ac29-36decdbed208",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "e11ab632-e960-4e07-9f0f-6cc2be172a6b",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e12fe6b6-d2c9-4165-875d-5b1ad8b433bd",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "e34cd3e0-9480-47c9-a622-93e15c6e3569",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "3024422c-f7ba-49e3-9e9b-793859b7083b",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "c6d0e85a-619c-4a94-b1a0-fc130dc4f2f6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "349baf21-6337-47cb-acb9-1e970f9c1ee7",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "c3448c1b-438b-426f-8cab-9acfab537393",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "662a5d2f-5830-40b8-8b43-2c856e37aec7",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "cec76f02-93d6-4748-b94b-98fb66d39e6f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "c7183136-7ca7-4f38-8ad5-ef6b6c3a3db1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "46e76f6f-dc4b-4377-8aea-02a17ebdbc64",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "2edd17f0-9f7b-454c-b39b-74ef2cc48133",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "b5194ef4-5626-4262-b883-73e0dafc6039",
+                  "ord": "a1"
+                }
+              ],
+              "id": "7ffc9532-47c9-494a-9e11-ea3723cc16bd",
+              "ord": "a0"
+            }
+          ],
+          "id": "db7be2d5-a402-408a-99cb-028350b544df",
+          "ord": "a2"
+        }
+      ],
+      "id": "a28655e4-06d2-409c-a4d6-81f1889c7cff"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Crescendo Music School — lessons for every age",
+      "seoDescription": "Crescendo Music School offers warm, encouraging lessons in piano, guitar, voice and violin for all ages and levels. Book a free trial lesson online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "575ab328-2b33-40cd-adae-54f8259b45c7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1552422535-c45813c61732?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBwaWFubyUyMGxlc3NvbnxlbnwwfDB8fHwxNzg2MzkxNTI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A young student smiling at the piano during a lesson",
+                  "loading": "eager"
+                },
+                "id": "8c92dc94-f0f4-4996-a767-379fd957d24d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "21e2a70c-e58a-4f0c-b1ef-aea14bddf79a",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Learn to love making music"],
+                    "id": "e0f92cae-adfe-4b0a-b1e3-9335a77eb538",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more — for every age and every level. Start with a free trial lesson."
+                    ],
+                    "id": "d38c74dc-ac8c-4cc7-aaae-fad4192b439f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a trial lesson"],
+                        "id": "ca0c7a86-3f45-44a5-b1e4-75008af9bef1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons & classes"],
+                        "id": "03c2f0d2-7144-4d51-a68e-70a5580522f5",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b7fdb3f7-357b-4dbb-b50c-8a3cf3b3b757",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "45f176c1-e479-4d2d-a999-e36d82986cc6",
+                "ord": "a2"
+              }
+            ],
+            "id": "807435ef-d385-4703-ade3-d69e8f7763ed",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Caring, certified teachers"],
+                            "id": "0de0575e-315b-4ed7-8cfb-cbd267ecde02",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Real musicians who love to teach — patient, encouraging, and trained to meet you exactly where you are."
+                            ],
+                            "id": "29e7d574-fd32-4a2f-9409-d474541f2931",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ed46a129-1f9b-4a8e-899d-b0adf84befc6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["All ages, all instruments"],
+                            "id": "e667ab44-0bd5-41e5-9fad-19ba5dfc7057",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "From four-year-olds at their first keyboard to grandparents picking up guitar — beginners are genuinely welcome here."
+                            ],
+                            "id": "c607830e-5634-4d6f-a4a4-e5a13d07aef9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3905284d-c438-47e7-b3d3-8991c43e9a09",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Recitals & performances"],
+                            "id": "4746324c-7b90-4cc1-81da-23886e964cd0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Friendly, low-pressure recitals give every student something to work toward and a moment to feel proud."
+                            ],
+                            "id": "448c80d8-1f3e-4b95-a1b7-d9b1ee8ccb68",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3332c3ff-a546-4d78-b4fc-b9368cc4cc63",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Flexible scheduling"],
+                            "id": "c51e0b26-c1fc-4534-924f-d0ab9343d16a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "After-school and weekend times, easy online booking, and reminders so lessons fit around real family life."
+                            ],
+                            "id": "b100372f-b20d-4e85-8349-f4fc5545c0a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3542e7d7-4c7e-46f4-8348-0d2e9cf0c6f8",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "672de778-4f42-4046-9604-b0ea23ccbf88",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e55a0145-a73b-4696-bf53-642fe0fd31d9",
+                "ord": "a0"
+              }
+            ],
+            "id": "966c0e99-615a-49b8-b484-f357d62dab60",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Lessons & classes"],
+                        "id": "5b09c237-f983-4e7e-8d7c-fc7e71c11f82",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the ways to make music with us. See full prices and live times on the booking page — and remember, your first lesson is free."
+                        ],
+                        "id": "03c0678e-2e4e-47b3-824e-ab7fc274f5ec",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "fca05b2d-25c7-4a19-8cff-c3c63b0811b4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Trial lesson"],
+                                "id": "c2cb5251-6753-4f9a-8f5c-881f52271400",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "71c8470a-f70e-4877-ac66-e1cda725027d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b6dd7cfd-010d-45b8-a690-447e132d2b7a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "746f8160-776c-4eff-bfcd-05ad5c406691",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A free first lesson — meet a teacher and try it out."],
+                            "id": "06b10a9f-7dd4-4010-86f5-d8a293bce314",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "10f907e8-62fd-4db8-8120-0eca4f07da31",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Piano lesson"],
+                                "id": "91aa98d9-257c-4e82-8ddb-115e9050a849",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$60"],
+                                "id": "02fa00ec-9ad9-4878-a4a4-71f2167905f3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a24aae51-017c-4733-8a96-620dbee3ce28",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "b3ec7d9e-9378-4fc0-a7d9-45772fe4e0d8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["One-to-one piano for every level."],
+                            "id": "3919ddec-deaa-4fc1-b7de-24c65054d892",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6ef53008-ca05-4aa1-8060-6ad6f162b887",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Guitar lesson"],
+                                "id": "03fcfcb7-a631-43c0-affb-03522f48695b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$55"],
+                                "id": "d37df317-9e9e-44b1-b5e3-195a3a4e9a03",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9a080d22-dd95-4c1a-8942-903931d76ef3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "73b9dfab-27da-445a-acf0-3d0de51f426c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Acoustic or electric, chords to solos."],
+                            "id": "e0a22361-25d4-44d8-a6bb-749ef29993ec",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "331460bf-3c13-4f02-a111-e838a4f2c774",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Group musicianship class"],
+                                "id": "8933cc54-c3ad-4a28-8192-d29d086a93b8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$30"],
+                                "id": "b760fe25-4c9e-433e-b71f-e4cd0eeaf094",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "35e1ed75-0502-4944-bc52-1249f897109f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "90ffa277-680e-4f23-bc4a-7e98f44e719f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Rhythm, ear-training and playing together."],
+                            "id": "45eb458b-891d-418e-9008-c3c62a98330a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5a3e4ad7-97a2-4cc0-b3ca-4abf4888e257",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "fc8b5a43-39c1-4cab-8bdb-5899ad552f2d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "1938273c-b396-4179-b150-c41360769862",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "67ba72f5-194b-420e-a2ee-fb16b40b6834",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "eb891158-e94f-49c6-9f40-7c8787421e14",
+                "ord": "a0"
+              }
+            ],
+            "id": "c7ff1688-fb5f-4c02-b65f-3f8e466d551d",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBsZXNzb24lMjByb29tJTIwcGlhbm98ZW58MHwwfHx8MTc4NjM5MTUyOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A warm, light-filled lesson room with an upright piano and music stands",
+                      "loading": "lazy"
+                    },
+                    "id": "b3576c30-ca9b-4be6-812b-3017ef0cf643",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Music should feel joyful, not stressful"],
+                        "id": "6edfa8a7-ed9b-4339-be11-f2570401bf33",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first — celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind."
+                        ],
+                        "id": "3d890a52-593c-4487-8d3e-7805946b4a17",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Progress is personal here. Whether you dream of playing in a recital or just want a happy half-hour each week, your teacher builds the lessons around you."
+                        ],
+                        "id": "252033ae-e5d9-4b88-937f-e3ead64bb7a7",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a trial lesson"],
+                            "id": "baee9719-e9a4-470a-8f7d-426917370351",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "2cd9ad8d-a851-4296-91a2-95f3a77d9fc8",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "697f3c1b-46f9-4682-8095-47c119ac76a1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2f5b97a8-56f8-4fad-990d-0d22588f167d",
+                "ord": "a0"
+              }
+            ],
+            "id": "cbe905d9-d6c3-4684-b7a6-abd39037b47d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your teachers"],
+                        "id": "36b8dbfc-fe86-446e-974a-3e974246b556",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn."
+                        ],
+                        "id": "c8cb36f3-d3b7-4d5c-b89a-4f54d6c5a80d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e8aa3938-2ef9-41d9-b3b6-c07128da578e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBtdXNpYyUyMHRlYWNoZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkxNTMxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Mara Ellison, piano and voice teacher",
+                              "loading": "lazy"
+                            },
+                            "id": "80594c83-d11b-4941-8e2a-57021879a7e4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Mara Ellison"],
+                                "id": "e1d3754e-791d-4720-9aa1-86b47195001f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Piano & voice"],
+                                "id": "75262381-620a-49e5-b37f-4571a92777b9",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Twenty years of teaching, endless patience, and a gift for making beginners feel at home at the keyboard."
+                                ],
+                                "id": "0d807f41-a9d0-4175-81b8-d37cae3ae01e",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "2723c901-b6b3-4a48-b7f9-0a8460d1149e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "977fe1a7-b1ad-4684-8710-a2135d37e396",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1636581563713-5ead3fb53a80?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjB0ZWFjaGVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MTUzM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Theo Nakamura, guitar teacher",
+                              "loading": "lazy"
+                            },
+                            "id": "11ccaffa-f207-403f-9f69-cc0fce55fcc6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Theo Nakamura"],
+                                "id": "a398b0d6-3fb7-4404-a1bf-a48a8709d49c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Guitar"],
+                                "id": "fc13649a-6724-430c-93df-d180fbcc5ae9",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "From first chords to full songs, Theo meets every student where they are — teens and grown-up beginners especially love his classes."
+                                ],
+                                "id": "96ba456d-38e6-4290-9761-105c9ea5949c",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "fff8286a-23ed-40c3-b49d-6d3eaa157da1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7c5b7400-71ef-42df-8163-43456702769d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1725215956940-91f616b95443?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmlvbGluJTIwdGVhY2hlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1Mzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Lena Petrov, violin teacher",
+                              "loading": "lazy"
+                            },
+                            "id": "dbeef708-c468-4e00-8d19-dd249d5fe021",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Lena Petrov"],
+                                "id": "d752b426-7786-465f-837f-363c088b9afe",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Violin & strings"],
+                                "id": "f8626912-be80-4221-8e78-1a1a7d1bd88e",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "A warm, encouraging strings teacher who makes the violin approachable for the very youngest players and returning adults alike."
+                                ],
+                                "id": "8e8aa65e-1ace-4993-b729-157fcfe12f19",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e41da507-7f65-43c4-ac25-9223cd33c5ae",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ffbe16be-c53c-4eb9-b20b-b744a3e65212",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4d62ad4f-86bc-4b59-b615-1f021b31f9b7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "96db0744-9ef8-4966-87a4-a81518ddad8a",
+                "ord": "a0"
+              }
+            ],
+            "id": "497aa940-8ccb-490c-a5de-532e760d73c4",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“My daughter counts down the days to her piano lesson. She’s learning so much, but more than that, she’s fallen in love with music. That’s everything we hoped for.”"
+                    ],
+                    "id": "68e23327-7d1c-4c8a-99b1-b4e119fc9093",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Rachel, parent of a Crescendo student"],
+                    "id": "f68bc885-dd2b-48ca-bb5c-4c20eb3e7acc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ba5efc8d-8491-4e73-9737-01aa993407f5",
+                "ord": "a0"
+              }
+            ],
+            "id": "45d2e284-56d8-4143-8775-657b40f90ee4",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to make some music?"],
+                    "id": "2b505bc8-4f1d-4f4e-adf9-777ce3e77ca0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick an instrument, choose your teacher and see live times. Your first lesson is free — it takes about a minute to book."
+                    ],
+                    "id": "e662cf76-1c63-48fa-8d31-31d69df49ee4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a trial lesson"],
+                    "id": "711ece96-ed75-4ab0-869a-1b3c5379327f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "4c03d545-35a2-4821-8acb-7e046b63baf5",
+                "ord": "a0"
+              }
+            ],
+            "id": "3395f983-9c94-4b95-a2d7-1922a4fe4a49",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Crescendo Music School",
+      "seoDescription": "See what Crescendo Music School offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a924cd9d-1b7c-4f55-aeb9-67567f23ac5a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bXVzaWMlMjBsZXNzb24lMjByb29tJTIwcGlhbm98ZW58MHwwfHx8MTc4NjM5MTUyOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A warm, light-filled lesson room with an upright piano and music stands",
+                  "loading": "eager"
+                },
+                "id": "0d78796e-1014-454b-a2e7-2d280885c637",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "09b46861-3ea2-4e07-ab28-62869392815f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your lesson"],
+                    "id": "8ac9f4fe-3d75-4892-a8e4-2a0613d7fb1b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a lesson or class to see prices and live availability, then pick your teacher and time. First lesson’s on us."
+                    ],
+                    "id": "c60e9212-b3bd-4240-98cc-13d83126b639",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See lessons below"],
+                        "id": "e02f2993-f3d1-42e2-a281-24b80b5b2782",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "09c7172d-2738-42ed-871f-78ce7b01f5d7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "80a5666a-5e4f-48a1-9340-9a2759357588",
+                "ord": "a2"
+              }
+            ],
+            "id": "dea880e6-8dc0-4f5c-912f-a83db470a31f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "ff4f6567-5fb0-4432-b3d1-3fe1597da667",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Crescendo Music School",
+      "seoDescription": "Who Crescendo Music School is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b042063e-6035-4500-a33b-21f483b77e51",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1552422535-c45813c61732?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBwaWFubyUyMGxlc3NvbnxlbnwwfDB8fHwxNzg2MzkxNTI0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A young student smiling at the piano during a lesson",
+                      "loading": "lazy"
+                    },
+                    "id": "4e676119-100d-4c57-98ea-9127b07f717e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Crescendo Music School"],
+                        "id": "ce111042-d7d3-4ca7-ac7f-a42586170aa5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Crescendo began with a simple belief: that everyone deserves the joy of making music, and that the right teacher can change a life. We opened our doors as a neighbourhood school where children and adults, absolute beginners and returning players, all feel equally welcome."
+                        ],
+                        "id": "23fe2421-dff8-41ff-9301-d770b725e48a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Today we’re a small, close-knit school of teachers who genuinely love what they do — and a community of students, families and friends who cheer each other on at every recital."
+                        ],
+                        "id": "98594d5f-0e6d-46bd-9544-c5f22113025d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a trial lesson"],
+                            "id": "cf62ba48-01e0-4828-914c-51d25501c4ea",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "2cacb89a-5a85-43da-9f2f-f39540c8aa28",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0739c79c-ca7c-44be-a2f6-560bdbb8193d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "89ce482d-a89b-42ed-8c41-cd0029dbcaa3",
+                "ord": "a0"
+              }
+            ],
+            "id": "ac68e8c8-0839-4e5c-aa6f-41f521b163d3",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["What we believe"],
+                    "id": "122df181-b379-4c95-9f67-aa2c9e782859",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Everyone is musical"],
+                            "id": "cec92338-4182-4d6a-87ec-7108859d24b4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "There’s no such thing as “not musical” — only music not yet discovered. We teach with that faith in every student."
+                            ],
+                            "id": "189a345c-f52a-4d86-a77a-46796894688f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5f0a1d95-26fd-4b6c-ad8b-a2e25bc7ba08",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Encouragement first"],
+                            "id": "a5a53b6b-533f-4326-b5a7-c1c5f2229e70",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We lead with warmth and small wins. Confidence is what keeps people playing, so we build it from the very first lesson."
+                            ],
+                            "id": "69c2c1a2-24c8-454d-8f90-33b3a05aca27",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6d4aea4e-db10-4a6f-b378-443596415a48",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A place to belong"],
+                            "id": "a3ad38fd-87a1-4518-bdec-aeeb3047882c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Recitals, group classes and a friendly front desk make Crescendo a community, not just a place you take lessons."
+                            ],
+                            "id": "af52b8b0-c6fa-4be8-9122-879d0a2c33a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a09b3421-4a9d-4a2e-b44f-76cafb4edb44",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6b97afe2-ac1c-4224-91ae-ce7613c8e1d6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "20c6d7bc-2aec-4f0c-ac27-128f49cf6535",
+                "ord": "a0"
+              }
+            ],
+            "id": "ebba0e8d-7768-4f16-b149-dfdb0ad5ed69",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Crescendo Music School",
+      "seoDescription": "Where to find Crescendo Music School, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "070dc232-2f44-48b4-bb4d-4d476c4fb495",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the school"],
+                        "id": "d6413d55-a59a-44fb-9d9d-401b5bce94ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Crescendo Music School"],
+                            "id": "5077ce4c-64a3-4794-9afe-2a800d142237",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["215 Maple Row"],
+                            "id": "3b8c6356-74cf-40f2-92fe-62d9e819bd30",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 3 · Asheville, NC 28801"],
+                            "id": "24dddcf6-74ae-4ec8-96f6-7c2027e46066",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "192080dd-baad-4bf2-aeec-5814f48bdc40",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Thursday"],
+                                "id": "2f433328-17b3-4aa6-8447-f2cbf9c6096e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["3:00 – 8:00"],
+                                "id": "6fa0e82c-2c0d-42ec-97d5-4968b4c9c323",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e7ffe680-1451-4eca-9a6f-6fb79ecbd31a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday"],
+                                "id": "2d8d3e94-051a-46a9-97e5-dc1e96a75b1a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["3:00 – 8:00"],
+                                "id": "dce8e984-fda3-47e5-aa90-8055ca7ef113",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6219ed3e-2e24-4237-b75d-ca79db48ecbc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "cf1f07c5-723b-44fb-9d7e-fd362278ce4d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 2:00"],
+                                "id": "9f1cc22d-1a19-438a-bfbe-ada19ebacdc2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e701129f-dbd0-4cc5-b9e8-0bf3c1057e65",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "a594e618-d046-4d99-9a71-8c3bc66653a5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 2:00"],
+                                "id": "7548da26-da06-4bd9-acb1-fdb4b107ba9a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b75b7bd9-0b9f-434c-bb5b-de1bd113d893",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "2867edb0-7402-44e4-9710-ad89209b684f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6f0031e2-65f7-4813-ae12-8f4f6b291c1a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "215 Maple Row, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "fc02d88c-80f8-4f77-bf5d-cea590611e69",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d600e6c-11e4-4909-b0fa-d2f59a7214e9",
+                "ord": "a0"
+              }
+            ],
+            "id": "064e8e24-e1e1-413b-bc4c-95666693c37b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "72d4d117-2a2e-4a58-a836-780da22f3542",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your free trial lesson online — no phone tag."
+                    ],
+                    "id": "1bad3499-f858-45af-9f78-d001bcc1b22e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a trial lesson"],
+                    "id": "fe3e7d6f-0ca1-4ce0-b7d8-47c7ae3324f0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c079f6ff-fef4-4cc6-bd00-b3787747225c",
+                "ord": "a0"
+              }
+            ],
+            "id": "ea07c5eb-6071-4f13-8fa9-966ca19c2943",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "crescendo",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.012 90)",
+      "--color-base-200": "oklch(94% 0.016 88)",
+      "--color-base-300": "oklch(89% 0.02 85)",
+      "--color-base-content": "oklch(25% 0.02 25)",
+      "--color-primary": "oklch(42% 0.13 18)",
+      "--color-secondary": "oklch(38% 0.03 22)",
+      "--color-accent": "oklch(76% 0.12 80)",
+      "--color-neutral": "oklch(28% 0.02 25)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 18)",
+      "--color-secondary-content": "oklch(98% 0.01 22)",
+      "--color-accent-content": "oklch(15% 0.02 80)",
+      "--color-neutral-content": "oklch(98% 0.01 25)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(76% 0.12 80)",
+      "--color-highlight-content": "oklch(15% 0.02 80)",
+      "--color-border": "oklch(89% 0.02 85)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 20)",
+      "--color-base-200": "oklch(18% 0.018 20)",
+      "--color-base-300": "oklch(14% 0.014 20)",
+      "--color-base-content": "oklch(95% 0.01 90)",
+      "--color-primary": "oklch(70% 0.11 22)",
+      "--color-secondary": "oklch(80% 0.02 80)",
+      "--color-accent": "oklch(82% 0.12 82)",
+      "--color-neutral": "oklch(84% 0.015 80)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 22)",
+      "--color-secondary-content": "oklch(15% 0.02 80)",
+      "--color-accent-content": "oklch(15% 0.02 82)",
+      "--color-neutral-content": "oklch(15% 0.015 80)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(82% 0.12 82)",
+      "--color-highlight-content": "oklch(15% 0.02 82)",
+      "--color-border": "oklch(14% 0.014 20)"
+    }
+  }
+}

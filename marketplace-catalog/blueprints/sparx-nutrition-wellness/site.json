@@ -1,0 +1,2136 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "15c8f0b2-2a06-4fbb-b2e2-b63e28b0ae67",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "e63e3bd0-47fe-4313-8295-970444ef8da6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "d1acb551-dc16-462d-81c2-4c4465c7770f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "a185be30-4f16-470e-81ba-cc1cfd30eb62",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "95f66c93-f752-4f12-abf4-ba701ad61ffe",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "3487f0b5-b00c-4b91-b790-cc1a9d71fd6e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "351209f9-902f-411c-9afb-782b463d21ca",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "dd2b0458-b475-44f2-8f99-12bdf9a59b02",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "7dde28f8-cfed-409e-b803-d96d8d554604",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "97512251-97db-499b-82a4-4a0da987085e",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "3a4b51a1-a5ef-4de2-9037-63e675c91427",
+                  "ord": "a2"
+                }
+              ],
+              "id": "69d2f7e7-bfc5-4f30-a0a7-5c1624b8970f",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f6e33724-05c4-404e-a0a3-d428a7129452",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9289f5a2-01ae-465e-af65-8b6e5c772305",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "367ab748-da07-46c3-a2d8-510bb9412ebc",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "69287acb-4d6c-4df8-95a9-19936339319a",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "cf0a2d1d-d46e-4572-8467-9efc83d8a4b8",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "ad812a94-9fd5-425b-be10-5c284d232ed4",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "f3806f76-18f1-40e5-b982-dd431ee1fd19",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "8943eb04-042c-4757-b5eb-cb57538d3446",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "acb977de-4ad5-46a2-8bec-b073894c99c9",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "e756f052-141a-444f-a385-56ddf45b4726",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "4913e000-f9e8-4ec4-a887-70d13578313c",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "f94df554-d4c2-4601-9830-a9f1fe91efdc",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9c06c77d-7db0-48d2-a3c1-419aa2d6dd40",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "c1c4cecd-c954-4f00-8c24-4917cbcc9ce0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "17f5e631-bf12-4f05-a73d-e52837175987",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "450eb9a9-fa3a-4d28-b29e-96c4c22e6550",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a038da1d-871c-4595-aaef-0e5f94a3dbbc",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "db2aa18e-de2b-4ec5-a651-1867bf3896bb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2490dae1-cb8b-4b07-930b-fd6736ea8f48",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "42a33fee-e0db-45a9-9210-dc34cfd00c39",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6800b133-d6b0-4302-87a5-f6ee7dd387d4",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "3658194d-fc9d-4ea7-9744-5dd4c0e89e37",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "1763c140-24ce-4fec-af3b-3f439774e3e7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "db9cb852-0f06-46f4-92f3-cc2adf6989c9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "87ea8d66-1e87-4874-b6b9-335dc336695f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "84bdcb18-2a8e-46f7-943e-9165d163f833",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1dbebe2a-3d43-49a6-ac12-84dd671ad0f0",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "c69feab3-9fba-4ed7-b7bf-7b6266cf02a8",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e24893b7-f95c-402a-9772-e50b1d1342a0",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "8203977b-9fb1-405e-b327-2d6beea7e3de",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "9c89c23b-da26-41dc-bdfc-4a1c3d185216",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e72f04aa-b029-43e1-846b-e78e66345a75",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "0a09148d-5640-404f-a580-386707fb7397",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "fe8ff598-b0d3-4ac8-ab44-cc3d5d86477b",
+                  "ord": "a1"
+                }
+              ],
+              "id": "8de21112-9934-4263-9a38-b850be832dcb",
+              "ord": "a0"
+            }
+          ],
+          "id": "a433021f-9396-4f8a-8ca6-bdb623b259e5",
+          "ord": "a2"
+        }
+      ],
+      "id": "fe61b988-5448-41ed-804e-66751fb46476"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Nourish Nutrition — warm, non-diet nutrition counseling",
+      "seoDescription": "Nourish Nutrition is a whole-health dietitian practice — one-to-one nutrition counseling for weight, gut health, intuitive eating and family nutrition, in person or by video. Book a free discovery call.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d4f7a977-42af-46d7-a9cc-11231c07f399",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhbHRoeSUyMGZvb2QlMjBmcmVzaCUyMHZlZ2V0YWJsZXN8ZW58MHwwfHx8MTc4NjM5NDI2Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright wooden table of fresh vegetables, fruit and whole grains",
+                  "loading": "eager"
+                },
+                "id": "c95f9205-0717-4437-8813-3908857f2fca",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/30",
+                "id": "fada92b9-04fe-4b9b-ad01-9c65f13a543f",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Food that feels good again"],
+                    "id": "e4fe41cb-e9c2-430b-9c21-06a554aa9ad5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Work one-to-one with a registered dietitian on real, sustainable changes — weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you."
+                    ],
+                    "id": "793602ce-2db5-4fc7-bc22-ffd4134d4346",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consultation"],
+                        "id": "4cf4788c-048d-413d-9edf-f46b1f418245",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Start with a free call"],
+                        "id": "c10672cb-763c-4d3b-b190-c66b6cae79f6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0185dd51-30c1-4abb-88a7-8f3ee80e788c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "602172b1-4158-476e-89dc-9f7ae12bcccf",
+                "ord": "a2"
+              }
+            ],
+            "id": "20f173e2-c15b-4a7d-b9a2-69c0576ff4ff",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Care you can actually keep up"],
+                    "id": "c42ced46-649b-4812-bec8-8ce4bd19c5a2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Registered dietitians"],
+                            "id": "ef0db030-f0b7-48a5-92b6-baa230e3cacd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every plan comes from a qualified, registered dietitian — real credentials and real science, translated into food you’ll genuinely eat."
+                            ],
+                            "id": "5391a7b9-7f72-4779-a1a1-fdb2f4952a92",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1dd30429-be07-4be2-98c9-c1614c0ac0cb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Non-diet & judgment-free"],
+                            "id": "57c4bba5-b334-49a8-bb76-28c221ae8d93",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body — not against them."
+                            ],
+                            "id": "9449971e-a42b-404b-a786-c0d8e1fb4da0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cd4c857f-8e75-47a4-a60a-6a203b5e91ad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Insurance often covers it"],
+                            "id": "7b922f12-a62d-4bf4-bbf2-3134bf560c8e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Many plans cover nutrition counseling, especially with a referral. We’ll help you check your benefits before your first visit."
+                            ],
+                            "id": "c679aa0d-1ba1-4e9d-b18a-c1af5c5a05bb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6e0aa30e-e191-41df-9156-ac0043380e8c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["In person & virtual"],
+                            "id": "27fd5f09-acac-4e08-83e6-dd07847fe3e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Meet us at the office or by secure video from your own kitchen — evenings and a Saturday morning included, so it fits your week."
+                            ],
+                            "id": "55a81217-bc72-4f01-9a98-729b93745584",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1f8124d4-dfa6-4b15-b9d9-3f96d5923d58",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7bd6b86c-6ddb-454c-9c99-87ed07e8d4fc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4a56b6a8-7131-4123-9e44-eaef1e95d072",
+                "ord": "a0"
+              }
+            ],
+            "id": "863af2c5-cfac-4fb0-a059-bc2bfbd6423a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways we can work together"],
+                        "id": "b65ef4d8-5257-40bd-b28c-42f2a296d09f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Start with a free discovery call, then choose the consultation that fits. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "d3b3e6c5-5d44-4f0a-be2e-3478b251248a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2a177e11-80b5-4f79-b0e4-05b26b33db9f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free discovery call"],
+                                "id": "7aed059f-81a8-46d7-9dde-5316362ffde2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "95c1459f-d1a9-420b-9764-216353987b1a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e809d76e-f188-4b69-90b3-c83e895fd4fd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["20 min"],
+                            "id": "5b497f39-2989-447d-8620-18547cfbd9f9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A no-cost call to match you with the right dietitian."],
+                            "id": "0585f761-6435-4168-965f-b33683c9415a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "dfdd3850-4acd-449e-8575-d7fd383e3dfb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Initial consultation"],
+                                "id": "7de3a5e6-61e8-47fd-b730-ff9acd19262f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$165"],
+                                "id": "4d661cea-5f28-4c34-a663-798658a92953",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "62f6beff-c9c3-48cb-bbcf-36daef06831d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "8a313bce-f418-4450-ac71-081e031b11d1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A full first session and a personal plan you leave with."
+                            ],
+                            "id": "157478a3-c100-4f0e-bd58-396057b0212d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e4ea032a-39f7-49c6-849e-736623fe5adb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Gut health consult"],
+                                "id": "ef16ba9d-64c3-4960-9629-ea936a7f3e17",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$150"],
+                                "id": "880e274e-3f53-45d2-a9a8-3a171b50f383",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "17db70e6-efd7-4944-9a95-9dac187856bb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["50 min"],
+                            "id": "85be54d3-c954-4d5c-85ac-96eb1bf122b4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Food-first support for bloating, IBS and digestion."],
+                            "id": "ebfafb95-1adb-4178-b566-5605246043bd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "08bc2e08-3776-4d5d-afe8-5bcf8a6f8d50",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Intuitive eating session"],
+                                "id": "4a28ec86-3668-4f5c-8cf3-4ce87e9cf390",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$150"],
+                                "id": "3d6f2691-dc92-4d3b-b6cb-edb0a3aeaf38",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5aecfdc7-5e50-4ed4-8662-3c343ce9b860",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["50 min"],
+                            "id": "2cb9badd-658c-476f-83af-409156012710",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Gentle coaching to step off the diet cycle for good."],
+                            "id": "b87dcf7c-a0b5-4968-82d5-bf405a0a9ca2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "39c0a384-6132-45b9-98d0-e0eef8ae704b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "95986fbf-cf6e-49ab-b7f2-3270f536916b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "4fd50a7a-c54b-4bcc-9a42-a50002f849de",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d10cb8c5-1116-43c9-9b8b-70df08f2447f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f841a77b-99a1-4187-823d-28ff387d202f",
+                "ord": "a0"
+              }
+            ],
+            "id": "bd584317-62b5-4228-bcb0-3274c129b77f",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1675270360889-2c850358e364?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlldGl0aWFuJTIwY29uc3VsdGF0aW9ufGVufDB8MHx8fDE3ODYzOTQyNjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A dietitian and client talking warmly over a cup of tea",
+                      "loading": "lazy"
+                    },
+                    "id": "6144442a-5801-4c6f-96b2-f448d82aa033",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Whole-health nutrition, not another diet"],
+                        "id": "f2c81051-78ed-4673-a7ed-f345408c920b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Diets ask you to shrink your life to fit a plan. We do the opposite — build the plan around your real days, your favourite foods and the health goals that matter to you."
+                        ],
+                        "id": "c03f8290-a0e1-4e6f-b3ab-072ea0e0cf34",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table — for good, not for six weeks."
+                        ],
+                        "id": "23c7193c-e8d2-4a90-9bef-dfd9c8d82f8f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "802c7b93-4e5f-438d-bcbf-8cdecc81a274",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e73583ab-7f4c-4482-8952-1975e3ab2276",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "de79624b-e85c-40a8-b4a8-e0264ddc208c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d4c87ea-a2c3-41c5-b667-104ccb79284a",
+                "ord": "a0"
+              }
+            ],
+            "id": "82f132ee-faec-4795-8be9-756fdac9ba5d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your dietitians"],
+                        "id": "d4176c5e-c4b1-43d8-9bc3-2c32d8bdc20a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll see the same dietitian each visit, someone who gets to know you, your health and your story."
+                        ],
+                        "id": "6911f6c8-a94a-4231-8d4c-9ee9dea4f657",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d3124da2-3c90-4702-9d91-b38fc02dad52",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1675270690434-aa99f4871e8a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBudXRyaXRpb25pc3QlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzk0MjY4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Hannah Okafor, registered dietitian",
+                              "loading": "lazy"
+                            },
+                            "id": "a2f21eed-1781-47ac-b7d8-d81e4109c171",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Hannah Okafor"],
+                                "id": "5c7a21f3-8fe8-4254-a109-53aa38920514",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Registered dietitian"],
+                                "id": "626dff41-cc0d-49fa-945d-7bea9f1795bb",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Weight, gut health and everyday energy, with a warm, no-nonsense style. Hannah leads the practice."
+                                ],
+                                "id": "48104cf8-86b3-4863-bfa4-1577bc1e97e9",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "a79b1c97-7af7-4930-a5f8-590dc4c082f4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "83edbc17-e05d-4c2c-8e32-50fc8b880062",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlldGl0aWFuJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5NDI3MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "David Alvarez, registered dietitian",
+                              "loading": "lazy"
+                            },
+                            "id": "876e7dd9-0ed9-4cff-98e1-6312e5f735ae",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["David Alvarez"],
+                                "id": "801a1afc-51e4-408e-900e-226886d4a192",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Registered dietitian"],
+                                "id": "25056cce-6623-41de-a1a2-e1dbdb008fd6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Diabetes and heart health — turning a diagnosis into calm, doable everyday choices."
+                                ],
+                                "id": "30a09438-ddd4-434d-9e89-dbcbcb698292",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "547c9a56-e23b-4943-b350-14aebc606cbb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "69718f4b-fb29-400d-8806-82fe94389bc3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBoZWFsdGhjYXJlJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4OTI5N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Sofia Lindqvist, registered dietitian",
+                              "loading": "lazy"
+                            },
+                            "id": "d2dc0051-ff9a-482b-8998-7bd11c69239d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Sofia Lindqvist"],
+                                "id": "b3f1a9b8-9d86-47d4-b51e-eebe0d5ebeed",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Registered dietitian"],
+                                "id": "8e55271d-3237-4d41-8f0c-d6e3c72d61f1",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Intuitive eating and family nutrition, judgment-free — feeding yourself and your kids without the stress."
+                                ],
+                                "id": "0372d1c4-7b9d-460e-99c3-d9d522bc81e8",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "d87b5a84-e54d-41ea-b57a-d286f28ffbcf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8baac971-e24c-4f12-bff2-a24a01b230dd",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "28c5a774-2cca-4ba3-89e5-221f2689eca5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5fa25159-d1e1-4e25-953e-cad281ed1ae3",
+                "ord": "a0"
+              }
+            ],
+            "id": "51e8fd01-aa42-4c31-a660-e137e989e599",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life — and the first calm relationship with food I’ve had in years.”"
+                    ],
+                    "id": "5f93e26f-4e37-4a0a-89da-6ee0d1ae7cb2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Rachel, client since 2024"],
+                    "id": "87e47f58-aab0-4e57-a736-c0176b3a8c45",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ff3881d8-b2c9-4fe2-bc60-de8e1564de8e",
+                "ord": "a0"
+              }
+            ],
+            "id": "1de9a00b-de74-4cd3-a0aa-1ec45465682e",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Start with one small, kind step"],
+                    "id": "95220816-8971-41df-836b-7dfbfce79b6c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free 20-minute discovery call — no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute."
+                    ],
+                    "id": "77b97d74-6f84-43e2-a081-4459e0c585f5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "33a4073b-2a88-4238-84ab-71a4379fe70c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "53f8e16a-3905-478b-a969-bc1f78ed4b1e",
+                "ord": "a0"
+              }
+            ],
+            "id": "51e0a80e-ecc1-4a25-ae57-6fd9e7da4579",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Nourish Nutrition",
+      "seoDescription": "See what Nourish Nutrition offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6ed8a94c-d87c-44ec-8d0a-6bd0e3426a32",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1675270360889-2c850358e364?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlldGl0aWFuJTIwY29uc3VsdGF0aW9ufGVufDB8MHx8fDE3ODYzOTQyNjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A dietitian and client talking warmly over a cup of tea",
+                  "loading": "eager"
+                },
+                "id": "6ae151f0-4be7-4fa9-9cb6-097c8094f916",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "8082522d-7f86-459d-9746-7a62046d6d48",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your consultation"],
+                    "id": "211fb80e-66a0-412a-8c46-bab75326e14e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a consultation to see live availability, then pick your dietitian and a time that works for you. New here? Start with the free discovery call."
+                    ],
+                    "id": "39feb774-33aa-4750-968a-e4e8f2fb6561",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See consultations below"],
+                        "id": "5b59ab22-e3da-4278-86da-20a0209616e7",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "b07314ef-3d7c-43c0-9fce-a712fe0a6f97",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "199e1589-50b2-4f53-ab12-9e5df0e69a92",
+                "ord": "a2"
+              }
+            ],
+            "id": "23d7036c-c87a-42a8-9ab4-d6f67bf8f309",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "d42030ca-e796-4b38-9819-4c8805450b64",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Nourish Nutrition",
+      "seoDescription": "Who Nourish Nutrition is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3e7357cf-740c-4a89-8973-44f5df1ebb59",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1597362925123-77861d3fbac7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhbHRoeSUyMGZvb2QlMjBmcmVzaCUyMHZlZ2V0YWJsZXN8ZW58MHwwfHx8MTc4NjM5NDI2Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright wooden table of fresh vegetables, fruit and whole grains",
+                      "loading": "lazy"
+                    },
+                    "id": "1ed4273f-d6f2-4658-8938-7148ccb5c4c7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Nourish Nutrition"],
+                        "id": "0838a8d7-244c-4440-982b-843419eaa657",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating — none of it lasts, and none of it feels good."
+                        ],
+                        "id": "966ad5e0-f95d-4c63-8096-85d27a85bcc9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So we built a practice around the opposite: registered dietitians, real science, and warm, practical support that meets you exactly where you are. Whether it’s gut trouble, a new diagnosis, or just wanting to feel at ease with food again, our job is to make the next step feel doable."
+                        ],
+                        "id": "07abd1aa-1856-474e-bc64-8add7c5ad736",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consultation"],
+                            "id": "a07fda4a-d7c6-4808-8aae-e5efadf4f568",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "d092c597-5c52-4d90-9845-7803fc2cadeb",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7c7a4e65-6508-4fb4-b6ed-9757755ba2d2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a046d0df-ebcb-457f-a84c-eec6957dcab5",
+                "ord": "a0"
+              }
+            ],
+            "id": "76d744c2-1561-4500-afa2-8177fb6d3d5c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["What we believe"],
+                    "id": "4bf97296-479a-4dfe-9460-39a734b9d3ad",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["All foods fit"],
+                            "id": "030debb4-fd5d-4825-94a8-9aeecb962f8d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No forbidden lists and no guilt. Lasting change comes from adding what helps and finding balance, not from cutting out everything you love."
+                            ],
+                            "id": "86464472-0e14-42b4-88cd-e81b88b66ca7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "142f7932-a4e9-4cae-a52c-4c05aee4b61f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Evidence over trends"],
+                            "id": "a8e20900-3569-4c2e-8eda-34cba609d685",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Fads come and go; good science stays. Every recommendation is grounded in real nutrition research, not the latest headline or supplement."
+                            ],
+                            "id": "acbd8718-7390-46f0-8590-87e6b85af7bf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d578e927-7ba6-4b6c-a9b8-709094a48c17",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Your goals, your pace"],
+                            "id": "2f83b176-5ca3-49d7-90b7-28553b4c5c2f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You set the direction and the speed. We’re here to guide, adjust and cheer you on — never to hand you a rigid plan and walk away."
+                            ],
+                            "id": "d4473b17-cf4b-4943-8177-684e5ccd54e8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ceca0aa6-18cf-4558-9353-5651dc4228b2",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "fcb43e76-7833-4fef-bb6c-6fb7a23ec8b3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "444d0cde-3b0a-403f-88e9-32a2a1bdb16d",
+                "ord": "a0"
+              }
+            ],
+            "id": "ee87f836-c1e8-46e3-a4dd-09cdfc0f6b79",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Nourish Nutrition",
+      "seoDescription": "Where to find Nourish Nutrition, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a6e1e8ec-2eeb-4b00-a264-98b8dd413ab5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Reach the practice"],
+                        "id": "f436b612-7382-4f44-99b3-e17cccd7200c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Nourish Nutrition"],
+                            "id": "10d72003-d307-4f23-b80d-586ffa47cc9b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["In person & virtual · secure video sessions"],
+                            "id": "c842f916-beda-4339-99c4-4064b461d375",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["84 Maple Court, Suite 3 · Portland, OR 97209"],
+                            "id": "c86f2e82-eaca-405c-8f09-cdd74d9fb7a0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "24fde53f-64b2-45e3-a2fe-adb6817ca0bf",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday & Friday"],
+                                "id": "f6e46f37-b022-4d1e-9e3e-438fc9d60ee2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 5:00"],
+                                "id": "5baf8c92-8f69-448b-bd53-19a3801d532c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "52488785-a6c3-4872-8c30-299a5159f102",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Thursday"],
+                                "id": "a055f7b2-248a-48bf-b79b-26529b328d2a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 8:00 (evenings)"],
+                                "id": "88410f8b-6f25-4cae-b075-8cc8951bb1d8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c750f2ea-697c-44ef-89b8-cc2d215c0198",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "9bd052a5-8158-47da-b524-472a1871031a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 1:00"],
+                                "id": "d4a3074f-b701-499d-b600-b9733b75e98f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9a9ef55f-eb5e-48db-8b4e-9133597927ab",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "2d0d273a-bf3b-4ac2-97a1-40845c810531",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "857ebd37-f4fb-4fe9-9343-efd290d3f46b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "949ce838-86cd-45b3-b901-9002d5a18b61",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "5705426d-d8a5-477c-8972-ee723901f49b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "240b66bc-e641-4f70-9b07-a3bed2d8ebc6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "84 Maple Court, Portland, OR 97209",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "0aaecf51-bd82-4f1a-8b77-a5ae0bdf7ca2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2fa9d180-40b4-4610-a24c-72a681af9310",
+                "ord": "a0"
+              }
+            ],
+            "id": "7d51a1de-bfdf-4a4b-b85e-1b6d87af1b46",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than email?"],
+                    "id": "a353ec3b-4e0a-4298-a851-e04ce579054a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve a free discovery call online — no phone tag, no waiting."
+                    ],
+                    "id": "eff36950-b237-4658-a196-6e3814730604",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consultation"],
+                    "id": "169beeec-d610-434c-9bed-baad2607b21e",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ae331fcb-cb07-4855-99ee-38a07188339c",
+                "ord": "a0"
+              }
+            ],
+            "id": "34d654ec-f17a-44b3-b4bc-86906090c035",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "nourish",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97.5% 0.02 90)",
+      "--color-base-200": "oklch(94% 0.028 92)",
+      "--color-base-300": "oklch(88% 0.03 95)",
+      "--color-base-content": "oklch(28% 0.03 75)",
+      "--color-primary": "oklch(52% 0.09 148)",
+      "--color-secondary": "oklch(36% 0.03 70)",
+      "--color-accent": "oklch(64% 0.13 46)",
+      "--color-neutral": "oklch(30% 0.025 72)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.875rem",
+      "--radius-field": "0.75rem",
+      "--radius-box": "1.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 148)",
+      "--color-secondary-content": "oklch(98% 0.01 70)",
+      "--color-accent-content": "oklch(15% 0.02 46)",
+      "--color-neutral-content": "oklch(98% 0.01 72)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(64% 0.13 46)",
+      "--color-highlight-content": "oklch(15% 0.02 46)",
+      "--color-border": "oklch(88% 0.03 95)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.028 75)",
+      "--color-base-200": "oklch(20% 0.024 75)",
+      "--color-base-300": "oklch(16% 0.018 75)",
+      "--color-base-content": "oklch(95% 0.02 90)",
+      "--color-primary": "oklch(72% 0.1 150)",
+      "--color-secondary": "oklch(78% 0.03 78)",
+      "--color-accent": "oklch(74% 0.12 48)",
+      "--color-neutral": "oklch(82% 0.024 78)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(15% 0.02 78)",
+      "--color-accent-content": "oklch(15% 0.02 48)",
+      "--color-neutral-content": "oklch(15% 0.02 78)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.12 48)",
+      "--color-highlight-content": "oklch(15% 0.02 48)",
+      "--color-border": "oklch(16% 0.018 75)"
+    }
+  }
+}

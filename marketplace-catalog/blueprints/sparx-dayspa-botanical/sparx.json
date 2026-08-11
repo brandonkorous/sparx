@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-dayspa-botanical",
+  "name": "sparx — Day Spa (Botanical)",
+  "version": "1.0.0",
+  "tagline": "A warm, botanical template for day spas — book online from day one.",
+  "description": "A warm, botanical day-spa site — an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as \"Verdure\", a calm garden sanctuary.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Day spa",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Day Spa (Botanical) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Day Spa (Botanical) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#365541",
+  "sortWeight": 80
+}

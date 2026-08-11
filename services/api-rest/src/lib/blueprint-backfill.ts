@@ -44,6 +44,7 @@ import {
   installCommerceSlice,
   installContentSlice,
   installEmailSlice,
+  installSchedulingSlice,
   installSiteSlice,
   type InstallResult,
   type SliceEnv,
@@ -70,6 +71,10 @@ const MODULE_SLICE: Partial<Record<ModuleSlug, SliceSpec>> = {
   cms: { isMaterialized: (r) => r.content.length > 0, run: installContentSlice },
   builder: { isMaterialized: (r) => r.pages.length > 0, run: installSiteSlice },
   email: { isMaterialized: (r) => r.emails.length > 0, run: installEmailSlice },
+  scheduling: {
+    isMaterialized: (r) => (r.scheduling?.services.length ?? 0) > 0,
+    run: installSchedulingSlice,
+  },
 };
 const BACKFILL_MODULES = Object.keys(MODULE_SLICE) as ModuleSlug[];
 

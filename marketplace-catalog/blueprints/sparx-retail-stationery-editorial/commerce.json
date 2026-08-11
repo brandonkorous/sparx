@@ -1,0 +1,512 @@
+{
+  "categories": [
+    {
+      "handle": "notebooks",
+      "name": "Notebooks",
+      "description": "Hardcovers and pocket books, chosen for the paper.",
+      "featured": true
+    },
+    {
+      "handle": "pens",
+      "name": "Pens & ink",
+      "description": "Fountain pens, refills and bottled ink.",
+      "featured": true
+    },
+    {
+      "handle": "planners",
+      "name": "Planners",
+      "description": "Weekly planners and desk pads.",
+      "featured": true
+    },
+    {
+      "handle": "cards-gifts",
+      "name": "Cards & gifts",
+      "description": "Cards, tape and gift sets.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The latest to land on the shelf.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["margin-notebook", "fountain-pen", "weekly-planner", "card-set"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The desk staples people keep reordering.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["margin-notebook", "pocket-notebook", "weekly-planner", "desk-kit"]
+    },
+    {
+      "handle": "everyday-carry",
+      "name": "Everyday carry",
+      "description": "What lives in the bag and the jacket pocket.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["pocket-notebook", "fountain-pen", "writers-ink"]
+    },
+    {
+      "handle": "planner-desk",
+      "name": "The planner desk",
+      "description": "Everything for keeping the week in order.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["weekly-planner", "desk-pad"]
+    },
+    {
+      "handle": "writing-kit",
+      "name": "The writing kit",
+      "description": "A notebook, a pen and an ink worth pairing.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["margin-notebook", "fountain-pen", "writers-ink", "desk-kit"]
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "For the person who loves their stationery.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["card-set", "washi-tape", "desk-kit"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "margin-notebook",
+      "title": "The Margin Notebook",
+      "description": "Our flagship hardcover — a cloth-bound A5 with 192 pages of 120gsm ivory stock that takes a wet nib without a whisper of bleed. Lies dead flat on a stitched binding, keeps its shape in a bag, and has a proper ribbon and an elastic that actually holds. The one to write the year in.",
+      "status": "active",
+      "productType": "Notebook",
+      "vendor": "Margin & Co.",
+      "tags": ["notebook", "hardcover", "a5", "fountain-pen-friendly"],
+      "categoryHandles": ["notebooks"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "writing-kit"],
+      "seoTitle": "The Margin Notebook — cloth-bound A5 hardcover | Margin & Co.",
+      "seoDescription": "A flat-lying cloth-bound A5 hardcover with 192 pages of fountain-pen-friendly 120gsm ivory paper. Dotted, lined or blank.",
+      "options": [
+        {
+          "name": "Ruling",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Dotted"
+            },
+            {
+              "value": "Lined"
+            },
+            {
+              "value": "Blank"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARGIN-NB-A5-DOT",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Dotted"
+          }
+        },
+        {
+          "sku": "MARGIN-NB-A5-LIN",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Lined"
+          }
+        },
+        {
+          "sku": "MARGIN-NB-A5-BLK",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Blank"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-margin-notebook",
+          "isPrimary": true,
+          "alt": "A cloth-bound hardcover notebook open to a dot-grid page"
+        }
+      ]
+    },
+    {
+      "handle": "pocket-notebook",
+      "title": "Pocket Notebook, Set of Three",
+      "description": "A three-pack of slim staple-bound pocket books that live in a jacket or a back pocket — the place a passing thought actually gets caught. Sixty-four pages each of the same smooth 90gsm stock as the big notebook, in a stitched kraft cover that ages nicely and never looks precious.",
+      "status": "active",
+      "productType": "Notebook",
+      "vendor": "Margin & Co.",
+      "tags": ["notebook", "pocket", "set", "everyday-carry"],
+      "categoryHandles": ["notebooks"],
+      "collectionHandles": ["everyday-carry", "best-sellers"],
+      "seoTitle": "Pocket Notebook, Set of Three — pocket-size notebooks | Margin & Co.",
+      "seoDescription": "A set of three staple-bound pocket notebooks in kraft covers, 64 pages each. Dotted, lined or blank.",
+      "options": [
+        {
+          "name": "Ruling",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Dotted"
+            },
+            {
+              "value": "Lined"
+            },
+            {
+              "value": "Blank"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARGIN-NB-PKT-DOT",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Dotted"
+          }
+        },
+        {
+          "sku": "MARGIN-NB-PKT-LIN",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Lined"
+          }
+        },
+        {
+          "sku": "MARGIN-NB-PKT-BLK",
+          "priceCents": 1600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Ruling": "Blank"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-pocket-notebook",
+          "isPrimary": true,
+          "alt": "A three-pack of slim pocket notebooks fanned out"
+        }
+      ]
+    },
+    {
+      "handle": "fountain-pen",
+      "title": "The Fieldnote Fountain Pen",
+      "description": "A pen built to be a daily writer, not a display piece — a balanced resin body, a smooth steel medium nib, and a standard converter so you can fill it from a bottle or drop in a cartridge. It starts on the first stroke after a week in a drawer, which is the only test a pen has to pass.",
+      "status": "active",
+      "productType": "Pen",
+      "vendor": "Margin & Co.",
+      "tags": ["pen", "fountain-pen", "writing"],
+      "categoryHandles": ["pens"],
+      "collectionHandles": ["new-arrivals", "everyday-carry", "writing-kit"],
+      "seoTitle": "The Fieldnote Fountain Pen — everyday fountain pen | Margin & Co.",
+      "seoDescription": "A balanced everyday fountain pen with a smooth steel medium nib and a standard converter. Fills from a bottle or a cartridge.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ink Black"
+            },
+            {
+              "value": "Slate Blue"
+            },
+            {
+              "value": "Oxblood"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARGIN-PEN-FP-BLK",
+          "priceCents": 6800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ink Black"
+          }
+        },
+        {
+          "sku": "MARGIN-PEN-FP-BLU",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Slate Blue"
+          }
+        },
+        {
+          "sku": "MARGIN-PEN-FP-OXB",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Oxblood"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fountain-pen",
+          "isPrimary": true,
+          "alt": "A lacquered fountain pen with its cap off"
+        }
+      ]
+    },
+    {
+      "handle": "writers-ink",
+      "title": "Writer’s Ink, 30ml",
+      "description": "A bottle of properly saturated fountain-pen ink that flows wet and dries fast, in colours worth reaching for. Non-permanent and pen-safe, it rinses clean between fills — so keep one of each on the desk and switch by mood, not by machine.",
+      "status": "active",
+      "productType": "Ink",
+      "vendor": "Margin & Co.",
+      "tags": ["ink", "fountain-pen", "writing"],
+      "categoryHandles": ["pens"],
+      "collectionHandles": ["everyday-carry", "writing-kit"],
+      "seoTitle": "Writer’s Ink, 30ml — bottled fountain-pen ink | Margin & Co.",
+      "seoDescription": "A 30ml bottle of saturated, pen-safe fountain-pen ink that flows wet and dries fast. Midnight, Sepia or Teal.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Midnight"
+            },
+            {
+              "value": "Sepia"
+            },
+            {
+              "value": "Teal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARGIN-INK-30-MID",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Midnight"
+          }
+        },
+        {
+          "sku": "MARGIN-INK-30-SEP",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sepia"
+          }
+        },
+        {
+          "sku": "MARGIN-INK-30-TEA",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Teal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-writers-ink",
+          "isPrimary": true,
+          "alt": "A glass bottle of writing ink beside a pen nib"
+        }
+      ]
+    },
+    {
+      "handle": "weekly-planner",
+      "title": "Undated Weekly Planner",
+      "description": "A week-to-a-spread planner with no printed dates — so you start it in January or in July, and a skipped week costs you nothing. A full column for each day, a notes margin down the side, and a lay-flat binding that stays open while you actually plan. Fifty-two weeks of room to think.",
+      "status": "active",
+      "productType": "Planner",
+      "vendor": "Margin & Co.",
+      "tags": ["planner", "undated", "weekly"],
+      "categoryHandles": ["planners"],
+      "collectionHandles": ["new-arrivals", "planner-desk", "best-sellers"],
+      "seoTitle": "Undated Weekly Planner — week-to-a-spread planner | Margin & Co.",
+      "seoDescription": "An undated week-to-a-spread planner with a notes margin and a lay-flat binding. Start any week, skip none.",
+      "variants": [
+        {
+          "sku": "MARGIN-PLN-WKLY",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-weekly-planner",
+          "isPrimary": true,
+          "alt": "An undated weekly planner opened flat"
+        }
+      ]
+    },
+    {
+      "handle": "desk-pad",
+      "title": "Monthly Desk Pad",
+      "description": "A big tear-off desk pad that turns the month into something you can see at a glance — generous day boxes, a to-do rail down the side, and a heavy chipboard back so it sits flat under a keyboard or on the wall. Fifty sheets: a full year and change of clean starts.",
+      "status": "active",
+      "productType": "Planner",
+      "vendor": "Margin & Co.",
+      "tags": ["planner", "desk-pad", "monthly"],
+      "categoryHandles": ["planners"],
+      "collectionHandles": ["planner-desk"],
+      "seoTitle": "Monthly Desk Pad — tear-off monthly planner pad | Margin & Co.",
+      "seoDescription": "A 50-sheet tear-off monthly desk pad with roomy day boxes, a to-do rail and a heavy chipboard back.",
+      "variants": [
+        {
+          "sku": "MARGIN-PLN-DESK",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-desk-pad",
+          "isPrimary": true,
+          "alt": "A tear-off monthly desk pad on a desk"
+        }
+      ]
+    },
+    {
+      "handle": "card-set",
+      "title": "Everyday Card Set, Box of Eight",
+      "description": "Eight letterpress cards for the occasions that don’t come with a printed line — a thank-you, a thinking-of-you, a well-done. Blank inside so the words are yours, on cotton stock with a deep impression you can feel, and eight kraft envelopes to match. The box to keep in a drawer for when you need one.",
+      "status": "active",
+      "productType": "Cards",
+      "vendor": "Margin & Co.",
+      "tags": ["cards", "letterpress", "gift", "set"],
+      "categoryHandles": ["cards-gifts"],
+      "collectionHandles": ["gifts", "new-arrivals"],
+      "seoTitle": "Everyday Card Set, Box of Eight — blank letterpress cards | Margin & Co.",
+      "seoDescription": "A boxed set of eight blank letterpress cards on cotton stock with kraft envelopes. For the everyday occasions.",
+      "variants": [
+        {
+          "sku": "MARGIN-CARD-SET8",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-card-set",
+          "isPrimary": true,
+          "alt": "A boxed set of letterpress greeting cards"
+        }
+      ]
+    },
+    {
+      "handle": "washi-tape",
+      "title": "Washi Tape Trio",
+      "description": "Three rolls of low-tack Japanese paper tape for the small joys of a page — flagging a spread, taping in a ticket, or just breaking up a wall of ink. Writes over cleanly, tears by hand, and peels off without a fight. Sold as a set that actually goes together.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Margin & Co.",
+      "tags": ["washi", "tape", "accessory", "set"],
+      "categoryHandles": ["cards-gifts"],
+      "collectionHandles": ["gifts"],
+      "seoTitle": "Washi Tape Trio — Japanese paper tape set | Margin & Co.",
+      "seoDescription": "A set of three low-tack washi paper tapes that write over cleanly, tear by hand and peel off without a fight.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Warm"
+            },
+            {
+              "value": "Cool"
+            },
+            {
+              "value": "Mono"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "MARGIN-WASHI-WRM",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Warm"
+          }
+        },
+        {
+          "sku": "MARGIN-WASHI-COL",
+          "priceCents": 1200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Cool"
+          }
+        },
+        {
+          "sku": "MARGIN-WASHI-MON",
+          "priceCents": 1200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Mono"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-washi-tape",
+          "isPrimary": true,
+          "alt": "Three rolls of patterned washi tape"
+        }
+      ]
+    },
+    {
+      "handle": "desk-kit",
+      "title": "The Desk Kit",
+      "description": "The whole starting point in one box — the Margin Notebook, the Fieldnote fountain pen, and a bottle of Writer’s Ink, wrapped and ready to give. It’s what we hand anyone who says they “should write more”: everything they need and nothing to figure out. Add a note at checkout and we’ll write it in.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Margin & Co.",
+      "tags": ["gift", "bundle", "set", "writing-kit"],
+      "categoryHandles": ["cards-gifts"],
+      "collectionHandles": ["gifts", "writing-kit", "best-sellers"],
+      "seoTitle": "The Desk Kit — notebook, pen & ink gift set | Margin & Co.",
+      "seoDescription": "A boxed gift set: the Margin Notebook, the Fieldnote fountain pen and a bottle of Writer’s Ink, wrapped and ready to give.",
+      "variants": [
+        {
+          "sku": "MARGIN-GIFT-DESK",
+          "priceCents": 9200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-desk-kit",
+          "isPrimary": true,
+          "alt": "A gift box holding a notebook, a pen and ink"
+        }
+      ]
+    }
+  ]
+}

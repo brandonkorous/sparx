@@ -1,0 +1,2649 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "9e5be555-2faa-4799-a6fe-65ed30ae7442",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "8a9898b8-4bec-472c-9eb4-ec9c15b33a49",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "29bbcc65-9a1e-4f2d-92da-289a70f107e2",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "3777adbd-9cf9-405f-a080-67837ea391f0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "a6bb62f1-d66e-4da7-88e5-8582f8655900",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "78766019-60c5-45f0-9c4a-7bcf12ffea08",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "9b8c05ab-dd2d-4255-a8c8-0cd9e0fb7c02",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "93989fb4-955c-4948-8932-3548c2c05dca",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "402c3539-482b-483b-ac3d-88cbacff7c6a",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "45333141-1c9e-436a-bd4c-e2b2646eb263",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "32dad8a8-57a0-48fd-9c16-41fe4028bdde",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "024d07ad-c84f-4467-af84-affa7844faee",
+                  "ord": "a2"
+                }
+              ],
+              "id": "7afadd45-11e2-470d-b98d-4bf923cdcf1d",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "8401958b-ea4f-4815-99cd-a9e778dcfc6e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "efc93302-5d8e-4769-af90-0ad961d178cd",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "d1c063ba-27b5-4099-8268-38decf293ca8",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "c7226c7b-6b86-472e-a476-4098aa9ac5bc",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "5a4191e4-6083-43d8-96f5-3ea87a7a48c8",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "e9a136fd-a473-488b-81cf-6211338b0a4b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "344f19ea-2a0a-40b0-8d05-b481e78327a7",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "30f74485-ac0c-4392-acab-6e2db9a3a3a1",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "d979d36a-2ca6-4d76-b584-30d719d159cd",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "31470417-75b3-489b-8f97-dc767202e8c4",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "5157ef72-5c03-45b2-b863-e8701bd90231",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "1d5cad9a-d9c9-49c2-809d-98ec964d1a04",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "973a2ab0-8ad5-4fd3-a429-314a2d40ca97",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "3ee9c49d-ad6d-4762-9d2c-4ed7d17e4873",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "e4425976-fe7f-4258-a9b8-b672ea50dcd7",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "68e7b7bf-dc1e-4e0c-b0d7-a0244436b2f9",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "12622db4-d715-4fe1-9736-8ebdb6a2acd4",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "77298561-5f85-4a0e-b4de-9f524b7257ce",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "a8563f4a-39a1-4c52-a9d2-5dcca9c36f8e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a20168aa-8354-4193-920f-ae7ad99ba13e",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "fbe47800-e454-4c6e-b83f-3b0607611710",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a219288c-9e46-43e7-9294-9f7447e60818",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "0b4fc9e2-13ab-40f7-8941-2c4ea3f901b4",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8c93cb47-f2f3-46a5-a246-037fd3e25739",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "f8ccdddb-65c4-4691-9a13-e3975aa6f504",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a0e0e60e-8644-411b-a721-2e8eaade3ee5",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "dd5a601b-c04b-4642-9431-c8360a9ba2cb",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "643be546-7e65-43c2-88a6-3ea304cadb17",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "0b1aa226-8c78-47bb-b036-7fdbf0186c82",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "4758a1bb-3707-4a45-ba6f-26b2d208e8c2",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "622eeebf-9d82-4422-9113-957422e04dc3",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "1ee13dbf-5a7c-49ef-8e87-fe7ced1d374b",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "dd444878-fbf1-492c-8881-72fcb2834dd2",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "4b1fbd59-9f0f-4831-a625-3229ad1a6bb6",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "41e477fc-1582-4f5f-9c81-fad1034d0116",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "a9c3dc9e-8434-4a8d-afae-01887c21095e",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "38a27b59-c2a1-4320-ba88-61c68a6fbdde",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "56193a04-909b-4fdc-bb7c-7f30c5f40bbf",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "242a219e-3afe-4443-b397-5af4a188c5a5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "7aa0c619-fc02-4f79-8388-b7c49e8d7022",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f0f6958f-5c1f-42ee-af7d-3309f7829c64",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "903448f5-b850-437b-81e4-c626d89ecd12",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "74445fea-11c5-4d1b-8713-75dde6bb3e65",
+                  "ord": "a1"
+                }
+              ],
+              "id": "ccdfc089-5701-437c-aeba-16b8f84e001d",
+              "ord": "a0"
+            }
+          ],
+          "id": "d3d8390e-9e63-4dc3-b23c-2ddbaa4cc672",
+          "ord": "a2"
+        }
+      ],
+      "id": "18a7a227-aa2f-4510-89c6-0410b4642b04"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Frond — sculptural plants, planters & stands for considered spaces",
+      "seoDescription": "Frond is a modern plant studio — sculptural plants chosen for their form, paired with designed planters and stands, and shipped ready to place. Greenery as design, not decoration.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "10f75137-dcf0-41eb-a244-e9920609f224",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1652517209166-f17a2742a5fe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwbWluaW1hbCUyMHJvb20lMjBzaW5nbGUlMjBzY3VscHR1cmFsJTIwcGxhbnQlMjBzdG9uZXdhcmV8ZW58MHwwfHx8MTc4NjQwMzY0NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A minimal room with a single sculptural plant",
+                  "loading": "lazy"
+                },
+                "id": "de2b13ce-b987-4fcd-87d6-994b5c4ec808",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["A plant is a piece of the room."],
+                        "id": "8cb5b089-1bcb-4d0c-8675-6c19f5706500",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Frond is a plant studio for people who care how a space is put together. We choose plants for their form, pair each one with a planter and a stand that belong to it, and ship the whole object ready to place — so the greenery reads as design, not decoration."
+                        ],
+                        "id": "16ef70f9-e2f2-421e-a71d-d41ca07443ec",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the studio"],
+                            "id": "8108e56b-626d-4056-b926-3fc4489f4a47",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/subscription"
+                            },
+                            "children": ["Plant of the month"],
+                            "id": "42a64f83-a2c2-4556-8c65-a829be5976f5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5b50ed2c-0095-442a-ac55-fb3053b732ca",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "99c148f0-5123-492d-990a-b85df7ee6c04",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c55db883-f683-40c8-b38c-ba7dfe7dcccb",
+                "ord": "a1"
+              }
+            ],
+            "id": "b12b8967-6d9c-45b0-b6ca-bb816d3dacf8",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Shop by piece"],
+                    "id": "c7f9fd0a-1bfd-47c5-9f11-1ed1f54102b7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1556747772-6e7e5bb3a60b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMGFyY2hpdGVjdHVyYWwlMjBwbGFudCUyMGFnYWluc3QlMjBwYWxlJTIwd2FsbHxlbnwwfDB8fHwxNzg2NDAzNjQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A tall architectural plant against a pale wall",
+                              "loading": "lazy"
+                            },
+                            "id": "d94eb4c5-fcba-46fa-a7b3-38441c4b2f13",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Plants"],
+                            "id": "096e7af2-e1d6-4277-9b65-d5d149dc6e2a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "02927781-80b9-4ef0-af6e-191230ecfc2b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1783000852871-6fa0af00ad4c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93JTIwbWF0dGUlMjBkZXNpZ25lZCUyMHBsYW50ZXJzJTIwY29uY3JldGUlMjBzaGVsZnxlbnwwfDB8fHwxNzg2NDAzNjQ5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Matte designed planters on a concrete shelf",
+                              "loading": "lazy"
+                            },
+                            "id": "07a4f8bc-8052-4a15-aecb-22aacbba1f1e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Planters"],
+                            "id": "69e25a55-0d07-4c43-8fdc-2ab3abdd5253",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f4260f7b-1722-465f-b45d-d3620394f263",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1589988272301-a739b5380093?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhbnQlMjByYWlzZWQlMjBzbGVuZGVyJTIwd29vZGVuJTIwcGxhbnQlMjBzdGFuZHxlbnwwfDB8fHwxNzg2NDAzNjUzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A plant raised on a slender wooden stand",
+                              "loading": "lazy"
+                            },
+                            "id": "ebbda141-9d64-4221-80ca-676108473e29",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Stands"],
+                            "id": "e6f0fde3-753b-4aeb-a7ae-8ac8bc9a7f69",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fd867e1b-1faf-43ec-aea5-5d4c6bb19b6f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1774534577685-5f522d7bd4cc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwYnJhc3MlMjBwbGFudC1jYXJlJTIwdG9vbHMlMjBsYWlkJTIwb3V0JTIwc3RvbmV8ZW58MHwwfHx8MTc4NjQwMzY1Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Brass plant-care tools laid out on stone",
+                              "loading": "lazy"
+                            },
+                            "id": "2787e6b8-a18d-43ff-8faa-977dfaecbe57",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Care"],
+                            "id": "71f65076-34f1-4a7e-ba9a-b37efae6b789",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bd4364f8-76fa-479d-b7e3-72d794686695",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "71333b87-2656-4634-80fc-26fd64feaf85",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b03ca91e-096a-4654-a26f-8d8be74c3ad5",
+                "ord": "a0"
+              }
+            ],
+            "id": "462d7f95-dead-428b-b8ad-27b9bebcd08f",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New in the studio"],
+                    "id": "781956cc-0927-4520-a5b9-e18f10ba488a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "82d79518-21f4-4c60-a9ab-10f09277ef5b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "88bd772e-f16f-47c5-ace5-559f19ab13f6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "f34377d5-66b1-4909-8c3e-d623d63000db",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "670ce33e-b1cd-4996-9bb4-a224fb4e8022",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ed06d6a3-155c-4669-b6a9-3911b7aeb65a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d4fc1fe6-5b69-41d8-9fe1-d544691a95e3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "575681c6-f1d6-402f-a2a5-e6930c9a43fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e0d972b0-2959-4330-8cb1-a68535515f21",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "10cc39c2-466d-488e-8ce9-20c1cdf2fd6c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a181c6ee-d332-4f04-8aa3-2c9090c75633",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "9f47def3-b220-4c01-9670-038ca9aecd2e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "01195159-b1d0-400b-a16d-849f0581581d",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "9d3fb4a2-af2b-43be-a8bc-1edd68ecd8a1",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1767125067255-a6a2cc45941f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwcGxhbnQlMjBsaXQlMjBhcyUyMHNjdWxwdHVyZSUyMGFnYWluc3QlMjBwbGFpbnxlbnwwfDB8fHwxNzg2NDAzNjYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A single plant lit as a sculpture",
+                  "loading": "lazy"
+                },
+                "id": "5a3b6f50-ebbd-4051-828f-93a1f537edee",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Chosen for their form"],
+                        "id": "4ea65668-ae64-4fa6-ad64-a84ec5d05717",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We don’t stock everything green. Each plant earns its place on line, silhouette and how it holds a room — the paddle of a bird of paradise, the spare geometry of a cactus, the weight of a rubber plant’s leaf. Fewer plants, chosen the way you’d choose a chair."
+                        ],
+                        "id": "84189543-fb10-4e04-a811-212a61e14ed0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/choosing-a-plant-for-its-form"
+                        },
+                        "children": ["How we choose plants"],
+                        "id": "472787ff-8493-429f-a954-662d8b3b242f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5b3c696d-df5f-44fc-b091-9bf8ca598038",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "1b51b25c-69d4-4b38-807e-635dbf9b0c56",
+                "ord": "a1"
+              }
+            ],
+            "id": "4200497a-b12f-4693-990e-83f501eb1f51",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The plants"],
+                    "id": "38d93002-8a0a-4fdc-b7d8-26b9fb0fb54f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "2aafa26f-ff80-4c7c-8fa9-13932127d039",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f0fd31ce-473e-4818-94e9-53ecbf68467e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "bfcc109e-2493-40b6-ad38-7ff33522a924",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "d331c04e-1519-4e35-904b-7965daa84b08",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c37ada56-e1b4-4cf8-868f-bcb13498d46b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "28349aa4-e833-4753-b045-9c2576728de7",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "f04cde7c-36cf-4619-a621-3f6122096b92",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "fd6d5fc5-dd87-4ce5-83bf-21b384cce89a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e22d74fc-0b69-413c-adbe-191adc5d78bb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "68cfd29d-d1d5-4238-856e-fcf997a419e7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "2cf9c008-1958-485a-b92b-692d42402dc4",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.plants"
+                },
+                "id": "e7da4f11-7104-4538-a03f-ca73fa11622c",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "0f408afd-8dbc-4027-9834-6ff659ec9ba8",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Planters & stands"],
+                    "id": "52a153cf-12c0-414e-b5c1-2f0e62104094",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "b08bf3c7-4601-4851-870d-70108089d3d0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "6923e791-a8f6-427e-bea5-f8859f6c22bb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "0677a64a-e6fc-44e3-b9b5-1c409c0a31db",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "de5ff003-598a-4c2e-81b5-85a681507841",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b39f2844-2837-425e-bf39-d28c53d59b24",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "23d68a3c-b8fd-4931-9c34-47c5e45713d2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "39ab3d49-c883-49d2-a0de-1cd1622c832c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "876c7eb2-bf35-472e-ae98-f0cfcfa4efa3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "76ed9aaf-0121-49e9-bbd1-e9f35f1dd2e7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "67d744f4-df0f-4a2d-9d98-ab954b7eeb4b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "78889900-ae07-4db1-b48b-28566dba3c94",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.planters"
+                },
+                "id": "10608fd7-3a54-4eb4-8148-221f02e5a1a5",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "b15e40fa-224b-4b0a-ac74-b419e77ec030",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1700051358666-571342d57e66?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmV3bHklMjBkZWxpdmVyZWQlMjBwbGFudCUyMG1pbmltYWwlMjBwbGFudGVyJTIwYnklMjB3aW5kb3d8ZW58MHwwfHx8MTc4NjQwMzY2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A newly delivered plant in a minimal planter by a window",
+                  "loading": "lazy"
+                },
+                "id": "72811f84-1608-4f70-8bd0-c9e67cbe2daf",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["One plant, every month"],
+                        "id": "c9b9b503-a0c1-4772-af90-bb2aa911ed10",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Plant of the month is the slow way to build a considered collection: tell us your light and your space, and a curated plant — matched to a planter that suits it — arrives on your schedule. Skip, swap or cancel any time; no lock-in, ever."
+                        ],
+                        "id": "31039d27-b13c-476b-bd2b-fceb2820cab5",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop/subscription"
+                        },
+                        "children": ["Start plant of the month"],
+                        "id": "f0953ee9-1b6e-408f-b8ef-38eceedff98b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2a2b53fe-dbb3-4b42-973a-86eccaddcc55",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "310fc6b4-e4d4-48b5-9a7d-f918a41fdd6f",
+                "ord": "a1"
+              }
+            ],
+            "id": "0d408fb9-c5c1-4483-9005-393d18aa6f63",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Frond",
+      "seoDescription": "Browse everything Frond makes, with prices and options at a glance. Plant studio.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "08065afa-66c0-4eb4-ac47-6cc853f97fc9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The studio"],
+                    "id": "133d2ea3-e29c-443d-a68f-f4c95ebd3242",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we’re carrying right now — sculptural plants, the planters and stands that finish them, and a short, considered care kit. Filter by piece or by size; each plant ships potted, checked by hand, with a single plain card on light and water."
+                    ],
+                    "id": "b22dd088-9bae-4978-a754-567dd37a3ac6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "68c463dd-3a9d-4020-a2d9-f52f077c1d97",
+                "ord": "a0"
+              }
+            ],
+            "id": "fe2be540-de0e-483a-a84b-567dcaabcc23",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "3998d7bc-0ba7-4888-812f-50988380ea55",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Frond",
+      "seoDescription": "Explore the collections at Frond, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3730d5f3-14c9-4acc-b4d0-19ce07ea2ad6",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "c84e8a73-2096-4c1b-9192-6fb21cbc81f3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The studio grouped the way people actually shop — what’s new in, the sculptural statement plants, planters and stands, the low-effort pieces, and pairings we’d put together ourselves."
+                    ],
+                    "id": "05c7c13e-2787-46a1-a514-f31efcaff563",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e18e217f-9ece-4ca7-9a79-05ddbd7f679c",
+                "ord": "a0"
+              }
+            ],
+            "id": "b63f2de7-51f9-4785-9897-29259be55ca9",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "55275ec8-1070-4108-8914-aa9b3acc50b1",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Frond",
+      "seoDescription": "Review what is in your cart and check out securely at Frond.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "06e00e0e-50ab-410e-a3c2-ec4e21105b56",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "cd85cf13-efad-470c-ae7e-11f17b999ff5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping over $75, and every plant travels braced and cushioned with a care card inside. If a piece arrives less than perfect, send a photo within a week and we’ll put it right — a plant should settle a room, not stress you out."
+                    ],
+                    "id": "0d8b0fbb-7a6b-4dc6-a049-d52918f2df55",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "59cd5d75-7d81-43d0-bf69-29dee10477a2",
+                "ord": "a0"
+              }
+            ],
+            "id": "7befbf55-4c92-40ab-bcd7-2b0570547cc3",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "53039f0f-7cdc-4b5a-936f-b9fa6e9afd66",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Frond",
+      "seoDescription": "Search Frond for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "de44ecb6-76c7-4925-b538-1189930b7dba",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Frond"],
+                    "id": "4bcea204-c9eb-4884-8bbf-8f434d6ed787",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a particular plant, a planter size, or a styling note? Search the whole studio and the journal below."
+                    ],
+                    "id": "29e86190-03e6-4a1f-bde4-bfd5baa1bc48",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5e43a505-94ef-4310-b256-12c98c3e17e8",
+                "ord": "a0"
+              }
+            ],
+            "id": "f17c1115-bb78-41ce-9844-820200cb2efc",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e3243967-d30f-4f32-9ed3-cd48a337aa0a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Frond",
+      "seoDescription": "Stories, guides and notes from Frond.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "93ca3b0b-d794-419a-86c3-57baf6710857",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Frond journal"],
+                    "id": "7c488ddd-5802-4f37-9698-f18cd1f7c04d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the studio — choosing a plant for its form, pairing it with the right planter, and the small habits that keep a considered space alive. Design-minded, plainly written."
+                    ],
+                    "id": "cb867a57-23f0-45db-813a-314184f09970",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "55ffd62f-8a7e-47a7-83ee-5bf8ee5498d0",
+                "ord": "a0"
+              }
+            ],
+            "id": "58c67201-c450-4aec-a9cc-51953609a044",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "693a0751-02e7-4478-81a3-3d8b2d6a2719",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "a4ed5f17-a65b-43dd-9f05-1f193984961a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "32c2231e-9acf-4e70-b6e4-0db98690bfdf",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "cfaff6da-3ba3-4214-9d19-1b09de72057c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "bb6c41ee-1914-41e9-8e65-194eae9f0858",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "91bdb96d-bac1-4a22-9739-7794392825f2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "7bdaeb8f-2476-47b4-9557-ca4f26733d81",
+                "ord": "a0"
+              }
+            ],
+            "id": "47cee289-0f23-4013-9e9c-1536f1949c59",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Frond",
+      "seoDescription": "How Frond chooses, pairs and ships plants — a short, considered range of sculptural plants, small-run planters and stands, treated as one composed object.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "346620fb-c85e-4ecd-883a-46c2ecbe6168",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Frond"],
+                    "id": "161ea51a-cd6a-43fb-9241-d89c1326f3af",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Frond began with a simple frustration: plants are sold like produce and styled like an afterthought, when the good ones are as considered as any object you’d bring into a room. So we built a studio that treats a plant, its planter and its stand as one composed piece — chosen together, shipped together, placed together."
+                    ],
+                    "id": "dbc6de9e-5a53-4b61-86af-c26aecd69410",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We keep the range deliberately short. Every plant is grown on and acclimatised rather than drop-shipped, every planter is made in small runs by people we can name, and nothing goes on the shelf unless it earns its place on form and holds up in a real home. We would rather carry twenty pieces we’d live with than two hundred we wouldn’t."
+                    ],
+                    "id": "af5ff31b-509b-4648-a542-8be7911c66d9",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No plastic nursery pots as the finished look, no impossible-to-keep rarities sold on hype, no jargon. Just plants chosen as objects, matched to your light and your space, with the plain guidance to keep them looking the way they did the day they arrived."
+                    ],
+                    "id": "2cf13804-9aef-42fd-947e-1d7c9c7438a4",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "1601726e-850e-4fbb-8794-9084b9a97106",
+                "ord": "a0"
+              }
+            ],
+            "id": "9e0f6bb1-731b-4ec4-acdf-9a29913bf622",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Frond",
+      "seoDescription": "Get in touch with Frond — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "93c1c699-506a-4fd4-9937-bb0551c79c86",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "76944a83-921b-4230-acd2-948fb195e4c7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Styling a corner and not sure what fits, planning plants for an office or a project, or want a piece you can’t see here? Send a photo of the space and a note — a real person at the studio will help you compose it."
+                    ],
+                    "id": "cffc7fd7-5005-4a8d-92ed-54fc5a77c0bb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:studio@frondplants.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "cdf889fd-f5b1-4dd5-9be8-e7c649b1a197",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "b3c51053-9cf7-4e64-b198-3adf443dda55",
+                "ord": "a0"
+              }
+            ],
+            "id": "820ff957-cf4c-49c1-9065-357f8e23f5e0",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Frond",
+      "seoDescription": "Product details at Frond — plant studio, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "0f52b175-8c98-45a3-845e-e367b79f0ffe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Frond"],
+                            "id": "4dcc512c-7a3d-4b4b-9976-c85b62b99031",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a615c4b9-6e05-4cf8-99b3-93d86e805336",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "12a9606f-4be0-4347-8c7d-8d31fd2dd2f5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "b77edb20-9087-415c-ae41-e7481043f1dc",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "ac2c809c-0524-4ba8-bb8c-a12e59bb26fe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9119325c-8388-426b-9a43-81c149675011",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "a4a2e1a0-5873-45e9-889a-03e4ce1b9017",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "82f53aff-9a56-4fa4-871a-d5d7ee9d3a2f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "36304c07-fe4a-483b-9e8f-b8b29d55e3c3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "75d95e56-afb8-4d05-9459-43399d2c2e8c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "85e11520-8f47-4a94-a830-5c4cf9907cd0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "9f940168-93cb-4b85-a7f1-771864c0e59a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2a9519df-8195-4deb-a62b-08b1a0782463",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "6759cd98-e005-4fd0-b167-7bdd4fd16a7e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "f6c09265-dffa-49c0-92d4-9f64055626a3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Delivered ready to place"],
+                            "id": "71d46b4f-158c-40db-8666-9768f8bb369a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Choose a size and, if you like, the planter it was styled with — it arrives potted, checked by hand and packed to travel, with a single card on light, water and where it looks best. Give it a week to settle into its spot before you judge it."
+                            ],
+                            "id": "08c0ff9a-cc7c-41b5-8921-bfb5ff01cf21",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e1a49e4d-2733-4015-be93-7faca9cb3a66",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "d64713e3-3361-4fe9-9255-5c5f0d0cb23f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "24724b9c-7eff-41dd-aead-e3c865fc8222",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "780c79df-fcd8-42b9-a35e-c4130005f1c2",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "f75aa9b7-6fc5-4095-8c31-894306a48f79",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f1fa471a-d575-477f-8c62-505673f753e5",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "0e715364-3df2-4392-9be4-ed368296c63d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Style it with"],
+                    "id": "e888ca9c-5154-4351-9450-452ab7da1688",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "403728ed-d50f-4bf1-8626-099685724536",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "754f17d4-77e2-4090-b324-e1bb242f05b4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "2fe1f4b8-ad70-4df6-9c6c-ac6cf5e17de1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "27f43432-be10-40ce-874c-4fc165f92a01",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ae7216af-d8d5-4179-a21d-5326d61db819",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3158293d-7288-4336-a861-6ae5efa594d9",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "1a3c1cfb-dffb-4b26-92e9-34bf693ea3fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "913f234c-14bf-4296-be3b-2b0e364d00d6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "9982fe66-9376-4f6f-bd53-c4068d48c36d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "08ead4a4-082b-40d3-b18c-a77eaa1106d8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "ab159ca3-aac6-4db1-ab75-063627e390a9",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "59ca281e-bfeb-4d37-b7a7-e4ad6a1cc1c8",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "74dfbf88-37de-4ad8-ad71-96ab77fc20ab",
+            "ord": "a1"
+          }
+        ],
+        "id": "4f46821e-69f5-4932-9de8-fdb712bbfe04"
+      }
+    }
+  ],
+  "theme": {
+    "name": "frond-modern",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.004 130)",
+      "--color-base-200": "oklch(94.5% 0.006 130)",
+      "--color-base-300": "oklch(90% 0.008 128)",
+      "--color-base-content": "oklch(20% 0.014 155)",
+      "--color-primary": "oklch(37% 0.085 158)",
+      "--color-secondary": "oklch(40% 0.03 160)",
+      "--color-accent": "oklch(50% 0.09 78)",
+      "--color-neutral": "oklch(24% 0.014 155)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 158)",
+      "--color-secondary-content": "oklch(98% 0.01 160)",
+      "--color-accent-content": "oklch(98% 0.01 78)",
+      "--color-neutral-content": "oklch(98% 0.01 155)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.09 78)",
+      "--color-highlight-content": "oklch(98% 0.01 78)",
+      "--color-border": "oklch(90% 0.008 128)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.012 155)",
+      "--color-base-200": "oklch(15% 0.012 155)",
+      "--color-base-300": "oklch(12% 0.012 155)",
+      "--color-base-content": "oklch(95% 0.006 130)",
+      "--color-primary": "oklch(80% 0.12 158)",
+      "--color-secondary": "oklch(76% 0.04 160)",
+      "--color-accent": "oklch(80% 0.1 80)",
+      "--color-neutral": "oklch(30% 0.014 155)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 158)",
+      "--color-secondary-content": "oklch(15% 0.02 160)",
+      "--color-accent-content": "oklch(15% 0.02 80)",
+      "--color-neutral-content": "oklch(98% 0.01 155)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.1 80)",
+      "--color-highlight-content": "oklch(15% 0.02 80)",
+      "--color-border": "oklch(12% 0.012 155)"
+    }
+  }
+}

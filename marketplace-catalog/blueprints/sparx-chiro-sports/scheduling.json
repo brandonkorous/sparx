@@ -1,0 +1,332 @@
+{
+  "policies": [
+    {
+      "handle": "clinic-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a visit. We send a reminder the day before and two hours ahead so you never miss your slot."
+    },
+    {
+      "handle": "no-show",
+      "name": "Assessment & performance policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Assessments and performance consults hold a longer slot with a provider and a room. Two missed appointments without 24 hours’ notice pauses online booking until we reconnect."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Dr. Marcus Vela",
+      "kind": "staff",
+      "skillTags": ["sports", "adjustment", "art", "screening"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "dana",
+      "name": "Dr. Dana Okafor",
+      "kind": "staff",
+      "skillTags": ["rehab", "dry-needling", "adjustment", "sports"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Reyes",
+      "kind": "staff",
+      "skillTags": ["performance", "screening", "sports", "rehab"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1230
+        }
+      ]
+    },
+    {
+      "handle": "room-a",
+      "name": "Treatment Room A",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "room-b",
+      "name": "Rehab Bay B",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1260
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "movement-assessment",
+      "name": "Movement assessment",
+      "description": "A full-body movement screen — we find what’s limiting you, then build the plan to fix it and get you back to training.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["screening"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "sports-injury-visit",
+      "name": "Sports injury visit",
+      "description": "Acute or nagging — a focused visit to diagnose the injury, calm it down and start you moving again.",
+      "durationMinutes": 40,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["sports"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "adjustment",
+      "name": "Chiropractic adjustment",
+      "description": "A targeted adjustment to restore motion and take pressure off the joints — in and out, back to your day.",
+      "durationMinutes": 20,
+      "priceCents": 6500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["adjustment"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "active-release-session",
+      "name": "Active-release session",
+      "description": "Hands-on soft-tissue work to break up restriction, free the muscle and restore clean range of motion.",
+      "durationMinutes": 30,
+      "priceCents": 8500,
+      "bufferAfterMin": 5,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["art"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "dry-needling-session",
+      "name": "Dry-needling session",
+      "description": "Precise needling to release trigger points and switch tight, guarded muscles back on.",
+      "durationMinutes": 30,
+      "priceCents": 9000,
+      "bufferAfterMin": 5,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["dry-needling"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "rehab-session",
+      "name": "Rehab session",
+      "description": "Loaded, progressive rehab — the strength and control work that keeps the injury from coming back.",
+      "durationMinutes": 60,
+      "priceCents": 11000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["rehab"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "performance-consult",
+      "name": "Performance consult",
+      "description": "A free sit-down to map your training goals and see whether we’re the right team to get you there — no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["performance"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    }
+  ]
+}

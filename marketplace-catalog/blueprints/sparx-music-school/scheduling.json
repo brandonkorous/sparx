@@ -1,0 +1,367 @@
+{
+  "policies": [
+    {
+      "handle": "lesson-standard",
+      "name": "Standard lesson",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel a lesson. We send a reminder the day before and two hours ahead so nobody forgets."
+    },
+    {
+      "handle": "no-show",
+      "name": "Missed lesson",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens — just let your teacher know as early as you can and we’ll do our best to find another time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "mara",
+      "name": "Mara Ellison",
+      "kind": "staff",
+      "skillTags": ["piano", "voice", "theory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Nakamura",
+      "kind": "staff",
+      "skillTags": ["guitar", "bass", "ukulele"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "lena",
+      "name": "Lena Petrov",
+      "kind": "staff",
+      "skillTags": ["violin", "viola", "strings", "theory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 900,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 840
+        }
+      ]
+    },
+    {
+      "handle": "room-a",
+      "name": "Studio A",
+      "kind": "space",
+      "skillTags": ["lesson-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "room-b",
+      "name": "Studio B",
+      "kind": "space",
+      "skillTags": ["lesson-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "trial-lesson",
+      "name": "Trial lesson",
+      "description": "A free, no-pressure first lesson — meet a teacher, try your instrument and see if we’re the right fit. All ages, all levels welcome.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["piano"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "piano-lesson",
+      "name": "Piano lesson",
+      "description": "One-to-one piano for beginners through advanced — from first notes and reading music to pieces you’ve always wanted to play.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["piano"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "guitar-lesson",
+      "name": "Guitar lesson",
+      "description": "Acoustic or electric, chords to solos — a private guitar lesson built around the music you love to play.",
+      "durationMinutes": 45,
+      "priceCents": 5500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["guitar"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "voice-lesson",
+      "name": "Voice lesson",
+      "description": "Find your voice with gentle, healthy technique — breathing, range and songs, at whatever pace feels right for you.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["voice"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "violin-lesson",
+      "name": "Violin lesson",
+      "description": "Private violin from the very first day — posture, tone and technique, with a warm, patient teacher beside you.",
+      "durationMinutes": 45,
+      "priceCents": 6000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["violin"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "group-musicianship-class",
+      "name": "Group musicianship class",
+      "description": "A joyful small-group class — rhythm, ear-training and playing together. The fun, social side of learning music.",
+      "durationMinutes": 60,
+      "priceCents": 3000,
+      "bookingType": "class",
+      "capacity": 8,
+      "assignmentStrategy": "collective",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["theory"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "recital-prep-lesson",
+      "name": "Recital prep lesson",
+      "description": "A focused, hour-long session to polish your piece and steady your nerves before a recital or exam.",
+      "durationMinutes": 60,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "teacher",
+          "kind": "staff",
+          "skillTags": ["piano"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["lesson-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    }
+  ]
+}

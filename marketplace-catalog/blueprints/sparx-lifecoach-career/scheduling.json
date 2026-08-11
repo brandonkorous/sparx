@@ -1,0 +1,252 @@
+{
+  "policies": [
+    {
+      "handle": "coaching-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel — no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "coaching-no-show",
+      "name": "Session hold",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Booked sessions are time held just for you. Reschedule with 24 hours’ notice at no cost; a missed session or a same-day cancellation is billed as the full fee so your coach’s time is respected."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "daniela",
+      "name": "Daniela Reyes",
+      "kind": "staff",
+      "skillTags": ["executive", "leadership", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 720
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 720
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 720
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 720
+        },
+        {
+          "dayOfWeek": 1,
+          "startMinute": 1020,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["career", "leadership", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 780
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 1020,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 1020,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand",
+      "kind": "staff",
+      "skillTags": ["transition", "interview", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 840
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 1020,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 720
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A free 30-minute call to hear your goals, talk through where you are and match you with the right coach. No cost, no pitch.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "career-strategy-session",
+      "name": "Career strategy session",
+      "description": "A focused working session to name your next move and reverse-engineer the plan — the conversations, the visibility and the skills that get you there.",
+      "durationMinutes": 60,
+      "priceCents": 20000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-no-show"
+    },
+    {
+      "handle": "executive-coaching-session",
+      "name": "Executive coaching session",
+      "description": "One-to-one coaching for senior leaders — executive presence, influence and high-stakes decision-making, with a coach who’s led at the top.",
+      "durationMinutes": 60,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["executive"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-no-show"
+    },
+    {
+      "handle": "leadership-coaching-session",
+      "name": "Leadership coaching session",
+      "description": "Grow into the leader the role needs — managing up, leading a team for the first time, and building the confidence to make the call.",
+      "durationMinutes": 60,
+      "priceCents": 22000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["leadership"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-no-show"
+    },
+    {
+      "handle": "interview-prep-session",
+      "name": "Interview prep session",
+      "description": "Walk in ready — sharpen your positioning, rehearse the hard questions and turn your story into answers that land.",
+      "durationMinutes": 45,
+      "priceCents": 18000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    },
+    {
+      "handle": "promotion-strategy-session",
+      "name": "Promotion strategy session",
+      "description": "Build the case for your promotion — the results to surface, the stakeholders to win over and the ask that makes it obvious.",
+      "durationMinutes": 45,
+      "priceCents": 19000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-no-show"
+    },
+    {
+      "handle": "coaching-package-consult",
+      "name": "Coaching package consult",
+      "description": "A short call to walk through our multi-session coaching packages and find the engagement that fits your goals and timeline.",
+      "durationMinutes": 30,
+      "priceCents": 5000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "coach",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "coaching-standard"
+    }
+  ]
+}

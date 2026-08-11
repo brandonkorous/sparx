@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-hvac-comfort",
+  "name": "sparx — HVAC (Comfort)",
+  "version": "1.0.0",
+  "tagline": "A warm, friendly template for HVAC companies — book comfort visits from day one.",
+  "description": "A friendly residential HVAC site built on year-round comfort — a warm amber-heating and cool sky-blue palette on a clean warm-white ground. Installs a working booking flow: tune-ups, free install estimates, diagnostics and air-quality visits, three techs dispatched by skill with their own hours, and a maintenance-plan priority policy. Ships as \"Evenair Heating & Cooling\".",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "HVAC",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — HVAC (Comfort) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — HVAC (Comfort) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#e28339",
+  "sortWeight": 76
+}

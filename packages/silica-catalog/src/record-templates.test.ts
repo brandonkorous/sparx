@@ -18,9 +18,11 @@ import {
   recordAddressAt,
   recordAddressFor,
   recordIndexPath,
+  recordPreviewPath,
   recordTemplate,
   slugCandidatesForPath,
 } from './record-templates';
+import { starterPages, starterSite } from './site';
 
 /** Every host-core key mounted anywhere in a subtree. */
 function hostKeys(node: unknown, out: string[] = []): string[] {
@@ -83,7 +85,7 @@ describe('RECORD_TEMPLATES — every routed record type has a default', () => {
   describe('recordTemplate()', () => {
     it('resolves a routed type to a labelled tree', () => {
       const t = recordTemplate('cms.blog_post');
-      expect(t?.label).toBe('Blog post');
+      expect(t?.label).toBe('Each blog post');
       expect(t?.root).toBeTruthy();
     });
 
@@ -171,5 +173,111 @@ describe('slugCandidatesForPath — one matcher for body and chrome', () => {
   it('tolerates a trailing slash without inventing an empty segment', () => {
     expect(slugCandidatesForPath('/products/')).toEqual(['products', '/products']);
     expect(slugCandidatesForPath('/')).toEqual([]);
+  });
+});
+
+describe('recordPreviewPath', () => {
+  const product = recordAddressFor('commerce.product')!;
+  const post = recordAddressFor('cms.blog_post')!;
+
+  // The whole reason this exists: an author laying out the product DETAIL page pressed
+  // Preview and was shown the product LIST, which contains none of their work.
+  it('opens a real record when one is known', () => {
+    expect(recordPreviewPath(product, { 'commerce.product': '/products/brake-kit' })).toBe(
+      '/products/brake-kit'
+    );
+  });
+
+  // Not a defect — a tenant with no products has no detail page to show, and the index
+  // is a real page. This is also exactly where Preview went before samples existed, so a
+  // failed or empty lookup costs nothing.
+  it('falls back to the route index when the tenant has no record of that kind', () => {
+    expect(recordPreviewPath(product, {})).toBe('/products');
+    expect(recordPreviewPath(post, undefined)).toBe('/blog');
+    expect(recordPreviewPath(post, null)).toBe('/blog');
+  });
+
+  // A mismatched entry would send an author previewing their product page to a blog
+  // post, and they would read the TEMPLATE as broken rather than the link as wrong.
+  it('ignores a sample that is not under this address prefix', () => {
+    expect(recordPreviewPath(product, { 'commerce.product': '/blog/hello-world' })).toBe(
+      '/products'
+    );
+  });
+
+  // `/products` is the index, not a product — interpolating an empty segment would
+  // preview the wrong page while looking like it worked.
+  it('ignores a sample that is the prefix with nothing after it', () => {
+    expect(recordPreviewPath(product, { 'commerce.product': '/products/' })).toBe('/products');
+    expect(recordPreviewPath(product, { 'commerce.product': '/products' })).toBe('/products');
+  });
+
+  it('reads only its own record type', () => {
+    expect(recordPreviewPath(product, { 'cms.blog_post': '/blog/hello-world' })).toBe('/products');
+  });
+
+  // Every address must be previewable — a new one added without a sample resolver still
+  // has to produce a fetchable path rather than a pattern.
+  it('never returns a path containing the address pattern', () => {
+    for (const address of RECORD_ADDRESSES) {
+      expect(recordPreviewPath(address, {})).not.toContain(':');
+    }
+  });
+});
+
+describe('record page names are the switcher, not a DTO field', () => {
+  // Giving record pages an address put them in the page switcher, beside the ordinary
+  // pages. A label that merely READS fine on its own is not enough there — it has to be
+  // tellable apart from every neighbour, by someone who did not author either.
+  const site = starterSite(undefined, {
+    commerceEnabled: true,
+    cmsEnabled: true,
+    schedulingEnabled: true,
+  });
+  const ordinary = starterPages({
+    commerceEnabled: true,
+    cmsEnabled: true,
+    schedulingEnabled: true,
+  }).map((p) => p.name);
+  const labels = ROUTED_RECORD_TYPES.map((t) => RECORD_TEMPLATE_LABELS[t]);
+
+  /** Lowercased and de-pluralized — how a name reads at a glance, rather than byte-wise. */
+  const glance = (s: string) => s.toLowerCase().trim().replace(/s$/, '');
+
+  it('does not collide with an ordinary page name, even as a near-miss', () => {
+    // The real bug this exists for: `Collection` (the record page) sat one letter from
+    // `Collections` (the index) in the same list. Exact-equality would have called that
+    // fine. It was a coin flip for every owner who met it.
+    for (const label of labels) {
+      for (const name of ordinary) {
+        expect(
+          glance(label) === glance(name),
+          `record page "${label}" is indistinguishable from the "${name}" page at a glance`
+        ).toBe(false);
+      }
+    }
+  });
+
+  it('is distinguishable from every OTHER record page', () => {
+    expect(new Set(labels.map(glance)).size).toBe(labels.length);
+  });
+
+  it('uses one shape for all five, so none reads as a different kind of thing', () => {
+    // Three of the five used to carry a `detail` suffix and two did not, which implied a
+    // distinction that does not exist. Consistency here IS the meaning.
+    for (const label of labels) expect(label.startsWith('Each ')).toBe(true);
+  });
+
+  it('speaks no developer vocabulary', () => {
+    // The audience is a salon owner, not the person who named the record type.
+    for (const label of labels) {
+      expect(/detail|record|template|entity|slug|handle|singleton/i.test(label)).toBe(false);
+    }
+  });
+
+  it('names every seeded record page from this list, so the switcher cannot drift', () => {
+    const seeded = site.pages.filter((p) => isRecordAddress(p.slug));
+    expect(seeded.length).toBe(ROUTED_RECORD_TYPES.length);
+    for (const page of seeded) expect(labels).toContain(page.name);
   });
 });

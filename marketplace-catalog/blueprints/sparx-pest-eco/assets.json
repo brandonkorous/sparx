@@ -1,0 +1,32 @@
+[
+  {
+    "id": "pest-eco-hero",
+    "url": "https://images.unsplash.com/photo-1683191457485-42a612eeea57?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z3JlZW4lMjBob21lJTIwZ2FyZGVufGVufDB8MHx8fDE3ODYzOTM3NjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm family home with a green garden on a bright, still morning"
+  },
+  {
+    "id": "pest-eco-garden",
+    "url": "https://images.unsplash.com/photo-1542323789-c2761a7703fc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmF0dXJhbCUyMGdhcmRlbiUyMHBsYW50c3xlbnwwfDB8fHwxNzg2MzkzNzY2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A lush backyard garden with herbs and flowers along the fence line"
+  },
+  {
+    "id": "pest-eco-ipm",
+    "url": "https://images.unsplash.com/photo-1747659629851-a92bd71149f6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVzdCUyMGNvbnRyb2wlMjBpbnNwZWN0aW9ufGVufDB8MHx8fDE3ODYzOTM3Njl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A technician inspecting a garden bed, checking for pests by hand"
+  },
+  {
+    "id": "pest-eco-elena",
+    "url": "https://images.unsplash.com/photo-1581091224003-01e7c2e69f6f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWNobmljaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Ortiz, botanical treatment lead"
+  },
+  {
+    "id": "pest-eco-marco",
+    "url": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marco Deyn, IPM and rodent specialist"
+  },
+  {
+    "id": "pest-eco-priya",
+    "url": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB3b21hbnxlbnwwfDB8fHwxNzg2MzkzNzc1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, recurring-care technician"
+  }
+]

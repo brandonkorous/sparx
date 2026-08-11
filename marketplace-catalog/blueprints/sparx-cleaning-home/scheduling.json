@@ -1,0 +1,275 @@
+{
+  "policies": [
+    {
+      "handle": "cleaning-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel. We send a reminder the day before and two hours ahead, so you’re never caught off guard."
+    },
+    {
+      "handle": "first-clean",
+      "name": "First clean & recurring",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Your first clean and any recurring plan is fully flexible — change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rosa",
+      "name": "Rosa Delgado",
+      "kind": "staff",
+      "skillTags": ["standard", "deep", "recurring"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "mateo",
+      "name": "Mateo Rivera",
+      "kind": "staff",
+      "skillTags": ["deep", "move-out", "standard"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "aisha",
+      "name": "Aisha Bello",
+      "kind": "staff",
+      "skillTags": ["standard", "recurring", "eco"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "grace",
+      "name": "Grace Lin",
+      "kind": "staff",
+      "skillTags": ["standard", "deep", "move-out", "post-reno"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-estimate",
+      "name": "Free in-home estimate",
+      "description": "A friendly walk-through of your home so we can quote an exact price — no obligation, no pressure.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["standard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    },
+    {
+      "handle": "standard-clean",
+      "name": "Standard clean",
+      "description": "Kitchens, bathrooms, floors and surfaces across your whole home — the everyday refresh that keeps things sparkling.",
+      "durationMinutes": 120,
+      "priceCents": 12000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["standard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    },
+    {
+      "handle": "deep-clean",
+      "name": "Deep clean",
+      "description": "Top-to-bottom detail — baseboards, inside the oven and fridge, grout, vents and the spots that get skipped.",
+      "durationMinutes": 180,
+      "priceCents": 22000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["deep"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    },
+    {
+      "handle": "recurring-setup",
+      "name": "Recurring plan — first visit",
+      "description": "Set up weekly, every-two-weeks or monthly cleans with the same friendly cleaner each time. Change or skip any time.",
+      "durationMinutes": 120,
+      "priceCents": 11000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["recurring"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "first-clean"
+    },
+    {
+      "handle": "move-out-clean",
+      "name": "Move-in / move-out clean",
+      "description": "An empty-home deep clean, cupboards to skirting, so you hand back the keys spotless and get every deposit dollar back.",
+      "durationMinutes": 240,
+      "priceCents": 28000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["move-out"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    },
+    {
+      "handle": "one-time-refresh",
+      "name": "One-time refresh",
+      "description": "A quick single visit before guests, after a party or whenever life gets busy — the essentials, done well.",
+      "durationMinutes": 90,
+      "priceCents": 9000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["standard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    },
+    {
+      "handle": "post-reno-clean",
+      "name": "Post-renovation clean",
+      "description": "Dust, debris and builder’s residue cleared out after a remodel, so your finished project actually feels finished.",
+      "durationMinutes": 240,
+      "priceCents": 32000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "cleaner",
+          "kind": "staff",
+          "skillTags": ["post-reno"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "cleaning-standard"
+    }
+  ]
+}

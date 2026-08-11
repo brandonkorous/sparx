@@ -1,0 +1,248 @@
+{
+  "policies": [
+    {
+      "handle": "visit-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to change or cancel a visit. We text a reminder the day before and two hours ahead, with your technician’s name and arrival window."
+    },
+    {
+      "handle": "maintenance-plan",
+      "name": "Maintenance plan",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Seasonal maintenance visits are scheduled ahead and reminded twice, so your system is tuned before you need it. Reschedule any time with a day’s notice."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marco",
+      "name": "Marco Ellis",
+      "kind": "staff",
+      "skillTags": ["heat-pump", "install", "assessment"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "dana",
+      "name": "Dana Whitfield",
+      "kind": "staff",
+      "skillTags": ["tune-up", "repair", "smart"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Park",
+      "kind": "staff",
+      "skillTags": ["install", "ductwork", "assessment"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 960
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "energy-assessment",
+      "name": "Home energy assessment",
+      "description": "A room-by-room look at where your home loses heating and cooling — insulation, drafts, ductwork and your current system — with a plain-language report and the changes that would cut your bills the most. The $49 fee comes off any work you book.",
+      "durationMinutes": 90,
+      "priceCents": 4900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["assessment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "free-install-estimate",
+      "name": "Free install estimate",
+      "description": "Thinking about a new furnace, AC or heat pump? We measure your home, size the system properly and give you a written, no-pressure quote — including any rebates and financing you qualify for. Always free.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["assessment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "heat-pump-consult",
+      "name": "Heat-pump consultation",
+      "description": "A focused sit-down on whether a heat pump fits your home — how it heats and cools with one efficient system, what it would cost to run, and the rebates that bring it down. Free, and no obligation to buy.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["heat-pump"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "efficiency-tune-up",
+      "name": "Efficiency tune-up",
+      "description": "A full clean-and-check that keeps your system running at its rated efficiency — cleaner air, quieter operation and lower bills. Cleared coils, fresh filter, calibrated controls and a safety check.",
+      "durationMinutes": 75,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["tune-up"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "smart-thermostat-install",
+      "name": "Smart thermostat install",
+      "description": "We supply and fit a smart thermostat, wire it to your system and set up the schedule that saves you the most — so your home eases back when you’re out and is comfortable the moment you’re home.",
+      "durationMinutes": 90,
+      "priceCents": 18900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["smart"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "system-diagnostic",
+      "name": "System diagnostic",
+      "description": "Not heating or cooling like it should, or running your bill up? A technician traces the fault, explains it in plain terms and gives you a fixed price to repair before any work starts.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["repair"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "visit-standard"
+    },
+    {
+      "handle": "maintenance-visit",
+      "name": "Seasonal maintenance visit",
+      "description": "The twice-a-year visit that keeps a system efficient and heads off breakdowns — a spring cooling check and a fall heating check, each a full tune, safety inspection and efficiency report.",
+      "durationMinutes": 120,
+      "priceCents": 16900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "tech",
+          "kind": "staff",
+          "skillTags": ["tune-up"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "maintenance-plan"
+    }
+  ]
+}

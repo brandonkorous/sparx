@@ -1,0 +1,520 @@
+{
+  "categories": [
+    {
+      "handle": "cooking",
+      "name": "Cooking",
+      "description": "Ranges, cookware and bakeware.",
+      "featured": true
+    },
+    {
+      "handle": "prep-storage",
+      "name": "Prep & storage",
+      "description": "Prep tables, mixers and food storage.",
+      "featured": true
+    },
+    {
+      "handle": "front-of-house",
+      "name": "Front of house",
+      "description": "Holding, service and crockery.",
+      "featured": true
+    },
+    {
+      "handle": "smallwares",
+      "name": "Smallwares",
+      "description": "Knives, tools and station kits.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The lines kitchens reorder most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "stainless-prep-table",
+        "sheet-pans-case",
+        "chef-knife-case",
+        "food-storage-containers-case"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "Lines just added to the catalog.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "countertop-induction-range",
+        "planetary-floor-mixer",
+        "strip-heat-lamp",
+        "smallwares-starter-kit"
+      ]
+    },
+    {
+      "handle": "open-a-kitchen",
+      "name": "Open a kitchen",
+      "description": "Everything to fit out a line from empty.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "stainless-prep-table",
+        "countertop-induction-range",
+        "planetary-floor-mixer",
+        "chef-knife-case",
+        "smallwares-starter-kit"
+      ]
+    },
+    {
+      "handle": "prep-line-essentials",
+      "name": "Prep-line essentials",
+      "description": "The gear no prep station runs without.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["stainless-prep-table", "food-storage-containers-case", "chef-knife-case"]
+    },
+    {
+      "handle": "front-of-house-service",
+      "name": "Front-of-house service",
+      "description": "Hold it hot, plate it clean.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["strip-heat-lamp", "coupe-dinner-plates-case"]
+    },
+    {
+      "handle": "bulk-smallwares",
+      "name": "Bulk smallwares",
+      "description": "Buy the case, reorder on a schedule.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "fry-pans-case",
+        "sheet-pans-case",
+        "chef-knife-case",
+        "food-storage-containers-case",
+        "coupe-dinner-plates-case"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "stainless-prep-table",
+      "title": "Stainless Prep Table, 18-Gauge",
+      "description": "A workhorse 18-gauge 304 stainless prep table with a welded frame, adjustable galvanised undershelf and bullet feet — the flat, cleanable surface every station is built around. Ships flat-packed, one table. MOQ 1. Pick your length to fit the line.",
+      "status": "active",
+      "productType": "Prep & storage",
+      "vendor": "Pass Supply Co.",
+      "tags": ["prep", "work-table", "stainless", "nsf"],
+      "categoryHandles": ["prep-storage"],
+      "collectionHandles": ["best-sellers", "open-a-kitchen", "prep-line-essentials"],
+      "seoTitle": "Stainless Prep Table, 18-Gauge | Pass Supply Co.",
+      "seoDescription": "An 18-gauge 304 stainless commercial prep table with undershelf, sold by the unit. 48, 60 or 72 inch.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "48 in"
+            },
+            {
+              "value": "60 in"
+            },
+            {
+              "value": "72 in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "PSC-PREP-TBL-48",
+          "priceCents": 21900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "48 in"
+          }
+        },
+        {
+          "sku": "PSC-PREP-TBL-60",
+          "priceCents": 25900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "60 in"
+          }
+        },
+        {
+          "sku": "PSC-PREP-TBL-72",
+          "priceCents": 29900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "72 in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-prep-table",
+          "isPrimary": true,
+          "alt": "A stainless steel commercial prep table"
+        }
+      ]
+    },
+    {
+      "handle": "countertop-induction-range",
+      "title": "Countertop Induction Range, 1800W",
+      "description": "A commercial 1800W countertop induction range with digital power and temperature control and a schott-glass top — fast, precise, flameless heat for a prep station, a satellite line or a front-of-house action station. 120V, plugs into a standard outlet. Sold by the unit. MOQ 1.",
+      "status": "active",
+      "productType": "Cooking",
+      "vendor": "Pass Supply Co.",
+      "tags": ["cooking", "induction", "countertop", "equipment"],
+      "categoryHandles": ["cooking"],
+      "collectionHandles": ["new-in", "open-a-kitchen"],
+      "seoTitle": "Countertop Induction Range, 1800W | Pass Supply Co.",
+      "seoDescription": "A commercial 1800W countertop induction range with digital control and glass top. 120V, sold by the unit.",
+      "variants": [
+        {
+          "sku": "PSC-COOK-IND-1800",
+          "priceCents": 28900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-induction",
+          "isPrimary": true,
+          "alt": "Countertop Induction Range, 1800W"
+        }
+      ]
+    },
+    {
+      "handle": "fry-pans-case",
+      "title": "Aluminium Fry Pans, 10 in — Case of 6",
+      "description": "Heavy-gauge 3004 aluminium fry pans, 10\", with a natural finish and a riveted stay-cool handle — the everyday sauté pan a line burns through and replaces. Case of 6. MOQ 2 cases. Even heat, fast response, tough enough for the flat-top.",
+      "status": "active",
+      "productType": "Cooking",
+      "vendor": "Pass Supply Co.",
+      "tags": ["cooking", "cookware", "fry-pan", "aluminium"],
+      "categoryHandles": ["cooking"],
+      "collectionHandles": ["bulk-smallwares"],
+      "seoTitle": "Aluminium Fry Pans 10 in, Case of 6 | Pass Supply Co.",
+      "seoDescription": "Heavy-gauge 3004 aluminium 10 inch fry pans with riveted handles, case of 6. The everyday line sauté pan.",
+      "variants": [
+        {
+          "sku": "PSC-COOK-FRY-10",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fry-pan",
+          "isPrimary": true,
+          "alt": "Aluminium Fry Pans, 10 in — Case of 6"
+        }
+      ]
+    },
+    {
+      "handle": "sheet-pans-case",
+      "title": "Aluminium Sheet Pans, Full Size — Case of 12",
+      "description": "18\" x 26\" full-size 19-gauge aluminium sheet pans with a wire-reinforced rolled rim that will not warp on a hot deck. Case of 12. MOQ 2 cases. The single most-used pan in any kitchen — buy the case, you always need more.",
+      "status": "active",
+      "productType": "Cooking",
+      "vendor": "Pass Supply Co.",
+      "tags": ["cooking", "bakeware", "sheet-pan", "aluminium"],
+      "categoryHandles": ["cooking"],
+      "collectionHandles": ["best-sellers", "bulk-smallwares"],
+      "seoTitle": "Aluminium Sheet Pans, Full Size, Case of 12 | Pass Supply Co.",
+      "seoDescription": "Full-size 18x26 inch 19-gauge aluminium sheet pans, wire-reinforced rim, case of 12. Warp-resistant.",
+      "variants": [
+        {
+          "sku": "PSC-COOK-SHEET-FS",
+          "priceCents": 8400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sheet-pans",
+          "isPrimary": true,
+          "alt": "Aluminium Sheet Pans, Full Size — Case of 12"
+        }
+      ]
+    },
+    {
+      "handle": "chef-knife-case",
+      "title": "Chef's Knife, 8 in — Case of 6",
+      "description": "A forged high-carbon stainless 8\" chef's knife with a full tang and a moulded, dishwasher-safe polypropylene handle rated NSF — sharp out of the box and easy to hone. Case of 6. MOQ 1 case. Kit the whole line or keep spares in the drawer.",
+      "status": "active",
+      "productType": "Smallwares",
+      "vendor": "Pass Supply Co.",
+      "tags": ["smallwares", "knife", "cutlery", "nsf"],
+      "categoryHandles": ["smallwares"],
+      "collectionHandles": [
+        "best-sellers",
+        "open-a-kitchen",
+        "prep-line-essentials",
+        "bulk-smallwares"
+      ],
+      "seoTitle": "Chef's Knife 8 in, Case of 6 | Pass Supply Co.",
+      "seoDescription": "A forged high-carbon stainless 8 inch chef's knife, full tang, NSF handle, case of 6.",
+      "variants": [
+        {
+          "sku": "PSC-SW-CHEF-8",
+          "priceCents": 13200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-chef-knife",
+          "isPrimary": true,
+          "alt": "Chef's Knife, 8 in — Case of 6"
+        }
+      ]
+    },
+    {
+      "handle": "food-storage-containers-case",
+      "title": "Polycarbonate Food Storage Containers — Case of 12",
+      "description": "Clear, break-resistant polycarbonate food storage containers with graduated measure marks, stackable and rated for the walk-in and the reach-in — the square container that organises every prep shelf. Case of 12, lids sold separately. MOQ 1 case. Pick your size.",
+      "status": "active",
+      "productType": "Prep & storage",
+      "vendor": "Pass Supply Co.",
+      "tags": ["prep", "storage", "food-container", "nsf"],
+      "categoryHandles": ["prep-storage"],
+      "collectionHandles": ["best-sellers", "prep-line-essentials", "bulk-smallwares"],
+      "seoTitle": "Polycarbonate Food Storage Containers, Case of 12 | Pass Supply Co.",
+      "seoDescription": "Clear graduated polycarbonate food storage containers, stackable, case of 12. 2, 6 or 12 quart.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "2 qt"
+            },
+            {
+              "value": "6 qt"
+            },
+            {
+              "value": "12 qt"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "PSC-STOR-PC-2",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "2 qt"
+          }
+        },
+        {
+          "sku": "PSC-STOR-PC-6",
+          "priceCents": 7400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "6 qt"
+          }
+        },
+        {
+          "sku": "PSC-STOR-PC-12",
+          "priceCents": 9200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12 qt"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-food-containers",
+          "isPrimary": true,
+          "alt": "A case of clear polycarbonate food storage containers"
+        }
+      ]
+    },
+    {
+      "handle": "planetary-floor-mixer",
+      "title": "Planetary Floor Mixer",
+      "description": "A gear-driven commercial planetary mixer with a #12 hub, three fixed speeds and a stainless bowl, whip, hook and paddle included — the bench a bakery or a busy prep kitchen leans on for dough, batter and everything in between. Sold by the unit. MOQ 1. Pick the capacity your volume needs.",
+      "status": "active",
+      "productType": "Prep & storage",
+      "vendor": "Pass Supply Co.",
+      "tags": ["prep", "mixer", "bakery", "equipment"],
+      "categoryHandles": ["prep-storage"],
+      "collectionHandles": ["new-in", "open-a-kitchen"],
+      "seoTitle": "Planetary Floor Mixer | Pass Supply Co.",
+      "seoDescription": "A gear-driven commercial planetary floor mixer with bowl, whip, hook and paddle. 20 or 30 quart, sold by the unit.",
+      "options": [
+        {
+          "name": "Capacity",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "20 qt"
+            },
+            {
+              "value": "30 qt"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "PSC-PREP-MIX-20",
+          "priceCents": 129000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Capacity": "20 qt"
+          }
+        },
+        {
+          "sku": "PSC-PREP-MIX-30",
+          "priceCents": 169000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Capacity": "30 qt"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-mixer",
+          "isPrimary": true,
+          "alt": "A commercial planetary floor mixer"
+        }
+      ]
+    },
+    {
+      "handle": "strip-heat-lamp",
+      "title": "Strip Heat Lamp",
+      "description": "An infrared strip heat lamp with a brushed-aluminium housing and a toggle switch, mounts over the pass to hold plated food at temperature without drying it out. Sold by the unit. MOQ 1. Pick the length to span your window.",
+      "status": "active",
+      "productType": "Front of house",
+      "vendor": "Pass Supply Co.",
+      "tags": ["front-of-house", "heat-lamp", "holding", "equipment"],
+      "categoryHandles": ["front-of-house"],
+      "collectionHandles": ["new-in", "front-of-house-service"],
+      "seoTitle": "Strip Heat Lamp | Pass Supply Co.",
+      "seoDescription": "An infrared strip heat lamp with brushed-aluminium housing for the pass. 24, 36 or 48 inch, sold by the unit.",
+      "options": [
+        {
+          "name": "Length",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "24 in"
+            },
+            {
+              "value": "36 in"
+            },
+            {
+              "value": "48 in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "PSC-FOH-LAMP-24",
+          "priceCents": 13900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "24 in"
+          }
+        },
+        {
+          "sku": "PSC-FOH-LAMP-36",
+          "priceCents": 16900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "36 in"
+          }
+        },
+        {
+          "sku": "PSC-FOH-LAMP-48",
+          "priceCents": 19900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "48 in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-heat-lamp",
+          "isPrimary": true,
+          "alt": "A strip heat lamp over a service pass"
+        }
+      ]
+    },
+    {
+      "handle": "coupe-dinner-plates-case",
+      "title": "Coupe Dinner Plates, 10½ in — Case of 24",
+      "description": "Bright-white, fully vitrified coupe dinner plates, 10½\", with a rolled edge that resists chipping through the dish pit — the clean, rimless plate that lets the food do the talking. Case of 24. MOQ 2 cases. Restaurant-grade and rewash-after-rewash durable.",
+      "status": "active",
+      "productType": "Front of house",
+      "vendor": "Pass Supply Co.",
+      "tags": ["front-of-house", "crockery", "dinnerware", "vitrified"],
+      "categoryHandles": ["front-of-house"],
+      "collectionHandles": ["front-of-house-service", "bulk-smallwares"],
+      "seoTitle": "Coupe Dinner Plates 10½ in, Case of 24 | Pass Supply Co.",
+      "seoDescription": "Bright-white fully vitrified coupe dinner plates, 10.5 inch, chip-resistant rolled edge, case of 24.",
+      "variants": [
+        {
+          "sku": "PSC-FOH-PLATE-105",
+          "priceCents": 16800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-dinner-plates",
+          "isPrimary": true,
+          "alt": "Coupe Dinner Plates, 10½ in — Case of 24"
+        }
+      ]
+    },
+    {
+      "handle": "smallwares-starter-kit",
+      "title": "Line Cook Smallwares Starter Kit",
+      "description": "A curated kit of the smallwares a new line or a satellite station runs out of first — a chef's knife, a set of tongs, a fish spatula, measuring cups and spoons, a bench scraper, mixing bowls and quarter-pans — packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to arm a station from empty.",
+      "status": "active",
+      "productType": "Smallwares",
+      "vendor": "Pass Supply Co.",
+      "tags": ["smallwares", "kit", "starter", "bundle"],
+      "categoryHandles": ["smallwares"],
+      "collectionHandles": ["new-in", "open-a-kitchen"],
+      "seoTitle": "Line Cook Smallwares Starter Kit | Pass Supply Co.",
+      "seoDescription": "A curated starter kit of essential line smallwares — knife, tongs, spatula, measures and more, priced below the sum.",
+      "variants": [
+        {
+          "sku": "PSC-SW-KIT-STARTER",
+          "priceCents": 21900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-smallwares-kit",
+          "isPrimary": true,
+          "alt": "Line Cook Smallwares Starter Kit"
+        }
+      ]
+    }
+  ]
+}

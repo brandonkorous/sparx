@@ -77,6 +77,7 @@ export const BlueprintModuleSlug = z.enum([
   'cms',
   'crm',
   'email',
+  'scheduling',
   'b2b',
   'dropship',
   'inventory',
@@ -353,6 +354,125 @@ export const CommerceDecl = z.object({
 });
 export type CommerceDecl = z.infer<typeof CommerceDecl>;
 
+// ── Scheduling (docs/79) ───────────────────────────────────────────────────────
+//
+// A booking-backed service business — the spine that makes a "services" blueprint
+// FUNCTION, not just look the part (a real service menu with durations + prices, the
+// staff/rooms/stations a booking consumes, weekly hours, deposit/cancellation
+// policy). The installer maps each decl to the scheduling service layer
+// (`createBookingPolicy` → `createResource` + `setAvailabilityWindows` → `createService`),
+// resolving handles → ids and attaching the module-activation-seeded 'Main location'.
+// References are by HANDLE like the rest of the manifest.
+//
+// The enums below MIRROR @sparx/scheduling-schemas' column value sets, kept inline so
+// this package stays dependency-light + DB-free (exactly as BlueprintModuleSlug mirrors
+// ModuleSlug). The installer re-validates every mapped value against the domain's own
+// CreateService/Resource/Policy inputs before writing, so drift is caught at install.
+
+const SchedResourceKind = z.enum(['staff', 'asset', 'table', 'space', 'equipment']);
+const SchedBookingType = z.enum(['appointment', 'class', 'reservation', 'rental']);
+const SchedAssignmentStrategy = z.enum([
+  'any_available',
+  'round_robin',
+  'collective',
+  'customer_choice',
+]);
+const SchedDepositType = z.enum(['none', 'card_hold', 'deposit', 'prepay']);
+
+/** A required-resource role on a service (stored in the service's
+ *  `resource_requirements` JSONB) — the slot engine matches a free resource per role by
+ *  `kind` + `skillTags` at booking time. Mirrors scheduling-schemas' ResourceRequirement. */
+export const SchedulingResourceRequirementDecl = z.object({
+  role: z.string().min(1).max(40),
+  kind: SchedResourceKind,
+  skillTags: z.array(z.string().min(1).max(63)).max(20).default([]),
+  count: z.number().int().min(1).max(20).default(1),
+});
+export type SchedulingResourceRequirementDecl = z.infer<typeof SchedulingResourceRequirementDecl>;
+
+/** One recurring weekly availability window for a resource — minutes from local
+ *  midnight, `dayOfWeek` 0=Sun..6=Sat. Maps to an `AvailabilityWindow` row. */
+export const SchedulingWindowDecl = z.object({
+  dayOfWeek: z.number().int().min(0).max(6),
+  startMinute: z.number().int().min(0).max(1440),
+  endMinute: z.number().int().min(0).max(1440),
+});
+export type SchedulingWindowDecl = z.infer<typeof SchedulingWindowDecl>;
+
+/** A bookable resource — a stylist (`staff`), a treatment room (`space`), a nail
+ *  station (`table`), a bay (`equipment`)… A service's `resourceRequirements` match
+ *  resources by `kind` + `skillTags`, so the link is capability-based, not by id. */
+export const SchedulingResourceDecl = z.object({
+  handle: Handle,
+  name: z.string().min(1).max(255),
+  kind: SchedResourceKind,
+  skillTags: z.array(z.string().min(1).max(63)).max(50).default([]),
+  capacity: z.number().int().min(1).max(100_000).default(1),
+  capacityMin: z.number().int().min(1).max(100_000).optional(),
+  capacityMax: z.number().int().min(1).max(100_000).optional(),
+  /** IANA zone the weekly windows are authored in (the engine resolves DST). */
+  timezone: z.string().min(1).max(64).default('UTC'),
+  bookableOnline: z.boolean().default(true),
+  imageAssetId: ManifestId.optional(),
+  windows: z.array(SchedulingWindowDecl).max(100).default([]),
+});
+export type SchedulingResourceDecl = z.infer<typeof SchedulingResourceDecl>;
+
+/** A deposit / cancellation / reminder policy a service attaches to by `handle`.
+ *  Omit and a service uses no policy (the activation-seeded 'Standard' still exists). */
+export const SchedulingPolicyDecl = z.object({
+  handle: Handle,
+  name: z.string().min(1).max(255),
+  depositType: SchedDepositType.default('none'),
+  depositAmountCents: MoneyCents.optional(),
+  depositPercent: z.number().int().min(0).max(100).optional(),
+  cancellationWindowHours: z.number().int().min(0).max(8760).default(24),
+  policyText: z.string().max(20_000).optional(),
+  /** Minutes-before-start to remind, e.g. `[1440, 120]` = 24h + 2h. */
+  reminderOffsetsMin: z.array(z.number().int().min(0).max(43_200)).max(10).default([1440, 120]),
+});
+export type SchedulingPolicyDecl = z.infer<typeof SchedulingPolicyDecl>;
+
+/** A bookable service — the menu row a visitor picks on `/book`. `resourceRequirements`
+ *  (the domain's own shape) name the roles a booking must fill by kind + skill. */
+export const SchedulingServiceDecl = z.object({
+  handle: Handle,
+  name: z.string().min(1).max(255),
+  description: z.string().max(10_000).optional(),
+  bookingType: SchedBookingType.default('appointment'),
+  durationMinutes: z
+    .number()
+    .int()
+    .min(1)
+    .max(60 * 24 * 30)
+    .default(60),
+  bufferBeforeMin: z.number().int().min(0).max(1440).default(0),
+  bufferAfterMin: z.number().int().min(0).max(1440).default(0),
+  priceCents: MoneyCents.default(0),
+  /** ISO-4217 lowercase (the scheduling column form, e.g. 'usd'). */
+  currency: z.string().length(3).default('usd'),
+  /** >1 = a class roster; appointments/reservations/rentals keep 1. */
+  capacity: z.number().int().min(1).max(100_000).default(1),
+  slotIntervalMin: z.number().int().min(1).max(1440).default(15),
+  minLeadMinutes: z.number().int().min(0).default(0),
+  maxAdvanceDays: z.number().int().min(0).max(3650).default(365),
+  assignmentStrategy: SchedAssignmentStrategy.default('any_available'),
+  resourceRequirements: z.array(SchedulingResourceRequirementDecl).max(20).default([]),
+  /** A `SchedulingPolicyDecl` handle; omitted = no attached policy. */
+  policyHandle: Handle.optional(),
+  bookableOnline: z.boolean().default(true),
+  requiresApproval: z.boolean().default(false),
+  imageAssetId: ManifestId.optional(),
+});
+export type SchedulingServiceDecl = z.infer<typeof SchedulingServiceDecl>;
+
+export const SchedulingDecl = z.object({
+  policies: z.array(SchedulingPolicyDecl).max(20).default([]),
+  resources: z.array(SchedulingResourceDecl).max(100).default([]),
+  services: z.array(SchedulingServiceDecl).min(1).max(200),
+});
+export type SchedulingDecl = z.infer<typeof SchedulingDecl>;
+
 // ── The site: frame, pages, theme, symbols (docs/118) ──────────────────────────
 //
 // SILICA-NATIVE, and only silica. A blueprint's authored trees are the same
@@ -488,6 +608,10 @@ export const BlueprintSchema = z.object({
    *  key) before products so a product's `attributes` bag validates against its type. */
   productTypes: z.array(ProductTypeDecl).max(50).default([]),
   commerce: CommerceDecl.optional(),
+  /** A booking-backed service business (docs/79) — policies, resources, weekly hours,
+   *  and a bookable service menu. Present → the install provisions a working booking
+   *  flow (the `/book` widget renders it live). Requires the `scheduling` module. */
+  scheduling: SchedulingDecl.optional(),
   /** The authored silica site (frame + pages + theme + symbols). Optional so a
    *  commerce/content-only blueprint (no hosted site) stays expressible. */
   site: SiteDecl.optional(),

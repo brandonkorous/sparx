@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-chiro-sports",
+  "name": "sparx — Chiropractic (Sports & Rehab)",
+  "version": "1.0.0",
+  "tagline": "An athletic template for sports & rehab chiropractic — book assessments online from day one.",
+  "description": "A bold, athletic chiropractic & performance site — electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as \"Kinetic Spine & Sport\", a sports/rehab clinic that books online from day one.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Chiropractic",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Chiropractic (Sports & Rehab) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Chiropractic (Sports & Rehab) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#0071e0",
+  "sortWeight": 55
+}

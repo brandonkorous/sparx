@@ -1,0 +1,1104 @@
+{
+  "categories": [
+    {
+      "handle": "optical",
+      "name": "Optical",
+      "description": "Hand-finished prescription and blue-light frames.",
+      "featured": true
+    },
+    {
+      "handle": "sun",
+      "name": "Sun",
+      "description": "Hand-polished sunglasses with UV400 lenses.",
+      "featured": true
+    },
+    {
+      "handle": "reading",
+      "name": "Reading",
+      "description": "Proper reading frames, glazed to strength.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Leather cases and frame care.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "off-the-bench",
+      "name": "New off the bench",
+      "description": "The latest frames to come off the workshop bench.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["beaumont", "ellsworth", "riviera", "anniversary-1932"]
+    },
+    {
+      "handle": "best-loved",
+      "name": "Best loved",
+      "description": "The shapes worn for a lifetime.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["beaumont", "marguerite", "riviera"]
+    },
+    {
+      "handle": "optical-line",
+      "name": "The optical line",
+      "description": "The full hand-finished optical collection.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["beaumont", "ellsworth", "marguerite", "whitfield"]
+    },
+    {
+      "handle": "sun",
+      "name": "Sun",
+      "description": "Hand-polished sunglasses in classic, polarised and prescription.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["riviera", "cassis"]
+    },
+    {
+      "handle": "reading",
+      "name": "The reading room",
+      "description": "Reading frames glazed to the strength you choose.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["study-reader", "whitfield"]
+    },
+    {
+      "handle": "limited-1932",
+      "name": "The 1932 series",
+      "description": "Numbered limited runs from the archive.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["anniversary-1932"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "beaumont",
+      "title": "The Beaumont",
+      "description": "The frame the house is known for — a rounded panto in hand-finished acetate, its curve softened by hand until it flatters almost any face. Milled from a single block, tumbled for days and set on five-barrel hinges, it has been cut on this bench, largely unchanged, since 1948.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["optical", "panto", "round", "acetate", "signature"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["off-the-bench", "optical-line", "best-loved"],
+      "seoTitle": "The Beaumont — hand-finished panto optical frame | Atelier Optique",
+      "seoDescription": "A rounded panto in hand-polished Italian acetate, cut from a single block on five-barrel hinges. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Havana"
+            },
+            {
+              "value": "Amber Tortoise"
+            },
+            {
+              "value": "Smoke Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-BEAUMONT-HAV-PRE",
+          "priceCents": 28500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-BEAUMONT-HAV-BLU",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-BEAUMONT-AMB-PRE",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-BEAUMONT-AMB-BLU",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-BEAUMONT-SMO-PRE",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Smoke Crystal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-BEAUMONT-SMO-BLU",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Smoke Crystal",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-beaumont",
+          "isPrimary": true,
+          "alt": "The Beaumont"
+        }
+      ]
+    },
+    {
+      "handle": "ellsworth",
+      "title": "The Ellsworth",
+      "description": "A bold rectangular front for a face that can carry it — deep, architectural and quietly confident, with a heavy brow line and a keen-cut bevel that catches the light. The dark havana is figured like walnut; no two fronts are ever quite the same.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["optical", "rectangle", "acetate", "bold"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["off-the-bench", "optical-line"],
+      "seoTitle": "The Ellsworth — bold rectangular acetate frame | Atelier Optique",
+      "seoDescription": "A deep, architectural rectangular front in figured dark-havana acetate, hand-bevelled and polished. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Dark Havana"
+            },
+            {
+              "value": "Ebony"
+            },
+            {
+              "value": "Honey Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-ELLSWORTH-DAR-PRE",
+          "priceCents": 29500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Dark Havana",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-ELLSWORTH-DAR-BLU",
+          "priceCents": 29500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Dark Havana",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-ELLSWORTH-EBO-PRE",
+          "priceCents": 29500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-ELLSWORTH-EBO-BLU",
+          "priceCents": 29500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-ELLSWORTH-HON-PRE",
+          "priceCents": 29500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey Crystal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-ELLSWORTH-HON-BLU",
+          "priceCents": 29500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey Crystal",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ellsworth",
+          "isPrimary": true,
+          "alt": "The Ellsworth"
+        }
+      ]
+    },
+    {
+      "handle": "marguerite",
+      "title": "The Marguerite",
+      "description": "A gently lifted cat-eye, drawn from a 1950s pattern still pinned to the workshop wall. The upsweep is filed by hand so the line stays soft rather than sharp — flattering, a little bit of an occasion, and made to be worn every ordinary day as well.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["optical", "cat-eye", "acetate", "vintage"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["optical-line", "best-loved"],
+      "seoTitle": "The Marguerite — hand-filed cat-eye frame | Atelier Optique",
+      "seoDescription": "A softly lifted cat-eye drawn from a 1950s workshop pattern, hand-filed in figured acetate. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Rose Tortoise"
+            },
+            {
+              "value": "Havana"
+            },
+            {
+              "value": "Onyx"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-MARGUERITE-ROS-PRE",
+          "priceCents": 29000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rose Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-MARGUERITE-ROS-BLU",
+          "priceCents": 29000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rose Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-MARGUERITE-HAV-PRE",
+          "priceCents": 29000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-MARGUERITE-HAV-BLU",
+          "priceCents": 29000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-MARGUERITE-ONY-PRE",
+          "priceCents": 29000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-MARGUERITE-ONY-BLU",
+          "priceCents": 29000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-marguerite",
+          "isPrimary": true,
+          "alt": "The Marguerite"
+        }
+      ]
+    },
+    {
+      "handle": "whitfield",
+      "title": "The Whitfield",
+      "description": "A small keyhole panto with a scholarly air — the pince-nez’s well-mannered descendant. Light on the face and quietly characterful, with a hand-cut keyhole bridge and slender temples that disappear into the hair. The reading-room frame, made properly.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["optical", "keyhole", "panto", "small", "acetate"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["optical-line"],
+      "seoTitle": "The Whitfield — keyhole panto optical frame | Atelier Optique",
+      "seoDescription": "A small, scholarly keyhole panto with a hand-cut bridge in figured acetate. Prescription or blue-light.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Olive Tortoise"
+            },
+            {
+              "value": "Amber"
+            },
+            {
+              "value": "Crystal"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-WHITFIELD-OLI-PRE",
+          "priceCents": 27500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Olive Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-WHITFIELD-OLI-BLU",
+          "priceCents": 27500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Olive Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-WHITFIELD-AMB-PRE",
+          "priceCents": 27500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-WHITFIELD-AMB-BLU",
+          "priceCents": 27500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-WHITFIELD-CRY-PRE",
+          "priceCents": 27500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-WHITFIELD-CRY-BLU",
+          "priceCents": 27500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Crystal",
+            "Lens": "Blue-light"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-whitfield",
+          "isPrimary": true,
+          "alt": "The Whitfield"
+        }
+      ]
+    },
+    {
+      "handle": "riviera",
+      "title": "The Riviera",
+      "description": "A hand-polished sunglass with a mid-century squareness and a warm, glassy finish you only get from days in the drums. UV400 as standard, with the option of polarised lenses ground to cut glare off water and road — the pair for a long drive south, or a slow lunch in the sun.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["sun", "sunglasses", "uv400", "acetate"],
+      "categoryHandles": ["sun"],
+      "collectionHandles": ["off-the-bench", "sun", "best-loved"],
+      "seoTitle": "The Riviera — hand-polished acetate sunglasses | Atelier Optique",
+      "seoDescription": "A mid-century squared sunglass in hand-polished acetate with UV400 lenses — classic, polarised or prescription.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Bottle Green"
+            },
+            {
+              "value": "Ebony"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic tint"
+            },
+            {
+              "value": "Polarised"
+            },
+            {
+              "value": "Prescription sun"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-RIVIERA-TOR-CLA",
+          "priceCents": 26500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-TOR-POL",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-TOR-PRE",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-BOT-CLA",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Bottle Green",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-BOT-POL",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Bottle Green",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-BOT-PRE",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Bottle Green",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-EBO-CLA",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-EBO-POL",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-RIVIERA-EBO-PRE",
+          "priceCents": 26500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Prescription sun"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-riviera",
+          "isPrimary": true,
+          "alt": "The Riviera"
+        }
+      ]
+    },
+    {
+      "handle": "cassis",
+      "title": "The Cassis",
+      "description": "A generous round sunglass with a slim acetate rim and a retro tilt — sun-struck and easy, the pair you reach for without thinking. Hand-polished to a deep shine and fitted with UV400 lenses; take it polarised for the water, or prescription so you can finally read the menu.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["sun", "sunglasses", "round", "uv400"],
+      "categoryHandles": ["sun"],
+      "collectionHandles": ["sun"],
+      "seoTitle": "The Cassis — round hand-polished sunglasses | Atelier Optique",
+      "seoDescription": "A generous round acetate sunglass, hand-polished with UV400 lenses — classic, polarised or prescription.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Honey"
+            },
+            {
+              "value": "Tortoise"
+            },
+            {
+              "value": "Ebony"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic tint"
+            },
+            {
+              "value": "Polarised"
+            },
+            {
+              "value": "Prescription sun"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-CASSIS-HON-CLA",
+          "priceCents": 25500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-HON-POL",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-HON-PRE",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Honey",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-TOR-CLA",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-TOR-POL",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-TOR-PRE",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Tortoise",
+            "Lens": "Prescription sun"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-EBO-CLA",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Classic tint"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-EBO-POL",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Polarised"
+          }
+        },
+        {
+          "sku": "AO-CASSIS-EBO-PRE",
+          "priceCents": 25500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ebony",
+            "Lens": "Prescription sun"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cassis",
+          "isPrimary": true,
+          "alt": "The Cassis"
+        }
+      ]
+    },
+    {
+      "handle": "study-reader",
+      "title": "The Study Reader",
+      "description": "A proper reading frame, not a chemist’s afterthought — the same acetate, the same five-barrel hinges and the same hand-polish as the optical line, glazed with magnified reading lenses in the strength you choose. The pair on the bedside table, made to be as good as the one on your face.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["reading", "acetate", "optical"],
+      "categoryHandles": ["reading"],
+      "collectionHandles": ["reading", "off-the-bench"],
+      "seoTitle": "The Study Reader — hand-finished reading glasses | Atelier Optique",
+      "seoDescription": "Well-made reading glasses in hand-polished acetate, glazed to the strength you choose. Havana, amber tortoise or onyx.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Havana"
+            },
+            {
+              "value": "Amber Tortoise"
+            },
+            {
+              "value": "Onyx"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "+1.00"
+            },
+            {
+              "value": "+1.50"
+            },
+            {
+              "value": "+2.00"
+            },
+            {
+              "value": "+2.50"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-STUDY-HAV-100",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-HAV-150",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "AO-STUDY-HAV-200",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-HAV-250",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Havana",
+            "Lens": "+2.50"
+          }
+        },
+        {
+          "sku": "AO-STUDY-AMB-100",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-AMB-150",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "AO-STUDY-AMB-200",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-AMB-250",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Amber Tortoise",
+            "Lens": "+2.50"
+          }
+        },
+        {
+          "sku": "AO-STUDY-ONY-100",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "+1.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-ONY-150",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "+1.50"
+          }
+        },
+        {
+          "sku": "AO-STUDY-ONY-200",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "+2.00"
+          }
+        },
+        {
+          "sku": "AO-STUDY-ONY-250",
+          "priceCents": 16500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Onyx",
+            "Lens": "+2.50"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-study",
+          "isPrimary": true,
+          "alt": "The Study Reader"
+        }
+      ]
+    },
+    {
+      "handle": "anniversary-1932",
+      "title": "The 1932 Anniversary",
+      "description": "Struck in small numbers each year to mark the year we began — a faithful reissue of the workshop’s very first pattern, cut from a special run of amber-and-ink laminated acetate we lay up by hand. Individually numbered, engraved at the temple, and boxed with a copy of the original 1932 drawing.",
+      "status": "active",
+      "productType": "Eyewear",
+      "vendor": "Atelier Optique",
+      "tags": ["optical", "limited", "numbered", "acetate", "archive"],
+      "categoryHandles": ["optical"],
+      "collectionHandles": ["limited-1932", "off-the-bench"],
+      "seoTitle": "The 1932 Anniversary — limited numbered frame | Atelier Optique",
+      "seoDescription": "A numbered limited-run reissue of the workshop’s first 1932 pattern in hand-laid laminated acetate. Prescription, blue-light or plain.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Archive Amber"
+            },
+            {
+              "value": "Ink Tortoise"
+            }
+          ]
+        },
+        {
+          "name": "Lens",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Prescription"
+            },
+            {
+              "value": "Blue-light"
+            },
+            {
+              "value": "Plain"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AO-1932-ARC-PRE",
+          "priceCents": 38500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Archive Amber",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-1932-ARC-BLU",
+          "priceCents": 38500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Archive Amber",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-1932-ARC-PLA",
+          "priceCents": 38500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Archive Amber",
+            "Lens": "Plain"
+          }
+        },
+        {
+          "sku": "AO-1932-INK-PRE",
+          "priceCents": 38500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ink Tortoise",
+            "Lens": "Prescription"
+          }
+        },
+        {
+          "sku": "AO-1932-INK-BLU",
+          "priceCents": 38500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ink Tortoise",
+            "Lens": "Blue-light"
+          }
+        },
+        {
+          "sku": "AO-1932-INK-PLA",
+          "priceCents": 38500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Ink Tortoise",
+            "Lens": "Plain"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-1932",
+          "isPrimary": true,
+          "alt": "The 1932 Anniversary"
+        }
+      ]
+    },
+    {
+      "handle": "saddle-case",
+      "title": "The Saddle Case",
+      "description": "A hard glasses case cut and stitched by hand from vegetable-tanned saddle leather, lined in soft suede and closed with a solid brass press-stud. It ages the way good leather should — darkening and softening with a decade of pockets — and it comes free with every frame, or on its own here.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Atelier Optique",
+      "tags": ["accessories", "leather", "case"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["off-the-bench"],
+      "seoTitle": "The Saddle Case — hand-stitched leather glasses case | Atelier Optique",
+      "seoDescription": "A hard glasses case in hand-stitched vegetable-tanned saddle leather, suede-lined with a brass press-stud.",
+      "variants": [
+        {
+          "sku": "AO-CASE",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-case",
+          "isPrimary": true,
+          "alt": "A hand-stitched leather glasses case"
+        }
+      ]
+    },
+    {
+      "handle": "bench-kit",
+      "title": "The Bench Kit",
+      "description": "The small kit we keep at the bench, boxed for home — a lint-free polishing cloth, an alcohol-free lens spray that won’t strip a coating, and a phial of hinge oil to keep the temples swinging sweetly. Everything a good pair of glasses needs to last for decades, and nothing it doesn’t.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Atelier Optique",
+      "tags": ["accessories", "care", "kit"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["off-the-bench"],
+      "seoTitle": "The Bench Kit — lens cloth, spray & hinge oil | Atelier Optique",
+      "seoDescription": "A frame-care kit — lint-free cloth, alcohol-free lens spray and hinge oil — boxed for home from the workshop bench.",
+      "variants": [
+        {
+          "sku": "AO-KIT",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-kit",
+          "isPrimary": true,
+          "alt": "A frame-care kit — cloth, spray and hinge oil"
+        }
+      ]
+    }
+  ]
+}

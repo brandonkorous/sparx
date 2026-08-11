@@ -1,0 +1,724 @@
+{
+  "categories": [
+    {
+      "handle": "wholesale-beans",
+      "name": "Wholesale beans",
+      "description": "Trade coffee by the 1kg and 5kg bag.",
+      "featured": true
+    },
+    {
+      "handle": "filter-capsules",
+      "name": "Filter & capsules",
+      "description": "Filter sachets and office capsules.",
+      "featured": true
+    },
+    {
+      "handle": "syrups-extras",
+      "name": "Syrups & extras",
+      "description": "Syrups, cups and back-bar supplies.",
+      "featured": true
+    },
+    {
+      "handle": "equipment",
+      "name": "Equipment",
+      "description": "Grinders and brewers, supplied and serviced.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-crop",
+      "name": "New crop",
+      "description": "The coffees on the roaster right now.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["colombia-filter", "house-espresso", "trade-sampler"]
+    },
+    {
+      "handle": "cafe-essentials",
+      "name": "Café essentials",
+      "description": "The lines every bar orders first.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["house-espresso", "filter-packs-case", "takeaway-cups", "flavour-syrups"]
+    },
+    {
+      "handle": "office-program",
+      "name": "Office program",
+      "description": "No-barista coffee for offices and breakrooms.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["capsules", "filter-packs-case", "decaf", "standing-order"]
+    },
+    {
+      "handle": "espresso-program",
+      "name": "Espresso program",
+      "description": "Everything to run a great espresso bar.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["house-espresso", "commercial-grinder", "takeaway-cups"]
+    },
+    {
+      "handle": "opening-a-cafe",
+      "name": "Opening a café",
+      "description": "The starter kit for a brand-new site.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "commercial-grinder",
+        "house-espresso",
+        "filter-packs-case",
+        "takeaway-cups"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "house-espresso",
+      "title": "Foundry House Espresso",
+      "description": "The workhorse behind hundreds of bars — a chocolatey, syrupy blend built for volume, forgiving on the grinder and heavy enough to cut through milk without disappearing. Consistent batch to batch so your baristas dial in once and hold it through the rush. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.",
+      "status": "active",
+      "productType": "Wholesale coffee",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["espresso", "blend", "wholesale", "cafe"],
+      "categoryHandles": ["wholesale-beans"],
+      "collectionHandles": ["new-crop", "cafe-essentials", "espresso-program", "opening-a-cafe"],
+      "seoTitle": "Foundry House Espresso — wholesale espresso beans | Foundry Coffee Trade",
+      "seoDescription": "A chocolatey, milk-friendly house espresso built for café volume. Trade bags by the 1kg and 5kg, per-kilo breaks.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter grind"
+            },
+            {
+              "value": "Espresso grind"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "1kg"
+            },
+            {
+              "value": "5kg"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-ESP-HOUSE-WB-1K",
+          "priceCents": 2700,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-ESP-HOUSE-WB-5K",
+          "priceCents": 12200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-ESP-HOUSE-FL-1K",
+          "priceCents": 2700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-ESP-HOUSE-FL-5K",
+          "priceCents": 12200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-ESP-HOUSE-ES-1K",
+          "priceCents": 2700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-ESP-HOUSE-ES-5K",
+          "priceCents": 12200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "5kg"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-house-espresso",
+          "isPrimary": true,
+          "alt": "Foundry House Espresso"
+        }
+      ]
+    },
+    {
+      "handle": "colombia-filter",
+      "title": "Colombia Huila — Filter",
+      "description": "A clean, sweet washed Colombia for batch brew and pour-over — milk chocolate, red apple and caramel, medium-bodied and easy to sell all day. The house filter for cafés and the go-to for office batch machines. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.",
+      "status": "active",
+      "productType": "Wholesale coffee",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["filter", "single-origin", "colombia", "wholesale"],
+      "categoryHandles": ["wholesale-beans"],
+      "collectionHandles": ["new-crop", "cafe-essentials", "office-program"],
+      "seoTitle": "Colombia Huila Filter — wholesale filter beans | Foundry Coffee Trade",
+      "seoDescription": "A sweet, balanced washed Colombia for batch brew and pour-over. Trade bags by the 1kg and 5kg.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter grind"
+            },
+            {
+              "value": "Espresso grind"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "1kg"
+            },
+            {
+              "value": "5kg"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-FIL-COL-WB-1K",
+          "priceCents": 2900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-FIL-COL-WB-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-FIL-COL-FL-1K",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-FIL-COL-FL-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-FIL-COL-ES-1K",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-FIL-COL-ES-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "5kg"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-colombia-filter",
+          "isPrimary": true,
+          "alt": "Colombia Huila — Filter"
+        }
+      ]
+    },
+    {
+      "handle": "decaf",
+      "title": "Nightshift Decaf",
+      "description": "A sugarcane-process decaf that pours like the real thing — cocoa, roasted almond and dried cherry, with none of the flat papery note decaf is known for. The one your evening service and office breakroom actually reorder. Minimum first order 4 x 1kg; per-kilo price improves at 5kg.",
+      "status": "active",
+      "productType": "Wholesale coffee",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["decaf", "wholesale", "cafe", "office"],
+      "categoryHandles": ["wholesale-beans"],
+      "collectionHandles": ["office-program"],
+      "seoTitle": "Nightshift Decaf — wholesale decaf beans | Foundry Coffee Trade",
+      "seoDescription": "A genuinely good sugarcane-process decaf for café and office. Trade bags by the 1kg and 5kg.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter grind"
+            },
+            {
+              "value": "Espresso grind"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "1kg"
+            },
+            {
+              "value": "5kg"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-DEC-NS-WB-1K",
+          "priceCents": 2900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-DEC-NS-WB-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-DEC-NS-FL-1K",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-DEC-NS-FL-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter grind",
+            "Size": "5kg"
+          }
+        },
+        {
+          "sku": "FDY-DEC-NS-ES-1K",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "1kg"
+          }
+        },
+        {
+          "sku": "FDY-DEC-NS-ES-5K",
+          "priceCents": 13100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso grind",
+            "Size": "5kg"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-decaf",
+          "isPrimary": true,
+          "alt": "Nightshift Decaf"
+        }
+      ]
+    },
+    {
+      "handle": "filter-packs-case",
+      "title": "Filter Sachets — Case of 100",
+      "description": "Pre-portioned, freshly ground filter sachets for offices, hotel rooms and back-of-house — one sachet per pot, no grinder, no waste, no guesswork. A case of 100 x 60g sachets of the Colombia filter, nitrogen-flushed for freshness. The easiest coffee program to run where there is no barista.",
+      "status": "active",
+      "productType": "Filter coffee",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["filter", "sachets", "office", "wholesale"],
+      "categoryHandles": ["filter-capsules"],
+      "collectionHandles": ["office-program", "cafe-essentials"],
+      "seoTitle": "Filter Sachets, case of 100 — wholesale filter coffee | Foundry Coffee Trade",
+      "seoDescription": "Pre-portioned 60g filter sachets, case of 100, for offices and back-of-house. Nitrogen-flushed, roasted to order.",
+      "variants": [
+        {
+          "sku": "FDY-FILPK-100",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-filter-packs",
+          "isPrimary": true,
+          "alt": "A case of filter coffee sachets"
+        }
+      ]
+    },
+    {
+      "handle": "capsules",
+      "title": "Compostable Capsules",
+      "description": "Our house espresso in a fully compostable capsule for offices, meeting rooms and hotel suites — the coffee people actually like, in the format that needs no training. Compatible with standard domestic and office machines. Order by the box of 50 or the trade case of 200.",
+      "status": "active",
+      "productType": "Coffee capsules",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["capsules", "office", "compostable", "wholesale"],
+      "categoryHandles": ["filter-capsules"],
+      "collectionHandles": ["office-program"],
+      "seoTitle": "Compostable Coffee Capsules — wholesale | Foundry Coffee Trade",
+      "seoDescription": "House espresso in a compostable capsule for offices and hotels. Box of 50 or trade case of 200.",
+      "options": [
+        {
+          "name": "Pack",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Box of 50"
+            },
+            {
+              "value": "Case of 200"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-CAP-50",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pack": "Box of 50"
+          }
+        },
+        {
+          "sku": "FDY-CAP-200",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pack": "Case of 200"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-capsules",
+          "isPrimary": true,
+          "alt": "A box of compostable coffee capsules"
+        }
+      ]
+    },
+    {
+      "handle": "flavour-syrups",
+      "title": "Flavour Syrups — Case of 6",
+      "description": "The three flavours a café actually sells — vanilla, caramel and hazelnut — in 1L pump bottles, a case of six. Clean, not cloying, and made to hold up in milk. Mix the case across flavours or keep it to one; either way it ships with pumps.",
+      "status": "active",
+      "productType": "Syrup",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["syrup", "extras", "cafe", "wholesale"],
+      "categoryHandles": ["syrups-extras"],
+      "collectionHandles": ["cafe-essentials"],
+      "seoTitle": "Flavour Syrups, case of 6 — wholesale café syrups | Foundry Coffee Trade",
+      "seoDescription": "Vanilla, caramel and hazelnut syrups in 1L pump bottles, a case of six. Made to hold up in milk.",
+      "options": [
+        {
+          "name": "Flavour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Vanilla"
+            },
+            {
+              "value": "Caramel"
+            },
+            {
+              "value": "Hazelnut"
+            },
+            {
+              "value": "Mixed case"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-SYR-VAN",
+          "priceCents": 5400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Vanilla"
+          }
+        },
+        {
+          "sku": "FDY-SYR-CAR",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Caramel"
+          }
+        },
+        {
+          "sku": "FDY-SYR-HAZ",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Hazelnut"
+          }
+        },
+        {
+          "sku": "FDY-SYR-MIX",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Mixed case"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-syrups",
+          "isPrimary": true,
+          "alt": "A case of flavour syrup bottles"
+        }
+      ]
+    },
+    {
+      "handle": "takeaway-cups",
+      "title": "Branded Takeaway Cups — Case of 1000",
+      "description": "Double-wall takeaway cups that hold heat without a sleeve, printed with your logo or left plain, lids included. A case of 1000 in the size your bar runs on. Set up your artwork once with your account manager and reorder in a click. Minimum print run one case per size.",
+      "status": "active",
+      "productType": "Disposables",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["cups", "disposables", "branded", "cafe", "wholesale"],
+      "categoryHandles": ["syrups-extras"],
+      "collectionHandles": ["cafe-essentials", "espresso-program", "opening-a-cafe"],
+      "seoTitle": "Branded Takeaway Cups, case of 1000 — wholesale | Foundry Coffee Trade",
+      "seoDescription": "Double-wall takeaway cups with lids, printed or plain, case of 1000. 8, 12 and 16oz.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8oz"
+            },
+            {
+              "value": "12oz"
+            },
+            {
+              "value": "16oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-CUP-08",
+          "priceCents": 8800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "8oz"
+          }
+        },
+        {
+          "sku": "FDY-CUP-12",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "12oz"
+          }
+        },
+        {
+          "sku": "FDY-CUP-16",
+          "priceCents": 10400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "16oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cups",
+          "isPrimary": true,
+          "alt": "A sleeve of double-wall takeaway cups"
+        }
+      ]
+    },
+    {
+      "handle": "commercial-grinder",
+      "title": "On-Demand Espresso Grinder",
+      "description": "A commercial on-demand grinder built for a busy bar — flat burrs, a dosing display and a hopper that keeps up with back-to-back service. Supplied, installed and dialled in on your beans, with servicing and loan cover available on a wholesale account. The single biggest upgrade to a café’s cup.",
+      "status": "active",
+      "productType": "Equipment",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["equipment", "grinder", "espresso", "wholesale"],
+      "categoryHandles": ["equipment"],
+      "collectionHandles": ["espresso-program", "opening-a-cafe"],
+      "seoTitle": "On-Demand Espresso Grinder — commercial café equipment | Foundry Coffee Trade",
+      "seoDescription": "A commercial flat-burr on-demand espresso grinder, supplied, installed and serviced on a wholesale account.",
+      "variants": [
+        {
+          "sku": "FDY-EQ-GRINDER",
+          "priceCents": 129000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-grinder",
+          "isPrimary": true,
+          "alt": "A commercial on-demand espresso grinder"
+        }
+      ]
+    },
+    {
+      "handle": "trade-sampler",
+      "title": "Trade Tasting Box",
+      "description": "The way to choose before you commit — a sampler of our house espresso, the Colombia filter and the seasonal single origin, each a 250g bag, with dialling-in notes for every one. Cup them on your own machine with your own team, then build your program from what your bar actually pours.",
+      "status": "active",
+      "productType": "Sampler",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["sampler", "trade", "wholesale", "tasting"],
+      "categoryHandles": ["wholesale-beans"],
+      "collectionHandles": ["new-crop"],
+      "seoTitle": "Trade Tasting Box — wholesale coffee samples | Foundry Coffee Trade",
+      "seoDescription": "A sampler of house espresso, Colombia filter and the seasonal single origin, with dialling-in notes. Choose before you commit.",
+      "variants": [
+        {
+          "sku": "FDY-SAMPLE-BOX",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sampler",
+          "isPrimary": true,
+          "alt": "A trade tasting box of sample bags"
+        }
+      ]
+    },
+    {
+      "handle": "standing-order",
+      "title": "Weekly Standing Order",
+      "description": "A recurring trade delivery that keeps your bar stocked without a phone call every week — set your regular lines and quantities and we roast and freight them on your schedule. Skip a week, change quantities or pause any time from your account. The price shown is a representative starter; your account manager builds it to your real order.",
+      "status": "active",
+      "productType": "Standing order",
+      "vendor": "Foundry Coffee Trade",
+      "tags": ["standing-order", "subscription", "wholesale", "recurring"],
+      "categoryHandles": ["wholesale-beans"],
+      "collectionHandles": ["cafe-essentials", "office-program"],
+      "seoTitle": "Weekly Standing Order — recurring wholesale coffee delivery | Foundry Coffee Trade",
+      "seoDescription": "A recurring trade delivery built to your order — skip, adjust or pause any time. Roasted to order every cycle.",
+      "options": [
+        {
+          "name": "Frequency",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Weekly"
+            },
+            {
+              "value": "Fortnightly"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FDY-STO-WK",
+          "priceCents": 14000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Frequency": "Weekly"
+          }
+        },
+        {
+          "sku": "FDY-STO-FN",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Frequency": "Fortnightly"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-standing-order",
+          "isPrimary": true,
+          "alt": "Trade coffee bags packed for a standing-order delivery"
+        }
+      ]
+    }
+  ]
+}

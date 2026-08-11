@@ -1,0 +1,474 @@
+{
+  "categories": [
+    {
+      "handle": "pantry",
+      "name": "Pantry",
+      "description": "Flour, sugar, tinned goods and dry-store staples by the sack and case.",
+      "featured": true
+    },
+    {
+      "handle": "oils-staples",
+      "name": "Oils & staples",
+      "description": "Cooking oils, coffee and the everyday staples, by the case.",
+      "featured": true
+    },
+    {
+      "handle": "packaging",
+      "name": "Packaging",
+      "description": "Takeaway cups, boxes and containers by the carton.",
+      "featured": true
+    },
+    {
+      "handle": "disposables",
+      "name": "Disposables",
+      "description": "Napkins, gloves and front-of-house consumables in bulk.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "trade-favourites",
+      "name": "Trade favourites",
+      "description": "The lines our kitchens reorder every single week.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "bakers-flour-16kg",
+        "chopped-tomatoes-case",
+        "extra-virgin-olive-oil-case",
+        "espresso-beans-5kg",
+        "cafe-starter-pack"
+      ]
+    },
+    {
+      "handle": "new-account-essentials",
+      "name": "New-account essentials",
+      "description": "Opening a kitchen? Start here — the first order, sorted.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "cafe-starter-pack",
+        "bakers-flour-16kg",
+        "espresso-beans-5kg",
+        "takeaway-cups-1000",
+        "nitrile-gloves-case"
+      ]
+    },
+    {
+      "handle": "pantry-staples",
+      "name": "Pantry staples",
+      "description": "The dry store — flour, sugar and tinned goods by the sack.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["bakers-flour-16kg", "caster-sugar-25kg", "chopped-tomatoes-case"]
+    },
+    {
+      "handle": "oils-and-staples",
+      "name": "Oils & staples",
+      "description": "Cooking oil and coffee, by the case.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["extra-virgin-olive-oil-case", "espresso-beans-5kg"]
+    },
+    {
+      "handle": "packaging-disposables",
+      "name": "Packaging & disposables",
+      "description": "The front-of-house run — cups, boxes, napkins and gloves.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "takeaway-cups-1000",
+        "kraft-food-boxes-500",
+        "dinner-napkins-carton",
+        "nitrile-gloves-case"
+      ]
+    },
+    {
+      "handle": "back-of-house",
+      "name": "Back of house",
+      "description": "The consumables the kitchen burns through — gloves, napkins, boxes.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["nitrile-gloves-case", "dinner-napkins-carton", "kraft-food-boxes-500"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "bakers-flour-16kg",
+      "title": "Baker’s Flour — 16kg Sack",
+      "description": "A strong, consistent baker’s flour milled for volume kitchens — reliable protein for bread, pizza and pastry that behaves the same batch to batch. Sold as a 16kg sack. Minimum order 2 sacks. Trade price per sack; volume breaks from 10 sacks.",
+      "status": "active",
+      "productType": "Dry goods",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["pantry", "baking", "bulk", "dry-goods"],
+      "categoryHandles": ["pantry"],
+      "collectionHandles": ["trade-favourites", "pantry-staples", "new-account-essentials"],
+      "seoTitle": "Baker’s Flour, 16kg sack — wholesale | The Larder Supply Co.",
+      "seoDescription": "Strong, consistent baker’s flour by the 16kg sack at trade prices. MOQ 2 sacks, volume breaks from 10.",
+      "variants": [
+        {
+          "sku": "LARD-FLOUR-16",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-flour",
+          "isPrimary": true,
+          "alt": "A 16kg sack of baker’s flour"
+        }
+      ]
+    },
+    {
+      "handle": "caster-sugar-25kg",
+      "title": "Fine Caster Sugar — 25kg Sack",
+      "description": "A fine, fast-dissolving caster sugar for bakery, pastry and front-of-house alike. Free-flowing and screened for consistency, sold as a 25kg sack. Minimum order 1 sack. Trade price per sack; volume breaks from 8 sacks.",
+      "status": "active",
+      "productType": "Dry goods",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["pantry", "baking", "bulk", "dry-goods"],
+      "categoryHandles": ["pantry"],
+      "collectionHandles": ["pantry-staples"],
+      "seoTitle": "Fine Caster Sugar, 25kg sack — wholesale | The Larder Supply Co.",
+      "seoDescription": "Fine, fast-dissolving caster sugar by the 25kg sack at trade prices. MOQ 1 sack, volume breaks from 8.",
+      "variants": [
+        {
+          "sku": "LARD-SUGAR-25",
+          "priceCents": 2900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-sugar",
+          "isPrimary": true,
+          "alt": "A 25kg sack of fine caster sugar"
+        }
+      ]
+    },
+    {
+      "handle": "chopped-tomatoes-case",
+      "title": "Italian Chopped Tomatoes — Case of 12",
+      "description": "Ripe Italian chopped tomatoes in a rich natural juice — the backbone of every sauce, braise and soup on the menu. Case of 12 × 2.5kg tins. Minimum order 2 cases. Trade price per case; volume breaks from 10 cases.",
+      "status": "active",
+      "productType": "Tinned goods",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["pantry", "tinned", "bulk", "sauce"],
+      "categoryHandles": ["pantry"],
+      "collectionHandles": ["trade-favourites", "pantry-staples"],
+      "seoTitle": "Italian Chopped Tomatoes, case of 12 — wholesale | The Larder Supply Co.",
+      "seoDescription": "Ripe Italian chopped tomatoes, case of 12 × 2.5kg tins at trade prices. MOQ 2 cases, volume breaks from 10.",
+      "variants": [
+        {
+          "sku": "LARD-TOM-2500",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tomatoes",
+          "isPrimary": true,
+          "alt": "A catering case of chopped Italian tomatoes"
+        }
+      ]
+    },
+    {
+      "handle": "extra-virgin-olive-oil-case",
+      "title": "Extra Virgin Olive Oil — Case of 4 × 5L",
+      "description": "A smooth, everyday extra virgin olive oil for dressing, roasting and finishing — big enough flavour to matter, priced to pour freely. Case of 4 × 5-litre tins. Minimum order 1 case. Trade price per case; volume breaks from 6 cases.",
+      "status": "active",
+      "productType": "Oils",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["oils", "staples", "bulk", "catering"],
+      "categoryHandles": ["oils-staples"],
+      "collectionHandles": ["trade-favourites", "oils-and-staples"],
+      "seoTitle": "Extra Virgin Olive Oil, case of 4 × 5L — wholesale | The Larder Supply Co.",
+      "seoDescription": "Smooth everyday extra virgin olive oil, case of 4 × 5L tins at trade prices. MOQ 1 case, volume breaks from 6.",
+      "variants": [
+        {
+          "sku": "LARD-EVOO-5L",
+          "priceCents": 9200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-oil",
+          "isPrimary": true,
+          "alt": "A case of four 5-litre tins of extra virgin olive oil"
+        }
+      ]
+    },
+    {
+      "handle": "espresso-beans-5kg",
+      "title": "Espresso Roast Beans — 5kg Wholesale Bag",
+      "description": "A chocolatey, forgiving espresso blend roasted for volume service — pulls a sweet, consistent shot and stands up to milk all day. Sold as a 5kg wholesale bag, whole bean. Minimum order 2 bags. Trade price per bag; volume breaks from 8 bags.",
+      "status": "active",
+      "productType": "Coffee",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["coffee", "staples", "bulk", "cafe"],
+      "categoryHandles": ["oils-staples"],
+      "collectionHandles": ["trade-favourites", "oils-and-staples", "new-account-essentials"],
+      "seoTitle": "Espresso Roast Beans, 5kg wholesale bag — wholesale | The Larder Supply Co.",
+      "seoDescription": "A chocolatey, forgiving espresso blend by the 5kg bag at trade prices. MOQ 2 bags, volume breaks from 8.",
+      "variants": [
+        {
+          "sku": "LARD-COFFEE-5K",
+          "priceCents": 7400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-coffee",
+          "isPrimary": true,
+          "alt": "A 5kg wholesale bag of espresso roast coffee beans"
+        }
+      ]
+    },
+    {
+      "handle": "takeaway-cups-1000",
+      "title": "Single-Wall Takeaway Cups — Case of 1000",
+      "description": "Sturdy single-wall paper hot cups with a rolled rim that seats a lid cleanly and holds heat without collapsing. Case of 1000, lids sold separately. Minimum order 1 case. Choose your size below. Trade price per case; volume breaks from 10 cases.",
+      "status": "active",
+      "productType": "Packaging",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["packaging", "takeaway", "bulk", "cafe"],
+      "categoryHandles": ["packaging"],
+      "collectionHandles": ["packaging-disposables", "new-account-essentials"],
+      "seoTitle": "Single-Wall Takeaway Cups, case of 1000 — wholesale | The Larder Supply Co.",
+      "seoDescription": "Sturdy single-wall paper hot cups, case of 1000, in 8/12/16oz at trade prices. MOQ 1 case.",
+      "options": [
+        {
+          "name": "Cup size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8oz"
+            },
+            {
+              "value": "12oz"
+            },
+            {
+              "value": "16oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LARD-CUP-08",
+          "priceCents": 7900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cup size": "8oz"
+          }
+        },
+        {
+          "sku": "LARD-CUP-12",
+          "priceCents": 8500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cup size": "12oz"
+          }
+        },
+        {
+          "sku": "LARD-CUP-16",
+          "priceCents": 9200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cup size": "16oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cups",
+          "isPrimary": true,
+          "alt": "A case of a thousand paper takeaway cups"
+        }
+      ]
+    },
+    {
+      "handle": "kraft-food-boxes-500",
+      "title": "Kraft Food Boxes — Carton of 500",
+      "description": "Grease-resistant kraft boxes for burgers, bowls and takeaway service — flat-packed, fold in seconds and stack tidy on the pass. Carton of 500. Minimum order 1 carton. Choose your size below. Trade price per carton; volume breaks from 8 cartons.",
+      "status": "active",
+      "productType": "Packaging",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["packaging", "takeaway", "bulk", "kraft"],
+      "categoryHandles": ["packaging"],
+      "collectionHandles": ["packaging-disposables", "back-of-house"],
+      "seoTitle": "Kraft Food Boxes, carton of 500 — wholesale | The Larder Supply Co.",
+      "seoDescription": "Grease-resistant kraft takeaway boxes, carton of 500, regular or large, at trade prices. MOQ 1 carton.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Regular"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LARD-BOX-REG",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "Regular"
+          }
+        },
+        {
+          "sku": "LARD-BOX-LRG",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-boxes",
+          "isPrimary": true,
+          "alt": "A carton of kraft food boxes"
+        }
+      ]
+    },
+    {
+      "handle": "dinner-napkins-carton",
+      "title": "Dinner Napkins — Carton of 4000",
+      "description": "Soft two-ply dinner napkins in a clean natural white, quarter-folded and ready for the dispenser. Bulk carton of 4000. Minimum order 1 carton. Trade price per carton; volume breaks from 6 cartons.",
+      "status": "active",
+      "productType": "Disposables",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["disposables", "front-of-house", "bulk", "paper"],
+      "categoryHandles": ["disposables"],
+      "collectionHandles": ["packaging-disposables", "back-of-house"],
+      "seoTitle": "Dinner Napkins, carton of 4000 — wholesale | The Larder Supply Co.",
+      "seoDescription": "Soft two-ply dinner napkins, bulk carton of 4000 at trade prices. MOQ 1 carton, volume breaks from 6.",
+      "variants": [
+        {
+          "sku": "LARD-NAP-4000",
+          "priceCents": 4100,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-napkins",
+          "isPrimary": true,
+          "alt": "A bulk carton of dinner napkins"
+        }
+      ]
+    },
+    {
+      "handle": "nitrile-gloves-case",
+      "title": "Nitrile Gloves — Case of 1000",
+      "description": "Powder-free nitrile catering gloves — tough, tactile and food-safe, the ones that don’t tear when you’re boning a tray of chicken. Case of 1000 (10 boxes of 100). Minimum order 1 case. Choose your size below. Trade price per case; volume breaks from 6 cases.",
+      "status": "active",
+      "productType": "Disposables",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["disposables", "back-of-house", "bulk", "ppe"],
+      "categoryHandles": ["disposables"],
+      "collectionHandles": ["packaging-disposables", "back-of-house", "new-account-essentials"],
+      "seoTitle": "Nitrile Gloves, case of 1000 — wholesale | The Larder Supply Co.",
+      "seoDescription": "Powder-free food-safe nitrile gloves, case of 1000, in S/M/L at trade prices. MOQ 1 case.",
+      "options": [
+        {
+          "name": "Glove size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LARD-GLV-S",
+          "priceCents": 5600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glove size": "Small"
+          }
+        },
+        {
+          "sku": "LARD-GLV-M",
+          "priceCents": 5600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glove size": "Medium"
+          }
+        },
+        {
+          "sku": "LARD-GLV-L",
+          "priceCents": 5600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glove size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gloves",
+          "isPrimary": true,
+          "alt": "A case of nitrile catering gloves"
+        }
+      ]
+    },
+    {
+      "handle": "cafe-starter-pack",
+      "title": "Cafe Starter Pack",
+      "description": "Everything a new cafe needs on day one, priced as a kit — a 5kg bag of espresso beans, a case of 1000 12oz cups with lids, a carton of napkins and 500 kraft boxes. One SKU to open the doors. Minimum order 1 pack; reorder the lines individually after.",
+      "status": "active",
+      "productType": "Bundle",
+      "vendor": "The Larder Supply Co.",
+      "tags": ["bundle", "starter", "cafe", "new-account"],
+      "categoryHandles": ["oils-staples"],
+      "collectionHandles": ["trade-favourites", "new-account-essentials"],
+      "seoTitle": "Cafe Starter Pack — wholesale opening kit | The Larder Supply Co.",
+      "seoDescription": "A day-one opening kit for a new cafe — espresso beans, cups, napkins and kraft boxes in one trade SKU.",
+      "variants": [
+        {
+          "sku": "LARD-STARTER",
+          "priceCents": 21900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-starter",
+          "isPrimary": true,
+          "alt": "A cafe starter pack of coffee, cups, napkins and boxes"
+        }
+      ]
+    }
+  ]
+}

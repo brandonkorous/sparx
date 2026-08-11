@@ -1,0 +1,406 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "nightjar-cover",
+    "status": "published",
+    "authorSlug": "pilar-ortega",
+    "categories": ["Editorial"],
+    "tags": ["Editorial", "Cover", "Riso"],
+    "body": {
+      "title": "Nightjar — a cover that had to fly off the shelf",
+      "excerpt": "A magazine cover for a feature on city wildlife: one nightjar, mid-flight, drawn to catch the eye across a crowded newsstand.",
+      "featuredImage": {
+        "$asset": "riso-editorial"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Client: a monthly city magazine. Brief: the cover for a long feature about the wild animals quietly sharing the streets after dark. It had to work small, on a phone thumbnail, and loud, on a rack of forty other magazines."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The brief"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The editors wanted “nature, but not gentle” — nothing soft or sentimental, no watercolour foxes. They wanted the city to feel like it belonged to the animals for a few hours a night. The one rule: the cover lines had to stay readable over whatever I drew."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I built the whole thing around a single nightjar caught mid-wingbeat, cropped so it breaks the frame — the bird owns the page. I drew it in two riso passes, coral over cobalt, letting the misregistration do the work so the wings have a shivery, in-motion edge. The city sits underneath as a flat indigo silhouette, low enough to leave a clean band for the masthead and the cover lines."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The colour was the argument: warm bird, cold city, and nothing in between to soften it. I tested the whole thing at thumbnail size before I inked a single final line — if it didn’t read at 2cm, it didn’t make the cut."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it ran"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It ran as the print cover and the whole digital package — social cards, the animated header on the article, and a poster the magazine sold in its shop. It was the best-selling single issue of that year, and the poster sold out twice. Not bad for one bird."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "brass-hollow-cast",
+    "status": "published",
+    "authorSlug": "pilar-ortega",
+    "categories": ["Character"],
+    "tags": ["Character", "Games", "Design"],
+    "body": {
+      "title": "Brass Hollow — a cast of characters with a pulse",
+      "excerpt": "Character design for an indie adventure game: a whole cast of brass automatons, each one readable in a single silhouette.",
+      "featuredImage": {
+        "$asset": "riso-character"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Client: a small indie game studio. Brief: design the full playable cast for Brass Hollow, a story about clockwork automatons who’ve outlived their makers. Six heroes, a dozen supporting parts, all recognisable from across a room."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The brief"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The studio had the writing and the world but no faces yet. The one hard requirement was silhouette: each character had to be identifiable as a black shape alone, because the game’s lighting would often reduce them to exactly that."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I started with silhouettes only — no detail, no colour, just black shapes I could tell apart at a glance. Once the cast read as a group, I gave each one a single strong form idea (a lopsided lantern head, a barrel chest, a too-tall stoop) and drew turnarounds so the modellers had every angle."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Colour came last and stayed disciplined: brass and bone as the base, then one saturated riso accent per character — coral for the reckless one, cobalt for the cautious one — so you learn a personality from a palette before anyone speaks a line."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it ran"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The designs became the in-game models, the key art, and a printed art book that shipped with the collector’s edition. Players started fan-drawing the cast within a week of launch — the surest sign the characters actually landed as characters, not just assets."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "kinetic-supper",
+    "status": "published",
+    "authorSlug": "pilar-ortega",
+    "categories": ["Motion"],
+    "tags": ["Motion", "Animation", "Social"],
+    "body": {
+      "title": "Kinetic Supper — a menu that dances",
+      "excerpt": "A set of looping animated illustrations for a restaurant’s launch — food that moves, built to stop a thumb mid-scroll.",
+      "featuredImage": {
+        "$asset": "riso-motion"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Client: a new supper club opening in an old dance hall. Brief: a launch campaign of short looping animations for social — the food and the room brought to life, playful enough to make someone stop scrolling and book a table."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The brief"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "They didn’t want photographs of plates; every restaurant has those. They wanted the feeling of the place — a bit theatrical, a bit late-night — as a run of GIFs and short clips that felt hand-made, not slick."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I drew every frame by hand and animated on twos to keep the boil — that lovely wobble where the line never quite sits still — so even a plate of noodles looks like it’s mid-dance. Each loop is built around one gag: a fork that conducts, a glass that pours itself, a chair that scoots in. Riso-style overprint gives the motion a flickering coral-and-blue trail."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I kept every loop under two seconds and readable with the sound off, because that’s how anyone actually watches these. Twelve loops, one visual language, endlessly recombinable."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it ran"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The loops carried the whole pre-launch on social, plus the animated screens inside the restaurant itself. The opening month sold out on reservations, and the venue kept the loops running on its in-house screens long after the campaign ended."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "pulp-orchard",
+    "status": "published",
+    "authorSlug": "pilar-ortega",
+    "categories": ["Packaging"],
+    "tags": ["Packaging", "Branding", "Illustration"],
+    "body": {
+      "title": "Pulp Orchard — labels loud enough to pick up",
+      "excerpt": "A full range of hand-drawn juice labels for a farm cooperative — saturated fruit on cream, built to win the supermarket shelf.",
+      "featuredImage": {
+        "$asset": "riso-packaging"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Client: a growers’ cooperative bottling cold-pressed juice. Brief: a label system for a starting range of six flavours that would stand out against the glossy national brands without pretending to be one of them."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The brief"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The co-op’s whole pitch was that the fruit was real, local, and a bit wonky — so the packaging couldn’t be sterile and corporate. It had to feel drawn by a person, scale across six flavours (and however many they added later), and survive being printed cheaply on a matte cream stock."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The making"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "I hand-drew every fruit at full, unapologetic size — a whole pear filling the label, a fistful of berries spilling past the edge — in flat saturated colour on the warm cream of the bare stock. One coral accent runs across the range so the shelf reads as a family, while each flavour gets its own dominant hue so you can grab the right one without reading."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The system was the deliverable, not six one-off labels: a fixed layout grid, a drawn logotype, and a colour rule any new flavour drops straight into. The co-op can add a seventh juice next season without calling me."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it ran"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The range launched across regional supermarkets and the co-op’s own market stall. Sell-through beat the co-op’s forecast by half again, and two more grocers picked up the line on the strength of the shelf presence alone."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

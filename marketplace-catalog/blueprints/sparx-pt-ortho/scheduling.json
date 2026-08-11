@@ -1,0 +1,331 @@
+{
+  "policies": [
+    {
+      "handle": "clinic-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a visit. We send a reminder the day before and two hours ahead so you never miss your slot."
+    },
+    {
+      "handle": "evaluation-hold",
+      "name": "Evaluation & post-op policy",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file — nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jordan",
+      "name": "Dr. Jordan Ellis, DPT",
+      "kind": "staff",
+      "skillTags": ["ortho", "manual", "sports"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "sasha",
+      "name": "Dr. Sasha Kim, DPT",
+      "kind": "staff",
+      "skillTags": ["sports", "dry-needling", "ortho"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "nadia",
+      "name": "Dr. Nadia Okonkwo, DPT",
+      "kind": "staff",
+      "skillTags": ["post-op", "manual", "ortho"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1230
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1230
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room 1",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1260
+        }
+      ]
+    },
+    {
+      "handle": "gym-floor",
+      "name": "Rehab Gym Floor",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1260
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1260
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "initial-evaluation",
+      "name": "Initial evaluation",
+      "description": "A full one-on-one assessment — we pinpoint what’s driving the pain or limitation, then build the plan to get you back to doing what you love.",
+      "durationMinutes": 60,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["ortho"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evaluation-hold"
+    },
+    {
+      "handle": "follow-up-session",
+      "name": "Follow-up session",
+      "description": "A hands-on treatment and progression visit — we advance your program as you get stronger and keep you moving forward.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["ortho"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "sports-rehab-session",
+      "name": "Sports rehab session",
+      "description": "Loaded, sport-specific rehab to rebuild strength, power and control — the work that gets you back on the field and keeps you there.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["sports"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "manual-therapy-session",
+      "name": "Manual therapy session",
+      "description": "Skilled hands-on soft-tissue and joint work to free up restriction, calm irritated tissue and restore clean, pain-free range of motion.",
+      "durationMinutes": 30,
+      "priceCents": 8500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["manual"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "dry-needling-session",
+      "name": "Dry-needling session",
+      "description": "Precise needling to release stubborn trigger points and switch tight, guarded muscles back on — often the fastest way to unlock a plateau.",
+      "durationMinutes": 30,
+      "priceCents": 9000,
+      "bufferAfterMin": 5,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["dry-needling"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "clinic-standard"
+    },
+    {
+      "handle": "post-op-rehab",
+      "name": "Post-op rehab",
+      "description": "Guided recovery after surgery — a careful, progressive program that protects the repair and rebuilds your strength and mobility step by step.",
+      "durationMinutes": 60,
+      "priceCents": 13000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["post-op"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evaluation-hold"
+    },
+    {
+      "handle": "movement-screen",
+      "name": "Movement screen",
+      "description": "A free screen of how you actually move under load — we find the weak link and tell you straight whether we’re the right team to fix it. No pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["ortho"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "evaluation-hold"
+    }
+  ]
+}

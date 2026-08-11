@@ -1,0 +1,397 @@
+{
+  "policies": [
+    {
+      "handle": "vet-standard",
+      "name": "Standard appointment",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel so we can offer the time to another pet family. We’ll text and email a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "no-show-hold",
+      "name": "Reserved-time hold",
+      "depositType": "card_hold",
+      "depositAmountCents": 3500,
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show — otherwise the hold is released after your visit."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-maya",
+      "name": "Dr. Maya Ellison",
+      "kind": "staff",
+      "skillTags": ["exam", "sick", "surgery", "dental"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dr-sam",
+      "name": "Dr. Sam Reyes",
+      "kind": "staff",
+      "skillTags": ["exam", "sick", "senior", "dental"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "tech-jordan",
+      "name": "Jordan Blake",
+      "kind": "staff",
+      "skillTags": ["vaccine", "nail", "wellness"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-1",
+      "name": "Exam Room 1",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-2",
+      "name": "Exam Room 2",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-3",
+      "name": "Exam Room 3",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "wellness-exam",
+      "name": "Wellness exam",
+      "description": "A head-to-tail check-up for a healthy dog or cat — weight, heart, teeth, coat and a plan to keep them feeling their best.",
+      "durationMinutes": 30,
+      "priceCents": 6500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    },
+    {
+      "handle": "vaccination-visit",
+      "name": "Vaccination visit",
+      "description": "Core and lifestyle vaccines kept up to date, given gently by our tech with plenty of treats and patience.",
+      "durationMinutes": 20,
+      "priceCents": 4500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["vaccine"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    },
+    {
+      "handle": "sick-visit",
+      "name": "Sick visit",
+      "description": "Not quite themselves? Same-day appointments for the sniffles, tummy troubles, limps and everything that just seems off.",
+      "durationMinutes": 30,
+      "priceCents": 8000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["sick"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    },
+    {
+      "handle": "new-patient-exam",
+      "name": "New patient exam",
+      "description": "A longer first visit so we can meet your pet, go over their history, and start their records off right.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    },
+    {
+      "handle": "senior-wellness",
+      "name": "Senior wellness",
+      "description": "A gentle, thorough check-in for older pets — mobility, weight, bloodwork and comfort, so their golden years stay easy.",
+      "durationMinutes": 45,
+      "priceCents": 12000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["senior"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    },
+    {
+      "handle": "dental-cleaning",
+      "name": "Dental cleaning",
+      "description": "A full dental under anesthesia with pre-op bloodwork — scaling, polishing and a look under the gumline for a fresher, healthier mouth.",
+      "durationMinutes": 90,
+      "priceCents": 34000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["dental"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show-hold"
+    },
+    {
+      "handle": "nail-trim",
+      "name": "Nail trim",
+      "description": "A quick, low-stress nail trim with our tech — in and out, no exam needed. Walk-ins welcome when we can fit you in.",
+      "durationMinutes": 20,
+      "priceCents": 2500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["nail"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "vet-standard"
+    }
+  ]
+}

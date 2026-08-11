@@ -1,0 +1,27 @@
+[
+  {
+    "id": "roofing-storm-claim",
+    "url": "https://images.unsplash.com/photo-1633759593085-1eaeb724fc88?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZiUyMHN0b3JtJTIwZGFtYWdlfGVufDB8MHx8fDE3ODYzOTM3Mzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A roofer on a ladder photographing hail damage on a shingle roof for an insurance claim"
+  },
+  {
+    "id": "roofing-storm-crew",
+    "url": "https://images.unsplash.com/photo-1635424824849-1b09bdcc55b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmluZyUyMGNyZXclMjB3b3JraW5nfGVufDB8MHx8fDE3ODYzOTM3NDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An Ironclad crew and branded truck at a storm-damaged house, ready to tarp and inspect"
+  },
+  {
+    "id": "roofing-storm-cole",
+    "url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uc3RydWN0aW9uJTIwd29ya2VyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5Mzc0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Cole Brennan, storm and roofing lead"
+  },
+  {
+    "id": "roofing-storm-marisol",
+    "url": "https://images.unsplash.com/photo-1581092570490-cc40829efaae?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBjb250cmFjdG9yJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5Mzc0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marisol Vega, siding and windows specialist"
+  },
+  {
+    "id": "roofing-storm-deshawn",
+    "url": "https://images.unsplash.com/photo-1507126117511-e87526de90e2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vZmVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5Mzc0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Deshawn Pierce, insurance and claims lead"
+  }
+]

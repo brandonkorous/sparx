@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to reschedule or cancel your consultation. We send a reminder two days ahead and again the day before, so the time is always easy to keep."
+    },
+    {
+      "handle": "planning-fee",
+      "name": "Planning fee",
+      "depositType": "deposit",
+      "depositAmountCents": 25000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Bespoke planning consultations carry a planning fee that is credited in full toward your booked trip. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marchetti",
+      "kind": "staff",
+      "skillTags": ["luxury", "honeymoon", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Adeyemi",
+      "kind": "staff",
+      "skillTags": ["experiential", "luxury", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["family", "luxury", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 570,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 570,
+          "endMinute": 1050
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "discovery-call",
+      "name": "Discovery call",
+      "description": "A relaxed 30-minute call to talk through where you dream of going, how you like to travel and how we can help — no fee, no obligation.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "custom-itinerary-consult",
+      "name": "Custom itinerary consultation",
+      "description": "A full planning session to shape a bespoke, day-by-day itinerary — the flights, the stays, the tables and the moments that make it yours.",
+      "durationMinutes": 60,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["luxury"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    },
+    {
+      "handle": "honeymoon-consult",
+      "name": "Honeymoon consultation",
+      "description": "Plan the trip of a lifetime for two — private villas, romantic escapes and the details handled, so all you do is arrive.",
+      "durationMinutes": 60,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["honeymoon"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    },
+    {
+      "handle": "luxury-trip-consult",
+      "name": "Luxury trip consultation",
+      "description": "For the once-in-a-decade journey — the finest suites, private guides and seamless logistics across every leg of the trip.",
+      "durationMinutes": 60,
+      "priceCents": 35000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["luxury"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    },
+    {
+      "handle": "family-travel-consult",
+      "name": "Family travel consultation",
+      "description": "Multi-generational trips that work for everyone — the right pace, the right rooms and experiences that delight all ages.",
+      "durationMinutes": 60,
+      "priceCents": 20000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["family"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    },
+    {
+      "handle": "group-travel-consult",
+      "name": "Group & celebration consultation",
+      "description": "Milestone birthdays, anniversaries and friends’ getaways — one advisor coordinating the whole party so no one is left planning.",
+      "durationMinutes": 45,
+      "priceCents": 20000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    },
+    {
+      "handle": "vip-experience-consult",
+      "name": "VIP access & experiences consultation",
+      "description": "The doors most travelers never see — private access, hard-to-get reservations and once-in-a-lifetime experiences, arranged for you.",
+      "durationMinutes": 45,
+      "priceCents": 50000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["luxury"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "planning-fee"
+    }
+  ]
+}

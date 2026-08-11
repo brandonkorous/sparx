@@ -1,0 +1,2667 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "eeabe2b9-bcdb-48a4-b5da-ef3b0cbd875b",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "37c65a37-8713-4bb3-bf0a-fd532a44810a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "14116e40-dabf-40e6-a48a-82a9114fb5cb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "48a85ba4-f5e3-42eb-8741-3336115ea10e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "40617ca2-8679-43a2-946a-8a362d40cbc6",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b4a5f15b-3297-44a8-b973-e2d0fa5ac364",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "21801f19-66a5-4ae8-bd91-2fa09da6a94e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "6757b69d-121f-4a43-bbaa-556f57d797b0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Open a trade account",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "ac42f2ba-b432-40e4-84c3-e169bb7b529f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "6fa2ea5c-92dc-4c63-95a8-98d9726d4043",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "5264057d-0b89-44ab-a8a0-63fff3ef4261",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "699112c2-f3b7-45e4-911b-a2730a4f859c",
+                  "ord": "a2"
+                }
+              ],
+              "id": "37e60e10-c0fb-4974-996f-0d2d85b7a3c1",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "176a8d35-e9c4-4744-8315-5bbe4fc20ee1",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "ce363468-a8c1-4df2-a947-816198db4819",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "a7b616c0-3a47-4532-bda6-03add3c606bd",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "ee417e98-aad5-4ecb-a9e8-ba6601645bc7",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "c084d0c1-9285-4c1f-a4a8-8f4aed0cb7a3",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Open a trade account",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "58f9203d-c60d-498e-bbbf-00114bee8080",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "aeba1d8e-0ff5-4a67-beb0-fa388f941649",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "07130d91-d9c6-4c73-8d99-af6e0d9d72fa",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "687c7eaf-33f2-4ba5-b9f1-0f66f4651dad",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "43910eab-afab-408e-9725-ca4e12d35d67",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "1017efbf-9ce5-41d9-8e2a-0818355583fa",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "ea63f418-406f-48cb-b403-1faebab5d53a",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "16544bf4-0a5e-43e8-a5a1-357b77fcde1a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "774f818d-1053-4c96-8fdf-500cee16f5dd",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "c73768ff-1fcd-4b8d-ba49-9a49eddf0446",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "a501730d-5214-4c95-83e6-dbc77245f2ab",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "caa0ea9a-6fa6-44d9-8b6b-efb913d441a2",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "aa5e5e72-4790-481e-b504-8b0fdc7804d0",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "33e67262-52c9-40f3-a6fa-c79cd70d42b1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "fbe061f3-bc67-42e7-9f3b-688ceedf9217",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "14e125b9-1653-4491-b646-3e0ef5f9748d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b6e2cea5-1d3a-4ef9-856a-984bff1edda9",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "4cedbb4f-bd72-47f2-aff7-7178f2adb5f1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "00609a26-37c5-4b0c-b70e-fc96ecd0e420",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "07198e6c-a68d-4a49-910d-21f19c95fe3d",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "9d6cf01d-2f60-4a0a-81fa-1ddb10a7d3a1",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "6f15b2e1-3d6d-4ec2-bbc0-78130b4335d4",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "fef98ad4-169b-42e3-94bf-c780188802c1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2bba91ad-36c3-45ee-bde1-649082316bc5",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "8510619b-1ced-4474-aab8-84af1dfb34e4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "13b19578-f3de-4847-9627-54a3814cecb0",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "45ea0f97-2eb7-4e04-b929-17b3389f029f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3474a8d1-2fd8-47fe-97ac-41d5c096f384",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "b30a2951-a077-4173-b59e-671447dbe538",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0a53650d-16e4-42e8-b933-75fbed2d002b",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "8c43bf85-12f9-4c1f-b1c8-dcae15ed2ebd",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "25af1530-a032-4e2d-9fbc-3cf235c2b83a",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "5b7bad2f-689e-40ba-b124-ee0240b5c2e4",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "571a6379-0923-40cc-ad69-1b9b67d38d38",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "dd8cd333-2b6a-47f8-b952-8231e40d1433",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "cf3f335a-a352-46c4-ba25-757b4f852b52",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "123ad430-b14c-44e4-ad15-5685ae87b773",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "962633a1-825b-44ee-99cf-43cf1f29ea17",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "1ab4fef5-cdb8-41db-8f29-4f935f5211ae",
+                  "ord": "a1"
+                }
+              ],
+              "id": "5ee5d455-33ca-4f04-b50f-0fb4b78d7a8a",
+              "ord": "a0"
+            }
+          ],
+          "id": "6ca29112-6d66-4525-8037-2a8c6c9c87a0",
+          "ord": "a2"
+        }
+      ],
+      "id": "7ba0e38c-1fd2-427b-b8ea-79e9ffbf15c6"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Foundry Coffee Trade — wholesale coffee for cafés, offices and restaurants",
+      "seoDescription": "Foundry Coffee Trade is a wholesale roaster supplying cafés, offices and restaurants — beans, filter and capsule programs, syrups, cups and equipment, on trade pricing with standing orders and net-30.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8e8f5e3e-7c2c-42c2-ae15-e14e66aff782",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1770055592659-b35f56ea6b45?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZHJ1bSUyMHJvYXN0ZXIlMjBmdWxsJTIwaGVzc2lhbiUyMHNhY2tzJTIwd29ya2luZyUyMHJvYXN0ZXJ5fGVufDB8MHx8fDE3ODY0MTM0OTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A drum roaster and hessian sacks on a roastery floor",
+                  "loading": "lazy"
+                },
+                "id": "7d8c6b05-f58f-4678-913d-74093d1e27c6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["The roaster behind your counter."],
+                        "id": "ddff372b-afbd-496a-bc2e-5b929ec74666",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Foundry Coffee Trade supplies cafés, offices and restaurants with coffee roasted to order — beans by the trade bag, filter and capsule programs, syrups, cups and the machines to run them. Trade pricing, weekly standing orders and a real account manager who knows your bar."
+                        ],
+                        "id": "af9e255c-2948-4940-b256-2ecad4035b3b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Open a wholesale account"],
+                            "id": "0b760e39-c60c-4596-bd8d-c09f32325a7f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Browse the trade catalogue"],
+                            "id": "bf9de185-c1a5-42cf-915e-869178bd61aa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "82a6d0ed-bbcc-4fc8-b12e-1d3caabfba72",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f0729795-0905-4a69-9146-7ffb8bbdc5a0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c652249d-f22f-4cce-ad12-59f6bc40e1b2",
+                "ord": "a1"
+              }
+            ],
+            "id": "9d94043a-fa2e-435d-8e0b-6a13264cd17f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Everything the bar runs on"],
+                    "id": "dbd9add1-6e4d-4f64-b271-ba9f95b1f3dd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1530496216518-a53d24e99c31?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhZGUlMjBzYWNrcyUyMHJvYXN0ZWQlMjBjb2ZmZWUlMjBiZWFucyUyMHN0YWNrZWQlMjB3YXJlaG91c2V8ZW58MHwwfHx8MTc4NjQxMzUwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Trade sacks of roasted beans",
+                              "loading": "lazy"
+                            },
+                            "id": "d4a136cf-e2aa-4f70-8d0c-87381472b3b7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Wholesale beans"],
+                            "id": "7c422bab-1642-4400-918b-7b945a214565",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a6094c96-9221-4871-8bcc-db2b9f2c52b1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1514212586585-6a0e1838e7bf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94ZXMlMjBwcmUtcG9ydGlvbmVkJTIwZmlsdGVyJTIwc2FjaGV0cyUyMGNvZmZlZSUyMGNhcHN1bGVzfGVufDB8MHx8fDE3ODY0MTM1MDd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Filter sachets and capsules",
+                              "loading": "lazy"
+                            },
+                            "id": "cca07a2d-0b81-454d-bcb1-c133d79fd442",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Filter & capsules"],
+                            "id": "237e7f5c-5198-464a-acba-e6bd76ee89e8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4a0694a2-0385-43ed-bf6c-9f63fdf89840",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://picsum.photos/seed/tile-syrups/1600/1000",
+                              "alt": "Syrup bottles and takeaway cups",
+                              "loading": "lazy"
+                            },
+                            "id": "cbbb13eb-4ee8-4f99-b6ad-032021438c56",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Syrups & extras"],
+                            "id": "30d3b758-ee7d-441e-92c0-7d444495849a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9be6c67a-f121-4f41-97a6-c658aaf609c5",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1537130508299-46ab547b4be3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29tbWVyY2lhbCUyMGNvZmZlZSUyMGdyaW5kZXJ8ZW58MHwwfHx8MTc4NjQxMzY2OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A commercial coffee grinder",
+                              "loading": "lazy"
+                            },
+                            "id": "b28a6883-ca60-4fa9-ac13-1294d72af595",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Equipment"],
+                            "id": "a5f90e84-0c93-418a-806d-0e9eacfa8ebd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "92bf87cb-7494-4885-a353-29d394e409e5",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "01347cbb-75d9-4983-9be2-3ed9fcb2acc8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "cb26ae84-c1c7-44e8-a041-163fecb2cea3",
+                "ord": "a0"
+              }
+            ],
+            "id": "a0cbd61a-553e-4ab3-94e2-087abb008252",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Trade favourites"],
+                    "id": "6b4ef7be-e747-436d-81d8-cd6bca52d11c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "1f60511a-1426-456d-938c-683182632627",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "c914b8a2-d6fd-4da4-b0de-d4ea730d55ea",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "fea1a01f-e291-4ec4-b602-a8d8b3d72383",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "e2c3c7ed-27a7-4af3-9186-123d2f654a25",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "73157f63-3ce3-40db-96ab-c7811a0403d9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "326b76b2-69e2-4961-b6f9-58b2522104f1",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "89182496-7384-4bec-9ded-6f72b86b813b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "49d932b6-e83d-4f2a-acf0-ded569f43811",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e08461c8-c439-4ed3-a2ba-b958c18dd1df",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "386872d6-ce3a-4b18-a8cb-261c518cac09",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "ca785f82-76d2-4ec3-bd88-2d6317fe82cc",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "343d553c-40f1-4df6-bd27-34594bd4ad6c",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "d31ad7dd-1e4b-432a-80df-7284a593d669",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9hc3RlciUyMHJlYWRpbmclMjBiYXRjaCUyMGN1cnZlJTIwYmVzaWRlJTIwZ2xvd2luZyUyMGRydW18ZW58MHwwfHx8MTc4NjQxMzUxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A roaster reading a batch curve beside a drum roaster",
+                  "loading": "lazy"
+                },
+                "id": "f6ec7721-e61d-4ee9-b8a2-bfe053e1dc01",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Roasted to order, in trade volumes"],
+                        "id": "cb908435-f095-40b2-856c-96ddee33b0d8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We roast on a production drum and cup every batch before it ships, so a café ordering fifty kilos gets the same coffee we tasted on the sample table. Consistent week to week is the whole job — a house espresso that drifts is a bar full of remakes."
+                        ],
+                        "id": "c659bdd8-cc7d-4302-b4a3-372b99bf0aad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/dialling-in-for-your-cafe"
+                        },
+                        "children": ["How we roast for trade"],
+                        "id": "28d66888-d9a2-407d-9aad-b226baffcf46",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "302ee2e3-1873-4840-84fa-95e8af08fc57",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d08ac5fb-eae1-436a-8ad5-739a0acffd5f",
+                "ord": "a1"
+              }
+            ],
+            "id": "107a4c39-1e89-47dd-842c-1c2bfb4a24f2",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Beans by the trade bag"],
+                    "id": "46cc4468-a636-42f9-8255-99ce7f61c657",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0abcbd1d-eef2-43e7-81d9-031125f5a1e0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "d50dc25a-faf4-48c5-93b5-27e16cc5f536",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "1a04d840-99a5-4abe-96a8-0e4b1d4cd9d8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "1f2f0f43-8717-48f9-93f6-9bb2d33d5669",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "faabfeca-77b2-4811-962c-d052d465c593",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ba39c1ea-1985-48dc-a504-b556ca32c650",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "46e81f23-a8bf-4d0b-982b-bedb4ab93cd9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "bfe7c0cc-9a2b-4e0d-baf9-f57a3a0ccd96",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "96e45b56-28f8-4804-a4e8-549cde9d1c11",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "848c9ae1-ec08-4991-bcd0-d1f15ec27478",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "71eda898-6197-4275-abc0-0e8a9e4185ee",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.wholesale-beans"
+                },
+                "id": "05217412-0206-4cfa-a4fe-e223fefc29aa",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "8b094939-b0e6-42dc-84bc-30fddfffe77e",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-3xl flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Wholesale, run like a partnership"],
+                        "id": "1de8252e-e481-4e37-bb0d-15dd6c479980",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Opening an account takes a short call and a first order. From there you get trade pricing that improves with volume, a standing order that keeps your bar stocked, and a named account manager who picks up the phone — not a ticket queue."
+                        ],
+                        "id": "26c4faa7-06a1-4f8f-ba4c-07371dad39b0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6ab8c8fa-7400-4834-805c-ffe4e7bcc245",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @md:grid-cols-2 @3xl:grid-cols-3 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Trade pricing & breaks"],
+                            "id": "2f47c85b-0027-4cdf-8d94-96bb0da4015b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wholesale rates from your first case, with per-kilo breaks as your order grows. See your account price at checkout — no haggling, no hidden list."
+                            ],
+                            "id": "bd5f4362-678d-41ce-ba82-afddbab513e3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0d59c815-84c5-4008-96fb-941ef3afa9c7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Weekly standing orders"],
+                            "id": "bc13e365-2feb-4ad9-b131-b0e019b6be09",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Set a recurring delivery and never run dry mid-service. Adjust quantities, skip a week or pause the schedule from your account whenever trade shifts."
+                            ],
+                            "id": "07da9cd0-0401-4b68-9862-fb4d16dde02c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5944645f-e0e7-4473-80d8-e32b6ce85398",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Barista training"],
+                            "id": "02e4b95a-9435-4e68-8e47-c2e9795bb7b5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We dial in your espresso on your machine and train your team to hold it through the rush — on install, and any time you take on new staff."
+                            ],
+                            "id": "4a0a077f-88ee-457e-a470-1dbee23f068e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3378e0f8-d171-4ea9-a2ad-2d995ffa9724",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Equipment & servicing"],
+                            "id": "d67a3527-33d2-4761-a943-dafb53eb9e20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Grinders and brewers supplied, installed and kept honest, with loan gear if a machine goes down so the bar never stops pouring."
+                            ],
+                            "id": "e4d96a43-22bb-4023-9895-f1a6e06c4600",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2b27133a-19cd-45b4-9c66-8c4c4232ceeb",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Net-30 terms"],
+                            "id": "98e37729-f69b-46fc-98f3-72347275cd12",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Approved accounts invoice on net-30, so your coffee cost lands after the cups it made have already been sold."
+                            ],
+                            "id": "a51f896a-9574-4445-ace8-db752adfe563",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a512dc44-0441-4cce-bef2-5a2ba097b421",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-bold tracking-tight text-base-content",
+                            "children": ["Roasted to order"],
+                            "id": "84533fe4-d659-4453-9c07-f57304ca8c14",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every trade bag is roasted the week it ships and freight-packed fresh, so what reaches your hopper tastes the way it left the roastery."
+                            ],
+                            "id": "83dd2aec-1f5a-4ec2-98e5-a4f82f9ee143",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d746437-5abd-4e20-8fac-76777d10333f",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "8fb91478-3c50-4e54-9452-82f319fc27a3",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": ["Open a wholesale account"],
+                        "id": "bd1fe3a7-23fc-4118-bd59-df424d0d3ed1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop/standing-order"
+                        },
+                        "children": ["See the standing order"],
+                        "id": "26dedc1c-3975-4e6e-868d-6321c64d7cf4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "84573ac4-8378-4e60-9006-62d32d24f9a4",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "cc91cf11-1043-4e13-8d1e-daf6a6c1ce33",
+                "ord": "a0"
+              }
+            ],
+            "id": "98193153-da98-4204-be54-cf0be1696d42",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Foundry Coffee Trade",
+      "seoDescription": "Browse everything Foundry Coffee Trade makes, with prices and options at a glance. Wholesale coffee roaster.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9d894b28-f37d-4a57-b905-8a752ffc6d14",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The trade catalogue"],
+                    "id": "b5c8da63-4184-4969-8404-f6c1eeba72af",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we supply to the trade — beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables and equipment. Prices shown are trade rates; sign in to see your account pricing and put any line on a standing order."
+                    ],
+                    "id": "503f681d-24e2-4c4e-9e6f-1d3529f7197c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5f7f149d-ebb6-487e-83a5-452398858e2d",
+                "ord": "a0"
+              }
+            ],
+            "id": "1d9159a8-0217-4843-b0ba-7396b046ce2a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "52bb30ff-2a16-4ab5-9143-7bbc2199a788",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Foundry Coffee Trade",
+      "seoDescription": "Explore the collections at Foundry Coffee Trade, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3279dd2a-d648-4dc7-ae05-b89899624ffe",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Programs & bundles"],
+                    "id": "6e0932eb-2653-4580-bc83-6d3536a93235",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The catalogue grouped the way a bar actually orders it — new-crop coffees, the café essentials starter, the office program, and everything to open a new site."
+                    ],
+                    "id": "2d756078-dc78-4a3e-890a-1429b34e4f64",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0737371d-50c2-4b0d-a1ae-452867c1453e",
+                "ord": "a0"
+              }
+            ],
+            "id": "df849891-bef3-499f-a65c-7f90ace6d223",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "6f720647-eb14-4e03-96f2-3886235e3cf3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Foundry Coffee Trade",
+      "seoDescription": "Review what is in your cart and check out securely at Foundry Coffee Trade.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "841a374e-7485-460c-846f-febbb8766c7d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your order"],
+                    "id": "d971211a-81a3-4842-a1ce-72c44c68d578",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free trade delivery over $150, roasted to order and freight-packed within two working days. Approved accounts check out on net-30. Need to add this to a standing order or change a delivery date? Your account manager can set it up in a minute."
+                    ],
+                    "id": "93ad48a2-c952-4b39-b4a8-be3706e86b31",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f260bb9d-6a43-4b89-90aa-f90343b8a7f3",
+                "ord": "a0"
+              }
+            ],
+            "id": "630a31ff-ed43-44b4-acf2-7fed7198e459",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "24ea1332-011b-421c-872d-cd801546be2e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Foundry Coffee Trade",
+      "seoDescription": "Search Foundry Coffee Trade for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5bf112f1-83cf-4580-8c40-7a1b6b78739d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search the catalogue"],
+                    "id": "4723a917-6375-483f-8c52-bf25b68278c1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for an origin, a grind, a case size or a brewing guide? Search the whole trade catalogue and the journal below."
+                    ],
+                    "id": "915825c4-b895-458e-8371-40adf4de98c7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "28af4287-61c8-4974-b9aa-41f48d6df1bb",
+                "ord": "a0"
+              }
+            ],
+            "id": "b2f52b80-3ab1-435c-82d3-5fcf9eaff531",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "82227aac-bc6f-4b6d-9ca8-b5dab81d43b6",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Foundry Coffee Trade",
+      "seoDescription": "Stories, guides and notes from Foundry Coffee Trade.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8fdc6e20-1f4f-484c-a68a-70a5e9c4b701",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The trade journal"],
+                    "id": "0dca2270-6f56-4389-b923-5d6a38e0937b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the roastery for the people running the bar — dialling in a house espresso, getting the most out of a standing order, and keeping your equipment honest. Practical, made for a working café."
+                    ],
+                    "id": "1b7ecd86-9d19-4499-8a6d-6daa6ff4a611",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9412f6a8-11a9-4bf0-8d9f-99a9848269fd",
+                "ord": "a0"
+              }
+            ],
+            "id": "99bc16ee-007f-4908-ba70-9f9216b4f296",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "32ef4b85-ff59-4017-9097-582c6be1edb7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "e0369406-f875-4bf6-81ba-7992f27e7ada",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "fea2c839-3d5a-448b-be0d-388c6d90fe4e",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "0706eec5-10c6-44f3-8f4d-7466222e23d3",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "dea0fff5-cdcd-4a33-96f1-75ab4754a410",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "fb7d4dfa-c3bf-464a-b0fe-3e39c72a6c8d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "ce1536cc-c677-402c-86a4-0ff6e28a7ec7",
+                "ord": "a0"
+              }
+            ],
+            "id": "106637ba-4b22-4ef5-a7e1-0da4ed74141a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Foundry Coffee Trade",
+      "seoDescription": "How Foundry roasts and supplies the trade — roasted to order, named farms, trade pricing, standing orders, barista training, equipment servicing and net-30 terms.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bfee3d2b-8252-485e-938a-1007aa7952e2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Foundry Coffee Trade"],
+                    "id": "e7a4a10f-7be5-4ce5-8ea3-a0afe59bf83a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Foundry started as a wholesale roaster with one delivery van and a handful of cafés who wanted coffee they could stand behind. It grew the way trade relationships do — one bar, one standing order, one dialled-in espresso at a time — and it still runs on the same promise: roast well, supply reliably, and answer the phone."
+                    ],
+                    "id": "a79d57a3-b28b-4858-9e96-be8919b86015",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We buy green coffee from importers and farms we can name and pay above the commodity rate, because a supply chain that pays growers fairly is the only one that stays consistent season to season. Then we roast to order in production batches, cup every one, and freight it fresh so your hopper gets what we tasted."
+                    ],
+                    "id": "b86cb026-ee24-43e5-8f25-e562f508dd65",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "What a wholesale partner gets from us is not just coffee: it is trade pricing that rewards volume, standing orders that keep the bar stocked, barista training on your own machine, equipment supplied and serviced, and net-30 terms once you are approved. We win when your café does."
+                    ],
+                    "id": "40171d42-f025-48ca-86fb-3ad77d2721f9",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "74fafd47-d3a2-4ad1-b85b-785369fcd70d",
+                "ord": "a0"
+              }
+            ],
+            "id": "17869244-f47a-450f-831d-e5fc96681e19",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Foundry Coffee Trade",
+      "seoDescription": "Get in touch with Foundry Coffee Trade — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ad251b19-6c53-496e-90eb-50ecf4d01178",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Open a wholesale account"],
+                    "id": "dcede872-308b-4b81-b1ef-102e813dbf43",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Tell us about your café, office or restaurant — how much coffee you go through, what you pour now, and when you would want a first delivery. A real person on the trade team will come back with account pricing, samples and a plan to get you dialled in."
+                    ],
+                    "id": "40e73349-cfd1-46fa-83a1-7a553245caf7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:trade@foundrycoffee.example"
+                    },
+                    "children": ["Email the trade team"],
+                    "id": "eb080716-ecb6-4c54-9e47-8de20d760c0d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "cd6e2fff-9bd4-46d4-96bf-5d7b30ffa067",
+                "ord": "a0"
+              }
+            ],
+            "id": "f4f54f59-3f29-4e93-88fc-5e4722499a25",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Foundry Coffee Trade",
+      "seoDescription": "Product details at Foundry Coffee Trade — wholesale coffee roaster, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "7f8bf813-0605-4543-9af1-171593bc1fc1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Foundry Coffee Trade"],
+                            "id": "f38d4ac1-49fe-44a2-9026-8aa6a56ecdf4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "df0a637c-b6b4-47de-86f7-ae4cc9321887",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "2d15c8a9-2f3a-436b-9fb3-fdb801096098",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "462f8af4-1639-4117-a780-422f385494c4",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "3980f594-1c6a-4b75-b72c-bff391d541d4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "de612bdb-ec19-491e-b085-4be4213f01a1",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border-2 border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "23a123d6-d04f-4e48-88a1-9f39a42437ed",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "4f353bd3-5817-4c57-badf-e67814311c21",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "746987ab-56fc-43d6-81aa-7cae3c53aaf3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "df864640-1679-428d-a595-1fbf7f693257",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "f1a7e06f-447a-4674-a96f-210b4602bd3e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "cf5b312e-7822-4747-8f1b-e26fca73bbea",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6e1013b9-78a5-426d-828a-277b16650aa6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "3f51e3e9-b520-414c-a005-464d87e77be9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "0abe3dbe-e1d7-4ea4-b310-3f9294edcab3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border-2 border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Trade pricing & standing orders"],
+                            "id": "278352c3-d547-45e0-8a50-29fd9bad2d84",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wholesale accounts see per-case trade pricing with per-kilo breaks as volume grows, and can put any line on a weekly or fortnightly standing order — adjust, skip or pause it any time. Approved accounts invoice net-30. Everything is roasted to order and freight-packed fresh, and your account manager is a phone call away if you need to change a delivery."
+                            ],
+                            "id": "2c8eafed-d4ce-416b-bead-169cae3f52b2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ef397a4a-a5bc-4ee1-bc65-1561b07d3e20",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t-2 border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "121b90eb-f6d8-450b-bd6e-aededa858c9b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "02790944-904b-462b-8656-e58441b500eb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0cd4e550-855f-4cfb-abea-a580c0bc986b",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "f16d3f3e-137d-4d98-b869-aacbda661ada",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d0025fb-2fbe-4578-808a-9ce5fd6e8608",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "d57368f4-5055-4b60-adc3-a67935c938f9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Ordered together"],
+                    "id": "b3951ef8-bb5c-4fd7-b054-1aada824eb62",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "88db48f8-6e75-4f47-a059-9583ca9485d9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "6e1618e2-3a9e-4b26-9311-4b6ecde44146",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "4ec1b8f7-2e72-47db-b00e-dbdce44ecf89",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "555df28e-a6cb-4d17-8a12-f8d505b24a99",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "48a853bf-57d7-4387-bc40-e418db96e455",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7e4071d3-cd17-49ee-b60e-6d1b603094a3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "e1ece64f-b1d7-484f-af60-beb0c83df01e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a51de49f-e58e-4296-9392-4931ccc1d7e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "1d3bb3e9-dab0-4607-9aa9-5c2da6a1a600",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e666adf3-c240-44e0-bba6-b333a61e450a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "836f41ae-7fcb-4b5f-9e43-41ff1f28053e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "9e9e52e7-888e-48c8-8842-dee55dcabfa2",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "de9f7b96-8830-4340-9852-7a1151141afb",
+            "ord": "a1"
+          }
+        ],
+        "id": "5430123d-0a78-4fdc-b72a-ea4ac6f90d5c"
+      }
+    }
+  ],
+  "theme": {
+    "name": "roasttrade",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(93% 0.006 250)",
+      "--color-base-200": "oklch(89% 0.01 250)",
+      "--color-base-300": "oklch(83% 0.014 250)",
+      "--color-base-content": "oklch(22% 0.02 255)",
+      "--color-primary": "oklch(30% 0.045 45)",
+      "--color-secondary": "oklch(42% 0.03 245)",
+      "--color-accent": "oklch(50% 0.15 55)",
+      "--color-neutral": "oklch(26% 0.015 250)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--border": "2px",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 45)",
+      "--color-secondary-content": "oklch(98% 0.01 245)",
+      "--color-accent-content": "oklch(98% 0.01 55)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.15 55)",
+      "--color-highlight-content": "oklch(98% 0.01 55)",
+      "--color-border": "oklch(83% 0.014 250)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(19% 0.014 250)",
+      "--color-base-200": "oklch(16% 0.014 250)",
+      "--color-base-300": "oklch(13% 0.014 250)",
+      "--color-base-content": "oklch(93% 0.006 250)",
+      "--color-primary": "oklch(80% 0.07 55)",
+      "--color-secondary": "oklch(76% 0.03 245)",
+      "--color-accent": "oklch(74% 0.14 60)",
+      "--color-neutral": "oklch(30% 0.015 250)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 55)",
+      "--color-secondary-content": "oklch(15% 0.02 245)",
+      "--color-accent-content": "oklch(15% 0.02 60)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.14 60)",
+      "--color-highlight-content": "oklch(15% 0.02 60)",
+      "--color-border": "oklch(13% 0.014 250)"
+    }
+  }
+}

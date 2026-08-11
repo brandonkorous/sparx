@@ -1,0 +1,2509 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "d2cc78c7-effe-480d-9f07-9c1e4b287bd8",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ead810fd-3163-4544-b12c-1647a4a1f4ad",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "3efa2860-3619-4c0f-800e-88513105da08",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "5b1ef01b-f3e0-4dfd-952d-3840f703d08e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "54dd590a-5188-4212-a21c-272b2bb28e37",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "f0232ca3-edae-4dc6-b9c6-8308bf6f4e05",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "689c6371-af72-42fe-9fa6-88e7e11a6523",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "b50c1f29-969d-40cd-b38a-6252b5dd79b8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "a104e337-da74-4bc6-b162-cdd915f1ccfe",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "ddf09e90-10ef-42a2-b366-82577067feba",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "20bc19fd-c51f-417f-8b5d-2f80ee6de296",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "55f81efa-5530-444e-864b-2e9b216bed3f",
+                  "ord": "a2"
+                }
+              ],
+              "id": "2919847a-9400-433a-af35-5761aa0759ba",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "7ceb582f-5b2a-4614-9267-f73bdbf32a66",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "744dd060-9506-4554-979a-cf64b585161a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "9a7e514e-022e-42c2-a912-c5ca009fcca2",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "871b04a9-8e32-491f-9b9c-db2beeda8e11",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "395d2df4-6246-41eb-8add-d59eb88868cc",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "b525ced5-01d3-43e8-b725-def20dbde1c7",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "e556eff1-eb63-47a9-b984-da7699846f3f",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "8e961ece-2ae0-49c1-8f5b-4a57f959ae90",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "bfaea81f-bafb-4ec7-a54c-63750ab2cfe1",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "af19e280-5d36-4ec4-9e98-fead8bc8dfd1",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "8138ded8-2c62-495e-acc6-7744a45d9f58",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "1241d9e5-a993-43f0-9f9b-97aed31ccd84",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "942428e3-18d1-43c1-a980-5e08a82811c9",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "6832316f-cd9a-427d-8540-3910929ec7d5",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "8bc06bef-2d16-4565-88e7-9bc28ca9c97a",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "2a39424f-09b3-42e7-8f96-954e7003a576",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "9107ca01-48ea-4313-9973-8edb2c5b3d7a",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "97c8b844-ded8-4c2a-9d77-cec8e723896d",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c896b767-a7ed-480d-974f-282fae8fa689",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "e3775aa7-0f9d-41bf-867b-cb95dabf53bf",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "ad63c4a9-3781-4387-b85f-19df5a95ec37",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "eb2666de-185d-4fee-99fc-904cc5c9e92f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "1e23dd3a-277e-48d2-aa34-de85e70765da",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "81f75849-6fe2-4e5a-a74a-9f0c24bae063",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b6dd23af-53c3-4f3e-b5c0-3324581912a7",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "36391784-3a07-4b69-91d9-3e2c5b62c375",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "933c461a-77e6-4077-8912-c33e78b3f0d4",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "627a53ea-ba1d-49f4-be6c-d48b0518ff40",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "0dbf6b5e-0831-48a1-bb7e-def7a5b7a7df",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "057c347e-2197-48ee-8eb0-506fbe94f66f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "b8081faa-89b7-4300-acd3-82658ac19ee1",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6b864b4b-5bfb-4f06-bf93-5cf3b4ffe503",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "dc16614e-eecb-47e4-96d8-f0653ed38010",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "9da84c4a-5127-4246-8793-554b03af4f31",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "5f947a1b-9f6d-46fb-b534-aaf60da7f9ec",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "fd96856f-bfb3-4775-a40c-d7c878e4de3a",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "94e16b24-1903-4f05-a6eb-611ce95827b0",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "083c6149-1784-4ee2-b2a7-671a4e07abf1",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "2006fb29-613b-4dd8-b9ad-1156a387e792",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "2865e9ae-c172-4769-a0e7-84ffcc540140",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "0265a866-7cc1-4dc4-8db1-b8429caa1656",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "523c6eef-1da4-42be-93db-937f921f0033",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "0c05f22f-4584-4574-a499-e3c1d626f47c",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "cfa0f892-38f4-4034-8a05-1e40b37e0de0",
+                  "ord": "a1"
+                }
+              ],
+              "id": "db6f41bb-b08a-4c98-96e9-74bc561d2c45",
+              "ord": "a0"
+            }
+          ],
+          "id": "4f44047c-dca0-48f1-a762-c97439c5fe95",
+          "ord": "a2"
+        }
+      ],
+      "id": "61856afc-c4d1-4b03-9ab2-7a7161ca6c3b"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Sediment — a natural-wine bottle shop",
+      "seoDescription": "Sediment is a natural-wine shop — low-intervention reds, whites, skin-contact oranges, pét-nats and rosé from small growers who farm clean. Nothing added, nothing taken away.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "88167460-d82c-44c1-a022-476d31769ee9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1773764271819-71fa11a0c1c7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8b3BlbiUyMGJvdHRsZXMlMjBzdGFpbmVkJTIwZ2xhc3NlcyUyMGNhbmRsZS1saXQlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA0OTYwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Open bottles and stained glasses on a candle-lit table",
+                  "loading": "lazy"
+                },
+                "id": "64134ecd-2d7b-4687-abae-48b43d1e066d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Wine made by people, not factories."],
+                        "id": "582b4b84-d349-496f-9b02-817dd8fed900",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Sediment is a natural-wine shop. We buy from small growers who farm organically and let the wine make itself — nothing added, nothing stripped out. Bright, alive bottles, chosen by people who drink them."
+                        ],
+                        "id": "c9811f17-6ce2-498f-ac3f-0927068da4fc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the shelf"],
+                            "id": "7b3aba8c-daa6-42dd-b89a-247da45a9d01",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["New to natural wine? Start here"],
+                            "id": "2f400dca-defb-434e-afb6-63df9b64616b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ff6ebbd1-2275-41e8-98f0-862b46347554",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b56e85c0-9475-459b-b822-9293bc450a1d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "fbda6632-f9f6-46c1-ab25-0bc94994faf1",
+                "ord": "a1"
+              }
+            ],
+            "id": "9f235bdc-63cd-425e-b614-d2209b2a6011",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Pick your colour"],
+                    "id": "a1712756-e8ac-44f5-a6ec-40e9a40531e3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1621644894301-cd6b2eaca610?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhc3MlMjBjaGlsbGVkJTIwcmVkJTIwd2luZSUyMGhlbGQlMjBsaWdodHxlbnwwfDB8fHwxNzg2NDA0OTYzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A glass of chilled red held to the light",
+                              "loading": "lazy"
+                            },
+                            "id": "5f6d0963-c6a6-4feb-a020-e010eca6285d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Red"],
+                            "id": "34ea4846-cdb9-4aa1-8592-6520edab13b2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cab9a017-d46a-48de-936d-cfa54ce702f9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1780492397566-a3dcd7879eb0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29sZCUyMGJvdHRsZSUyMHdoaXRlJTIwd2luZSUyMGJlYWRlZCUyMGNvbmRlbnNhdGlvbnxlbnwwfDB8fHwxNzg2NDA0OTY3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A cold bottle of white beaded with condensation",
+                              "loading": "lazy"
+                            },
+                            "id": "641a646c-00e8-4755-aa4c-c89a1d673cea",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["White"],
+                            "id": "84e0b105-026f-431f-a505-35fe506f0f94",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c0a07328-0916-4c80-9d28-b58398306706",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1596438214057-5ff7c7fa76b1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhc3MlMjBjbG91ZHklMjBhbWJlciUyMHNraW4tY29udGFjdCUyMHdpbmV8ZW58MHwwfHx8MTc4NjQwNDk3MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A glass of cloudy amber skin-contact wine",
+                              "loading": "lazy"
+                            },
+                            "id": "00994a30-8f50-42a5-ada6-c5834bd5a058",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Orange & pét-nat"],
+                            "id": "a9cbbc64-a9b2-43d0-ab0c-807688b7bd91",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "280560c3-55e4-47d9-b642-6950017558a4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://picsum.photos/seed/wine-tile-rose/1600/1000",
+                              "alt": "A bottle of pale rosé on linen",
+                              "loading": "lazy"
+                            },
+                            "id": "b70a39d8-105f-4064-8415-dde34954c1da",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Rosé"],
+                            "id": "bd1f0e8b-1387-4420-bb8e-767bb70c6797",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6264897b-de43-44ec-ab31-17650f582eb2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "63d418b7-5de8-430c-97d9-fb2ee19b9a0c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "37827f93-0934-4b3e-9508-f4fde3a49e67",
+                "ord": "a0"
+              }
+            ],
+            "id": "2f7c6ff5-0d72-4599-9b7e-dde1a4d6a71e",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Just landed"],
+                    "id": "0f7307bb-b512-4376-97e1-76b1b055b583",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "d2419033-3a30-4ea2-9843-c9c7f239a183",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "5c6709a8-7342-4eba-a912-55d02c7aed37",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "1eca3550-b4a9-4369-a7af-f539849cacc2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "e4667605-e69b-426d-9716-866dd2fd4373",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ea8e16c7-1632-4cfa-bed2-e8cd27eeaa1b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d781826e-5fa7-4a20-8b97-dad555c8ed21",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "3a609d58-0c66-4d24-a538-5aba46159a0c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8edebb56-e260-4bd5-a78f-d89a1bf95eaf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "fdb9c7f4-27dd-4c74-9e0d-c227c590f454",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c3aed3ec-fc43-4255-84cc-e93a42c28e6d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "960a2725-eec9-4b90-9f69-caefdbd02714",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "9ea3a7f4-3b0b-4ab9-b70f-416370705b9e",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "e76ee2af-c3c8-4d84-9b12-494bfc9d84be",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1561586143-986506dbe6a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZHVzdHklMjBib3R0bGVzJTIwcmVzdGluZyUyMHRoZWlyJTIwc2lkZXMlMjBjZWxsYXIlMjByYWNrfGVufDB8MHx8fDE3ODY0MDQ5NzZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Dusty bottles resting on their sides in a cellar rack",
+                  "loading": "lazy"
+                },
+                "id": "c9a98f6a-aa60-48b3-9a26-372b6f8486e8",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Nothing added, nothing taken away"],
+                        "id": "2837a53b-3b10-4058-8128-9af9dc5cbf86",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Natural wine is farmed organically, fermented with its own wild yeast, and bottled with little or no added sulphur — no lab yeasts, no colour, no fining agents, no filtering the life out of it. What that gets you is wine that tastes like the year, the place and the person who grew it."
+                        ],
+                        "id": "64524fc0-8760-4634-891b-cc639bb33e76",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/what-natural-wine-actually-means"
+                        },
+                        "children": ["How we choose our wine"],
+                        "id": "a6d60acc-847f-423c-a445-0eda22dd5390",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "81a3e874-269e-4336-aff9-9e3b18071ec2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2aa9bba7-4e03-498f-9217-180f39674cd2",
+                "ord": "a1"
+              }
+            ],
+            "id": "3527d504-134f-4c05-b8c8-cf42fff6ae95",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Chillable & juicy reds"],
+                    "id": "0913c05a-cf1d-426a-98db-c82b6f08f842",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "7e8cd397-4a2c-4c45-944c-b8e680cc7f9d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "bb24a65e-7ff1-4ba2-8880-9da5af12653b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "c4e184a3-20f5-4231-b993-fb8375604715",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "36df1262-c8e8-4965-91f2-79a4cc0c0e6a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "90e554dc-3ed6-4cb3-b835-16215a13c4ef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ce05c534-de0e-4ea5-abc0-1f50de53fa0d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "b96d84e9-be61-416f-b080-f38e84b852ef",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "2d6ae5e0-b515-4be1-bd6d-d2b1c567d564",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "bc3d01f9-64b8-446b-b3eb-d98a0db93c00",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9211b828-9122-45a5-b267-2688b5e36f02",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "26b7b2f7-b102-4669-bbfe-6ce6b7d751b2",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.red"
+                },
+                "id": "726c32ff-209d-422a-aaad-cc9c3735600c",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "0ba73b23-c6d5-4458-a30b-b66eca7bce59",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1613574203646-ffdae46ce3e9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym94JTIwbWl4ZWQlMjB3aW5lJTIwYm90dGxlcyUyMHBhY2tlZCUyMHRpc3N1ZXxlbnwwfDB8fHwxNzg2NDA0OTgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A box of mixed wine bottles packed with tissue",
+                  "loading": "lazy"
+                },
+                "id": "a0de24e7-f90b-458b-a831-f3c675a03ae2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A case worth opening"],
+                        "id": "1404d346-20d5-41d0-9987-c6f14728a6b6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Not sure where to start? The mixed six is our pick of the shelf right now — three reds, three whites and oranges, all low-intervention, all delicious, at a better price than buying them one at a time. We swap it every month."
+                        ],
+                        "id": "edcf4346-41e7-41b3-bfe7-9d5046e465ab",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/products/the-weeknight-six"
+                        },
+                        "children": ["See the mixed six"],
+                        "id": "ec821b9c-04e2-40ed-a2d3-6c66186014b0",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e720d8ac-ca93-4ddc-9143-e57a7edeefd1",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "6de6634a-015b-4341-884b-cc5fa85f909e",
+                "ord": "a1"
+              }
+            ],
+            "id": "2494c04c-9b53-4afc-be45-ad7e21feee62",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Sediment",
+      "seoDescription": "Browse everything Sediment makes, with prices and options at a glance. Wine shop.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "489bb804-759f-4023-82aa-52ad9ebbbee0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The whole shelf"],
+                    "id": "cac97e92-5ac6-432d-890f-9cf6a2b26944",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything we are pouring right now — reds, whites, skin-contact oranges, pét-nats, rosé, a magnum or two and a low-intervention non-alc. Filter by colour or sort however you like; every bottle here is farmed clean and made with a light hand."
+                    ],
+                    "id": "eeaf1456-1c0a-4715-bf4c-209a2e7a33cc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d4903a69-74ac-44a2-ada7-5443067a9113",
+                "ord": "a0"
+              }
+            ],
+            "id": "13607e55-ffd5-4ad7-9670-e600d67a0dab",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "3bb4681b-1cc0-4d90-b82f-16c36ba44d14",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Sediment",
+      "seoDescription": "Explore the collections at Sediment, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5d18bef7-efee-4dd8-a73a-7de9ea79c0c4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "3d3660ab-278d-45d4-a33f-20796d306b63",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The bottles grouped the way people actually shop — what just landed, the low-intervention core, the ones to chill hard, our staff picks and the bottles worth keeping."
+                    ],
+                    "id": "bd4fd66b-6636-4e74-a24a-6c8c3959e54c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ec5ca5b6-88a2-42ee-ba1c-31161734436b",
+                "ord": "a0"
+              }
+            ],
+            "id": "e57ecde6-8979-4ee6-b142-7f8f7ea6738a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "b63c5b59-5498-49c4-8a07-fa27c3ed5199",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Sediment",
+      "seoDescription": "Review what is in your cart and check out securely at Sediment.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a25862d6-1ec8-48fb-acff-0f926c0af4ea",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "ba43d1a6-4809-4a86-8601-278c86ac2388",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free local delivery over $75, and every order is packed to travel safely. Not sure about a bottle? Tell us what you like and we will point you at the right one — buying wine should be fun, not a test."
+                    ],
+                    "id": "29dc7883-068e-4108-be05-382489495c41",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "cb378b6f-ecb4-4997-ad78-0d67a76fe15a",
+                "ord": "a0"
+              }
+            ],
+            "id": "931ede98-19c3-49c6-93e4-2b394dfa3a16",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "faabab95-f683-4f44-bfd9-95f6fb49e9d0",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Sediment",
+      "seoDescription": "Search Sediment for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e780e94e-4186-47cc-9c54-63fbc62a0dcd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Sediment"],
+                    "id": "0a71b199-4dd4-4e81-b756-63c78150b505",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a grape, a colour, a region or a pairing? Search the whole shop and the journal below."
+                    ],
+                    "id": "ddad7b9d-3355-41bc-8f6b-65e3a2ca37c1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "dcd266d4-935c-4166-a244-0446fb065f82",
+                "ord": "a0"
+              }
+            ],
+            "id": "c7fbd9c3-26e8-447a-9edc-9c7eafed27f8",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "d42a2e28-e747-40e6-adec-db915f890842",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Sediment",
+      "seoDescription": "Stories, guides and notes from Sediment.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4be37784-aae1-4489-af6b-e7178bab74f1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Sediment journal"],
+                    "id": "d73349f7-d012-4674-81d2-a7c846d81b8a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from behind the counter — what natural wine actually means, what to pour with dinner, and how to taste a bottle without the ceremony. Honest, useful, no snobbery."
+                    ],
+                    "id": "c0c36e2f-29ef-4855-9d64-497fee92fbc0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e05deb32-405f-4b78-995a-5a4f7684d979",
+                "ord": "a0"
+              }
+            ],
+            "id": "e285aca9-972e-41ca-8f05-a8bba69f4e2b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "505128f2-1085-422d-9985-30a9556386cf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "da4d12bf-48b7-4e7e-b005-0941830f98a1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d062f6a1-ddca-4728-8874-e83cf13bccce",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "6d43ed1b-4c8a-4e96-99e8-9da7f191e062",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "0e02fbfc-eaa0-43b9-b5da-3aeb97fcfeda",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "ea1b2ade-aae4-4e57-81ad-56b0cf5ec1e0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e525efc7-2744-414e-b4bb-c5063d6bed53",
+                "ord": "a0"
+              }
+            ],
+            "id": "c4df2cec-56d5-403b-9345-9b6df8d47b8e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Sediment — natural wine, honestly chosen",
+      "seoDescription": "How Sediment buys and keeps its wine — small growers, organic farming, a light hand in the cellar, and a well-kept shelf of living bottles worth the money.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "be18ccec-2393-41fb-8b6c-85f4197cee34",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Sediment"],
+                    "id": "9ad2212f-e919-4fbb-9734-fb292d90c4f4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Sediment started as a corner of a wine bar and a stubborn belief: that the most interesting bottles were the ones the big shops would not stock — made by small growers, farmed without chemicals, and left alone in the cellar to become themselves."
+                    ],
+                    "id": "4415bfb7-72fb-47ab-931f-91868701b253",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We buy from importers and growers we can name, and we taste everything before it hits the shelf. If a bottle is not honest, alive and worth the money, it does not make the cut — no matter how good the label looks or how fashionable the region has become."
+                    ],
+                    "id": "498e9670-8cc0-4e3c-a209-8690308002df",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No gatekeeping, no lecture, no wine that needs a diagram to enjoy. Just a well-kept shelf of living wine and someone who is happy to help you find your next favourite bottle."
+                    ],
+                    "id": "1572bd8d-de95-410f-b006-e6dadc13057a",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "2eb9e18e-3ad3-472c-b8c7-587e337c0f3a",
+                "ord": "a0"
+              }
+            ],
+            "id": "2426a724-ad83-4e21-bf30-805a7d4d5d4e",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Sediment",
+      "seoDescription": "Get in touch with Sediment — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4aa2b843-a8c2-4dad-adb3-3e2a19fc11dc",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Come say hello"],
+                    "id": "cb5cce91-d5d5-4169-a03d-e1bd6ba7fe0d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "After a bottle for a dinner, a case for a party, or a hand picking something for a gift? Tell us what you are after and a real person from the shop will get back to you — recommendations always welcome."
+                    ],
+                    "id": "e0723036-132a-4b92-91e8-4ab65f34792e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@sedimentwine.example"
+                    },
+                    "children": ["Email the shop"],
+                    "id": "121996f0-85e7-41e6-aa9f-4018af93a659",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9b30c2ae-81e0-4bfc-8058-f0aeb0ecf0d5",
+                "ord": "a0"
+              }
+            ],
+            "id": "046a1108-7f93-4b10-95df-5c2fdf110b5d",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Sediment",
+      "seoDescription": "Product details at Sediment — wine shop, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "1f21f86a-ef0f-4ae9-bd3a-1551617c1443",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Sediment · Natural Wine"],
+                            "id": "2ec2e3b9-e50d-4e67-a4e6-e652bdb39fda",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "9a10dac1-85d3-4bb2-9b7d-94f698d0e9c0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "ceb29c29-3b7b-4bc3-bbda-a40b1ca13e17",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "13c33b0b-8bb5-406b-80b4-0121669e6521",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "63d2e2ff-c895-4042-a131-7f0bd426f190",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "26cb16b4-b849-4f6e-9bcd-e33e6016ac66",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Only a few left"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "d8e22476-dc7f-4f48-b8ae-bb1e9e7f8451",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "78a52baa-9743-406e-bd07-dbb234bc6a6e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "3653796f-a749-4b75-9f5b-b41d569dd8bf",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "e4f2b4fc-b4b5-48af-b8ae-831eca0ec68f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "a9554717-d316-4a83-8730-51129aa83ede",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "8867b860-220b-4547-b999-a116f0657e88",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "3637bb24-ae6a-47e1-9b7d-35873386d643",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "d451472f-3768-4482-8462-4a7727ee2259",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "c608cf67-134b-4619-839c-d039689f5ca4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["How we drink it"],
+                            "id": "63f4212c-683b-4012-9593-a79a2a9f4f59",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Serve it a touch cooler than you think — a light chill flatters almost everything on this shelf, reds included. Living wine can throw a little sediment or fizz; that is the wine, not a fault. Open it, give it a minute, and let it wake up."
+                            ],
+                            "id": "9d05618a-eb6b-4f56-8918-c0c3fac766dc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8073b481-2729-429d-9cac-5d8b0fb3539a",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "207fe36c-5151-45e6-82e1-da9dfa3cd204",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "449af334-b4ce-4d69-b025-cb68f3ee4b61",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b1b97147-95d6-42f5-984b-da86e5e7f436",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "95713873-7030-47d0-9b72-d81fe90b0c49",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "51dbcbe9-db3c-4ec5-baba-164d4ad7ccd6",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "cfe48760-9a9a-4dba-8cc0-492c405218ed",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Drinks well with"],
+                    "id": "594ab06d-efd3-4167-b89f-5b44cbd3305f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "52c6f855-925b-411f-9606-ad0b9d36b32a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "13d2b89e-7e1b-437e-89df-745e8e4f569f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "3b912deb-4bb1-444d-b512-8290f88a5a25",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "fc7d564c-efd1-4a6e-858b-ad27b46754a8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "55efd637-fdc4-4c83-9963-97120c4f5cf8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1eb5de85-6a78-491f-b9ef-1ca58a947f6e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "4f244b03-a62f-4cd5-aca1-f1b3eb03fde1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ce334584-115f-4e3c-8b59-533232396039",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "848304f6-cb94-405e-b8a0-a9976b3df9df",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "302d8f6c-58f4-4191-86c5-92f5f69fa63d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "e9e9e08d-bc1a-4d65-b7bc-35142257e584",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "d2b8be46-940d-491a-8632-4172edd7cfb7",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "4541d55b-633a-4799-84c8-4007bcc9da02",
+            "ord": "a1"
+          }
+        ],
+        "id": "a5d2e54c-e7e8-4528-82c4-afd73bb394a9"
+      }
+    }
+  ],
+  "theme": {
+    "name": "cellar-natural",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(23% 0.03 350)",
+      "--color-base-200": "oklch(19% 0.03 350)",
+      "--color-base-300": "oklch(15% 0.028 350)",
+      "--color-base-content": "oklch(93% 0.02 45)",
+      "--color-primary": "oklch(74% 0.14 12)",
+      "--color-secondary": "oklch(80% 0.055 60)",
+      "--color-accent": "oklch(84% 0.13 75)",
+      "--color-neutral": "oklch(32% 0.02 350)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.14 55)",
+      "--color-error": "oklch(70% 0.17 32)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"Karla\", sans-serif",
+      "--font-head": "\"Spectral\", serif",
+      "--color-primary-content": "oklch(15% 0.02 12)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 75)",
+      "--color-neutral-content": "oklch(98% 0.01 350)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 55)",
+      "--color-error-content": "oklch(15% 0.02 32)",
+      "--color-danger": "oklch(70% 0.17 32)",
+      "--color-danger-content": "oklch(15% 0.02 32)",
+      "--color-highlight": "oklch(84% 0.13 75)",
+      "--color-highlight-content": "oklch(15% 0.02 75)",
+      "--color-border": "oklch(15% 0.028 350)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Spectral\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(14% 0.022 350)",
+      "--color-base-200": "oklch(11% 0.022 350)",
+      "--color-base-300": "oklch(8% 0.02 350)",
+      "--color-base-content": "oklch(94% 0.016 45)",
+      "--color-primary": "oklch(76% 0.14 12)",
+      "--color-secondary": "oklch(82% 0.055 60)",
+      "--color-accent": "oklch(86% 0.13 75)",
+      "--color-neutral": "oklch(30% 0.02 350)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.14 55)",
+      "--color-error": "oklch(70% 0.17 32)",
+      "--color-primary-content": "oklch(15% 0.02 12)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 75)",
+      "--color-neutral-content": "oklch(98% 0.01 350)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 55)",
+      "--color-error-content": "oklch(15% 0.02 32)",
+      "--color-danger": "oklch(70% 0.17 32)",
+      "--color-danger-content": "oklch(15% 0.02 32)",
+      "--color-highlight": "oklch(86% 0.13 75)",
+      "--color-highlight-content": "oklch(15% 0.02 75)",
+      "--color-border": "oklch(8% 0.02 350)"
+    }
+  }
+}

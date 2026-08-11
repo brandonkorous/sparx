@@ -1,0 +1,229 @@
+{
+  "policies": [
+    {
+      "handle": "roomco-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Need to move your session? Just give us 24 hours’ notice and we’ll happily reschedule. We send a reminder the day before and two hours ahead."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rae",
+      "name": "Rae Whitfield",
+      "kind": "staff",
+      "skillTags": ["edesign", "color", "styling"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "devon",
+      "name": "Devon Ellis",
+      "kind": "staff",
+      "skillTags": ["edesign", "layout", "styling"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["edesign", "refresh", "color"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-consult",
+      "name": "Free discovery consult",
+      "description": "A friendly 30-minute video call to talk through your room, your style and what’s possible — no cost, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "single-room-edesign",
+      "name": "Single-room e-design",
+      "description": "A complete online design for one room — a shoppable design board, layout plan and a shopping list you can buy at your own pace.",
+      "durationMinutes": 60,
+      "priceCents": 29900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "color-consult",
+      "name": "Colour consult",
+      "description": "Stuck on paint or palette? Bring your room and we’ll land on colours that actually work in your light — with swatches to take away.",
+      "durationMinutes": 45,
+      "priceCents": 12900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "layout-consult",
+      "name": "Layout consult",
+      "description": "A fresh floor plan for a room that isn’t flowing — furniture placement, traffic and scale, mapped out so it just feels right.",
+      "durationMinutes": 45,
+      "priceCents": 14900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "room-refresh-package",
+      "name": "Room refresh package",
+      "description": "A budget-friendly refresh that reworks what you own and adds a few well-chosen pieces — a whole new room without starting over.",
+      "durationMinutes": 60,
+      "priceCents": 39900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "whole-home-consult",
+      "name": "Whole-home consult",
+      "description": "A big-picture session for the whole place — a cohesive palette, a room-by-room plan and a sensible order to tackle it all in.",
+      "durationMinutes": 60,
+      "priceCents": 24900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    },
+    {
+      "handle": "styling-session",
+      "name": "Styling session",
+      "description": "The finishing touch — shelves, art, textiles and the little details that make a room feel finished and personal.",
+      "durationMinutes": 45,
+      "priceCents": 15900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "designer",
+          "kind": "staff",
+          "skillTags": ["edesign"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roomco-standard"
+    }
+  ]
+}

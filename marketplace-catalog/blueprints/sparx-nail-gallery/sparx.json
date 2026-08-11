@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-nail-gallery",
+  "name": "sparx — Nail Studio (Gallery)",
+  "version": "1.0.0",
+  "tagline": "A gallery-chic template for nail studios — book online from day one.",
+  "description": "A gallery-chic nail-studio site — a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as \"Lacquer\", a calm daylight studio.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Nail studio",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Nail Studio (Gallery) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Nail Studio (Gallery) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#df7f78",
+  "sortWeight": 84
+}

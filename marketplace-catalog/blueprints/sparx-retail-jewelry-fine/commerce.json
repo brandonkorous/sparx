@@ -1,0 +1,893 @@
+{
+  "categories": [
+    {
+      "handle": "rings",
+      "name": "Rings",
+      "description": "Signets, stackers, bands and the solitaire.",
+      "featured": true
+    },
+    {
+      "handle": "necklaces",
+      "name": "Necklaces",
+      "description": "Pendants, chains and birthstones.",
+      "featured": true
+    },
+    {
+      "handle": "earrings",
+      "name": "Earrings",
+      "description": "Hoops and studs for every day.",
+      "featured": true
+    },
+    {
+      "handle": "bracelets",
+      "name": "Bracelets",
+      "description": "Cuffs and the tennis line.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New arrivals",
+      "description": "The newest pieces off the bench.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["oval-signet-ring", "petite-pendant-necklace", "birthstone-necklace"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["oval-signet-ring", "stacking-ring-trio", "everyday-hoop-earrings"]
+    },
+    {
+      "handle": "everyday-gold",
+      "name": "Everyday gold",
+      "description": "Solid pieces made to never take off.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "stacking-ring-trio",
+        "everyday-hoop-earrings",
+        "petite-pendant-necklace",
+        "smooth-cuff-bracelet"
+      ]
+    },
+    {
+      "handle": "the-signature-edit",
+      "name": "The signature edit",
+      "description": "The statement pieces — a little more of everything.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["classic-tennis-bracelet", "smooth-cuff-bracelet", "solitaire-ring"]
+    },
+    {
+      "handle": "engagement",
+      "name": "Engagement",
+      "description": "Rings made to mark a moment.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["solitaire-ring"]
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Wrapped, engraved, ready to give.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "petite-pendant-necklace",
+        "classic-tennis-bracelet",
+        "birthstone-necklace"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "oval-signet-ring",
+      "title": "Oval Signet Ring",
+      "description": "A classic oval-face signet with a softly domed top, polished to a mirror or brushed matte on request — the ring you engrave with an initial, a date, or nothing at all. Substantial without being heavy, and just as good stacked as worn alone.",
+      "status": "active",
+      "productType": "Ring",
+      "vendor": "Aurelia",
+      "tags": ["ring", "signet", "engravable"],
+      "categoryHandles": ["rings"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "everyday-gold"],
+      "seoTitle": "Oval Signet Ring — solid 14k gold or silver | Aurelia",
+      "seoDescription": "A classic engravable oval signet ring in solid 14k gold or sterling silver. Polished or brushed.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5"
+            },
+            {
+              "value": "6"
+            },
+            {
+              "value": "7"
+            },
+            {
+              "value": "8"
+            },
+            {
+              "value": "9"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-SIGNET-G-5",
+          "priceCents": 28500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-G-6",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-G-7",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-G-8",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-G-9",
+          "priceCents": 28500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "9"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-S-5",
+          "priceCents": 15700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-S-6",
+          "priceCents": 15700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-S-7",
+          "priceCents": 15700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-S-8",
+          "priceCents": 15700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-SIGNET-S-9",
+          "priceCents": 15700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "9"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-signet",
+          "isPrimary": true,
+          "alt": "Oval Signet Ring"
+        }
+      ]
+    },
+    {
+      "handle": "stacking-ring-trio",
+      "title": "Stacking Ring Trio",
+      "description": "Three fine bands — a plain round, a hammered facet and a tiny bezel-set stone — designed to be worn together or split across fingers. Buy the set to start a stack, then keep adding; they’re made to sit flush against each other without catching.",
+      "status": "active",
+      "productType": "Ring",
+      "vendor": "Aurelia",
+      "tags": ["ring", "stacking", "set"],
+      "categoryHandles": ["rings"],
+      "collectionHandles": ["everyday-gold", "best-sellers"],
+      "seoTitle": "Stacking Ring Trio — set of three fine bands | Aurelia",
+      "seoDescription": "A set of three fine stacking rings in solid 14k gold or sterling silver — plain, hammered and bezel-set.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5"
+            },
+            {
+              "value": "6"
+            },
+            {
+              "value": "7"
+            },
+            {
+              "value": "8"
+            },
+            {
+              "value": "9"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-STACK-G-5",
+          "priceCents": 19500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-STACK-G-6",
+          "priceCents": 19500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-STACK-G-7",
+          "priceCents": 19500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-STACK-G-8",
+          "priceCents": 19500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-STACK-G-9",
+          "priceCents": 19500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "9"
+          }
+        },
+        {
+          "sku": "AUR-STACK-S-5",
+          "priceCents": 10700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-STACK-S-6",
+          "priceCents": 10700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-STACK-S-7",
+          "priceCents": 10700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-STACK-S-8",
+          "priceCents": 10700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-STACK-S-9",
+          "priceCents": 10700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "9"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-stacking",
+          "isPrimary": true,
+          "alt": "Stacking Ring Trio"
+        }
+      ]
+    },
+    {
+      "handle": "petite-pendant-necklace",
+      "title": "Petite Pendant Necklace",
+      "description": "A small solid pendant on a delicate 16–18\" adjustable chain — the everyday necklace that layers with anything and never needs taking off. Wear it alone for a clean line, or as the shortest layer under longer chains.",
+      "status": "active",
+      "productType": "Necklace",
+      "vendor": "Aurelia",
+      "tags": ["necklace", "pendant", "layering"],
+      "categoryHandles": ["necklaces"],
+      "collectionHandles": ["new-arrivals", "everyday-gold", "gifts"],
+      "seoTitle": "Petite Pendant Necklace — solid gold or silver | Aurelia",
+      "seoDescription": "A small solid pendant on a fine adjustable chain, in 14k gold or sterling silver. Made to layer.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-PENDANT-G",
+          "priceCents": 16500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold"
+          }
+        },
+        {
+          "sku": "AUR-PENDANT-S",
+          "priceCents": 9100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-pendant",
+          "isPrimary": true,
+          "alt": "Petite Pendant Necklace"
+        }
+      ]
+    },
+    {
+      "handle": "everyday-hoop-earrings",
+      "title": "Everyday Hoop Earrings",
+      "description": "The hoop you put in and forget about — a lightweight 15mm solid hoop with a secure hinged closure, smooth enough to sleep in and small enough for the office. The pair most people never take out once they own them.",
+      "status": "active",
+      "productType": "Earrings",
+      "vendor": "Aurelia",
+      "tags": ["earrings", "hoops", "everyday"],
+      "categoryHandles": ["earrings"],
+      "collectionHandles": ["everyday-gold", "best-sellers"],
+      "seoTitle": "Everyday Hoop Earrings — solid 14k gold or silver | Aurelia",
+      "seoDescription": "Lightweight 15mm solid hoop earrings with a secure hinged closure, in 14k gold or sterling silver.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-HOOP-G",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold"
+          }
+        },
+        {
+          "sku": "AUR-HOOP-S",
+          "priceCents": 8000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-hoops",
+          "isPrimary": true,
+          "alt": "Everyday Hoop Earrings"
+        }
+      ]
+    },
+    {
+      "handle": "classic-tennis-bracelet",
+      "title": "Classic Tennis Bracelet",
+      "description": "A continuous line of round white sapphires, each hand-set in its own four-prong basket so the light gets all the way around. A double-locking clasp keeps it on; a graceful, unbroken sparkle keeps it a forever piece.",
+      "status": "active",
+      "productType": "Bracelet",
+      "vendor": "Aurelia",
+      "tags": ["bracelet", "tennis", "sapphire"],
+      "categoryHandles": ["bracelets"],
+      "collectionHandles": ["the-signature-edit", "gifts"],
+      "seoTitle": "Classic Tennis Bracelet — white sapphire line | Aurelia",
+      "seoDescription": "A hand-set line of round white sapphires with a double-locking clasp, in solid 14k gold or sterling silver.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-TENNIS-G",
+          "priceCents": 62000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold"
+          }
+        },
+        {
+          "sku": "AUR-TENNIS-S",
+          "priceCents": 34100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-tennis",
+          "isPrimary": true,
+          "alt": "Classic Tennis Bracelet"
+        }
+      ]
+    },
+    {
+      "handle": "birthstone-necklace",
+      "title": "Birthstone Necklace",
+      "description": "A single bezel-set birthstone on a fine chain — pick the month that means something and we set the stone to match. The gift that lands every time: personal without being fussy, and worn far past the birthday it marks.",
+      "status": "active",
+      "productType": "Necklace",
+      "vendor": "Aurelia",
+      "tags": ["necklace", "birthstone", "personalized", "gift"],
+      "categoryHandles": ["necklaces"],
+      "collectionHandles": ["gifts", "new-arrivals"],
+      "seoTitle": "Birthstone Necklace — bezel-set, solid gold or silver | Aurelia",
+      "seoDescription": "A single bezel-set birthstone on a fine chain, set to your month, in solid 14k gold or sterling silver.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        },
+        {
+          "name": "Birthstone",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "January — Garnet"
+            },
+            {
+              "value": "April — White Topaz"
+            },
+            {
+              "value": "July — Ruby"
+            },
+            {
+              "value": "October — Opal"
+            },
+            {
+              "value": "December — Blue Topaz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-BIRTH-G-JA",
+          "priceCents": 15000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Birthstone": "January — Garnet"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-S-JA",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "January — Garnet"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-G-AP",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Birthstone": "April — White Topaz"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-S-AP",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "April — White Topaz"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-G-JU",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Birthstone": "July — Ruby"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-S-JU",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "July — Ruby"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-G-OC",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Birthstone": "October — Opal"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-S-OC",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "October — Opal"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-G-DE",
+          "priceCents": 15000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Birthstone": "December — Blue Topaz"
+          }
+        },
+        {
+          "sku": "AUR-BIRTH-S-DE",
+          "priceCents": 8300,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "December — Blue Topaz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-birthstone",
+          "isPrimary": true,
+          "alt": "A single birthstone pendant on a fine chain"
+        }
+      ]
+    },
+    {
+      "handle": "smooth-cuff-bracelet",
+      "title": "Smooth Cuff Bracelet",
+      "description": "A solid open cuff with a clean, unadorned curve — the piece that reads as expensive precisely because there’s nothing on it. Gently springs to slip on over the wrist and holds its shape for years; polished bright or brushed soft.",
+      "status": "active",
+      "productType": "Bracelet",
+      "vendor": "Aurelia",
+      "tags": ["bracelet", "cuff", "minimal"],
+      "categoryHandles": ["bracelets"],
+      "collectionHandles": ["everyday-gold", "the-signature-edit"],
+      "seoTitle": "Smooth Cuff Bracelet — solid 14k gold or silver | Aurelia",
+      "seoDescription": "A solid open cuff with a clean unadorned curve, in 14k gold or sterling silver. Polished or brushed.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-CUFF-G",
+          "priceCents": 24000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold"
+          }
+        },
+        {
+          "sku": "AUR-CUFF-S",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-cuff",
+          "isPrimary": true,
+          "alt": "Smooth Cuff Bracelet"
+        }
+      ]
+    },
+    {
+      "handle": "solitaire-ring",
+      "title": "The Solitaire",
+      "description": "A single brilliant-cut lab-grown white sapphire raised in a slim six-prong setting, on a fine tapered band that lets the stone stand alone. The engagement-style ring for people who want the look, the sparkle and the meaning — without the small mortgage.",
+      "status": "active",
+      "productType": "Ring",
+      "vendor": "Aurelia",
+      "tags": ["ring", "solitaire", "engagement", "sapphire"],
+      "categoryHandles": ["rings"],
+      "collectionHandles": ["engagement", "the-signature-edit"],
+      "seoTitle": "The Solitaire — engagement-style ring | Aurelia",
+      "seoDescription": "A brilliant-cut white sapphire in a six-prong solitaire setting on a fine tapered band, in solid gold or silver.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "14k Gold"
+            },
+            {
+              "value": "Sterling Silver"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5"
+            },
+            {
+              "value": "6"
+            },
+            {
+              "value": "7"
+            },
+            {
+              "value": "8"
+            },
+            {
+              "value": "9"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "AUR-SOLITAIRE-G-5",
+          "priceCents": 125000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-G-6",
+          "priceCents": 125000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-G-7",
+          "priceCents": 125000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-G-8",
+          "priceCents": 125000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-G-9",
+          "priceCents": 125000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "14k Gold",
+            "Size": "9"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-S-5",
+          "priceCents": 68800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-S-6",
+          "priceCents": 68800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-S-7",
+          "priceCents": 68800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-S-8",
+          "priceCents": 68800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "AUR-SOLITAIRE-S-9",
+          "priceCents": 68800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "9"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aurelia-prod-solitaire",
+          "isPrimary": true,
+          "alt": "The Solitaire"
+        }
+      ]
+    }
+  ]
+}

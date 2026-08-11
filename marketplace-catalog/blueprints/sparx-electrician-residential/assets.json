@@ -1,0 +1,42 @@
+[
+  {
+    "id": "electrician-residential-hero",
+    "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNpYW4lMjB3b3JraW5nfGVufDB8MHx8fDE3ODYzODgyNzJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A licensed electrician neatly wiring a home electrical panel"
+  },
+  {
+    "id": "electrician-residential-inspection",
+    "url": "https://images.unsplash.com/photo-1635335874521-7987db781153?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHBhbmVsJTIwd2lyaW5nfGVufDB8MHx8fDE3ODYzODgyNzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An electrician checking outlets with a tester during a home safety inspection"
+  },
+  {
+    "id": "electrician-residential-marcus",
+    "url": "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNpYW4lMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2Mzg4Mjc4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Hale, master electrician"
+  },
+  {
+    "id": "electrician-residential-diego",
+    "url": "https://images.unsplash.com/photo-1531750026848-8ada78f641c2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFuJTIwcG9ydHJhaXQlMjBoZWFkc2hvdHxlbnwwfDB8fHwxNzg2Mzg4MzQ4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Diego Ramirez, panel and install specialist"
+  },
+  {
+    "id": "electrician-residential-ray",
+    "url": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODgyMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ray Whitfield, service and safety electrician"
+  },
+  {
+    "id": "electrician-residential-work1",
+    "url": "https://images.unsplash.com/photo-1635335874521-7987db781153?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMHdpcmluZyUyMHdvcmt8ZW58MHwwfHx8MTc4NjM4ODI4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tidy, labeled breaker panel after an upgrade"
+  },
+  {
+    "id": "electrician-residential-work2",
+    "url": "https://images.unsplash.com/photo-1718221621618-e477ce33485a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGlnaHQlMjBmaXh0dXJlJTIwaW5zdGFsbGF0aW9ufGVufDB8MHx8fDE3ODYzODgyODZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Recessed lighting installed cleanly in a living-room ceiling"
+  },
+  {
+    "id": "electrician-residential-work3",
+    "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlY3RyaWNhbCUyMG91dGxldCUyMGluc3RhbGxhdGlvbnxlbnwwfDB8fHwxNzg2Mzg4Mjg5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A newly installed ceiling fan in a bright bedroom"
+  }
+]

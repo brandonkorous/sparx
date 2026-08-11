@@ -7,8 +7,14 @@ import { describe, expect, it } from 'vitest';
 import { THEME_PRESETS } from '@wizeworks/silicaui-html';
 
 import { SPARX_THEMES } from './themes';
+import { CONTENT_THEMES } from './content-themes';
+import { TEMPLATE_THEMES } from './template-themes';
+import { PORTFOLIO_THEMES } from './portfolio-themes';
 import {
   FIRST_PARTY_THEMES,
+  CONTENT_THEME_META,
+  TEMPLATE_THEME_META,
+  PORTFOLIO_THEME_META,
   SILICA_THEME_META,
   SPARX_THEME_META,
   firstPartyTheme,
@@ -17,7 +23,13 @@ import {
 
 describe('first-party theme catalog', () => {
   it('lists every sparx shelf and every silica preset', () => {
-    expect(FIRST_PARTY_THEMES).toHaveLength(SPARX_THEMES.length + THEME_PRESETS.length);
+    expect(FIRST_PARTY_THEMES).toHaveLength(
+      SPARX_THEMES.length +
+        CONTENT_THEMES.length +
+        TEMPLATE_THEMES.length +
+        PORTFOLIO_THEMES.length +
+        THEME_PRESETS.length
+    );
   });
 
   // The reason this file exists: a preset with no copy is silently dropped from
@@ -29,6 +41,23 @@ describe('first-party theme catalog', () => {
 
   it('has marketplace copy for every sparx shelf', () => {
     const missing = SPARX_THEMES.filter((t) => !SPARX_THEME_META[t.name]).map((t) => t.name);
+    expect(missing).toEqual([]);
+  });
+
+  it('has marketplace copy for every content-template theme', () => {
+    const missing = CONTENT_THEMES.filter((t) => !CONTENT_THEME_META[t.name]).map((t) => t.name);
+    expect(missing).toEqual([]);
+  });
+
+  it('has marketplace copy for every commerce-template theme', () => {
+    const missing = TEMPLATE_THEMES.filter((t) => !TEMPLATE_THEME_META[t.name]).map((t) => t.name);
+    expect(missing).toEqual([]);
+  });
+
+  it('has marketplace copy for every portfolio-template theme', () => {
+    const missing = PORTFOLIO_THEMES.filter((t) => !PORTFOLIO_THEME_META[t.name]).map(
+      (t) => t.name
+    );
     expect(missing).toEqual([]);
   });
 

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "lumen-hero",
+    "url": "https://images.unsplash.com/photo-1567001897431-ba86def22f6e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwcGFsZSUyMGNhbmRsZSUyMGJyaWdodCUyMHN1bmxpdCUyMHRhYmxlJTIwYmVzaWRlfGVufDB8MHx8fDE3ODY0MDQ3OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single pale candle on a bright sunlit table beside a linen napkin"
+  },
+  {
+    "id": "lumen-tile-candles",
+    "url": "https://images.unsplash.com/photo-1585997089743-5a6b246fc80b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93JTIwbWluaW1hbGlzdCUyMG1hdHRlJTIwY2FuZGxlcyUyMGNsZWFuJTIwd2hpdGUlMjBzaGVsZnxlbnwwfDB8fHwxNzg2NDA0Nzk1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A row of minimalist matte candles on a clean white shelf"
+  },
+  {
+    "id": "lumen-tile-diffusers",
+    "url": "https://images.unsplash.com/photo-1783275463520-1e495760369d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlZCUyMGRpZmZ1c2VyJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDA1MTQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A reed diffuser and a room spray on a bright windowsill"
+  },
+  {
+    "id": "lumen-tile-refills",
+    "url": "https://images.unsplash.com/photo-1613161645210-13013d811d30?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVmaWxsJTIwcG91Y2glMjBiZXNpZGUlMjBlbXB0eSUyMGNlcmFtaWMlMjBjYW5kbGUlMjB2ZXNzZWx8ZW58MHwwfHx8MTc4NjQwNDgwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A refill pouch beside an empty ceramic candle vessel"
+  },
+  {
+    "id": "lumen-tile-gifts",
+    "url": "https://images.unsplash.com/photo-1759563871375-d5b140f6646e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlJTIwZ2lmdCUyMHNldCUyMHdyYXBwZWQlMjBwYWxlJTIwcGFwZXIlMjBjb3R0b258ZW58MHwwfHx8MTc4NjQwNDgwNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A candle gift set wrapped in pale paper and cotton ribbon"
+  },
+  {
+    "id": "lumen-band-clean",
+    "url": "https://images.unsplash.com/photo-1777107509014-e3eaea7981bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29jb251dC1zb3klMjB3YXglMjBjb3R0b24lMjB3aWNrJTIwY2xlYW4lMjBicmlnaHQlMjB3b3Jrc2hvcHxlbnwwfDB8fHwxNzg2NDA0ODA3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Coconut-soy wax and a cotton wick in a clean bright workshop"
+  },
+  {
+    "id": "lumen-band-refill",
+    "url": "https://images.unsplash.com/photo-1643701322328-d671ab7814a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVmaWxsJTIwYmVpbmclMjBwb3VyZWQlMjBpbnRvJTIwcmV1c2FibGUlMjBjZXJhbWljJTIwdmVzc2VsfGVufDB8MHx8fDE3ODY0MDQ4MTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A refill being poured into a reusable ceramic vessel in daylight"
+  },
+  {
+    "id": "prod-everyday",
+    "url": "https://images.unsplash.com/photo-1602607203588-d6d0eda790e3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXZlcnlkYXklMjBjYW5kbGUlMjBtYXR0ZSUyMHBhbGUlMjB2ZXNzZWx8ZW58MHwwfHx8MTc4NjQwNDgxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The Everyday Candle in a matte pale vessel"
+  },
+  {
+    "id": "prod-travel",
+    "url": "https://images.unsplash.com/photo-1602607203475-c5e99918dfc5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMHRyYXZlbCUyMGNhbmRsZSUyMG1hdHRlJTIwbGlkfGVufDB8MHx8fDE3ODY0MDQ4MTd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ceramic travel candle with a matte lid"
+  },
+  {
+    "id": "prod-diffuser",
+    "url": "https://images.unsplash.com/photo-1750433101196-604c1741a012?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlZCUyMGRpZmZ1c2VyJTIwZnJvc3RlZCUyMGNsZWFyJTIwYm90dGxlfGVufDB8MHx8fDE3ODY0MDQ4MjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A reed diffuser in a frosted clear bottle"
+  },
+  {
+    "id": "prod-spray",
+    "url": "https://images.unsplash.com/photo-1764395294549-686b3808320f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9vbSUyMHNwcmF5JTIwZnJvc3RlZCUyMGdsYXNzJTIwYm90dGxlfGVufDB8MHx8fDE3ODY0MDQ4MjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A room spray in a frosted glass bottle"
+  },
+  {
+    "id": "prod-refill",
+    "url": "https://images.unsplash.com/photo-1705242960887-4cb848cc406d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlJTIwcmVmaWxsJTIwcmVjeWNsZWQlMjBrcmFmdCUyMHBvdWNofGVufDB8MHx8fDE3ODY0MDQ4MjV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A candle refill in a recycled kraft pouch"
+  },
+  {
+    "id": "prod-matches",
+    "url": "https://picsum.photos/seed/prod-matches/1600/1000",
+    "alt": "A box of long matches with pale tips"
+  },
+  {
+    "id": "prod-discovery",
+    "url": "https://images.unsplash.com/photo-1773379412337-e959c8d8d60f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlzY292ZXJ5JTIwZm91ciUyMG1pbml8ZW58MHwwfHx8MTc4NjQwNTE1MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A discovery set of four mini candles in a pale tray"
+  },
+  {
+    "id": "prod-trio",
+    "url": "https://images.unsplash.com/photo-1759227860767-890fffb86f5b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2lmdCUyMHRyaW8lMjB0aHJlZXxlbnwwfDB8fHwxNzg2NDA1MTUzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A gift trio of three candles boxed in pale paper"
+  },
+  {
+    "id": "post-ingredients",
+    "url": "https://images.unsplash.com/photo-1777107857760-b04f791fe4df?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2F4JTIwZnJhZ3JhbmNlJTIwb2lsJTIwY290dG9uJTIwd2ljayUyMGxhaWQlMjBvdXR8ZW58MHwwfHx8MTc4NjQwNDgzNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Wax, fragrance oil and a cotton wick laid out on a bright bench"
+  },
+  {
+    "id": "post-refill",
+    "url": "https://images.unsplash.com/photo-1614835482670-650d049490ba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZW1wdHklMjB2ZXNzZWwlMjBiZWluZyUyMGNsZWFuZWQlMjByZS1wb3VyZWQlMjByZWZpbGx8ZW58MHwwfHx8MTc4NjQwNDgzOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An empty vessel being cleaned and re-poured with a refill"
+  },
+  {
+    "id": "post-styling",
+    "url": "https://images.unsplash.com/photo-1617283410420-76fd3d910621?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGl0JTIwY2FuZGxlJTIwc3R5bGVkJTIwYnJpZ2h0JTIwc2hlbGYlMjBib29rcyUyMHBsYW50fGVufDB8MHx8fDE3ODY0MDQ4NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A lit candle styled on a bright shelf with books and a plant"
+  }
+]

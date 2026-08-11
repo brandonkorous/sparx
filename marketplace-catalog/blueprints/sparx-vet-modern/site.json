@@ -1,0 +1,2101 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "6b62e81b-12e2-4f24-bfba-fadd1718b7f9",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "b32721e4-0c40-4b22-9608-b45bc040b510",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "447fd020-cec9-4054-95e6-95afeddb5730",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "b611ee39-a1b2-4ea3-9fa4-0c1f14cf9478",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "baebe127-5d51-4d6a-8600-bcc3407c6bfa",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "8d6f9258-bc45-4223-b7ba-e3744e3305d9",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "d0f167e6-da26-422c-a0af-8d2ef04f26b4",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "ed954cf3-8e69-4d95-871d-11562226078f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "c548e6e0-c2c5-48a7-894f-31f5771cbd14",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "5569174b-1e72-4142-97f6-a1d49c317c87",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "151df7b0-c6f1-4784-ac14-4b4f3b0c0c1a",
+                  "ord": "a2"
+                }
+              ],
+              "id": "b3c4cced-a59e-4578-943b-915c3cf1b7c4",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "40a0b430-25bd-469d-a57c-e047578542ab",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "668be7e2-fbca-451c-b10b-6064eaf5c543",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "4d08af46-866b-45b2-acf4-84f46d50dd31",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "c1a02201-2462-480a-83ed-ff1824e2ff61",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "243399d8-95b4-41af-a1f7-9e39191ffb7e",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "dbdda373-d324-44ea-88d9-91c56608039b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "b8a5b7c1-3504-408a-bf1b-148da8c1bd35",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "db446b07-b788-4231-8743-4639a15a3401",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "31c08454-d14f-4845-b553-c665fc40599f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "f4bc6852-e644-42ce-9a5d-8c33270e0945",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "6261efea-e862-4876-a2fc-93b762ed49d7",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ec7fccb3-322a-4547-b5c5-d979bbb89b79",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "fbd7cb6c-f866-402f-bb78-1a2d77e44ab6",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "54be751c-2d18-4193-bda7-11912b8b506c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "09348eae-2fb5-4c69-b4c1-6315eff299c6",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "87907e9d-af00-4230-9f3f-9770c02c6fe0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "92b0076b-f6ff-499d-aaf3-56d3225c02f1",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "7c39eb08-a691-4062-8e9f-9d82f94a7c5a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "762cbdb8-8ab1-4509-a3df-47e70b31744e",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "62dfeab2-c649-4072-aa7d-d29cb5fe523e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "54ecaa2e-f293-4ac5-a5b3-8530d59ac37f",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "fa09cd33-3b96-47bb-aa35-a694966cef46",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e7e2c0d9-62b1-4a19-b8bf-fc9870c28d8b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "b79e460a-d55f-4c03-8c1c-22a384f2e59e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f695cfdf-7eb2-4590-b8d5-ea861470405e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "1545bc17-f069-4664-978b-0eba054474f0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "602eb3d5-e2e8-49b6-bc82-407c2bd4b677",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "6a76ea88-5de0-4589-ad9f-1d4d3c0d9e50",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "6de3cf24-f35a-462c-a46a-f0c937c9f666",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e2437481-c67c-425d-9ddf-d38bf10a155d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "8e7bb8fd-c3f5-4e6e-b5ce-159556d1328f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "3c1c1167-52e4-40ab-b67e-aa97b364e4d0",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "3a23f660-b6db-4ba6-af39-adc98e821c23",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "34f5334c-d4e6-4209-8e26-e4c6771b7d22",
+                  "ord": "a1"
+                }
+              ],
+              "id": "8df4afb3-45ae-4283-a66b-e0392a7cbcf7",
+              "ord": "a0"
+            }
+          ],
+          "id": "84cf03e1-5a58-4f45-b193-2d7b5cd59a8f",
+          "ord": "a2"
+        }
+      ],
+      "id": "63e0b5ce-c3ae-47e7-a5e3-ae6a1a4b0be8"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Fauna Veterinary — calm, fear-free pet care",
+      "seoDescription": "Fauna Veterinary is a modern, fear-free practice for dogs and cats — wellness visits, nutrition, senior care and telehealth. Book your vet online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f32fd899-31a2-489f-b86b-08c43bceeef8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1772081960353-2ca7b181440c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyeSUyMGNsaW5pYyUyMGRvZ3xlbnwwfDB8fHwxNzg2MzkwMTIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A calm, sunlit veterinary studio with a relaxed dog resting on a soft mat",
+                  "loading": "eager"
+                },
+                "id": "6a23cb39-6862-4291-80a4-d1cc2cb1b2ff",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "6902f9c5-df05-4b9c-8aae-68ef3f74dfc0",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Calm, modern care for the pets you love"],
+                    "id": "82b423a4-5301-4bc1-b72e-4b8a1d265055",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A fear-free, whole-pet practice for dogs and cats — preventive medicine, nutrition and gentle, unhurried visits that leave everyone a little calmer."
+                    ],
+                    "id": "5bc51945-1e24-4f55-af4f-d5e6f59bca42",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a visit"],
+                        "id": "9d6d3714-871d-450c-90b2-b0bfa6f7cdde",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our care"],
+                        "id": "334a762a-86ad-4974-b26a-6f9f930c0854",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "be794ae5-288e-410f-b706-83e187db2784",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ea6d53ea-d075-43dd-8fee-4dde83fa1afa",
+                "ord": "a2"
+              }
+            ],
+            "id": "88f3f20e-c89c-4ac2-8c5c-bec8cacae26c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Fear-free, always"],
+                            "id": "7f905ac8-2456-429d-bc24-8a8f406cb2a1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Certified fear-free handling, soft rooms and treats first. We work at your pet’s pace so a visit feels like a check-in, not a fight."
+                            ],
+                            "id": "4aa317f0-e281-405a-8e14-639ea4e3aba8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8b11003d-e4fd-4e37-a3e5-7890e191bcbd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Preventive & integrative"],
+                            "id": "e6e46c74-e73d-497b-bb8c-74ba4c24d549",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We treat the whole animal — conventional medicine paired with nutrition and supportive care, aimed at keeping pets well, not just fixing what’s broken."
+                            ],
+                            "id": "f472cbfb-b177-42c3-af10-c0cde5c29160",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c898db85-1b18-4c55-8834-71c7e48be940",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Unhurried visits"],
+                            "id": "d77f10d8-caa4-4abb-bc28-ed888d20078c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No packed waiting room, no rushing you out the door. Real time with your vet to talk through what your pet actually needs."
+                            ],
+                            "id": "5fa48ef4-9929-4177-b7ca-6514c9cf5434",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1fa0b543-96ea-4bcf-ab2b-e2093e44ca58",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Plans & telehealth"],
+                            "id": "f9a08a3a-4b06-44d3-b62a-27605930dc17",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wellness plans that spread care across the year, plus video visits for the small questions — so help is there without the stressful trip."
+                            ],
+                            "id": "c33efe82-a731-49fd-92a4-314a6e76acaa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7e33646c-a21e-45d9-a6d0-25a6763a0aaf",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b700e4c9-7611-4d8e-86a8-afcc60dbaed0",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dae19c2e-9720-48a8-8e19-1ae828e3bc0f",
+                "ord": "a0"
+              }
+            ],
+            "id": "e2169ef8-b26c-428d-b55c-9ddd9fdb76f2",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Ways to visit"],
+                        "id": "7857eb96-1233-4070-aebf-fcae76334bc8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A few of the appointments we see most. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "ecf1cb27-56b9-408a-a5f3-28593e78e38c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "af71f826-a3e2-4685-9cc1-a42b919f4933",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Wellness visit"],
+                                "id": "07e0b22a-a2c5-4731-81a4-67ec6ce7c8f0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$65"],
+                                "id": "c75db30b-aecc-42c0-9384-5b1cfdab3dbf",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "897f8476-57ca-4aee-bb4a-2148b68cc885",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "8764a606-5da3-4f20-9146-abfe3333fd7c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["An unhurried preventive check-up, nose to tail."],
+                            "id": "52fe0f1b-04a4-4197-81e3-677af596deaa",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6f8c659b-d020-4b09-9e74-cecd81d3f772",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["New patient consult"],
+                                "id": "22dd1e1c-d09e-4825-9106-347ffbd9a1eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "768dbebe-6295-4326-83bd-ed837fade53e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9324ae59-a150-411c-9e70-882971e4acbc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "f36405a3-b773-45a4-9381-30f2c6f22575",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A relaxed first meeting and a plan together. Free."],
+                            "id": "041288a4-a4e3-4215-a42e-2acfe4d819aa",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b7d85ec8-02b9-43a0-b3d3-f8da150b92cc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Nutrition consult"],
+                                "id": "8634f498-9c94-4102-b844-c13f47518e98",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "2b4d6025-02e4-4627-ad16-83446cf691c9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "98ca488a-0be3-4ba0-962a-2640b3db60c9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "c1a20acd-eab2-46a5-8b37-3750a1231fc2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Practical food and weight guidance, no upsell."],
+                            "id": "7ecf00d2-fbcf-40a8-9b79-49dbf700c617",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "22505b84-d1e5-4f51-865d-e40317b116b2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Senior wellness"],
+                                "id": "254269c7-844e-4b8f-af60-daf45a20beab",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$140"],
+                                "id": "3a30e121-36d2-4031-b331-e3ea1d112cd9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "3aa55718-09c4-406a-938f-fc604bd26dcb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "8f6fd31d-ca1c-4933-acc2-8da988083799",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Extra time and screening for older pets."],
+                            "id": "4875f7dd-1e3e-4ec6-85e8-de3f1409b9b0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d9179193-1480-4d01-b886-13726c31a88a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2150d711-25a8-4a91-a10d-6523e5be9ce1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "8fe679af-580d-4fdb-8b98-ef55e60c068a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "68bcade6-3f65-4d79-8584-74931fa3e265",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6c93d17f-9601-4852-a64e-6981edd0a518",
+                "ord": "a0"
+              }
+            ],
+            "id": "217636a9-b9f2-45ec-ad25-06caa27e47a5",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwd2l0aCUyMGNhdHxlbnwwfDB8fHwxNzg2MzkwMDk4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A vet gently examining a content cat on a towel-lined table",
+                      "loading": "lazy"
+                    },
+                    "id": "aab8ac06-bba1-4bea-a2fe-e1bc032c79ce",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The whole pet, at their pace"],
+                        "id": "9531941f-5b8e-441e-865a-a8e28b168dee",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Fauna was built around one idea: a calmer visit is a better visit. Our team is fear-free certified, which means treats before needles, quiet rooms, and never forcing an anxious animal through something they’re not ready for."
+                        ],
+                        "id": "b2242645-4545-4e0a-92c8-9471cdb1db8f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It’s a whole-pet way of working — we look at nutrition, comfort and behaviour alongside the medicine, because the goal isn’t just treating illness. It’s helping your dog or cat thrive for years."
+                        ],
+                        "id": "3e59c2ff-255a-4d46-902d-23ea82a0b79f",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "f09f35b8-3a23-4b33-88e9-0cfe86efcd9f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "943d461b-0aaa-4f6a-a559-be44643a6119",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "24a3cac3-6f87-4b19-95ab-2ed266f79246",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5117866a-eaa5-4f43-a1a2-1b42649a7de5",
+                "ord": "a0"
+              }
+            ],
+            "id": "97fd5ce2-eb9e-4ffd-a2f0-afc40b1bf75b",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The vets you’ll see"],
+                        "id": "224cbfe4-0920-4f08-b5aa-f1c19dd94c81",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you and your pet get to know the same faces over time."
+                        ],
+                        "id": "173a640e-7068-479f-a2ac-52eafb672454",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "45588dd6-90f6-4ead-9387-b04a550b774c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1673865641073-4479f93a7776?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Wren Delgado, integrative & wellness veterinarian",
+                              "loading": "lazy"
+                            },
+                            "id": "e09b72b6-05dd-4c15-beba-206b5195e8c2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Wren Delgado"],
+                                "id": "99ae88e3-33eb-4d4a-8d1b-d7a833b548b8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Integrative & wellness"],
+                                "id": "cd682c63-8ba0-4e2b-9b36-2a6490d4d13c",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Preventive and integrative medicine, with a soft spot for nutrition and gut health."
+                                ],
+                                "id": "c444ee1d-16b4-4bd3-a084-a6e85b66fcb4",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "798fa74e-4350-4d44-9981-63cfe898f36f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "667f5cb6-3df2-44af-9943-8fa33df49dfc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1700665537604-412e89a285c3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDEwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Sol Okafor, primary-care veterinarian",
+                              "loading": "lazy"
+                            },
+                            "id": "383c3884-44af-4f4d-9a4c-23b60cb5a213",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Sol Okafor"],
+                                "id": "280d5bd4-b70d-4e27-b33f-2f13e3ede80a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Primary care"],
+                                "id": "beab45f1-0682-45c5-8742-d0d8b1c60133",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Everyday exams, sick visits and senior care — calm hands and straight answers."
+                                ],
+                                "id": "ae4d38b5-ad07-48a4-ba70-4669a1d33944",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "e649dae3-d090-4ef0-ad8c-1f39a5fd429a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6fe32e69-1f7b-4d31-a168-37c1d00846b3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg5MzExfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Marisol Reyes, wellness & telehealth veterinarian",
+                              "loading": "lazy"
+                            },
+                            "id": "c3a9e6a3-f9b1-4997-b069-1c20184b9987",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Marisol Reyes"],
+                                "id": "a6630845-2ac7-46cc-8058-198e5e4c71e9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Wellness & telehealth"],
+                                "id": "1c996a1d-1781-4123-902c-529351fb31e0",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Wellness visits and video consults, so small worries get answered fast."
+                                ],
+                                "id": "60f3c9f7-dfa2-476d-8e65-df8f243bfb1b",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "6bb17076-127c-4568-8b8e-cbbcd51aa503",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bc839d7a-dc0b-49f9-97df-2662253d2d4f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6c0ba645-173d-421e-bfcd-66124eaa59d6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "12b9e1ca-34c8-4fd2-a195-d49d57814606",
+                "ord": "a0"
+              }
+            ],
+            "id": "18348626-e0a0-4804-a643-b59d794fb1e1",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“First vet where my rescue didn’t shake the whole time. They let her sniff around, took it slow, and we actually got everything done. She trots in now.”"
+                    ],
+                    "id": "e2c34d67-e52a-4b63-af46-42f4c0761f0b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Devi & Juniper, clients since 2024"],
+                    "id": "380af1c7-edd7-4c4c-a47c-a5f87e5cff6f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c579f02d-a9fb-4e51-ab9e-73b054346d1e",
+                "ord": "a0"
+              }
+            ],
+            "id": "80cc6d66-d884-40bd-b475-51fa26ae3c1c",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to book a visit?"],
+                    "id": "95929d90-a3d4-46aa-b90a-4bc7555e9b11",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Choose an appointment, pick your vet and see live times. It takes about a minute."
+                    ],
+                    "id": "e21f0c3e-9f39-402c-92d2-ca9bd092087d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "5b995f86-940c-4cf2-a14e-ffc5a727e7e7",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "654883f5-6e20-4db8-9045-2a5dbabaa699",
+                "ord": "a0"
+              }
+            ],
+            "id": "b356ca01-8ad8-47dd-9c0d-422c56c4e8e7",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Fauna Veterinary",
+      "seoDescription": "See what Fauna Veterinary offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b994677e-42a3-499c-8e27-ae11dcf3e747",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1644675272883-0c4d582528d8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwdmV0JTIwY2xpbmljJTIwaW50ZXJpb3J8ZW58MHwwfHx8MTc4NjM5MDA5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A quiet, low-stress exam room in warm neutrals and greenery",
+                  "loading": "eager"
+                },
+                "id": "4c2ed81d-91fb-4c25-b16a-b37ab894213f",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "83e2277a-bfd3-415e-aa63-8478a74c2673",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a visit"],
+                    "id": "d5f2ef32-db60-44e1-96a0-9288dccfc13c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose an appointment type to see prices and live availability, then pick your vet and a time that suits you and your pet."
+                    ],
+                    "id": "dfffe707-8bab-488c-a134-9ab99db34562",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See appointments below"],
+                        "id": "e8f65d66-e657-4341-b109-d9b5d9c8162a",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "f50cb02a-fe9c-4b00-a746-4e35463375b9",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1ce26c89-9c52-464b-9a88-4161d340c959",
+                "ord": "a2"
+              }
+            ],
+            "id": "bc2967fe-2b1a-46b4-83d3-a57f4040adb6",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "ba170b25-06f8-4172-aa38-c75dd75b2349",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Fauna Veterinary",
+      "seoDescription": "Who Fauna Veterinary is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5503430b-0435-4a43-9e8f-ad21d6fa80b3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1772081960353-2ca7b181440c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyeSUyMGNsaW5pYyUyMGRvZ3xlbnwwfDB8fHwxNzg2MzkwMTIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A calm, sunlit veterinary studio with a relaxed dog resting on a soft mat",
+                      "loading": "lazy"
+                    },
+                    "id": "dcf69314-882c-4e88-a6c7-9c029d8a4525",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Fauna Veterinary"],
+                        "id": "b0ae50ae-042c-4ad9-bb86-465d8708aaed",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Fauna to practice the kind of medicine we always wanted for our own animals — calm, thorough, and centred on the whole pet rather than a single problem."
+                        ],
+                        "id": "4b85fdc6-25f6-4e9c-ab11-89232e1251de",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That means fear-free handling as the default, real time in every appointment, and honest guidance on food, prevention and comfort. Fewer stressed visits, healthier pets, and owners who actually understand the plan."
+                        ],
+                        "id": "5e0eab20-5a4c-46b9-9906-c944b06d1b92",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a visit"],
+                            "id": "5e01ab09-5d6a-4913-854d-99f12e8febb4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "17b408d4-8803-4023-b48d-a37d845eb441",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c019659c-69a4-4a5c-9fd5-3daf2301a64d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "783f4c5e-06e8-4027-a248-811f05e50b27",
+                "ord": "a0"
+              }
+            ],
+            "id": "f6da58b2-9dad-4731-9158-5665251a20da",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we care"],
+                    "id": "0f26c7cd-aaab-42eb-a989-3f4aa7a69fae",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Fear-free first"],
+                            "id": "603d8d01-9ca3-4c4d-8e73-364d75017c6b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every visit is paced for your pet — treats, patience and gentle handling, never a wrestling match."
+                            ],
+                            "id": "2421dd31-2a35-4190-adff-67de62bce646",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e31a7b46-4ff8-4383-855e-a9e9851e460d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Prevention over patching"],
+                            "id": "0c3a2767-e52d-426c-b384-9e9bc97115e7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wellness plans, nutrition and early screening keep problems small, so care costs less and pets feel better."
+                            ],
+                            "id": "8e3cd4c2-9a44-4dba-b59e-03633964b8be",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f7125765-a48b-4419-ae63-32b8fcdfdf90",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Clear, honest plans"],
+                            "id": "8d744a20-f01f-47fa-a2bb-3a1e826aac84",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll always leave knowing what we found, what it means, and what it costs — no jargon, no pressure."
+                            ],
+                            "id": "ae8fe3c0-8a26-4945-969a-b5318cb87ad9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4cd47712-6077-4db4-92c7-08ca671fda38",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "251ea8c4-e4a5-4145-8772-a36423793c38",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "959db1e8-7075-4b5f-af5c-5ae51877637c",
+                "ord": "a0"
+              }
+            ],
+            "id": "c79e4102-6b17-44c0-9515-c6cf0f6a5963",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Fauna Veterinary",
+      "seoDescription": "Where to find Fauna Veterinary, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f26c1c0d-fc58-461b-8388-5375270fc55e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the practice"],
+                        "id": "a3691a25-6c21-4a32-8a2a-46c8aba76186",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Fauna Veterinary"],
+                            "id": "bd517a1e-b755-459e-9ae6-be4dbc64c224",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Meadowlark Avenue"],
+                            "id": "5cd98e9b-87ed-42ba-b238-19ba1d2187bb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 3 · Asheville, NC 28801"],
+                            "id": "deb2a122-625e-4d78-951f-734396ee7f94",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3a6e0b84-c81c-4aa4-81d9-8ed067d56d34",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "1afece17-09ac-4ded-9a59-cd8a2fb97773",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "0ba26391-9c8b-43c8-bcbe-928d9a84d1f8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "450f4fff-a143-435a-95fe-d3474a602b20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "4a30d119-313f-4448-9518-a047c51fea87",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 4:00"],
+                                "id": "ba5f968c-42f3-4eea-8f8f-23f6b540055a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0d63fe57-3212-482e-a71a-ea7671bf2078",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "237e853b-3252-4a37-84dc-1fa1018e5ca6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "dc23d1cb-3c4a-448d-bbab-7be28d3efb0d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8b373f42-6900-4047-b9e4-7754bfd69e96",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1015726d-bd05-454c-a44b-6dc8dce1c1aa",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8d493fbf-71b7-4368-b97a-c2e63cee5c0d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Meadowlark Avenue, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "a89a5178-fa39-4835-89b6-56805607fd8e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d97d1d79-7a06-400c-952b-d07f5ff20588",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f5b8806-7a01-4bd4-9eb4-bdab8b5900cb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "842b0279-a3da-4856-a7b1-958040caec41",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your pet’s time online — no phone tag, no hold music."
+                    ],
+                    "id": "79fde844-222d-4532-85be-1d4c3bdf9641",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a visit"],
+                    "id": "58bfb45f-3082-4c43-8570-678e19672a36",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7c7c8d2d-bc0e-44e1-9784-b6eb31f4a2c1",
+                "ord": "a0"
+              }
+            ],
+            "id": "005b7db1-65d2-448c-9ef1-25e37b05b248",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "fauna",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.013 120)",
+      "--color-base-200": "oklch(94% 0.016 125)",
+      "--color-base-300": "oklch(88% 0.018 130)",
+      "--color-base-content": "oklch(28% 0.02 150)",
+      "--color-primary": "oklch(60% 0.068 150)",
+      "--color-secondary": "oklch(38% 0.028 152)",
+      "--color-accent": "oklch(70% 0.072 55)",
+      "--color-neutral": "oklch(30% 0.02 150)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.75rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(98% 0.01 152)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 150)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.072 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(88% 0.018 130)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.02 155)",
+      "--color-base-200": "oklch(20% 0.016 155)",
+      "--color-base-300": "oklch(16% 0.012 155)",
+      "--color-base-content": "oklch(95% 0.012 115)",
+      "--color-primary": "oklch(74% 0.08 150)",
+      "--color-secondary": "oklch(78% 0.02 130)",
+      "--color-accent": "oklch(77% 0.08 55)",
+      "--color-neutral": "oklch(83% 0.015 130)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(15% 0.02 130)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(15% 0.015 130)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.08 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(16% 0.012 155)"
+    }
+  }
+}

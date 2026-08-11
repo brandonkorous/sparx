@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-test",
+    "status": "published",
+    "body": {
+      "title": "How we test our gear, and why nothing ships until it fails",
+      "excerpt": "A spec sheet is a promise. We only make the ones we’ve watched a piece keep — soaked, overloaded and left out in the weather for a season.",
+      "featuredImage": {
+        "$asset": "post-trail"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outdoor gear is easy to design on paper and hard to trust in the field. A jacket can hit every waterproofing number in a lab and still wet out at the shoulders in an hour of real rain, because the seams weren’t taped where a pack strap flexes them. So before anything gets a page on this site, it does a season of actual trips — carried by people who will happily tell us it failed."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "We break it on purpose"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every sample goes out overloaded, dropped, dunked and left staked out overnight in whatever weather we can find. We overstuff the packs past their rating, run the shells through wind-driven rain, and freeze the bottles solid to see what cracks. The goal isn’t to prove the gear works — it’s to find the exact point where it stops, then decide whether that point is far enough past what you’ll ever ask of it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What survives, ships"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If a piece comes back with a failure we can’t fix at the design stage, it doesn’t make the catalogue — full stop. That’s why the range is short: plenty of good ideas didn’t survive the season. What’s left is gear we’ve personally watched take a beating and keep going, which is the only recommendation we think is worth anything."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-layer",
+    "status": "published",
+    "body": {
+      "title": "How to layer for the mountains without overthinking it",
+      "excerpt": "Base, mid, shell. Three layers, one job each — here’s the system we actually use, and how to read the weather instead of the forecast.",
+      "featuredImage": {
+        "$asset": "post-layering"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Staying comfortable outside isn’t about one magic jacket — it’s about a system you can add to and shed as the day changes. Get the three layers right and you carry less, sweat less, and never end up either soaked from the inside or shivering at the summit. Here’s the whole thing, minus the jargon."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Base, mid, shell"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The base layer touches your skin and has one job: move sweat away so you don’t chill when you stop. Merino wins here because it wicks and doesn’t stink. The mid layer traps warmth — a light down or fleece you throw on the moment you stop moving. The shell goes over everything and blocks wind and rain; it isn’t there to keep you warm, it’s there to keep the weather out. Each layer does one thing well, and together they cover almost anything."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Dress for the walk, not the car park"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The classic mistake is bundling up warm at the trailhead and boiling within ten minutes. Start slightly cold — you’ll warm up fast once you’re moving — and adjust before you’re drenched, not after. Vent the shell on the climb, add the mid layer at the top, and keep the base layer dry at all costs. Read your own body, not just the forecast, and the system does the rest."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "pack-for-an-overnight",
+    "status": "published",
+    "body": {
+      "title": "How to pack a 38-litre bag for a fast overnight",
+      "excerpt": "A trip report and a checklist in one: everything that went in the Trailhead 38 for a one-night traverse, and why it all fit.",
+      "featuredImage": {
+        "$asset": "post-packing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People assume you need a 60-litre expedition pack to spend a night out. You don’t. For a fast, light overnight in three-season weather, a well-loaded 38-litre bag carries everything you actually use and nothing you don’t — and it walks a lot nicer on the climb. Here’s exactly what went in for a recent one-night ridge traverse."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Heavy in the middle, close to the back"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The order matters more than the volume. Sleeping bag and spare clothes go in a dry bag at the bottom. The heavy stuff — water, stove, food — sits in the middle and tight against your spine, so the load pulls down through your hips instead of hauling you backwards. The shell, headlamp, map and snacks live in the lid and hipbelt pockets, where you can reach them without stopping. Done right, a full pack feels like part of you, not a sack hanging off your shoulders."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The overnight checklist"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Shelter and sleep: tent or tarp, sleeping bag in a dry bag, pad. Layers: the base-mid-shell system, plus a warm hat and gloves even in summer. Kit: stove, fuel, a pot, a lighter, a full bottle and a way to treat more water. Safety: headlamp, first-aid basics, map and compass, a charged phone. Food for the effort plus one extra meal. That’s a comfortable night out in a 38-litre bag with room to spare — and if it doesn’t fit, that’s usually a sign you’re carrying a want, not a need."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

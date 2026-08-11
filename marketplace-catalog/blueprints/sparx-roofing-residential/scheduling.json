@@ -1,0 +1,243 @@
+{
+  "policies": [
+    {
+      "handle": "roofing-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a visit. We text a reminder the day before and confirm the arrival window when the crew is on the way."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "ray",
+      "name": "Ray Sullivan",
+      "kind": "staff",
+      "skillTags": ["repair", "inspection", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "luis",
+      "name": "Luis Ferrara",
+      "kind": "staff",
+      "skillTags": ["replacement", "install", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dale",
+      "name": "Dale Hutchins",
+      "kind": "staff",
+      "skillTags": ["gutters", "maintenance", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 990
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 990
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-inspection",
+      "name": "Free roof inspection",
+      "description": "We climb up, check every slope, flashing and valley, and walk you through what we find in plain language — no charge, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "roof-repair-visit",
+      "name": "Roof repair visit",
+      "description": "A missing shingle, a lifted flashing or a soft spot fixed right the first time, with the area left clean and watertight.",
+      "durationMinutes": 90,
+      "priceCents": 18900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "replacement-estimate",
+      "name": "Replacement estimate",
+      "description": "A full measure-up and an honest, itemized written quote to re-roof your home — materials, timeline and price, before any work is booked.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "leak-diagnosis",
+      "name": "Leak diagnosis",
+      "description": "A stain on the ceiling or a drip in the attic tracked back to its real source on the roof, with a clear fix and a firm price.",
+      "durationMinutes": 60,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "gutter-service",
+      "name": "Gutter cleaning & repair",
+      "description": "Gutters and downspouts cleared, resecured and tested to run — so water leaves the roof instead of sitting on it.",
+      "durationMinutes": 90,
+      "priceCents": 14900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "maintenance-tune-up",
+      "name": "Roof maintenance tune-up",
+      "description": "A yearly once-over — sealants topped up, loose shingles nailed, debris cleared — to add years to the roof you already have.",
+      "durationMinutes": 90,
+      "priceCents": 16900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    },
+    {
+      "handle": "storm-damage-assessment",
+      "name": "Storm damage assessment",
+      "description": "After wind or hail, a careful top-to-bottom check with photos, so you know exactly what took a hit and what it needs.",
+      "durationMinutes": 120,
+      "priceCents": 0,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "roofing-standard"
+    }
+  ]
+}

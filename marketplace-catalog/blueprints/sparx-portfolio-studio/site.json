@@ -1,0 +1,2252 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "b305ec60-0495-4e91-995c-cd94602e21ad",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ad6fa1d4-7a40-4266-b2e6-563306d36e8c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "c53f1055-e714-4809-a81f-09a2eeeffc19",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "de15387d-02d3-4002-8b70-1fd1bec90cb3",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "d91bdcad-e08b-44ce-a951-d6e4f883942e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "e13fafc9-b892-408a-ac25-ea3014b6173f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "0d1a9f30-daf9-4a8d-ab63-ffcc7dddf2c5",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "179307c3-9c92-403a-a323-b126850f2565",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "f8b15db3-39e3-40ca-96f0-cdbc0f0e39dd",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "cdb37554-a900-434f-9117-f2ea56862802",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "94b99449-0d94-45d8-b1db-3e32dd980d98",
+                  "ord": "a2"
+                }
+              ],
+              "id": "ead0288b-73e0-4aec-bfb4-05db8958a957",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "c422f56c-773d-4ce5-b550-0591ae48dac0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "87b6b5a5-85f2-4dae-90fd-eb95334fc6ea",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "52eea7e9-0b62-4e6f-abdf-daedd474a0ef",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "58291f1d-7bd8-4acb-b70c-e31af978f312",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "9fc7c33d-98c8-4cfb-a532-e805e45bbbae",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "548bf195-8a82-4c12-b8c6-84c302e39d34",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "cc4dab4c-c874-458a-91d5-fe6f484e968e",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "a5ebd49d-33b7-4649-ac15-cc16e9e8220b",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "3c1e47c0-53e6-49cb-a9e2-3ee535c81ee7",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ce004362-9c37-455c-a3bc-a5f2959236f8",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "066ce0c5-748d-416d-be6a-66100750540e",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "25df6919-484b-40ca-a9ed-51a24543c9a1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "1da60459-1c54-488c-8a32-e53dd07444ac",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "e1c7332b-527b-4ff8-a7c5-c5ad6854cb26",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6b3e10a4-8860-4aad-b183-ec416f2eecfa",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "29eb3138-f4ba-4132-b0e7-2c13861c8fa5",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "85b12e0b-4288-48dc-8074-0a77e5304fb2",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "e8a5cf25-819e-4382-9cf1-ca6d7dbc15a6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "e9db8a17-e121-46bf-8e87-b4ec118aeed1",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "c500b820-34c9-4cff-8aef-f26f8d115cc4",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "5517426c-efe7-4e77-9378-0cdb37522df7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "2bac4dae-454b-4367-a86c-80a7f42e13fe",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "be7c838d-7425-41e1-a814-5b0a7d306733",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "be3f0acc-7bc8-416c-bec6-45c58191b737",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "16d43ed1-30b2-4bd0-9eab-f546c682276d",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "bc07f819-29a2-462f-b1d5-e8fc5a0cbce9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "c3777df6-c94d-4422-aa86-32e061b8b3fc",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "4a79ed8a-f13c-44df-8c1a-ab7248e66e70",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "89f12bb9-c637-4a6b-95eb-6a376963a357",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "2bc91ea1-dcbe-4579-a6d4-761a473de071",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "ffb50bd7-19b9-4f30-983b-6b0549f1cfd6",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "478eabd7-b8e9-4b99-bcb3-f3d1466e1a7b",
+                  "ord": "a1"
+                }
+              ],
+              "id": "227353b5-4874-4974-bb34-9dc18b24cbd5",
+              "ord": "a0"
+            }
+          ],
+          "id": "c9377939-4967-4b06-a082-9e4287ae8023",
+          "ord": "a2"
+        }
+      ],
+      "id": "cf46c1e6-79d1-42ca-80cb-60b47fadb192"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Nadia Rehman — architect & spatial designer",
+      "seoDescription": "Nadia Rehman is an architect and spatial designer in Lisbon working across homes, civic buildings, cultural spaces and workplaces — selected work, project sheets, and how to start a project.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a72b25bd-8a6c-40cd-8a3e-37d91b24fb6d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-16 @3xl:pt-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "max-w-4xl text-5xl font-bold uppercase leading-none tracking-tight text-base-content @2xl:text-7xl @3xl:text-8xl",
+                        "children": ["Buildings and spaces that know why they exist."],
+                        "id": "566a9ea6-cfec-4c8f-bb6c-d87bd966613b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": [
+                          "I’m Nadia Rehman — an architect and spatial designer working across homes, civic buildings, cultural spaces and workplaces. Every project starts with the question of what the place is for, and holds that answer from the first sketch to the last detail."
+                        ],
+                        "id": "d7bdcc21-59de-4d05-9f78-646e9db1d7d9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["See the work"],
+                            "id": "0667514d-2d2e-47a1-af8f-b6a9aabf88e7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/about"
+                            },
+                            "children": ["About the practice"],
+                            "id": "49ff7f16-433d-4dc4-aed1-0178956004de",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e247fb6c-5be8-4fc0-b2ed-c5f2783838d6",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "74bc3ae9-b17e-4782-90f8-c3771fc47972",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "overflow-hidden rounded-box border border-base-300",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-video w-full object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1532888277436-2286814f0ee1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9kZXJuJTIwY29uY3JldGUlMjBnbGFzcyUyMGJ1aWxkaW5nJTIwZHVzayUyMGFyY2hpdGVjdHVyZXxlbnwwfDB8fHwxNzg2Mzk5ODMyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "A large-format concrete-and-glass building at dusk, seen from a low corner",
+                          "loading": "lazy"
+                        },
+                        "id": "a2af37c8-c915-4420-8fcb-6b2dd84360e1",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "111d8469-6748-47b2-ac6d-03fa34360b7a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 border-t border-base-300 pt-8 @md:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Practice"],
+                            "id": "78040a4a-6653-4cf3-b1ec-e5154ea6a3d9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold leading-snug text-accent",
+                            "children": ["Rehman Studio, since 2014"],
+                            "id": "664b73e9-fa90-4576-8278-7ee51256b8ea",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e0fe74e9-57b7-4e29-aa01-3646b7d40e0e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Based"],
+                            "id": "16566c3e-51a6-4e19-a5cc-d1d497bd5286",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold leading-snug text-accent",
+                            "children": ["Lisbon, working internationally"],
+                            "id": "62273b49-8e81-45e6-b4cb-90d8109d9ee2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fc4ecc18-2721-4a8f-b077-5841e49929b8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Fields"],
+                            "id": "94a05ba9-fbf8-4d15-bdc7-6c517f86b4e7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold leading-snug text-accent",
+                            "children": ["Residential · Civic · Cultural · Workplace"],
+                            "id": "9720ddf8-1ab3-4ce5-92d5-b8b971e581cd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b137bacb-6230-4efd-ac60-60c875a8a953",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "94138e68-53de-4b76-bc6f-b826e5ec04dc",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e44636ff-3ed3-4c3c-873a-36e0a498636f",
+                "ord": "a0"
+              }
+            ],
+            "id": "72e54320-b893-45e9-a2e1-74c279f008e6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold uppercase tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Selected projects"],
+                        "id": "e84ee5dd-9e51-48ec-a3f2-327ee098ec3c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Four recent buildings, one from each field the practice works in. Each opens to the full sheet — the site, the idea, and how it was made."
+                        ],
+                        "id": "8ab78ce4-1d6b-49d0-8498-37f251391d0f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "95c1b80d-afe5-4e1c-ba90-265f5fbbfaf3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-8 @3xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group block overflow-hidden rounded-box border border-base-300 bg-base-100 transition hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/casa-mirador"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1631645033513-15144f920557?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29uY3JldGUlMjBob3VzZSUyMGhpbGxzaWRlJTIwbW9kZXJuJTIwYXJjaGl0ZWN0dXJlfGVufDB8MHx8fDE3ODYzOTk4MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A hillside house of board-formed concrete opening to a terraced garden",
+                              "loading": "lazy"
+                            },
+                            "id": "49be1b5a-108c-45ba-956b-2bd427e2a98a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Residential"],
+                                    "id": "88562663-0a33-49a8-9ce3-ecbb0947051c",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold text-primary",
+                                    "children": ["2026"],
+                                    "id": "fc4126ae-5d3f-459d-a871-07ae62802cae",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "85eb2ee4-9673-41e9-83e0-d629ec123252",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-2xl font-bold uppercase leading-tight tracking-tight text-base-content @2xl:text-3xl",
+                                "children": ["Casa Mirador"],
+                                "id": "69872881-4691-4141-bfbe-bbd4ef28745a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "448e20b4-f64b-448b-8e93-49d9c7f5ecd5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "925d1726-3863-4498-8d86-f17c443ef90c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group block overflow-hidden rounded-box border border-base-300 bg-base-100 transition hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/riverside-civic-hall"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1627397159237-d2acb7f500af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2l2aWMlMjBidWlsZGluZyUyMGNvbG9ubmFkZSUyMGFyY2hpdGVjdHVyZXxlbnwwfDB8fHwxNzg2Mzk5ODM5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A civic hall with a deep colonnade and a wide public forecourt",
+                              "loading": "lazy"
+                            },
+                            "id": "e2bbd43c-8596-43ed-b860-3768c582c130",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Civic"],
+                                    "id": "291a179e-cba4-4f37-ba72-3a06753ca58b",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold text-primary",
+                                    "children": ["2025"],
+                                    "id": "9d4ee603-505c-443b-b77e-6da189168d8b",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "0c8b369f-7837-47cd-81c5-b3bf802a42b2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-2xl font-bold uppercase leading-tight tracking-tight text-base-content @2xl:text-3xl",
+                                "children": ["Riverside Civic Hall"],
+                                "id": "d0bff27d-948a-417e-bf0a-c0dc10ed7312",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d51ff165-2d9d-4435-91df-e056e9b74f1b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "89304aee-da4b-4e1c-a128-7b09a188447a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group block overflow-hidden rounded-box border border-base-300 bg-base-100 transition hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/foundry-arts-centre"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1565610222536-ef125c59da2e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29udmVydGVkJTIwaW5kdXN0cmlhbCUyMGJ1aWxkaW5nJTIwZ2FsbGVyeSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTk4NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A converted industrial foundry, its steel roof trusses left exposed above a gallery",
+                              "loading": "lazy"
+                            },
+                            "id": "9ca4e904-3c32-45e2-8861-2cff291489eb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Cultural"],
+                                    "id": "23fd4193-ac3b-4aae-be7a-4467f0fc3de9",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold text-primary",
+                                    "children": ["2024"],
+                                    "id": "84b3516b-588f-4c8c-92a5-714628570229",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "defd63cb-91c9-4fce-ab61-831666475b1d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-2xl font-bold uppercase leading-tight tracking-tight text-base-content @2xl:text-3xl",
+                                "children": ["Foundry Arts Centre"],
+                                "id": "766cb2aa-b16a-41d2-8c2c-123bba85c7bc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "35821f11-1101-4820-9017-549b0c441c56",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8695d276-59dc-4991-bf53-fe6d09fcfde5",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group block overflow-hidden rounded-box border border-base-300 bg-base-100 transition hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/meridian-workspace"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1556761175-4b46a572b786?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8b2ZmaWNlJTIwaW50ZXJpb3IlMjBvYWslMjBnbGF6ZWQlMjB3b3JrcGxhY2V8ZW58MHwwfHx8MTc4NjM5OTg0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A daylit workplace interior with oak joinery and a full-height glazed wall",
+                              "loading": "lazy"
+                            },
+                            "id": "09b8922f-785f-4c82-8cc3-5d2d32edafc0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex items-baseline justify-between gap-4",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                                    "children": ["Workplace"],
+                                    "id": "f2d2621e-834a-4ad3-afc1-ae3d7f1b245d",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-sm font-semibold text-primary",
+                                    "children": ["2025"],
+                                    "id": "601c6219-7009-42c8-a20d-5f1371916e9d",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "102a051c-bb0f-4027-b512-7c2a1215d91a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-2xl font-bold uppercase leading-tight tracking-tight text-base-content @2xl:text-3xl",
+                                "children": ["Meridian Workspace"],
+                                "id": "aec29849-a0c5-4a8a-b2a0-d22f701e0c07",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "725ab59e-6cfa-4930-a042-e013c8513350",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9c755b27-7228-4c6d-ab26-47f535765bfc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "607e0e05-8ab3-4c5e-baf3-a4dd04a18d33",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ab9b0e3b-612a-4692-8728-14cb3e01dfb3",
+                "ord": "a0"
+              }
+            ],
+            "id": "24c436c3-367d-4a00-bb57-2edb8ca42a1b",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "max-w-3xl text-3xl font-bold uppercase tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["One practice, from the masterplan to the door handle."],
+                    "id": "5314d99f-139e-4456-bfc6-34640b1d05d5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 @md:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold uppercase tracking-tight text-base-content",
+                            "children": ["Architecture"],
+                            "id": "1a5aaaaf-b979-418a-91fa-a16366bc3bf1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "New buildings and thoughtful additions — houses, halls and cultural spaces designed from their structure and light out, not their surface in."
+                            ],
+                            "id": "df51dc1a-11a9-4497-b691-af242a9c8a1c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "786b1453-b5c7-45ec-b0e1-66d518bdd3ae",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold uppercase tracking-tight text-base-content",
+                            "children": ["Interiors"],
+                            "id": "3cbd08e8-6f57-43ca-b5c0-a7cae3458bfc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The rooms people actually live and work in: materials, joinery, and the daylight that makes a plan feel inevitable once you are standing inside it."
+                            ],
+                            "id": "447e98a8-8fb3-4061-9647-27787a27e0e9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "941a8b49-3907-49b6-a413-b565b010e650",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold uppercase tracking-tight text-base-content",
+                            "children": ["Masterplanning"],
+                            "id": "04960581-5dd7-4e2c-ba94-ab9d9bbef772",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "How a site holds more than one building — routes, thresholds and public space that make a place legible before a visitor has read a single sign."
+                            ],
+                            "id": "acf11987-6a15-4372-b848-fda24203639f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bae10005-66c6-410a-a7a3-448547a8ee7d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold uppercase tracking-tight text-base-content",
+                            "children": ["Exhibition"],
+                            "id": "2b5ffb2b-7f72-4647-8e7f-651477e09666",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Temporary and civic installations where the brief is a story, not a programme — pavilions and displays that teach a space how to be read."
+                            ],
+                            "id": "3bfb0203-8e96-4d83-ba60-b7be2ff99955",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "188fcb47-97d5-40fc-94a5-960850d1a7ac",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "47fb6856-bd00-4da4-9c3d-d3d0ad2d9c63",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c943abb7-eeb8-413b-9073-367ca7e3f49f",
+                "ord": "a0"
+              }
+            ],
+            "id": "01b405e2-9d96-49d6-898c-3f516ccba9aa",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold uppercase tracking-tight text-primary-content @3xl:text-4xl",
+                    "children": ["Have a site and a reason to build?"],
+                    "id": "8ce0ad3e-f236-4541-bc7d-3a992e7b5fb0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-primary-content",
+                    "children": [
+                      "I take on a small number of projects at a time and stay close to each one. If yours has a real question at its centre, I’d like to hear about it."
+                    ],
+                    "id": "f6480d82-1f3a-48ce-800c-330a9f091ecd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-lg mt-2 bg-base-100 text-base-content",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Start a project"],
+                    "id": "c1586855-c375-43c4-b039-c17b4f7a216b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "16b90f7a-6309-413d-a6f9-831d67f794a3",
+                "ord": "a0"
+              }
+            ],
+            "id": "c96eaf7f-e663-4437-a7e4-e9e585bd5344",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Nadia Rehman",
+      "seoDescription": "Selected projects and case studies by Nadia Rehman — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "91f44a69-234c-4288-b612-b92c67ff0f5f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-7xl",
+                        "children": ["Work"],
+                        "id": "4c7968f6-27e7-44ee-821e-e7ff82989b87",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Selected projects from the last few years, across the four fields the practice works in. Each sheet lays out the site, the idea, and how the building was made."
+                        ],
+                        "id": "87ec4727-ef49-4035-9c70-a50651c03421",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "175304e5-c7c7-468a-9be0-f3ec16020690",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-base-300 pt-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Residential"],
+                        "id": "90edab6b-48ff-4a5a-9fdd-62bd5060e769",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Civic"],
+                        "id": "4801a380-6b31-468d-88ec-4cea6f715f4f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Cultural"],
+                        "id": "392cd71e-2e4d-4a2c-8e77-3984599a317c",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Workplace"],
+                        "id": "40bc1305-ac82-4a6f-9c43-423642173996",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9852e4ad-3d7f-4f67-9e39-0688702e104f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2d831c5d-f372-4621-a9f4-1dd103aee513",
+                "ord": "a0"
+              }
+            ],
+            "id": "8646a806-5fea-43aa-bb8b-80445487185a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "08c07382-8ddf-4657-922d-3d75bd7d31f0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "8ef84326-6b93-4604-8836-27888d7fd883",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "52d62df0-bd72-4edf-8b85-5e1b74273045",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "2a5c0209-3bcf-4a4c-87c6-636a3903372a",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "3723b700-196b-4bd6-94e0-22cdba09997d",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "d37dfd77-7fe6-4437-a85d-31cb7131e57f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "96aed95c-6871-4612-80d9-f3430a0973d8",
+                "ord": "a0"
+              }
+            ],
+            "id": "c90b6a55-0ad6-4550-86b6-d6733bea6f24",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Nadia Rehman — architect & spatial designer",
+      "seoDescription": "A small Lisbon practice working from the masterplan to the door handle across residential, civic, cultural and workplace projects — the person, the approach, and the studio at a glance.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "cb7f9469-46b1-4311-889f-95c387b96f54",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["About Nadia"],
+                        "id": "85c02130-1d13-4c63-be41-edfdec7698f2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m an architect and spatial designer, and I run a small practice out of Lisbon. For over a decade I’ve worked across scales — a single house, a civic hall, the reuse of an old foundry, a workplace fit-out — and the thread through all of it is a stubborn interest in why a place exists before what it looks like."
+                        ],
+                        "id": "d027efe2-348c-43c8-a8ac-0b6c7be0a2fd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I keep the studio deliberately small so I can stay on the drawing and on site. That means the person you brief is the person who resolves the junction detail, and it means every project is designed from its structure, light and use outward — not decorated after the fact."
+                        ],
+                        "id": "6e11815c-9625-4c8f-b000-01d5cc4c6694",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Before founding the studio I worked at two international practices on cultural and civic buildings, and I still teach a design studio one term a year. I take on a handful of projects at a time, and I care most about the parts a photograph never shows — the threshold, the section, the way a room meets the light at four in the afternoon."
+                        ],
+                        "id": "144581e4-326e-49f0-90c5-8fbf07288a5b",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Selected clients & collaborators"],
+                            "id": "6541943e-fdb5-44fd-b6b1-5876522e9400",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-x-8 gap-y-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["City of Porto"],
+                                "id": "cfcfa981-7269-4e98-9ce4-824f5c5cc7b2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Fundação Aramar"],
+                                "id": "36a2d7d4-16cf-4637-b11f-0156af07cac7",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Meridian Group"],
+                                "id": "4d761a71-109f-425c-8f81-7c95fce423aa",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Casa do Vale"],
+                                "id": "e347dbfc-ed01-4b3b-8ca3-8bba91b4ceb0",
+                                "ord": "a3"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Bilbao Arts Trust"],
+                                "id": "24b4e472-1ba1-4935-9745-52b1a18b5ba2",
+                                "ord": "a4"
+                              }
+                            ],
+                            "id": "c7082ff3-759b-4c5c-940d-942d29fc4ae5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dbe123a9-fb30-4ee1-9534-4dd7484ab565",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "d199374f-1fd8-433b-aa3d-df4421b8b3f0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full rounded-box border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJjaGl0ZWN0JTIwcG9ydHJhaXQlMjBwcm9mZXNzaW9uYWx8ZW58MHwwfHx8MTc4NjM5OTg0OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Nadia Rehman, architect and spatial designer",
+                          "loading": "lazy"
+                        },
+                        "id": "bc6eadf2-d945-451d-872f-65abd3417177",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                                "children": ["Founded"],
+                                "id": "815d5315-27f1-4bcb-acb4-246b2b1bc789",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold leading-snug text-accent",
+                                "children": ["2014, Lisbon"],
+                                "id": "7d04c242-929a-4fb7-bb53-73cadfacadad",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c59aaca1-a229-4008-bc26-ba81d3384909",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                                "children": ["Team"],
+                                "id": "f82e0d1a-9fba-485b-bd21-6bffeffca987",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold leading-snug text-accent",
+                                "children": ["Six architects & designers"],
+                                "id": "fa27b3d2-4bd7-4d1b-aa31-38bbfa6c05ae",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "77d792cc-3705-49e2-b73e-2f8c9d9449d2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                                "children": ["Registration"],
+                                "id": "74662e82-64b6-429b-8ff6-d00f699872c5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold leading-snug text-accent",
+                                "children": ["Ordem dos Arquitectos"],
+                                "id": "77726add-00a4-4f90-a8d9-ab09ac86ed22",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5e2161ec-2094-4456-804c-66e418e366a9",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                                "children": ["Capabilities"],
+                                "id": "0def68b3-9314-4621-a1e0-9d040cfb0c5b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold leading-snug text-accent",
+                                "children": [
+                                  "Architecture · Interiors · Masterplanning · Exhibition"
+                                ],
+                                "id": "09cced3b-54d9-41a6-95df-6516eb7b436c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0edac51f-2da0-4256-9df9-12471918301b",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "58151148-2ffa-4b63-8703-15da95f3e3d1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "aaee4800-15ae-4ce4-b14a-28483b503352",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f0c56fb2-9c80-4a4a-b018-e24e157db607",
+                "ord": "a0"
+              }
+            ],
+            "id": "9229ade6-8d4a-473e-86f0-6c34354140c2",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Nadia Rehman",
+      "seoDescription": "Start a project with Nadia Rehman — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f4b1b3d8-0f65-45c3-a9e8-6a61db67fb86",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Start a project"],
+                    "id": "41625fbe-86d8-4324-917e-2411c876124d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start — but if you only have a plot and an idea, that’s a fine place to begin too."
+                    ],
+                    "id": "064e1420-6e09-4539-862a-883bd08f002b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I’ll usually reply within a few days to say whether it’s a good fit and to suggest a first conversation. New work generally begins two to three months out."
+                    ],
+                    "id": "e8dfdca9-8c0b-489f-a643-38253d2a5d64",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:hello@rehmanstudio.example"
+                        },
+                        "children": ["Email the studio"],
+                        "id": "79db6793-c786-464f-a574-35002733148a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the work first"],
+                        "id": "d24aa7d5-ead8-40a8-84db-19bf8a4e6a8a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a106c3a6-979f-45a7-be47-3ee161bbcb4a",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "8696fd6a-0d74-467e-be98-72f7bdf69359",
+                "ord": "a0"
+              }
+            ],
+            "id": "0a2897ff-36e9-4d48-a7c7-6ca6e8e89eca",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Nadia Rehman",
+      "seoDescription": "A project by Nadia Rehman — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "ad705c0d-34a4-4a6f-87bb-7a05b29da99d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All work"],
+                            "id": "d4cd50b6-6f12-4e1b-ac60-6eef7fc8055e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4ebb3759-3718-4b0a-b4b7-df2b527dbfac",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "bfb6f3df-d174-4f48-affc-a6f4c52732fd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold uppercase leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "8ecf7736-51cc-4664-8145-b1b34487aa80",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "135547b6-9ea8-49b6-8b4e-45b5fde3bbba",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "6ea630cd-2ca9-489f-ac0a-89d49df08158",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "22b36568-f657-456b-b0b1-ad4a454aee4c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "808d13c4-3399-4ba3-8c64-db7ab2942620",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c81bad3c-4cb9-49fa-8c29-d5f5932f74db",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6c1dd473-bb86-4f92-a74f-6416c371d9cd",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "8d556330-9efa-4604-8b37-4c4aba811914",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "fa5c6a43-1d87-4ac8-bd41-281f1996c690",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-5xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "88be6060-280d-4008-8ec3-194de931ba07",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d50e913d-2af4-43dc-8a3f-1057102f341a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "fad815a7-6ecd-46da-91b9-1df401d58703",
+                "ord": "a1"
+              }
+            ],
+            "id": "9102e363-0575-4f13-b72a-19c284d600de",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "e9531a33-8fed-479f-9870-cdc3453685a9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "db51c8d5-7829-4314-8b45-bb3f63bc7ccf",
+                "ord": "a0"
+              }
+            ],
+            "id": "1448e3ec-49e0-4afd-80ce-3a04f52a78f3",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "67a4b4e7-da9c-4046-b2f8-9433fb4b9c38",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "5a885738-230e-47eb-b574-49c6ec7b0b77",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "a5c94393-95c7-44bc-93e8-e40eeff3b5af",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "43c23360-2fc7-48e5-ae9c-90f9d9a0e57c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "0dbe5ba1-27bd-4409-b054-b79918699b33",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "413f27eb-c0a0-482f-8731-44d44e6db7fe",
+                "ord": "a0"
+              }
+            ],
+            "id": "6863fa47-d4ad-42d6-af4c-0b1ea9cb191f",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "898a1914-be1a-4c2b-a374-4502b94e6dc8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "7764e06a-b4d9-48d4-846b-6d0c369adc22",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8cdeaaac-35dd-4e03-b86c-f5a5c9326edd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f4b3cae1-b4c4-495a-8edd-75b1eac5c2ce",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8fb680ba-5dcb-4493-b38a-afb2b7f677c0",
+                "ord": "a0"
+              }
+            ],
+            "id": "a727a7dd-6d95-42e2-bc39-aac0b27057da",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "97726b8e-4642-4392-b39e-f19a122e05f8"
+      }
+    }
+  ],
+  "theme": {
+    "name": "atlas",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.004 90)",
+      "--color-base-200": "oklch(93% 0.005 90)",
+      "--color-base-300": "oklch(88% 0.007 88)",
+      "--color-base-content": "oklch(18% 0.005 90)",
+      "--color-primary": "oklch(52% 0.13 55)",
+      "--color-secondary": "oklch(41% 0.02 90)",
+      "--color-accent": "oklch(48% 0.06 240)",
+      "--color-neutral": "oklch(22% 0.006 90)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--border": "1px",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Archivo\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 55)",
+      "--color-secondary-content": "oklch(98% 0.01 90)",
+      "--color-accent-content": "oklch(98% 0.01 240)",
+      "--color-neutral-content": "oklch(98% 0.006 90)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(48% 0.06 240)",
+      "--color-highlight-content": "oklch(98% 0.01 240)",
+      "--color-border": "oklch(88% 0.007 88)",
+      "--container-max": "72rem",
+      "--font-heading": "\"Archivo\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.005 90)",
+      "--color-base-200": "oklch(15% 0.005 90)",
+      "--color-base-300": "oklch(12% 0.005 90)",
+      "--color-base-content": "oklch(95% 0.004 90)",
+      "--color-primary": "oklch(72% 0.14 60)",
+      "--color-secondary": "oklch(72% 0.02 90)",
+      "--color-accent": "oklch(74% 0.07 235)",
+      "--color-neutral": "oklch(30% 0.006 90)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 60)",
+      "--color-secondary-content": "oklch(15% 0.02 90)",
+      "--color-accent-content": "oklch(15% 0.02 235)",
+      "--color-neutral-content": "oklch(98% 0.006 90)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.07 235)",
+      "--color-highlight-content": "oklch(15% 0.02 235)",
+      "--color-border": "oklch(12% 0.005 90)"
+    }
+  }
+}

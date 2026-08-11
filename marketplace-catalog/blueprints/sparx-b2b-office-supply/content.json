@@ -1,0 +1,269 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "stock-a-supply-closet",
+    "status": "published",
+    "body": {
+      "title": "How to stock a supply closet that never runs dry",
+      "excerpt": "A run to the shop for a ream of paper costs an hour nobody has. Here is a simple min/max system any office can run so the box is on the shelf before the last one is empty.",
+      "featuredImage": {
+        "$asset": "post-supply-closet"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A supply closet exists to do one thing: make sure the paper, the pens and the toner are there the moment someone needs them. Get it wrong and a two-dollar cartridge holds up a proposal that is due at five. The good news is that keeping it right does not take software or a full-time office manager — it takes a min/max system and the discipline to follow it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Set a min and a max for every line"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For each supply, decide two numbers. The MIN is the reorder point — the quantity that should trigger a new order, set high enough to cover your usage over the delivery lead time so you never hit zero while a case is in transit. The MAX is how much you hold when full — enough to buy at a sensible case price without turning the shelf into dead stock. When a line drops to its min, you order back up to the max. That is the whole system."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Label the shelf, not your memory"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Write the line, the size and the min/max on the shelf edge itself. When anyone can see at a glance that the copier paper is below its min, ordering stops depending on one person remembering. A two-bin trick makes it simpler still: when the front box empties, that is the signal to reorder, and the back box covers you until the carton arrives."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Put the fast movers on a standing order"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The lines you burn through on a predictable schedule — paper, pens, wipes, coffee — do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "set-up-an-ergonomic-desk",
+    "status": "published",
+    "body": {
+      "title": "Set up a desk that does not wreck a back",
+      "excerpt": "Most office aches trace back to a chair set wrong and a monitor too low. Here is how to set up a workstation people can sit at all day — and what to buy so they can.",
+      "featuredImage": {
+        "$asset": "post-ergonomics"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The cheapest sick day is the one nobody takes. A workstation set up badly — chair too low, screen too far, wrists bent up at the keyboard — quietly builds the aches that turn into physio appointments and lost afternoons. Getting it right is not expensive or complicated; it is a chair that adjusts and five minutes to set it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with the chair"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Set the seat height so feet rest flat on the floor and knees sit level with the hips. Adjust the lumbar support into the small of the back, and set the armrests so shoulders can relax and elbows bend at about ninety degrees. A chair that cannot do those things is not saving you money — it is deferring a cost onto the person sitting in it. A mesh task chair with real adjustments is the single best supply an office buys."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Then the screen and the input"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Raise the monitor so the top of the screen is at or just below eye level and about an arm’s length away — that stops the head-forward slump that wrecks necks. Keep the keyboard and mouse close enough that wrists stay flat, not cocked up. A monitor riser and a keyboard tray cost little and do more for comfort than almost anything else on the desk."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy it once, for everyone"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ergonomics falls apart when it is done one exception at a time. Spec a good task chair and a riser as the standard desk kit, buy them by the carton at trade pricing, and every new hire gets a workstation that works from day one — instead of a folding chair and a promise to sort it out later."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "keep-the-breakroom-stocked",
+    "status": "published",
+    "body": {
+      "title": "Keep the breakroom stocked without thinking about it",
+      "excerpt": "An empty coffee tin at 9am is a small thing that sours a whole morning. Here is how to keep the breakroom running on autopilot — and why it is worth the small spend.",
+      "featuredImage": {
+        "$asset": "post-restock"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The breakroom is the one supply nobody puts on the budget and everybody notices when it is empty. A missing coffee filter or the last cup gone by mid-morning is trivial on paper and genuinely deflating in practice — it is the little signal that says nobody is looking after the place. Keeping it stocked is cheap insurance against a soured morning."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Bundle the staples, buy the case"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Coffee, cups, stir sticks, sugar, creamer and napkins move together and run out together, so buy them together. A restock case covers a small team for about a month, and buying the case beats grabbing packets from the corner shop at retail — both on price and on the hour you get back from not doing supply runs."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Put it on a standing order"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The whole point of a breakroom is that no one should have to manage it. Set a standing order for a restock case on a monthly cadence and it simply arrives — no reminder, no run, no empty tin. Adjust the frequency once you see how fast a team actually gets through it, and then forget about it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It is not a perk, it is friction removed"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A stocked breakroom is not about pampering anyone. It is about removing a dozen tiny frictions from the day — the hunt for a clean cup, the cold coffee, the trip out for milk — that each cost a few minutes and a little goodwill. Keep it full for the price of a case a month, and the whole office runs a touch smoother."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

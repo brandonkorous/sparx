@@ -1,0 +1,238 @@
+{
+  "policies": [
+    {
+      "handle": "consult-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to reschedule or cancel a consultation. We send reminders two days and one day ahead, and again two hours before."
+    },
+    {
+      "handle": "consult-deposit",
+      "name": "Consultation with deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 15000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Paid strategy consultations hold a $150 deposit that is credited in full toward your first invoice if you engage the firm. Reschedule with 48 hours’ notice and the deposit carries over."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus-reid",
+      "name": "Marcus Reid",
+      "kind": "staff",
+      "skillTags": ["corporate", "ma", "contracts", "formation"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 510,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 510,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 510,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 510,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 510,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "elena-vasquez",
+      "name": "Elena Vasquez",
+      "kind": "staff",
+      "skillTags": ["litigation", "disputes", "employment", "contracts"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1110
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1110
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1110
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1110
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1110
+        }
+      ]
+    },
+    {
+      "handle": "david-chen",
+      "name": "David Chen",
+      "kind": "staff",
+      "skillTags": ["ip", "contracts", "corporate"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "initial-consultation",
+      "name": "Initial consultation",
+      "description": "A complimentary 30-minute call to understand your matter, map the options and tell you plainly whether and how we can help.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["corporate"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-standard"
+    },
+    {
+      "handle": "business-formation-consult",
+      "name": "Business formation consultation",
+      "description": "Entity choice, founder and operating agreements, equity and the clean setup that avoids expensive fixes later.",
+      "durationMinutes": 45,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["formation"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "contract-review-consult",
+      "name": "Contract review consultation",
+      "description": "A working session on a specific agreement — where the risk sits, what to push back on and what to sign.",
+      "durationMinutes": 45,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["contracts"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "litigation-consult",
+      "name": "Commercial litigation consultation",
+      "description": "A candid read on a dispute or threatened claim — exposure, leverage, the realistic paths and what each one costs.",
+      "durationMinutes": 60,
+      "priceCents": 35000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["litigation"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "employment-consult",
+      "name": "Employment matter consultation",
+      "description": "Hiring, separations, restrictive covenants, policies and the claims that follow when they’re handled badly.",
+      "durationMinutes": 45,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["employment"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "ip-consult",
+      "name": "Intellectual property consultation",
+      "description": "Trademarks, trade secrets, licensing and IP assignment — protecting what your business is actually built on.",
+      "durationMinutes": 45,
+      "priceCents": 25000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["ip"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "ma-advisory-consult",
+      "name": "M&A advisory consultation",
+      "description": "A strategy session for a purchase, sale or investment — deal structure, diligence and the terms worth holding the line on.",
+      "durationMinutes": 60,
+      "priceCents": 35000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "attorney",
+          "kind": "staff",
+          "skillTags": ["ma"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    }
+  ]
+}

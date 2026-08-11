@@ -1,0 +1,366 @@
+{
+  "policies": [
+    {
+      "handle": "optometry-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "optometry-no-show",
+      "name": "Reserved-chair hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-reyes",
+      "name": "Dr. Elena Reyes",
+      "kind": "staff",
+      "skillTags": ["exam", "contacts", "medical"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dr-bell",
+      "name": "Dr. Marcus Bell",
+      "kind": "staff",
+      "skillTags": ["exam", "kids", "dry-eye"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "nadia",
+      "name": "Nadia Okafor",
+      "kind": "staff",
+      "skillTags": ["styling", "fitting"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-1",
+      "name": "Exam Room 1",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-2",
+      "name": "Exam Room 2",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 900
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "comprehensive-eye-exam",
+      "name": "Comprehensive eye exam",
+      "description": "A thorough, unhurried check of your vision and eye health — sharpness, prescription, pressure and a look at the health of your eyes, with plenty of time for questions. The right first step for anyone new to us, at any age.",
+      "durationMinutes": 40,
+      "priceCents": 12900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    },
+    {
+      "handle": "contact-lens-exam",
+      "name": "Contact lens exam & fitting",
+      "description": "Everything a comprehensive exam covers, plus a proper contact-lens fitting — measurements, a trial pair and a hands-on lesson if you’re new to lenses. We’ll find the fit that feels comfortable all day.",
+      "durationMinutes": 50,
+      "priceCents": 15900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["contacts"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    },
+    {
+      "handle": "kids-eye-exam",
+      "name": "Kids’ eye exam",
+      "description": "A friendly, playful eye check made just for little ones — no reading required for the youngest, lots of encouragement, and gentle screening for the vision problems that matter most as kids grow. First visits are our favourite.",
+      "durationMinutes": 30,
+      "priceCents": 9900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["kids"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    },
+    {
+      "handle": "dry-eye-consult",
+      "name": "Dry-eye consultation",
+      "description": "Gritty, tired, watery or stinging eyes? Sit down with one of our doctors to find out why and what actually helps. We’ll examine your tear film, talk through simple options, and build a plan to get you comfortable again.",
+      "durationMinutes": 30,
+      "priceCents": 8900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["dry-eye"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    },
+    {
+      "handle": "medical-eye-visit",
+      "name": "Medical eye visit",
+      "description": "Red, painful, or suddenly blurry? Got something in your eye, or an infection that won’t settle? Request a focused medical visit and we’ll examine what’s going on, ease it, and sort out the next step — often the same day.",
+      "durationMinutes": 30,
+      "priceCents": 11900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "requiresApproval": true,
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["medical"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-no-show"
+    },
+    {
+      "handle": "frame-styling",
+      "name": "Frame styling session",
+      "description": "Bring your prescription (or your last pair) and let our optician help you find frames you’ll love — shapes that suit your face, lenses that suit your day, and honest advice on what’s worth it. No exam needed, and it’s free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "optician",
+          "kind": "staff",
+          "skillTags": ["styling"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    },
+    {
+      "handle": "annual-checkup",
+      "name": "Annual eye checkup",
+      "description": "Your regular yearly visit — a quick, friendly update of your prescription and a health check to keep everything on track. The easy way to stay ahead of changes before they become a problem.",
+      "durationMinutes": 30,
+      "priceCents": 10900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "optometry-standard"
+    }
+  ]
+}

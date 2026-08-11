@@ -1,0 +1,27 @@
+[
+  {
+    "id": "hvac-comfort-hero",
+    "url": "https://images.unsplash.com/photo-1642749776312-aa42ce20c9f5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWlyJTIwY29uZGl0aW9uZXIlMjB0ZWNobmljaWFufGVufDB8MHx8fDE3ODYzODgyNDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A comfortable, sunlit family living room on a mild afternoon"
+  },
+  {
+    "id": "hvac-comfort-install",
+    "url": "https://images.unsplash.com/photo-1757219525975-03b5984bc6e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aHZhYyUyMGluc3RhbGxhdGlvbiUyMHdvcmt8ZW58MHwwfHx8MTc4NjM4ODI0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A technician checking a home heating and cooling system"
+  },
+  {
+    "id": "hvac-comfort-marcus",
+    "url": "https://images.unsplash.com/photo-1764014353079-08ece464a226?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzODgyNDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Reyes, comfort technician"
+  },
+  {
+    "id": "hvac-comfort-dana",
+    "url": "https://images.unsplash.com/photo-1581091224003-01e7c2e69f6f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWNobmljaWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dana Okonkwo, install lead"
+  },
+  {
+    "id": "hvac-comfort-luis",
+    "url": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODgyMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Luis Ferraro, service technician"
+  }
+]

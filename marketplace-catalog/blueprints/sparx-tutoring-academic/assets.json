@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tutoring-academic-hero",
+    "url": "https://images.unsplash.com/photo-1560785496-3c9d27877182?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBzdHVkeWluZyUyMHR1dG9yfGVufDB8MHx8fDE3ODYzOTMyNDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tutor sitting beside a smiling student, working through a problem together"
+  },
+  {
+    "id": "tutoring-academic-center",
+    "url": "https://images.unsplash.com/photo-1763310225230-6e15b125935a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGVhcm5pbmclMjBjZW50ZXIlMjBjbGFzc3Jvb218ZW58MHwwfHx8MTc4NjM5MzI0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bright, welcoming learning room with a shared table and books"
+  },
+  {
+    "id": "tutoring-academic-approach",
+    "url": "https://images.unsplash.com/photo-1598981457915-aea220950616?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3R1ZGVudCUyMHdyaXRpbmclMjBkZXNrfGVufDB8MHx8fDE3ODYzOTMyNTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A young student raising a hand with a confident grin"
+  },
+  {
+    "id": "tutoring-academic-elena",
+    "url": "https://images.unsplash.com/photo-1590650213165-c1fef80648c4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWFjaGVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzI1M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Elena Marsh, math and science tutor"
+  },
+  {
+    "id": "tutoring-academic-marcus",
+    "url": "https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHV0b3IlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkzMjU3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Bell, reading and writing tutor"
+  },
+  {
+    "id": "tutoring-academic-priya",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0dXRvciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMyNTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, math and homework coach"
+  }
+]

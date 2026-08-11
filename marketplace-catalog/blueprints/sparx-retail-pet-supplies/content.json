@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-first-week-with-a-new-dog",
+    "status": "published",
+    "body": {
+      "title": "The first week with a new dog",
+      "excerpt": "Bringing a dog home is joyful and a little chaotic. Here’s how we help a new arrival settle — less about training, more about giving them room to feel safe.",
+      "featuredImage": {
+        "$asset": "post-training"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The day you bring a dog home, everything is new to them — the smells, the floor, the people, the rules they don’t know yet. Whether they’re an eight-week puppy or an eight-year rescue, the single most useful thing you can do in the first week isn’t training. It’s making them feel safe enough to relax. A settled dog learns; an anxious one just copes."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Give them a place that’s theirs"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Before anything else, set up one spot that belongs to the dog and no one else — a bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves there, leave them completely alone, even if the kids are desperate to cuddle. A dog that learns it can retreat and won’t be followed is a dog that settles far faster, because it always has somewhere to switch off."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Keep the first week boring"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The instinct is to introduce the new dog to everyone and everything at once. Resist it. Keep the first week small and predictable: the same short walks, the same feeding times, the same handful of people. Predictability is what tells an animal it’s safe. The parties, the dog park, the big family visit — those can all wait a fortnight, and they’ll go far better once your dog trusts that home is calm and the routine holds."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-belongs-in-your-dogs-bowl",
+    "status": "published",
+    "body": {
+      "title": "What actually belongs in your dog’s bowl",
+      "excerpt": "Dog food labels are designed to confuse. Here’s a plain-English guide to reading one — and why single-ingredient treats are worth the small premium.",
+      "featuredImage": {
+        "$asset": "post-nutrition"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Walk down the pet-food aisle and every bag promises the same things — “natural”, “premium”, “complete”. Those words are marketing, not nutrition, and none of them are regulated in the way you’d hope. The only honest guide to what’s in the bag is the ingredients list, and once you know how to read it, the good stuff separates from the filler very quickly."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Read the first three ingredients"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Ingredients are listed by weight, so the first two or three are most of what your dog is actually eating. You want a named meat at the top — “chicken” or “beef”, not “meat meal” or “animal derivatives”, which are the cuts nobody wants to name. Be wary when the list opens with a grain or a vague “cereals”: that’s a bag padded out with cheap filler your dog digests poorly and you pay for anyway."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why single-ingredient treats matter"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Treats are where the worst offenders hide — glycerine, sugar, dyes and preservatives, all in something you hand over dozens of times a day during training. A single-ingredient treat is exactly what it says: one clean protein, slow-roasted, and nothing else. It’s gentler on sensitive stomachs, it won’t undo a careful diet, and because you’re giving so many, it’s the easiest place to cut the junk without your dog noticing anything but the better smell."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "five-minute-grooming-routine",
+    "status": "published",
+    "body": {
+      "title": "The five-minute grooming routine that prevents big problems",
+      "excerpt": "Grooming isn’t about looks — it’s the cheapest health check you’ll ever do. A short weekly routine catches trouble early and keeps a coat working the way it should.",
+      "featuredImage": {
+        "$asset": "post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most owners think of grooming as a cosmetic thing — a wash and a brush before visitors come. In fact it’s the most reliable early-warning system you have. Five minutes a week with your hands and a brush will catch lumps, ticks, sore ears, matted fur and cracked pads long before they turn into an expensive vet visit, and it keeps your dog’s coat doing the job it’s meant to."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Brush with the grain, feel as you go"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Once a week, brush the whole dog in the direction the coat lies — bent pins first to lift out loose undercoat and work through any tangles, then a soft bristle to spread the natural oils that keep the coat weatherproof and shiny. As you go, let your hands do a quiet survey: run them over the ribs, the belly, the legs and around the ears, noticing anything new — a bump, a tender spot, a patch of missing fur. You’ll know your dog’s body better than any once-a-year check-up can."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Don’t forget the bits at the ends"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Finish with the extremities, where problems love to hide. Glance inside the ears for redness or a yeasty smell, check the pads for cracks and stuck grit, and look at the nails — if you can hear them clicking on a hard floor, they’re due a trim. None of this takes long, and doing it little and often means your dog stays relaxed about being handled, so the day you really do need to check something sore, they let you."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

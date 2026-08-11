@@ -1,0 +1,97 @@
+[
+  {
+    "id": "kestrel-hero",
+    "url": "https://picsum.photos/seed/kestrel-hero/1600/1000",
+    "alt": "A model in a bone knit and wide wool trousers against a plaster wall"
+  },
+  {
+    "id": "kestrel-tile-tops",
+    "url": "https://images.unsplash.com/photo-1602810316693-3667c854239a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9sZGVkJTIwc3RhY2slMjBwbGFpbiUyMGNvdHRvbiUyMHRlZXMlMjBveGZvcmQlMjBzaGlydHxlbnwwfDB8fHwxNzg2NDAyMDY1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A folded stack of plain cotton tees and an oxford shirt"
+  },
+  {
+    "id": "kestrel-tile-knitwear",
+    "url": "https://images.unsplash.com/photo-1595026525047-dfa997df8a4a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjBjcmVhbSUyMGZpc2hlcm1hbiUyMGtuaXQlMjBsYWlkJTIwZmxhdHxlbnwwfDB8fHwxNzg2NDAyMDY3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A heavyweight cream fisherman knit laid flat"
+  },
+  {
+    "id": "kestrel-tile-trousers",
+    "url": "https://images.unsplash.com/photo-1705408738824-c77f11ac5c65?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2lkZS1sZWclMjB3b29sJTIwdHJvdXNlcnMlMjBkcmFwZWQlMjBjaGFpcnxlbnwwfDB8fHwxNzg2NDAyMDcxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Wide-leg wool trousers draped over a chair"
+  },
+  {
+    "id": "kestrel-tile-outerwear",
+    "url": "https://images.unsplash.com/photo-1689887883155-ea1e241b34d7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FtZWwlMjBvdmVyY29hdCUyMGhhbmdpbmclMjB3b29kZW4lMjBwZWd8ZW58MHwwfHx8MTc4NjQwMjA3NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A camel overcoat hanging on a wooden peg"
+  },
+  {
+    "id": "kestrel-band-craft",
+    "url": "https://images.unsplash.com/photo-1739117441029-9f2a8e59e8b2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFpbG9yJTIwcGlubmluZyUyMHNlYW0lMjBnYXJtZW50JTIwdGFibGV8ZW58MHwwfHx8MTc4NjQwMjA3OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tailor pinning a seam on a garment on the table"
+  },
+  {
+    "id": "kestrel-band-care",
+    "url": "https://images.unsplash.com/photo-1643015862949-5c8d15a4242e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8a25pdCUyMHN3ZWF0ZXIlMjBkcnlpbmclMjBmbGF0JTIwbGluZW4lMjBjbG90aHxlbnwwfDB8fHwxNzg2NDAyMDgxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A knit sweater drying flat on a linen cloth"
+  },
+  {
+    "id": "kestrel-prod-tee",
+    "url": "https://images.unsplash.com/photo-1759572095317-3a96f9a98e2b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjBjb3R0b24lMjBjcmV3LW5lY2slMjB0ZWUlMjBib25lfGVufDB8MHx8fDE3ODY0MDIwODR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A heavyweight cotton crew-neck tee in bone"
+  },
+  {
+    "id": "kestrel-prod-oxford",
+    "url": "https://images.unsplash.com/photo-1773747310659-9b331019c5c2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVsYXhlZCUyMGVjcnUlMjBveGZvcmQlMjBzaGlydCUyMGhhbmdlcnxlbnwwfDB8fHwxNzg2NDAyMDg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A relaxed ecru oxford shirt on a hanger"
+  },
+  {
+    "id": "kestrel-prod-fisherman",
+    "url": "https://images.unsplash.com/photo-1588271968087-4c51abe05afc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2h1bmt5JTIwb2F0bWVhbCUyMGZpc2hlcm1hbiUyMGtuaXQlMjBzd2VhdGVyfGVufDB8MHx8fDE3ODY0MDIwOTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A chunky oatmeal fisherman knit sweater"
+  },
+  {
+    "id": "kestrel-prod-merino",
+    "url": "https://images.unsplash.com/photo-1607160199580-1b0c9b736b66?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluZSUyMGNhbWVsJTIwbWVyaW5vJTIwY3Jldy1uZWNrJTIwc3dlYXRlcnxlbnwwfDB8fHwxNzg2NDAyMDk1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fine camel merino crew-neck sweater"
+  },
+  {
+    "id": "kestrel-prod-wide-trouser",
+    "url": "https://images.unsplash.com/photo-1544306021-b6e135ae456b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RvbmUlMjB3aWRlLWxlZyUyMHdvb2wlMjB0cm91c2Vyc3xlbnwwfDB8fHwxNzg2NDAyMDk4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Stone wide-leg wool trousers"
+  },
+  {
+    "id": "kestrel-prod-pleated-trouser",
+    "url": "https://images.unsplash.com/photo-1753741821073-848613438821?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hhcmNvYWwlMjBwbGVhdGVkJTIwdGFpbG9yZWQlMjB0cm91c2Vyc3xlbnwwfDB8fHwxNzg2NDAyMTAxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Charcoal pleated tailored trousers"
+  },
+  {
+    "id": "kestrel-prod-overcoat",
+    "url": "https://picsum.photos/seed/kestrel-prod-overcoat/1600/1000",
+    "alt": "A camel double-faced wool overcoat"
+  },
+  {
+    "id": "kestrel-prod-scarf",
+    "url": "https://images.unsplash.com/photo-1670764732085-ebedbd8d7e7c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29mdCUyMG9hdG1lYWwlMjBsYW1ic3dvb2wlMjBzY2FyZiUyMGNvaWxlZCUyMHN1cmZhY2V8ZW58MHwwfHx8MTc4NjQwMjEwN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A soft oatmeal lambswool scarf coiled on a surface"
+  },
+  {
+    "id": "kestrel-prod-tote",
+    "url": "https://images.unsplash.com/photo-1637759292654-a12cb2be085e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFuJTIwdmVnZXRhYmxlLXRhbm5lZCUyMGxlYXRoZXIlMjB0b3RlJTIwYmFnfGVufDB8MHx8fDE3ODY0MDIxMTB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tan vegetable-tanned leather tote bag"
+  },
+  {
+    "id": "kestrel-post-fewer",
+    "url": "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFyZWQtYmFjayUyMHdhcmRyb2JlJTIwcmFpbCUyMGZldyUyMGNvbnNpZGVyZWQlMjBwaWVjZXN8ZW58MHwwfHx8MTc4NjQwMjExM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pared-back wardrobe rail of a few considered pieces"
+  },
+  {
+    "id": "kestrel-post-fabric",
+    "url": "https://images.unsplash.com/photo-1628565487762-bf17ac622f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UlMjBjcm9wJTIwd292ZW4lMjB3b29sJTIwY290dG9uJTIwZmFicmljJTIwc3dhdGNoZXN8ZW58MHwwfHx8MTc4NjQwMjExNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A close crop of woven wool and cotton fabric swatches"
+  },
+  {
+    "id": "kestrel-post-care",
+    "url": "https://images.unsplash.com/photo-1778918006381-f6c98df9fe64?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZHMlMjBmb2xkaW5nJTIwa25pdCUyMHN3ZWF0ZXIlMjB3b29kZW4lMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDAyMTE5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Hands folding a knit sweater on a wooden table"
+  }
+]

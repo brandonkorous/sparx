@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-retail-records-classic",
+  "name": "sparx — Record Shop (Vintage)",
+  "version": "1.2.0",
+  "tagline": "A warm, working storefront for a vintage record shop.",
+  "description": "A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme — faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Record shop"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Record Shop (Vintage) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Record Shop (Vintage) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#98370c",
+  "sortWeight": 88
+}

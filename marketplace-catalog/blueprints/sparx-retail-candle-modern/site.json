@@ -1,0 +1,2608 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "e429fcfc-fcd5-42ca-bb91-7ec10722b678",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "2bbac1ce-ea6e-4e6e-9d21-50f612d4add7",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "71881268-b99e-4d7c-8aaf-7031280e013e",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "a982dbf1-0efa-4acf-883d-78fa7d5ae13b",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "6f040bb9-9929-4905-b5ae-0a5c8d19e56f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5f53f7a6-f2c1-4b62-843d-4e6e491bca21",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "46b6a204-bfc3-462e-963f-617dd6a1c17e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "4c98205f-e9fc-45d1-9b7e-bfa0fd21f7fd",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "23ef0992-9264-43b2-a9c5-18c2c524d37e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "1cfb10e8-8cec-411a-ad5b-e21b1c8b8efb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "0adb22eb-bb25-4578-a5dc-d8bd5d8c250c",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7c5c2441-4b28-4db7-9591-f6fd24f8902b",
+                  "ord": "a2"
+                }
+              ],
+              "id": "455be04b-f27c-416f-8afb-e4c0e4b1c552",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "01ffac19-e989-4209-8c75-bb589b1eb390",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "270972bc-d74f-4451-b5dd-6737129e8b29",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c8f764e4-5d1d-4871-b2fd-aae0ed0022b4",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "add0526e-fa98-4d16-980a-e42d55585157",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "691074c1-48af-4a36-a36d-767377ff9a2a",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "8d5136bf-5d7b-412e-bc7c-c7e65a4f4cba",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "d882eb60-8a8b-4087-860f-12e839765e4d",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "9f8f71ae-e3d6-4820-953b-6f1c08aacbc3",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "9eb556ec-606d-418c-b8e4-f4d48bf96d68",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "f05af726-b59a-4115-8b7f-335d71347ef0",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "b7b8abf2-66cb-4471-bfee-b86c5a3f7252",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "120f9c85-ab48-41f0-b062-cd9b2708b51e",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "c68103bf-ca72-4ed3-bebd-10194a1d9db1",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "e4112ead-3867-4c67-b033-f88bb915170d",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "696a57be-b5ae-4ae9-8f3e-0c6862a13498",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "4241a82a-0102-4134-96f6-20b090084607",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "003ca342-c7ec-4fd5-a7d3-856fbffcc818",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "2f3c78da-af24-4fb4-9706-9dfe955b004d",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "154b2363-0c24-4ba3-8e14-21344d8e15dd",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "c85931e5-5761-40cf-870c-6ffddb01e64f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "7b79d836-c55e-4e37-945a-179f443b4cf5",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "a00c2d7b-497e-4c1a-8ea7-d8bcc7d2d076",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a0fea5ae-9540-4ce4-b0cf-2ed17a1d36b7",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "645736da-3bec-4e5c-a3d7-15f28c8e3ca2",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "20a357a6-3451-474a-bea0-978aaf1fb3b7",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "3d221c3d-4a37-4d77-82e4-53bd11cc52cf",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a4e5e3b0-935a-4a86-9c68-443a7954390d",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "a165642c-6947-4482-a0c8-2d962c75b6ed",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "560e6eb4-a056-4d07-a6f5-9d3979e10e1e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "a21e7a82-ce57-4286-8bbd-54d254f4c884",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "74af0a9d-97f8-4203-b513-b53e8bbfa32c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3f23f967-14ab-4da0-a4b9-872c9d9b0076",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "0de2e329-9fe5-4ddd-bfc1-1e385e70e61d",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "7b8fd216-9d3a-4936-bd15-6eb126c6e38f",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "d192a22e-b0b5-4047-82f2-f013b010f3ff",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "ff965563-1332-4c7f-99fe-0cb4106dd246",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "cfb683c6-16c6-41fb-8a8b-61712f2961de",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "fc385762-d4a4-4966-b764-9e44d3d31864",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "a51f5448-3d11-4254-814e-558cb171bbb5",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "a3c0cac7-a96c-4cc3-9e61-933614bfdae8",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "2026169c-6760-4a93-844d-88f69ecbf4e5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "91497e27-0a5b-463d-9ab2-cbd822efa1e6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "9e4cb08a-e3dc-46d3-aed8-f09232333c51",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "c931ab04-8130-400e-9191-4458bb250403",
+                  "ord": "a1"
+                }
+              ],
+              "id": "c2cf1c2b-e823-455c-8302-f618c151b1e9",
+              "ord": "a0"
+            }
+          ],
+          "id": "3b610cb6-e1a2-4527-b8f4-85f29385ac92",
+          "ord": "a2"
+        }
+      ],
+      "id": "a824906a-f53f-477e-8c2a-0e414e7d507a"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Lumen — clean, refillable candles & home fragrance",
+      "seoDescription": "Lumen is a modern home-fragrance studio: clean coconut-soy candles, diffusers and sprays, blended phthalate-free with the whole ingredient list on the box — and built to be refilled, not thrown out.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "92045347-4a82-4db5-a2e5-c7a69b4cecf5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col items-start gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Clean fragrance, for the light everyday."],
+                        "id": "639165db-e7a1-49ee-aaf2-651182cb7e61",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-md text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Lumen is a small home-fragrance studio making candles the honest way — coconut-soy wax, cotton wicks, phthalate-free scent, and vessels built to be refilled rather than thrown out. Fragrance that smells fresh and clean, with nothing to hide on the label."
+                        ],
+                        "id": "22a0be6b-9096-4ac8-a864-25292ca2449e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop candles"],
+                            "id": "eb8da0a9-9440-4353-97a4-316273c2c46a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/refills"
+                            },
+                            "children": ["Refill your vessel"],
+                            "id": "b13bd4b6-8b03-4bdb-9c1b-5c29e2fc45b3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9c80fae4-ea80-4918-96ab-ced390596bbd",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6da97fe1-81a6-40e4-9078-e4629dec38dc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1567001897431-ba86def22f6e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwcGFsZSUyMGNhbmRsZSUyMGJyaWdodCUyMHN1bmxpdCUyMHRhYmxlJTIwYmVzaWRlfGVufDB8MHx8fDE3ODY0MDQ3OTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A pale candle on a bright sunlit table",
+                      "loading": "lazy"
+                    },
+                    "id": "6ce02a23-b2b6-4c54-be3c-af8e4daaa039",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1197948c-6ae2-49ab-b9dd-f4571c27ce2c",
+                "ord": "a0"
+              }
+            ],
+            "id": "b3bd0f68-8c5c-4645-b8c0-3d22496f4ead",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Find your everyday scent"],
+                    "id": "ee412ab7-5963-4c50-a67a-9b95fa2ab197",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1585997089743-5a6b246fc80b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm93JTIwbWluaW1hbGlzdCUyMG1hdHRlJTIwY2FuZGxlcyUyMGNsZWFuJTIwd2hpdGUlMjBzaGVsZnxlbnwwfDB8fHwxNzg2NDA0Nzk1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A row of minimalist candles",
+                              "loading": "lazy"
+                            },
+                            "id": "742f20a3-5f8b-4323-837a-83da875feae7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Candles"],
+                            "id": "9e6ccd0e-f801-4c2d-bda1-a1c55c6780a6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a84ead68-0819-4b09-9888-bf7334ab2f72",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1783275463520-1e495760369d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVlZCUyMGRpZmZ1c2VyJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDA1MTQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A diffuser and a room spray",
+                              "loading": "lazy"
+                            },
+                            "id": "d442769b-4436-481e-a0b2-d8be31680c78",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Diffusers & sprays"],
+                            "id": "4d9d5547-0edf-4bda-8345-b4423ded12c6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c7a3f26e-cfd0-4a83-84be-9cc164307852",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop/refills"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1613161645210-13013d811d30?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVmaWxsJTIwcG91Y2glMjBiZXNpZGUlMjBlbXB0eSUyMGNlcmFtaWMlMjBjYW5kbGUlMjB2ZXNzZWx8ZW58MHwwfHx8MTc4NjQwNDgwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A refill pouch and an empty vessel",
+                              "loading": "lazy"
+                            },
+                            "id": "c0eb65f9-8a5f-4fe2-b630-d8ddceac27a2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Refills"],
+                            "id": "52a44ae5-3a2f-4a29-b355-88b91cbdf100",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d919b2da-359c-4f13-8c93-3523db597b82",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759563871375-d5b140f6646e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlJTIwZ2lmdCUyMHNldCUyMHdyYXBwZWQlMjBwYWxlJTIwcGFwZXIlMjBjb3R0b258ZW58MHwwfHx8MTc4NjQwNDgwNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A wrapped candle gift set",
+                              "loading": "lazy"
+                            },
+                            "id": "711c2375-ad86-4484-ba40-21cf3b987024",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Gifts"],
+                            "id": "0605b1d9-5e9f-4b8d-a1a5-4e50d3d3bb94",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b88adb23-002b-4e7c-a3a5-6873843f6067",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9a0923f0-747c-4960-9d64-f6d1cd08e2f5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6de9ff24-e7b1-4106-8651-dedbe083ca34",
+                "ord": "a0"
+              }
+            ],
+            "id": "93f47c3d-2ad7-4d3a-9123-3dfcb9f24b83",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-14",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-8 @3xl:grid-cols-3 @3xl:gap-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h3",
+                        "class": "text-lg font-bold tracking-tight text-accent",
+                        "children": ["Coconut-soy wax"],
+                        "id": "d0ab5784-055b-4b9f-a009-76e879296a8b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-base-content",
+                        "children": [
+                          "A clean coconut-soy blend with cotton wicks — a slow, even burn and no paraffin soot on the ceiling."
+                        ],
+                        "id": "268e14b5-29d3-4d9e-9ca1-733376e296da",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ecce777b-a248-4b7b-be52-6ed4bd523e08",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h3",
+                        "class": "text-lg font-bold tracking-tight text-accent",
+                        "children": ["Phthalate-free scent"],
+                        "id": "e180a097-335b-4b88-97fb-afa77743a0d6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-base-content",
+                        "children": [
+                          "Fragrance blended without phthalates or parabens, and a full ingredient list on every product. Nothing hidden."
+                        ],
+                        "id": "6722f086-c9ab-4b29-9430-9ca31175b1b4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f502f0e4-c594-47db-a59c-8b9ba6866716",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h3",
+                        "class": "text-lg font-bold tracking-tight text-accent",
+                        "children": ["Made to be refilled"],
+                        "id": "a1d575e9-effd-478d-a6e3-3d5833cc1572",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-base-content",
+                        "children": [
+                          "Every vessel is built to be washed and refilled — buy the candle once, then top it up for less, forever."
+                        ],
+                        "id": "87645024-d61b-4052-a54d-579b19351b05",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f3d974db-11f8-44e7-9d4c-e8599c9c354c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "01f3d807-2af9-4239-b730-f17dacde4201",
+                "ord": "a0"
+              }
+            ],
+            "id": "b4ca3c74-341f-4674-9b26-106ed0690b76",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New this season"],
+                    "id": "f6b51477-0588-4490-a339-0562b83895e2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "edb28197-910d-42b7-8375-df7b9307895e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "7d9f4fef-6829-4e75-adde-d37c247bbcd4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "8c67ce25-93e4-4c71-bbfa-d9577f1f95f1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "63695e31-9948-4dc6-8570-3d82e6f5c3d6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c82353bc-8f83-40e4-9b91-a5ece408efbf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "65a48f9e-92fb-460e-8131-1cff6cee9bd8",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "4a5002c9-3db8-48e5-a222-46dc43015b6d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "7206e568-fbab-471c-a07c-7ba3f4ea7a40",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "f9a07093-e1cb-4916-a734-853a25edc1d9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4b9db738-3f55-4aa5-b76d-6b97346b30f0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "661b8766-6467-457e-90c3-6f1d5ffb9d16",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "6d068acf-e413-4470-b076-9a5b8f4ea8df",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "9b453eb7-3870-4694-8285-e30f16c29832",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1777107509014-e3eaea7981bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29jb251dC1zb3klMjB3YXglMjBjb3R0b24lMjB3aWNrJTIwY2xlYW4lMjBicmlnaHQlMjB3b3Jrc2hvcHxlbnwwfDB8fHwxNzg2NDA0ODA3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "Coconut-soy wax and a cotton wick in a bright workshop",
+                      "loading": "lazy"
+                    },
+                    "id": "d4adea9f-0edb-48dc-9297-27f4a937bf50",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col items-start gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Clean fragrance, honestly made"],
+                        "id": "3209336d-4044-4736-b0f8-b948a1ba916d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We pour in coconut-soy wax with cotton wicks, blend our scents phthalate-free, and print the whole ingredient list on every candle. No mystery “fragrance,” no soot, no guessing what you’re breathing in — just a clean, even burn and a scent that stays true from the first hour to the last."
+                        ],
+                        "id": "f2f6ee17-6bc6-4bd4-ab37-0b91ecf79e12",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/whats-in-a-lumen-candle"
+                        },
+                        "children": ["What’s in a Lumen candle"],
+                        "id": "72753347-d0b7-4fad-b177-f002950881d4",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "eca2e46d-d3e7-4e62-96ec-9886c936ef35",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6040321c-ee7a-45f6-b5d2-c57bd36d0869",
+                "ord": "a0"
+              }
+            ],
+            "id": "335b967d-6f69-4ab2-9c4d-6355f6d33ed5",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The candles"],
+                    "id": "e87720d9-9560-495a-a94c-1b9e310ec5e3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0beb59e2-0226-4f7c-ae5a-68d9e5f360f2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "bdc45c92-5748-4867-a4a8-f12e3fa63902",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "21e09c4a-3dc9-4199-b079-cd19096f7abd",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "233248a1-c4d8-419d-817d-139b6ae5f9c4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "50dbb6f4-0f4a-44ec-b746-524177b40eb2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a18ce987-7e09-423d-9bd3-7e3d049b0cbf",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2ccc4552-0f7d-45cf-941f-ea5de82459a8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e8ea9e96-edc3-4f3f-b983-6bfdf26e8763",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "d17ba079-384e-4e28-8d3e-8046e304a98a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "09fcda52-88f9-408b-bb48-ceb745478703",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "e23930a7-4192-4317-b13d-0c41fb7f89bc",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.candles"
+                },
+                "id": "0b919a50-2830-4486-acdb-436a25b6b8ea",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "99dc83a6-8601-4401-b247-2ce4990ccb0b",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col items-start gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Buy the candle once. Refill it forever."],
+                        "id": "7eb485bb-d269-4b6d-81c4-84a15dff07da",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every Lumen vessel is made to be washed out and poured again. When a candle burns down, a refill drops straight back in — same ceramic, same shelf, a little less money and a lot less waste. It’s the easy, quiet way to keep a home smelling good without a bin full of glass."
+                        ],
+                        "id": "6d4f40e9-02b2-4c42-b297-bfb597428a78",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop/refills"
+                        },
+                        "children": ["Shop refills"],
+                        "id": "100f0ed3-66c8-4948-bc9a-f20cf0888814",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c18b0036-f47b-4714-aba2-7b96dc70b3df",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1643701322328-d671ab7814a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVmaWxsJTIwYmVpbmclMjBwb3VyZWQlMjBpbnRvJTIwcmV1c2FibGUlMjBjZXJhbWljJTIwdmVzc2VsfGVufDB8MHx8fDE3ODY0MDQ4MTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A refill being poured into a reusable ceramic vessel in daylight",
+                      "loading": "lazy"
+                    },
+                    "id": "cba716f1-2b66-4874-8d31-1d3896f56fad",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "36e24cb6-3713-49b9-8a9c-35f509b0499f",
+                "ord": "a0"
+              }
+            ],
+            "id": "c2051234-a1a2-45d1-b9f6-79b1511e0eec",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Lumen",
+      "seoDescription": "Browse everything Lumen makes, with prices and options at a glance. Candle & home fragrance.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "699116dc-8fe2-465a-b72f-f621d4ac96e0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The whole studio"],
+                    "id": "16a1f357-2dd9-426a-9e48-58214fae81aa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every candle, diffuser, spray, refill and gift we make — poured in small batches in coconut-soy wax, blended phthalate-free, and built to be refilled. Filter by scent or format, or sort however you like."
+                    ],
+                    "id": "b5a38554-1c3d-4f0c-824c-1cd125031351",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b77a3e24-4e6b-4183-a0bc-5c0204900783",
+                "ord": "a0"
+              }
+            ],
+            "id": "3a5f50b2-648c-4dfc-a3e0-2c2e0e850d0c",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "8958ab26-b719-433e-8426-d57595bed6c5",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Lumen",
+      "seoDescription": "Explore the collections at Lumen, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "946fd0a7-203d-45f8-a42a-980e4ae809a4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "df7ec309-5dae-4062-a543-4a6c22aa05a1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The range grouped the way people actually shop — what’s new this season, the best-sellers, flame-free fragrance for every room, and the refills that keep a vessel going."
+                    ],
+                    "id": "c7b340d5-0e3b-4a09-be70-e80bfdfd3d01",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ec352b49-d75d-4544-b7f5-94a081a85fb0",
+                "ord": "a0"
+              }
+            ],
+            "id": "e08ce68c-255b-4ac4-8229-4a78cff294ae",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e5014427-6c34-44b2-9bd6-72d6a14be7d6",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Lumen",
+      "seoDescription": "Review what is in your cart and check out securely at Lumen.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "983345ef-8fbb-4379-a79b-6f968c65550a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "b4af9394-3a33-4dc0-a57d-5ba8f62ac519",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping on orders over $50, and everything ships in plastic-free, recyclable packaging. Changed your mind on a scent? Tell us within 30 days and we’ll swap it — clean fragrance should feel good all the way through."
+                    ],
+                    "id": "72b9e476-f42b-4518-9d83-8bf3dc88da6a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9171b07a-6f12-4de3-92fe-b25fc71c879f",
+                "ord": "a0"
+              }
+            ],
+            "id": "526f1d33-b3f7-4b7e-8015-cf8c4079ec26",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "a65de901-d33e-4edf-b762-9221ffe5a6a6",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Lumen",
+      "seoDescription": "Search Lumen for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "953d1eb6-c937-452b-9628-b2dab651595f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Lumen"],
+                    "id": "c2e701ca-8c33-4ea1-bd1a-31f04b4ff717",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a scent, a format, or a refill? Search the whole studio and the journal below."
+                    ],
+                    "id": "18263716-50a8-4c77-b477-a01b8c40b3f4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "639dce3a-1f4e-4a74-812d-205d711384b4",
+                "ord": "a0"
+              }
+            ],
+            "id": "28e22427-e9d9-4085-8a06-1aad4bc14d59",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e4917007-ffb7-486b-9365-34ab76d2818e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Lumen",
+      "seoDescription": "Stories, guides and notes from Lumen.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4ca42012-90ca-4c6d-aaf2-681f9d6b39d5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Lumen journal"],
+                    "id": "bccf4c89-53c9-4668-9679-865d560b6ef9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the studio — what actually goes into a clean candle, how the refill system works, and how to get every even hour out of a burn. Plain, honest, no wellness fog."
+                    ],
+                    "id": "2f198596-fb65-4a63-be6d-249ddbcef65f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "190c500d-430d-4e54-bdbe-946192448afc",
+                "ord": "a0"
+              }
+            ],
+            "id": "9da5e4a6-84db-41c2-a2d5-2d1294fc3e0b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "0c96dc91-b862-48d5-8dd3-17195b95c311",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "0e262e58-ada9-4b0d-a5b3-d37035dfbce6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "537940bc-803d-451e-ac88-ab7d9729b7c0",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "a18ae741-618b-4b9a-8160-679d30507675",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "f2b9cd8a-b3a3-41c3-b558-9972cd962c40",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "40bbc805-1140-4b47-a1af-e7a438fc8ac2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5919d5ce-310d-4a35-98b3-bb1481967ced",
+                "ord": "a0"
+              }
+            ],
+            "id": "cd26d322-8034-49ae-85dd-0ff82777c13d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Lumen",
+      "seoDescription": "Why Lumen makes candles the honest way — coconut-soy wax, cotton wicks, phthalate-free scent you can read on the label, and vessels designed to be washed out and refilled.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "edc3e23f-16c5-43a0-80d8-366ccf42b77a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Lumen"],
+                    "id": "8a71534c-5363-4510-8403-62442468a98d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Lumen started with a simple, slightly annoyed question: why is it so hard to find out what’s actually in a candle? Most of them list one word — “fragrance” — and burn a black ring onto the ceiling. We wanted the opposite: a candle we could read the whole label of, that smelled clean and fresh and burned without leaving anything behind."
+                    ],
+                    "id": "87245cbd-e731-42f9-b5d4-39ef0853f3d4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "So everything is poured by hand in a coconut-soy blend, with lead-free cotton wicks and fragrance we blend phthalate- and paraben-free, then tested for weeks before a scent earns a place. We print the full ingredient list on every box, and we design each vessel to be washed out and refilled — because the cleanest candle is also the one you don’t throw away."
+                    ],
+                    "id": "7c3acb0f-57f5-4d32-845a-11c73739dd15",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No mystery scent, no soot, no landfill of empty glass. Just bright, honest fragrance for ordinary days — and a refill waiting when it burns down."
+                    ],
+                    "id": "7efd6414-8e7a-4268-b174-62241513281d",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "f1cdacc8-ba0c-4ba3-9cac-43f09f0ad862",
+                "ord": "a0"
+              }
+            ],
+            "id": "2f22e1a9-cbc5-4982-9a46-9bb0caf2ccd2",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Lumen",
+      "seoDescription": "Get in touch with Lumen — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c04387fc-c4e1-4551-9816-1757ad619fff",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "1c6ff672-26cb-41a9-933d-418131190da3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Questions about a scent, a refill, or a wholesale order for your shop or hotel? Tell us what you’re after and a real person at the studio will write back."
+                    ],
+                    "id": "ba5845f0-8c7d-4931-9bdd-d7e92aa6b5d0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@lumengoods.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "8d795657-d438-4077-a364-c5a55be52a25",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ae745136-f957-43f3-a3f0-8429ce8e8925",
+                "ord": "a0"
+              }
+            ],
+            "id": "6cbe93d0-0a14-4a3d-8b4e-405adb2087cd",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Lumen",
+      "seoDescription": "Product details at Lumen — candle & home fragrance, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "d3eef565-2b00-4ed7-87c2-dbf66f69b888",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Lumen"],
+                            "id": "02039e5d-83ca-4f33-a78b-f4ff2f78ba6b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "89f2f331-8260-4a2b-96bf-df6ca599794a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "0a5f8af5-9c1b-48ae-b869-1e2ba7244dff",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "563852b9-e805-4340-92ca-d3ce59f6e2a7",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "f500d106-a91e-47e4-93ac-b539e80b36e2",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "618a412d-704f-4663-a017-92462483101f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "b61bb772-008b-44d2-b08b-c2dc93fc6907",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "d04fa8f5-fa04-457d-af7e-fdc2d6cd88f8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "50b8d681-3779-4560-99d5-aed7b1e74554",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "71e0f9a9-d421-4b59-9a41-36a2858f3e15",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "e8145e9e-17ff-4427-b681-947ea298bfee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "2c9cb963-71fe-4e4d-9339-5f34e40584bc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4e5be14b-12e2-428e-8fac-50724cc3ada5",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "47cfbd63-d22b-441f-9e5e-7f865c87a41a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "b7a5d219-04d2-4fb7-96c7-eb72412d27e3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Clean by design"],
+                            "id": "3bb30053-43c4-4109-99c0-824c6246de08",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Coconut-soy wax, a lead-free cotton wick and phthalate-free fragrance — the full ingredient list is on the box. Roughly a 45-hour burn. Trim the wick to a quarter inch before each light, and when it’s done, wash the vessel and drop in a refill."
+                            ],
+                            "id": "db153adb-de2d-48bf-9581-eefe0472e429",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d3f4772c-9c4d-4e4d-973e-d601909a3c38",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "6060d645-bc7f-4aa0-967d-7d2fc5baa0b4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "3fc454fb-8c36-48f5-b8f0-54a3aaad3f97",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "66775473-c4c0-49d1-9b12-1c81d88f9b68",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "17593498-5d0d-4372-a2b3-01f888991928",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8d801ec2-79ec-454b-914d-0ac90a2205eb",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "a16c15a6-275a-4327-ae36-4777cb8decce",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Goes well with"],
+                    "id": "21198acf-e6bc-4ce9-821f-c2e7f9eab02a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "86f6dfb0-1e05-427c-b0ea-6f576aa5d718",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "1b80211d-115e-4ea7-a909-1c6b8fcf3550",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "c80b38dd-c88d-487f-a464-ae69058131d8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0a050810-bcd5-4a64-9b1e-7b8f739aaf3b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8810a067-53aa-4837-9327-56392ad036f5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4f5fe378-82a5-45dd-977a-432df0fecb02",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "a7f89a60-d81c-45db-8bca-a10ee327c606",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "0b5edffc-4218-406f-ada4-49ae2c853122",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "487a225a-f04d-4f5e-a774-2b980e25ba57",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9d7cabdc-1000-4cc5-9ee6-881217003b3a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "27e9936f-817b-4f37-b3fe-2bd4178b39b1",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "ba362cd7-3436-4de5-8d23-1a40f2cc815d",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "088aea66-7039-4a0e-9548-4eae32f74cf4",
+            "ord": "a1"
+          }
+        ],
+        "id": "6493a782-1ea4-4d6f-bee7-e8004a49bf96"
+      }
+    }
+  ],
+  "theme": {
+    "name": "lumen-clean",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.008 40)",
+      "--color-base-200": "oklch(96% 0.012 38)",
+      "--color-base-300": "oklch(91% 0.016 34)",
+      "--color-base-content": "oklch(26% 0.02 150)",
+      "--color-primary": "oklch(46% 0.085 155)",
+      "--color-secondary": "oklch(42% 0.028 150)",
+      "--color-accent": "oklch(48% 0.1 185)",
+      "--color-neutral": "oklch(30% 0.018 150)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Manrope\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 155)",
+      "--color-secondary-content": "oklch(98% 0.01 150)",
+      "--color-accent-content": "oklch(98% 0.01 185)",
+      "--color-neutral-content": "oklch(98% 0.01 150)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(48% 0.1 185)",
+      "--color-highlight-content": "oklch(98% 0.01 185)",
+      "--color-border": "oklch(91% 0.016 34)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.012 150)",
+      "--color-base-200": "oklch(19% 0.012 150)",
+      "--color-base-300": "oklch(16% 0.012 150)",
+      "--color-base-content": "oklch(95% 0.008 90)",
+      "--color-primary": "oklch(82% 0.1 155)",
+      "--color-secondary": "oklch(80% 0.035 150)",
+      "--color-accent": "oklch(80% 0.11 185)",
+      "--color-neutral": "oklch(30% 0.018 150)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 155)",
+      "--color-secondary-content": "oklch(15% 0.02 150)",
+      "--color-accent-content": "oklch(15% 0.02 185)",
+      "--color-neutral-content": "oklch(98% 0.01 150)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.11 185)",
+      "--color-highlight-content": "oklch(15% 0.02 185)",
+      "--color-border": "oklch(16% 0.012 150)"
+    }
+  }
+}

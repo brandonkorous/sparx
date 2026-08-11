@@ -1,0 +1,37 @@
+[
+  {
+    "id": "larkspur-hero",
+    "url": "https://images.unsplash.com/photo-1758243488341-f1e09bba6a6c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FybSUyMGJpc3RybyUyMGRpbmluZyUyMHJvb20lMjBkdXNrJTIwY2FuZGxlcyUyMGxpdHxlbnwwfDB8fHwxNzg2NDE1MjQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warm bistro dining room at dusk, candles lit on set tables"
+  },
+  {
+    "id": "larkspur-dish-1",
+    "url": "https://images.unsplash.com/photo-1519233991914-26a44330ccd7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhdGVkJTIwc2Vhc29uYWwlMjBtYWluJTIwZGlzaCUyMGNlcmFtaWMlMjBwbGF0ZXxlbnwwfDB8fHwxNzg2NDE1MjUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A plated seasonal main dish on a ceramic plate"
+  },
+  {
+    "id": "larkspur-dish-2",
+    "url": "https://images.unsplash.com/photo-1494859802809-d069c3b71a8a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZnJlc2glMjBzdGFydGVyJTIwc2FsYWQlMjBwbGF0ZWQlMjBzaW1wbHl8ZW58MHwwfHx8MTc4NjQxNTI1NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fresh starter salad plated simply"
+  },
+  {
+    "id": "larkspur-dish-3",
+    "url": "https://images.unsplash.com/photo-1673791031093-eb8eefa60083?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzc2VydCUyMHBsYXRlJTIwc3Bvb24lMjBkdXN0aW5nJTIwc3VnYXJ8ZW58MHwwfHx8MTc4NjQxNTI1N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dessert plate with a spoon and a dusting of sugar"
+  },
+  {
+    "id": "larkspur-room",
+    "url": "https://images.unsplash.com/photo-1538334421852-687c439c92f4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmlzdHJvJTIwaW50ZXJpb3IlMjB3b29kZW4lMjB0YWJsZXMlMjB3YXJtJTIwbGlnaHQlMjBvcGVufGVufDB8MHx8fDE3ODY0MTUyNjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "The bistro interior — wooden tables, warm light, an open kitchen"
+  },
+  {
+    "id": "larkspur-kitchen",
+    "url": "https://images.unsplash.com/photo-1488992783499-418eb1f62d08?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZnMlMjBwbGF0aW5nJTIwZGlzaGVzJTIwYnVzeSUyMHBhc3MlMjBvcGVuJTIwa2l0Y2hlbnxlbnwwfDB8fHwxNzg2NDE1MjY0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Chefs plating dishes on a busy pass in an open kitchen"
+  },
+  {
+    "id": "larkspur-bar",
+    "url": "https://images.unsplash.com/photo-1662738221342-8106801cee08?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGwlMjBiYXIlMjByb3clMjB3aW5lJTIwZ2xhc3NlcyUyMHdhcm0lMjBsaWdodGluZ3xlbnwwfDB8fHwxNzg2NDE1MjY3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small bar with a row of wine glasses and warm lighting"
+  }
+]

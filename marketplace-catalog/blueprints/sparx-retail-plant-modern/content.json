@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "choosing-a-plant-for-its-form",
+    "status": "published",
+    "body": {
+      "title": "Choosing a plant for its form",
+      "excerpt": "Buy the silhouette, not the label. How to pick a plant the way you’d pick any other object in the room.",
+      "featuredImage": {
+        "$asset": "post-form"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most plant advice starts with care and ends with a shopping list. We’d start somewhere else: with the shape. A plant is one of the largest objects you’ll add to a room, and long before it needs watering it’s doing a job of line, mass and negative space — the same job as a lamp or a chair. Choose that first, and the rest follows."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Line, mass, and the gap around it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Think in three moves. Line is the plant’s gesture — the tall fan of a bird of paradise, the airy spread of an olive, the hard verticals of a cactus. Mass is its weight: a rubber plant reads as a solid dark form, where a fern reads as a haze. And negative space is what the plant does to the air around it — a sculptural plant needs room to be seen, so an empty corner is a feature, not a waste. Decide which of the three your space is short on, and buy for that."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Then, and only then, the care"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Form gets you a plant you want to look at; care keeps it that way. Once you’ve chosen the silhouette, check that its light matches your spot — every listing here states it plainly — and you’ve got a piece that earns its place and holds it. Beauty first, keepability confirmed second. That order is the whole trick."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "pairing-a-plant-with-its-planter",
+    "status": "published",
+    "body": {
+      "title": "Pairing a plant with its planter",
+      "excerpt": "The planter is half the object. A short guide to matching pot to plant so the two read as one piece.",
+      "featuredImage": {
+        "$asset": "post-pairing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A beautiful plant in the wrong pot is a beautiful plant you don’t quite notice. The planter isn’t packaging — it’s the base of the sculpture, and getting the pairing right is what turns a plant into a composed object. It’s less complicated than it sounds; it comes down to weight, texture and proportion."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Match the weight, contrast the texture"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Heavy plants want heavy planters: a top-heavy bird of paradise looks unstable in a light pot and settled in a weighted stoneware one. Then play texture against the plant, not with it — a glossy rubber plant sharpens against matte concrete, an airy olive softens in a fluted glaze. Same-and-same reads flat; a considered contrast reads intentional."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Get the proportion right"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "As a rule the planter should be roughly a third of the total height and a touch wider than the plant’s base — enough visual base to look grounded, not so much it swallows the stem. When in doubt, size up the plant before you size up the pot. And if you’d rather not think about any of it, the “styled in stoneware” option on every plant is simply us having made the call for you."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-low-maintenance-routine",
+    "status": "published",
+    "body": {
+      "title": "A low-maintenance routine for a considered space",
+      "excerpt": "Good plants don’t need fussing — they need a light touch, on a rhythm. The whole routine, in five minutes a week.",
+      "featuredImage": {
+        "$asset": "post-slow"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The plants we carry are chosen partly because they’re forgiving, and forgiving plants punish over-attention far more than benign neglect. So the routine here isn’t a chore chart — it’s a light, regular pass that keeps a space looking composed without turning it into a hobby you didn’t ask for."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Once a week, five minutes"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Check the soil before you reach for the watering can: a finger an inch or two in tells you more than any schedule, and if it’s still damp, walk away. Water only the ones that are dry, and water them properly — through, until it drains. Then wipe the dust off a couple of broad leaves so they can actually catch the light, and turn each plant a quarter so it grows evenly toward the window rather than leaning. That’s the whole of it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Once a season, step back"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every few months, do the slower pass: trim anything tired, top up or refresh the surface soil, feed lightly through the growing months, and — the part people skip — genuinely look at the arrangement. A plant that’s outgrown its spot or drifted out of balance with the room is worth moving. A considered space isn’t set once; it’s nudged, gently, as the plants grow into it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

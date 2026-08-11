@@ -1,0 +1,32 @@
+[
+  {
+    "id": "hvac-efficiency-system",
+    "url": "https://images.unsplash.com/photo-1700124113583-81aa99ea2aa2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdCUyMHB1bXAlMjB1bml0fGVufDB8MHx8fDE3ODYzODgyNTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A high-efficiency heat-pump unit installed neatly beside a home"
+  },
+  {
+    "id": "hvac-efficiency-savings",
+    "url": "https://images.unsplash.com/photo-1545259741-2ea3ebf61fa3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hcnQlMjB0aGVybW9zdGF0JTIwaG9tZXxlbnwwfDB8fHwxNzg2Mzg4MjU4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A smart thermostat on a wall showing a comfortable, lower target temperature"
+  },
+  {
+    "id": "hvac-efficiency-assessment",
+    "url": "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aHZhYyUyMHRlY2huaWNpYW4lMjB3b3JraW5nfGVufDB8MHx8fDE3ODYzODgyNjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A technician checking a home for drafts and energy loss with a meter"
+  },
+  {
+    "id": "hvac-efficiency-marco",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGVjaG5pY2lhbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzODgyNjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marco Ellis, heat-pump lead"
+  },
+  {
+    "id": "hvac-efficiency-dana",
+    "url": "https://images.unsplash.com/photo-1581092570490-cc40829efaae?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBlbmdpbmVlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzODgyNjd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dana Whitfield, service technician"
+  },
+  {
+    "id": "hvac-efficiency-theo",
+    "url": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwbWFuJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM4ODI2OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Theo Park, install technician"
+  }
+]

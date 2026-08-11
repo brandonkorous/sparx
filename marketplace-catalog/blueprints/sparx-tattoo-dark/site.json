@@ -1,0 +1,2157 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "d9fd37ef-cc73-42d0-b2eb-563c3f05cb3f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "d7b6c77d-ff8c-41e6-b182-061a0ca2749e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "4d1b57d4-5a48-47c3-86f6-11ab309554b6",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "767d51af-ee76-4d50-b929-31ceff55a8a3",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "7c2c33e2-c58b-470a-bdef-9c08a468dbf0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "d7c0a219-e92b-4d00-a43c-80d29a0bcced",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "6bd1893d-fae7-4f8e-8fcd-d8651c3ba75d",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "87453282-e4e2-48cf-8f57-a33cb60eebf6",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "4b8e2c83-02bd-48d1-b04f-81a02622d50c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "7ca06b7d-1638-4d39-8d77-3d5bdabb6503",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "f4bddcbc-c3f4-4912-bd13-695d43eb4b5a",
+                  "ord": "a2"
+                }
+              ],
+              "id": "24c1f2b3-7fe5-4898-9cf0-d0916f474351",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "f1c2609a-7f54-4227-9ff6-c8c0d88b7bdf",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "98f1bd4c-8115-4124-8839-5671f903ba6b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c54b91e0-2398-4b61-9efc-e353506e075b",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "5c5261fe-66f0-40d5-b5a7-79b45bba986e",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "dd24d39a-ff2b-46ed-a7f2-7917a0f91f52",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "80a45965-5823-4ac8-8ab6-17f90a1463e8",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "f33678f7-0256-46e3-bd84-4f87855a3326",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "23724c1a-608d-4af7-a44f-d319a1ba4c8a",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "c79fa8cf-88af-4d26-bf7e-752723d1cb0d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "f2508533-edfa-4dad-86dc-31e9a6a3520c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "1102cb13-3f2d-4190-883d-79df0eb636b5",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "a2fafe83-0cd9-4b4e-b532-32e8d7c596e9",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "963875b5-fad0-4cdb-a580-a540a5d19752",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "8362b661-562d-4171-a443-89422a04f9ff",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ad3bee68-3bae-4de6-b166-29ce75c5d3a7",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "55511509-17c0-48b3-ac6a-e592afa1355c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "cb6f003f-87dc-48e8-8119-74a6cacf818c",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "7a6c2223-8ae9-4d16-9a0a-aad5da9ca7bc",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "41d8353a-b372-489d-b6b9-68b97d4d5156",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "c2404ac7-342c-4dae-8190-fdc3e414a6c1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9516dd89-a863-4fbb-b287-a08901feedf9",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "0ed738f2-8dd5-4299-a6a5-cd50f5215ef1",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "06061e29-9189-4666-9c4a-2d9cc04df90b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "0155b226-1fa8-40bd-a48c-06389ebd22d1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "3cbef10d-14e8-45eb-888b-e7793f664a75",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "c971dd4b-a7db-470b-b680-81f5306e3b1f",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "3d8f0638-c4aa-4770-ba65-b865a8f3195f",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "bf9ce995-c8b8-4b5c-a1b5-85acba99d35f",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e974cb78-9890-483b-b6f9-38e670cc8b5e",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "ed5a1892-5cca-49f9-8d31-8860d3c47a5c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "47bfade3-f195-43b0-8e67-9a0373b0b1dd",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "51535d06-157c-4fe2-b89a-10f49da3e6b8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "251509a4-0105-42bb-b544-017d345b86df",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "725452e0-5959-48e5-bfa3-6fb8075328a4",
+                  "ord": "a1"
+                }
+              ],
+              "id": "852510ed-5bf7-431c-bcbb-10c73b50466d",
+              "ord": "a0"
+            }
+          ],
+          "id": "e5ccea6d-5819-4f82-a4e7-609a13bc2def",
+          "ord": "a2"
+        }
+      ],
+      "id": "1499a492-100f-420b-8400-4d423e5ad5b6"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Ironwood Tattoo — a custom tattoo studio",
+      "seoDescription": "Ironwood Tattoo is a private, dark studio for custom blackwork, fine-line, traditional and realism. Book a free consultation with your artist online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ccce1b44-6502-451f-a5f5-b3b1279b232e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1608666599953-b951163495f4?w=1600&q=80",
+                  "alt": "A dimly lit tattoo studio with a single artist at work",
+                  "loading": "eager"
+                },
+                "id": "2531f260-3e30-48b8-a1a0-88258811d261",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "5e8c8a3f-25df-470c-945d-51665a23dbe3",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Custom work, made to last"],
+                    "id": "854d5683-898b-4831-927d-32eb47c4352f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "A dark studio for considered, hand-drawn tattoos — blackwork, fine-line, traditional and realism. Every piece starts as a conversation, never a flash sheet."
+                    ],
+                    "id": "f1b16510-de07-4ab3-9f04-888e4efd35f1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a consult"],
+                        "id": "6f76931b-7ce4-4e87-81e1-94dbf719812e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the work"],
+                        "id": "5c9e1d61-430b-4f0d-b80f-617268525139",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ce178d77-f509-4821-b8ed-2e058411fefa",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1b874e02-3d85-4ed9-9327-e3c071cfffed",
+                "ord": "a2"
+              }
+            ],
+            "id": "00dee7a1-3798-430c-9017-1bf525a4cdbb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Custom, not off the wall"],
+                            "id": "69a94f7b-2150-4910-8a8c-bc453ee1c9d9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Nothing here is copy-and-paste. Your artist draws the piece for you, for your body, and refines it with you before a needle touches skin."
+                            ],
+                            "id": "3f933ba2-e574-4eff-abb7-49b92d5733ee",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3000db0c-522f-4a21-9bb4-03371dc5332d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Consultation first, always"],
+                            "id": "d6444cf6-b959-4da8-9b8c-e18f7a70cfc2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Big or small, every tattoo begins with a free sit-down. We plan placement, size and price up front, so the day of is calm and certain."
+                            ],
+                            "id": "c8e8f82a-4c49-4298-a7ee-035946396b29",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2a81ab52-3357-417b-b507-a8a141d7830b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Sterile, licensed, exacting"],
+                            "id": "f6864006-8c5c-4e74-a1a1-b7dcef8b9336",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Single-use needles, hospital-grade sterilisation and licensed artists. The craft is loud; the hygiene is quiet and non-negotiable."
+                            ],
+                            "id": "8d56bfc1-41e1-4b52-8c68-b79cf15a3d15",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a53e8577-95be-4d6f-a583-684de6d4a123",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "271921cc-e3d8-472c-8bc4-3325e34a286f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "32be1cab-7ce8-49de-8142-dac0f3e50b75",
+                "ord": "a0"
+              }
+            ],
+            "id": "0af339fb-8472-4511-84ce-6cb4f91cdfbf",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we do"],
+                        "id": "f7a59900-1102-4ca6-a69c-410fcbe52ba0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Sessions are priced by the time your piece takes. Consultations are free — start there, and we’ll size the rest together. Live availability is on the booking page."
+                        ],
+                        "id": "e8f4283a-e3fd-4d93-b8c9-9d62c7f52025",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "595d5003-366e-426e-a354-fef175df1716",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Small tattoo"],
+                                "id": "e1cd057a-a166-4684-b416-ebd675ecabe8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$180"],
+                                "id": "fdb52c73-cf7a-4220-99de-374f88ed5ad8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9aa2243e-72c4-4ecc-82ca-07f14b9573c1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "a2b71403-c5db-4aea-8961-e79e9823fa1d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A single, self-contained piece in one sitting."],
+                            "id": "06efe1e6-b2b8-481d-b572-1b68efa4427b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "aa3a6a21-c51c-433e-a1bd-3e2c1cf1fadc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Fine-line piece"],
+                                "id": "cfd46916-aaec-4676-b46f-5956e127e9b2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$320"],
+                                "id": "56d48f64-aac8-4659-ab70-3a35d9fc8149",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "67a7faa6-c66e-4121-96d6-37ea290fc4bf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["3 hr"],
+                            "id": "17298ae8-ade1-4a5c-a1cd-23b230869ff1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Delicate single-needle script and botanicals."],
+                            "id": "006474b4-319b-4315-805e-01b8d49cf068",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6c5385a4-37e9-4a30-be93-db8113f01796",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Half-day session"],
+                                "id": "3d53c26a-ebb5-4b26-bcd9-2c37faa5e52c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$480"],
+                                "id": "dc6a9998-0af7-40d6-846f-d1db3c7df635",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0b661313-b640-456a-9ee9-45b40e47cfa4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["4 hr"],
+                            "id": "a8480836-8739-4d0d-b8fe-a0aae4703fa9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A four-hour block for larger work."],
+                            "id": "70723270-31a4-40d6-94cc-799bcac35da4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8cb437c4-3a80-43c4-9dd7-6e661e42194d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Full-day session"],
+                                "id": "ce3637da-8225-422a-8a73-512031059023",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$840"],
+                                "id": "5d6c6675-cfed-4331-952c-9b167fec1a4c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "80de96b5-089e-4b9b-9342-d5c77e1831b1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["7 hr"],
+                            "id": "c11bda45-d883-4993-8ff8-1fc14ef59c3a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["A seven-hour sitting for major pieces."],
+                            "id": "3308023a-9f98-426c-bb5d-d17ef22f12be",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7886a647-635f-40c9-87e0-5825dcb2c68c",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "f83617e4-367d-457b-9027-0edf1e628695",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "aea36f68-4845-41e1-9371-f9e84b6a8142",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "d05a0aab-e5c8-44cf-9400-664a76e61274",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "579ede07-4cd5-4b46-8645-9b9aeb219fc2",
+                "ord": "a0"
+              }
+            ],
+            "id": "57d8f02a-0241-4bf7-b616-097dd5ac954a",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1605647533135-51b5906087d0?w=1600&q=80",
+                      "alt": "A private tattoo station under a warm work lamp",
+                      "loading": "lazy"
+                    },
+                    "id": "7ab39caa-e0db-4770-b511-3332e4502fb3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["A room built for the work"],
+                        "id": "eed1c59b-65b0-422c-bb02-d6f35c447e25",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Ironwood is a private, low-lit studio — three chairs, no walk-in churn, no music you have to shout over. Just focused artists and the time a good tattoo actually needs."
+                        ],
+                        "id": "8a52aa0c-0d1e-4294-a091-e919d5773f81",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’d rather do fewer pieces properly than rush a room full. That is the whole idea: craft over comfort, and ink you’ll still be glad you got in twenty years."
+                        ],
+                        "id": "477da286-41a0-4edf-a01c-adebff21bb0d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your chair"],
+                            "id": "04199d28-1705-4e3f-8bfe-28464ad1e1c9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "1ddd02db-02ec-48ca-a341-5b4722f2faf4",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "e2f21ab8-afb4-4719-9838-e87ca5501050",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c7d80c5f-868d-4726-ba03-f5853bbcb926",
+                "ord": "a0"
+              }
+            ],
+            "id": "5e6f25d2-55ea-4c63-a540-13904f0ce0c1",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The artists"],
+                        "id": "ae7a0de7-4b54-459d-b0b4-44068f8ee681",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — each artist owns their style, and you sit with the same one from consult to final pass."
+                        ],
+                        "id": "786e4751-5051-41f8-9eb5-a566891aa935",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2c4a2bcc-4b67-4e12-9234-9a73497db122",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1595747644932-abb68f85f419?w=1600&q=80",
+                              "alt": "Silas Roan, blackwork and traditional artist",
+                              "loading": "lazy"
+                            },
+                            "id": "3c962110-2500-46be-add2-195d266acfe2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Silas Roan"],
+                                "id": "ce096ed9-ab78-491d-83ca-57af8addc29a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Blackwork & traditional"],
+                                "id": "c6ba697c-7799-49a8-b57d-c93e7a0b3d7a",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Heavy black, bold lines and old-school traditional. Silas runs the studio."
+                                ],
+                                "id": "37608f44-bc03-4b6a-8054-473ce85de334",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "696f4207-aac8-4186-9467-42db559520fa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "483f8428-26b0-4530-977c-b81b0ede0abe",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1561432868-931a1373efa7?w=1600&q=80",
+                              "alt": "Del Marrow, fine-line and colour artist",
+                              "loading": "lazy"
+                            },
+                            "id": "20199018-1728-4c23-8cf7-0d2a50adab27",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Del Marrow"],
+                                "id": "b06ba026-c31f-4ba6-b4e2-e2827e00658d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Fine-line & colour"],
+                                "id": "24e03b17-65be-4fac-bcb7-51f5b8b26dcc",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Single-needle script, botanicals and quiet, precise colour."
+                                ],
+                                "id": "91485bd0-9f42-47a0-9382-448d9746748b",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "272e49ad-8979-4f88-a764-de6058d48e9c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d89378bd-0563-4d42-8b40-9201c164e920",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1542744383-8c330d91f4b1?w=1600&q=80",
+                              "alt": "June Okonkwo, realism and blackwork artist",
+                              "loading": "lazy"
+                            },
+                            "id": "d4b10133-e313-422c-9c78-ef0fe5691977",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["June Okonkwo"],
+                                "id": "2c4bb277-019c-4c5a-b6ac-18cc45f23acb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Realism & blackwork"],
+                                "id": "e58fb9fa-9d44-4ec9-ac18-6096d9803ff7",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Black-and-grey realism and large-scale custom builds."
+                                ],
+                                "id": "3fb07618-363d-404c-8597-8ee80972236b",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "8297fbb8-6859-4244-8900-b87e43766552",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "76fc8ca7-2042-4383-87e4-efa41088a2a8",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c7cc3fd8-2859-4c8c-83b8-7fc2c169930a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "697cd402-69b5-499e-9d35-3f487bb7dd38",
+                "ord": "a0"
+              }
+            ],
+            "id": "192fceea-44e7-4181-857f-5b0300a99b2b",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Recent work"],
+                    "id": "613b14ca-abd6-4251-984c-34c7839c2ebe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1758404255679-9afd847ede1c?w=1600&q=80",
+                          "alt": "A bold blackwork sleeve, freshly finished",
+                          "loading": "lazy"
+                        },
+                        "id": "8233113d-e584-40fd-9b41-0024f7bea013",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1583213261205-63258746ed4c?w=1600&q=80",
+                          "alt": "A fine-line botanical piece on a forearm",
+                          "loading": "lazy"
+                        },
+                        "id": "392b9262-abd1-4a08-bf7d-693f6710e37d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1557130641-1b14718f096a?w=1600&q=80",
+                          "alt": "A traditional bold-line design in heavy black",
+                          "loading": "lazy"
+                        },
+                        "id": "84dee5c1-6527-4437-b167-58ef271a6337",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1758404255679-9afd847ede1c?w=1600&q=80",
+                          "alt": "A detailed black-and-grey realism portrait",
+                          "loading": "lazy"
+                        },
+                        "id": "53b49563-1fd9-4dcb-a4be-dca33d50d078",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9e60be10-c483-4538-b053-3a5247bf5d00",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e5fa2e09-6547-4755-8eec-5780bd3a1544",
+                "ord": "a0"
+              }
+            ],
+            "id": "b6139205-bc76-436e-9158-35a8267e87cb",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“They talked me out of the rushed idea I walked in with and drew something far better. Cleanest studio I’ve been in, and the piece still looks sharp two years on.”"
+                    ],
+                    "id": "82eebc4f-56b9-4b42-8f7a-9cf5a326071d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Marco, client since 2024"],
+                    "id": "0205fb71-30a8-4985-ad25-804b43620e4f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "028a0ea0-81ce-4cab-abdc-64464056b316",
+                "ord": "a0"
+              }
+            ],
+            "id": "d99caa94-25dc-418a-848b-70c593a54c0f",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Bring us your idea"],
+                    "id": "598a4527-aced-4e35-8aa9-b0138b7c7e13",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Start with a free consultation. Pick your artist, choose a time, and we’ll plan the piece together."
+                    ],
+                    "id": "41768420-db2c-4cda-9402-c9d796481ef1",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a consult"],
+                    "id": "0c6d2502-5c8e-4906-a27e-b30b66a8f398",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a7e19d58-2107-4635-b578-e0859aa801e2",
+                "ord": "a0"
+              }
+            ],
+            "id": "75bb2776-291b-48e9-8b6f-4f367d653f03",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Ironwood Tattoo",
+      "seoDescription": "See what Ironwood Tattoo offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "44435926-5705-4ae2-b118-86e0972cdb25",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1605647533135-51b5906087d0?w=1600&q=80",
+                  "alt": "A private tattoo station under a warm work lamp",
+                  "loading": "eager"
+                },
+                "id": "be0d12d1-e440-4c15-a03e-30658a6ead5d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "3f663c28-7885-46de-aab3-8e848e7b57bb",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your session"],
+                    "id": "ca1f5dcb-40a6-4aee-a5ad-e0d50ae02d4b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Start with a free consultation, or book a session if you’ve already planned your piece with us. Choose a service to see live availability and your artist’s open times."
+                    ],
+                    "id": "fa3c22b1-947e-4d8b-8273-360a176507b8",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "2048a532-2583-4cd2-9182-06c5502072be",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "2e0c52ca-5f22-4640-9106-ed6abb0a0e40",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "fd2498e6-42f8-4031-91b5-4a0c98182e9b",
+                "ord": "a2"
+              }
+            ],
+            "id": "133e056d-9580-4dc7-a1a7-47e549a8e98d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "e342448e-e792-4302-92ee-cf789889caee",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Ironwood Tattoo",
+      "seoDescription": "Who Ironwood Tattoo is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b882aa6d-89d0-4f9d-a5ca-d50891353c70",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1608666599953-b951163495f4?w=1600&q=80",
+                      "alt": "A dimly lit tattoo studio with a single artist at work",
+                      "loading": "lazy"
+                    },
+                    "id": "54d36259-710d-4006-9be9-fcd45b25be95",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Ironwood Tattoo"],
+                        "id": "4a3e5888-76de-49cd-8767-655c011d1ed3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Ironwood to tattoo the way we always wanted to be tattooed — slowly, custom, and by the same artist from the first sketch to the last line."
+                        ],
+                        "id": "0dbb2559-1b5e-47b4-8035-337044b0eb25",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No flash-sheet churn, no rush, no leaving with something you settled for. Just hand-drawn work, an honest plan, and a studio that takes hygiene as seriously as the art."
+                        ],
+                        "id": "973adfa3-d211-4934-82dc-19673011a67d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a consult"],
+                            "id": "0a7129c2-ed2f-4b3b-9fdd-a036a392a6fc",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e0c24326-5d94-4ada-8ed9-decf383c601f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "57ff6596-0584-4641-92e4-964b8155294d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e600b35e-1be0-481c-bf48-58bc5fc2c416",
+                "ord": "a0"
+              }
+            ],
+            "id": "346a41cf-87ae-4cea-b077-fbc6885e18bb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "4081fa69-f9d9-402f-82f1-c2c33969a0b6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Consultation first"],
+                            "id": "7d7b85e3-0c74-48b4-9c60-ac6803eac831",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every piece starts with a free sit-down about your idea, your body and your budget — before we book anything."
+                            ],
+                            "id": "b4f2ba91-0e82-45ca-9e95-f011f1bbdf5e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ce4a1f0c-30c2-4ab4-8ba6-0ec16b7d2ece",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A deposit that holds your chair"],
+                            "id": "c4f20206-8954-4b69-a55d-fed991466250",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Sessions carry a $50 deposit that comes off your total and reserves the artist’s time. Reschedule with 72 hours’ notice and it carries over."
+                            ],
+                            "id": "df2dde3a-19fa-4eed-83eb-f1f54086676d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fdc23f6c-b1f8-46e9-b6a7-fcd61396e3cc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Yours for life"],
+                            "id": "fc2a781e-6edd-4681-ac0a-39d7ef671d4d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We tattoo to last and send you home knowing exactly how to heal it — so the piece looks as good on year ten as on day one."
+                            ],
+                            "id": "0969387e-208b-4e7c-8a23-e998ff542cb9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "91a34b0f-adce-4da3-b497-e9b052801812",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8e82de2e-2113-4fcb-b7d5-7daa6e6d6236",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ac2ce7ce-971e-4b2c-af68-4d042feef0fc",
+                "ord": "a0"
+              }
+            ],
+            "id": "1b9986d7-3fd1-48bd-b3b0-2e6e29153cf3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Ironwood Tattoo",
+      "seoDescription": "Where to find Ironwood Tattoo, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d56c9777-b578-47f8-b0e8-47a4d7045445",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the studio"],
+                        "id": "670638a9-7e96-44fe-8251-aaa43429fea5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Ironwood Tattoo"],
+                            "id": "3d720bc6-59d2-45d8-b0ee-40929cc16ae5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["212 Foundry Row"],
+                            "id": "bd08383b-62cd-4a32-8ac1-5be7e09826a3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Unit 4 · Portland, OR 97214"],
+                            "id": "c8d35127-b478-4513-8663-48d0b81c15d0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ebe83472-57f2-4b1c-a494-d8b2867f5380",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Saturday"],
+                                "id": "4171a015-ec3d-46a1-945d-70e7e5c429ce",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["12:00 – 8:00"],
+                                "id": "227fe21e-a800-400d-9847-218bee23b9aa",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7e5de610-5315-48ce-b371-90aae734fc31",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "294b9080-5fa8-4f07-b86c-4c496c8b1fe0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["12:00 – 8:00"],
+                                "id": "f9d1ce01-f621-430d-b6aa-ce7b5a3bc98d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "93cc9e20-135b-418a-9667-683ef9f19414",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "b7b63e2c-de68-41c7-80a6-15ac787b5824",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "9b8d1683-bd1e-4329-8f4f-b42443011b46",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "82eb008f-8248-4ea1-8091-4185f393fd61",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "1f93b6ed-7548-439f-bb2e-290534e96481",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "17dff03f-46c1-4de0-a6d4-63328a4d68a4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "212 Foundry Row, Portland, OR 97214",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "4f1be8e4-3f75-4937-99fe-78b7e801eadc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f282c3e7-a699-4710-b468-85a4eef0973a",
+                "ord": "a0"
+              }
+            ],
+            "id": "3bb5f0a7-f397-4788-94aa-9f5f6301b79f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "29056d3f-2962-4ae0-844b-fe1e3c08ff84",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve a consult or session online — no phone tag."
+                    ],
+                    "id": "ff3511f9-e86e-4ed3-aced-9bc86103dee9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book online"],
+                    "id": "ea5208d2-87a3-4ff4-a95d-9dfdcb7363ae",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "de06306e-1fa7-4865-9f9f-024439b54b07",
+                "ord": "a0"
+              }
+            ],
+            "id": "ff782113-1b1c-43b8-8876-d0fea5a2ba33",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "ironwood",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(14% 0.006 60)",
+      "--color-base-200": "oklch(18% 0.008 60)",
+      "--color-base-300": "oklch(26% 0.01 60)",
+      "--color-base-content": "oklch(92% 0.012 85)",
+      "--color-primary": "oklch(76% 0.12 88)",
+      "--color-secondary": "oklch(74% 0.025 70)",
+      "--color-accent": "oklch(46% 0.16 25)",
+      "--color-neutral": "oklch(30% 0.01 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.125rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.125rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 88)",
+      "--color-secondary-content": "oklch(15% 0.02 70)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(46% 0.16 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(26% 0.01 60)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(12% 0.006 60)",
+      "--color-base-200": "oklch(16% 0.008 60)",
+      "--color-base-300": "oklch(24% 0.01 60)",
+      "--color-base-content": "oklch(93% 0.01 85)",
+      "--color-primary": "oklch(78% 0.12 88)",
+      "--color-secondary": "oklch(76% 0.025 70)",
+      "--color-accent": "oklch(50% 0.16 25)",
+      "--color-neutral": "oklch(28% 0.01 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 88)",
+      "--color-secondary-content": "oklch(15% 0.02 70)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(50% 0.16 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(24% 0.01 60)"
+    }
+  }
+}

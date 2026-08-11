@@ -1,0 +1,1584 @@
+{
+  "categories": [
+    {
+      "handle": "tops",
+      "name": "Tops",
+      "description": "Tees and shirts.",
+      "featured": true
+    },
+    {
+      "handle": "knitwear",
+      "name": "Knitwear",
+      "description": "Sweaters and layers in good wool.",
+      "featured": true
+    },
+    {
+      "handle": "trousers",
+      "name": "Trousers",
+      "description": "Tailored and relaxed cuts.",
+      "featured": true
+    },
+    {
+      "handle": "outerwear",
+      "name": "Outerwear",
+      "description": "Coats and heavier layers.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "The finishing pieces.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "the-essentials",
+      "name": "The essentials",
+      "description": "The core of the wardrobe — start here.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "everyday-tee",
+        "oxford-shirt",
+        "merino-crew",
+        "wool-scarf",
+        "leather-tote"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "The latest cuts and colours.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["everyday-tee", "wide-trouser", "overcoat"]
+    },
+    {
+      "handle": "the-knitwear-edit",
+      "name": "The knitwear edit",
+      "description": "Everything knitted, in one place.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["fisherman-knit", "merino-crew"]
+    },
+    {
+      "handle": "the-tailoring",
+      "name": "The tailoring",
+      "description": "Trousers cut to last.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["wide-trouser", "pleated-trouser"]
+    },
+    {
+      "handle": "winter-layers",
+      "name": "Winter layers",
+      "description": "Coats and heavy knits for the cold.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["overcoat", "fisherman-knit", "wool-scarf"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "everyday-tee",
+      "title": "The Everyday Tee",
+      "description": "A heavyweight organic-cotton crew that holds its shape — a proper tee, not an undershirt. Boxy-but-clean through the body, ribbed at the neck so it never gapes, and dense enough to wear on its own. The one you’ll reach for first, in every colour.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Kestrel",
+      "tags": ["tee", "cotton", "everyday"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["the-essentials", "new-in"],
+      "seoTitle": "The Everyday Tee — heavyweight organic cotton | Kestrel",
+      "seoDescription": "A dense, boxy heavyweight organic-cotton crew tee that holds its shape. In bone, charcoal and slate.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-TEE-XS-BON",
+          "priceCents": 4500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "KES-TEE-XS-CHA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-TEE-XS-SLA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "KES-TEE-S-BON",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "KES-TEE-S-CHA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-TEE-S-SLA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "KES-TEE-M-BON",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "KES-TEE-M-CHA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-TEE-M-SLA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "KES-TEE-L-BON",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "KES-TEE-L-CHA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-TEE-L-SLA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Slate"
+          }
+        },
+        {
+          "sku": "KES-TEE-XL-BON",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "KES-TEE-XL-CHA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-TEE-XL-SLA",
+          "priceCents": 4500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-tee",
+          "isPrimary": true,
+          "alt": "The Everyday Tee"
+        }
+      ]
+    },
+    {
+      "handle": "oxford-shirt",
+      "title": "The Oxford Shirt",
+      "description": "A relaxed button-down in a soft, textured oxford cotton — crisp enough to wear open over a tee, easy enough to sleep in. Cut a little longer with a curved hem, mother-of-pearl buttons, and a collar that stands whether it’s buttoned or not.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Kestrel",
+      "tags": ["shirt", "oxford", "cotton"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["the-essentials"],
+      "seoTitle": "The Oxford Shirt — soft-washed oxford cotton | Kestrel",
+      "seoDescription": "A relaxed, longer-cut oxford button-down in soft textured cotton. In ecru, chambray and charcoal.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ecru"
+            },
+            {
+              "value": "Chambray"
+            },
+            {
+              "value": "Charcoal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-OXF-XS-ECR",
+          "priceCents": 9500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-OXF-XS-CHA",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Chambray"
+          }
+        },
+        {
+          "sku": "KES-OXF-XS-CHAR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-OXF-S-ECR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-OXF-S-CHA",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Chambray"
+          }
+        },
+        {
+          "sku": "KES-OXF-S-CHAR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-OXF-M-ECR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-OXF-M-CHA",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Chambray"
+          }
+        },
+        {
+          "sku": "KES-OXF-M-CHAR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-OXF-L-ECR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-OXF-L-CHA",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Chambray"
+          }
+        },
+        {
+          "sku": "KES-OXF-L-CHAR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-OXF-XL-ECR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-OXF-XL-CHA",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Chambray"
+          }
+        },
+        {
+          "sku": "KES-OXF-XL-CHAR",
+          "priceCents": 9500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-oxford",
+          "isPrimary": true,
+          "alt": "The Oxford Shirt"
+        }
+      ]
+    },
+    {
+      "handle": "fisherman-knit",
+      "title": "The Fisherman Knit",
+      "description": "A heavyweight cable-knit in undyed British wool, knitted to an old gansey pattern by a mill that still does it properly. Thick, warm, and built to soften with wear — the sweater you keep for twenty winters and hand on after that.",
+      "status": "active",
+      "productType": "Knitwear",
+      "vendor": "Kestrel",
+      "tags": ["knit", "wool", "heavyweight"],
+      "categoryHandles": ["knitwear"],
+      "collectionHandles": ["the-knitwear-edit", "winter-layers"],
+      "seoTitle": "The Fisherman Knit — heavyweight British wool cable | Kestrel",
+      "seoDescription": "A thick undyed British-wool cable-knit sweater in a traditional gansey pattern. In oatmeal, ecru and charcoal.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ecru"
+            },
+            {
+              "value": "Charcoal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-FISH-XS-OAT",
+          "priceCents": 18500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-FISH-XS-ECR",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-FISH-XS-CHA",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-FISH-S-OAT",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-FISH-S-ECR",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-FISH-S-CHA",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-FISH-M-OAT",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-FISH-M-ECR",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-FISH-M-CHA",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-FISH-L-OAT",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-FISH-L-ECR",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-FISH-L-CHA",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-FISH-XL-OAT",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-FISH-XL-ECR",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ecru"
+          }
+        },
+        {
+          "sku": "KES-FISH-XL-CHA",
+          "priceCents": 18500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-fisherman",
+          "isPrimary": true,
+          "alt": "The Fisherman Knit"
+        }
+      ]
+    },
+    {
+      "handle": "merino-crew",
+      "title": "The Merino Crew",
+      "description": "A fine-gauge extra-fine merino crew that layers under a coat without bulk and works on its own in a warm room. Naturally temperature-regulating, barely wrinkles, and softer than anything with this much give has a right to be.",
+      "status": "active",
+      "productType": "Knitwear",
+      "vendor": "Kestrel",
+      "tags": ["knit", "merino", "layer"],
+      "categoryHandles": ["knitwear"],
+      "collectionHandles": ["the-knitwear-edit", "the-essentials"],
+      "seoTitle": "The Merino Crew — extra-fine merino sweater | Kestrel",
+      "seoDescription": "A fine-gauge extra-fine merino crew that layers without bulk. In camel, navy and charcoal.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Camel"
+            },
+            {
+              "value": "Navy"
+            },
+            {
+              "value": "Charcoal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-MER-XS-CAM",
+          "priceCents": 12500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-MER-XS-NAV",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-MER-XS-CHA",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-MER-S-CAM",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-MER-S-NAV",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-MER-S-CHA",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-MER-M-CAM",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-MER-M-NAV",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-MER-M-CHA",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-MER-L-CAM",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-MER-L-NAV",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-MER-L-CHA",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-MER-XL-CAM",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-MER-XL-NAV",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-MER-XL-CHA",
+          "priceCents": 12500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-merino",
+          "isPrimary": true,
+          "alt": "The Merino Crew"
+        }
+      ]
+    },
+    {
+      "handle": "wide-trouser",
+      "title": "The Wide-Leg Trouser",
+      "description": "A high, clean-fronted trouser in a substantial wool-blend that drapes rather than clings — full through the leg, breaking just so over a shoe. Side adjusters instead of a belt, deep real pockets, and a press that holds all day.",
+      "status": "active",
+      "productType": "Trousers",
+      "vendor": "Kestrel",
+      "tags": ["trouser", "wool", "wide-leg"],
+      "categoryHandles": ["trousers"],
+      "collectionHandles": ["the-tailoring", "new-in"],
+      "seoTitle": "The Wide-Leg Trouser — draped wool blend | Kestrel",
+      "seoDescription": "A high, clean-fronted wide-leg trouser in a draping wool blend with side adjusters. In stone, charcoal and navy.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Stone"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Navy"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-WIDE-XS-STO",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "KES-WIDE-XS-CHA",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-WIDE-XS-NAV",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-WIDE-S-STO",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "KES-WIDE-S-CHA",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-WIDE-S-NAV",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-WIDE-M-STO",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "KES-WIDE-M-CHA",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-WIDE-M-NAV",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-WIDE-L-STO",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "KES-WIDE-L-CHA",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-WIDE-L-NAV",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Navy"
+          }
+        },
+        {
+          "sku": "KES-WIDE-XL-STO",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Stone"
+          }
+        },
+        {
+          "sku": "KES-WIDE-XL-CHA",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-WIDE-XL-NAV",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Navy"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-wide-trouser",
+          "isPrimary": true,
+          "alt": "The Wide-Leg Trouser"
+        }
+      ]
+    },
+    {
+      "handle": "pleated-trouser",
+      "title": "The Pleated Trouser",
+      "description": "A single-pleat tailored trouser that reads sharp without trying — tapered gently to the ankle, cut to sit at the natural waist. Dress it up with the oxford or down with the tee; it’s the trouser that quietly does both.",
+      "status": "active",
+      "productType": "Trousers",
+      "vendor": "Kestrel",
+      "tags": ["trouser", "pleated", "tailored"],
+      "categoryHandles": ["trousers"],
+      "collectionHandles": ["the-tailoring"],
+      "seoTitle": "The Pleated Trouser — single-pleat tailored | Kestrel",
+      "seoDescription": "A single-pleat tailored trouser, gently tapered, cut to the natural waist. In charcoal, taupe and black.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Taupe"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-PLT-XS-CHA",
+          "priceCents": 13500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-PLT-XS-TAU",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Taupe"
+          }
+        },
+        {
+          "sku": "KES-PLT-XS-BLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-PLT-S-CHA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-PLT-S-TAU",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Taupe"
+          }
+        },
+        {
+          "sku": "KES-PLT-S-BLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-PLT-M-CHA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-PLT-M-TAU",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Taupe"
+          }
+        },
+        {
+          "sku": "KES-PLT-M-BLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-PLT-L-CHA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-PLT-L-TAU",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Taupe"
+          }
+        },
+        {
+          "sku": "KES-PLT-L-BLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-PLT-XL-CHA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-PLT-XL-TAU",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Taupe"
+          }
+        },
+        {
+          "sku": "KES-PLT-XL-BLA",
+          "priceCents": 13500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-pleated-trouser",
+          "isPrimary": true,
+          "alt": "The Pleated Trouser"
+        }
+      ]
+    },
+    {
+      "handle": "overcoat",
+      "title": "The Overcoat",
+      "description": "A double-faced wool overcoat with no lining and no bulk — just two layers of cloth stitched together and bound by hand at every edge. Roomy enough for a knit underneath, long enough to mean it. The one coat, done once, done right.",
+      "status": "active",
+      "productType": "Outerwear",
+      "vendor": "Kestrel",
+      "tags": ["coat", "wool", "outerwear"],
+      "categoryHandles": ["outerwear"],
+      "collectionHandles": ["winter-layers", "new-in"],
+      "seoTitle": "The Overcoat — double-faced wool | Kestrel",
+      "seoDescription": "An unlined double-faced wool overcoat, hand-bound at every edge. In camel, charcoal and black.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Camel"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-COAT-XS-CAM",
+          "priceCents": 45000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-COAT-XS-CHA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-COAT-XS-BLA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-COAT-S-CAM",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-COAT-S-CHA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-COAT-S-BLA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-COAT-M-CAM",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-COAT-M-CHA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-COAT-M-BLA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-COAT-L-CAM",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-COAT-L-CHA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-COAT-L-BLA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-COAT-XL-CAM",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Camel"
+          }
+        },
+        {
+          "sku": "KES-COAT-XL-CHA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-COAT-XL-BLA",
+          "priceCents": 45000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-overcoat",
+          "isPrimary": true,
+          "alt": "The Overcoat"
+        }
+      ]
+    },
+    {
+      "handle": "wool-scarf",
+      "title": "The Lambswool Scarf",
+      "description": "A generously long lambswool scarf, brushed soft and finished with a hand-knotted fringe. Wide enough to wrap twice, light enough to leave on indoors. The finishing piece for the coat, in colours that go with all of it.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Kestrel",
+      "tags": ["scarf", "lambswool", "accessory"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["winter-layers", "the-essentials"],
+      "seoTitle": "The Lambswool Scarf — brushed soft, long | Kestrel",
+      "seoDescription": "A generously long brushed-lambswool scarf with a hand-knotted fringe. In oatmeal, charcoal and camel.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Camel"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-SCF-OAT",
+          "priceCents": 6500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KES-SCF-CHA",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Charcoal"
+          }
+        },
+        {
+          "sku": "KES-SCF-CAM",
+          "priceCents": 6500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Camel"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-scarf",
+          "isPrimary": true,
+          "alt": "The Lambswool Scarf"
+        }
+      ]
+    },
+    {
+      "handle": "leather-tote",
+      "title": "The Leather Tote",
+      "description": "A roomy vegetable-tanned leather tote, cut from a single hide and stitched to last — no hardware to fail, no lining to tear. It carries a laptop and a lunch, and it earns a patina the way good leather should. Buy it once.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Kestrel",
+      "tags": ["bag", "leather", "accessory"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["the-essentials"],
+      "seoTitle": "The Leather Tote — vegetable-tanned, unlined | Kestrel",
+      "seoDescription": "A roomy vegetable-tanned leather tote, cut from a single hide, made to patina. In tan, black and chocolate.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Tan"
+            },
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Chocolate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KES-TOTE-TAN",
+          "priceCents": 24500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Tan"
+          }
+        },
+        {
+          "sku": "KES-TOTE-BLA",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "KES-TOTE-CHO",
+          "priceCents": 24500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Chocolate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kestrel-prod-tote",
+          "isPrimary": true,
+          "alt": "The Leather Tote"
+        }
+      ]
+    }
+  ]
+}

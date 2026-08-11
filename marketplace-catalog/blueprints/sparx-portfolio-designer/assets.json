@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ledger-hero",
+    "url": "https://images.unsplash.com/photo-1504608245011-62d9758c1bb9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjB3b3Jrc3BhY2UlMjBsYXB0b3AlMjBub3RlYm9va3xlbnwwfDB8fHwxNzg2Mzk5NzM2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A designer’s workspace — a laptop, a notebook and a wall of interface sketches"
+  },
+  {
+    "id": "ledger-atlas",
+    "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGF0YSUyMGRhc2hib2FyZCUyMGFuYWx5dGljcyUyMHNjcmVlbnxlbnwwfDB8fHwxNzg2Mzk5NzQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A financial dashboard redesign shown across desktop and mobile"
+  },
+  {
+    "id": "ledger-north",
+    "url": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bW9iaWxlJTIwYXBwJTIwaW50ZXJmYWNlJTIwcGhvbmV8ZW58MHwwfHx8MTc4NjM5OTc0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A healthcare booking flow, a sequence of clean mobile screens"
+  },
+  {
+    "id": "ledger-kiln",
+    "url": "https://images.unsplash.com/photo-1602576666092-bf6447a729fc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dWklMjBkZXNpZ24lMjBzeXN0ZW0lMjBzY3JlZW58ZW58MHwwfHx8MTc4NjM5OTc0NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A design-system component library laid out as a swatch grid"
+  },
+  {
+    "id": "ledger-fathom",
+    "url": "https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29mdHdhcmUlMjBvbmJvYXJkaW5nJTIwYXBwJTIwc2NyZWVufGVufDB8MHx8fDE3ODYzOTk5MDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An onboarding checklist interface on a tablet"
+  },
+  {
+    "id": "ledger-portrait",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJvZmVzc2lvbmFsJTIwcG9ydHJhaXQlMjBwZXJzb24lMjBzdHVkaW98ZW58MHwwfHx8MTc4NjM5OTc1MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Portrait of Sasha Rourke, product designer"
+  }
+]

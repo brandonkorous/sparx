@@ -1,0 +1,97 @@
+[
+  {
+    "id": "coffee-hero",
+    "url": "https://images.unsplash.com/photo-1607681034540-2c46cc71896d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cm9hc3RlciUyMHBvdXJpbmclMjBmcmVzaC1yb2FzdGVkJTIwYmVhbnMlMjBjb29saW5nJTIwdHJheXxlbnwwfDB8fHwxNzg2NDAxOTQ3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A roaster pouring fresh-roasted beans from a cooling tray"
+  },
+  {
+    "id": "coffee-tile-origin",
+    "url": "https://images.unsplash.com/photo-1565273975921-c884f2b703df?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZCUyMHNjb29waW5nJTIwZ3JlZW4lMjBjb2ZmZWUlMjBidXJsYXAlMjBzYWNrfGVufDB8MHx8fDE3ODY0MDE5NTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand scooping green coffee from a burlap sack"
+  },
+  {
+    "id": "coffee-tile-blend",
+    "url": "https://images.unsplash.com/photo-1690983324988-bbceeeecbe58?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFnJTIwcm9hc3RlZCUyMGNvZmZlZSUyMGJlYW5zJTIwc3BpbGxpbmclMjBvbnRvJTIwd29vZHxlbnwwfDB8fHwxNzg2NDAxOTU2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of roasted coffee beans spilling onto a wood counter"
+  },
+  {
+    "id": "coffee-tile-gear",
+    "url": "https://images.unsplash.com/photo-1650940925927-f4a30c930a4d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG91ci1vdmVyJTIwZHJpcHBlciUyMGdvb3NlbmVjayUyMGtldHRsZSUyMGNvdW50ZXJ8ZW58MHwwfHx8MTc4NjQwMTk1OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pour-over dripper and gooseneck kettle on a counter"
+  },
+  {
+    "id": "coffee-tile-sub",
+    "url": "https://images.unsplash.com/photo-1766512442064-0ffc39ce866f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBrcmFmdCUyMGNvZmZlZSUyMGJhZ3MlMjB0aWVkJTIwdHdpbmV8ZW58MHwwfHx8MTc4NjQwMTk2M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of kraft coffee bags tied with twine"
+  },
+  {
+    "id": "coffee-band-roast",
+    "url": "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZHJ1bSUyMHJvYXN0ZXIlMjBnbG93aW5nJTIwd29yayUyMHNtYWxsJTIwcm9hc3Rlcnl8ZW58MHwwfHx8MTc4NjQwMTk2Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A drum roaster glowing at work in a small roastery"
+  },
+  {
+    "id": "coffee-band-sub",
+    "url": "https://images.unsplash.com/photo-1622919526861-1b6c75517f29?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8YmFnJTIwY29mZmVlJTIwZG9vcnN0ZXB8ZW58MHwwfHx8MTc4NjQwMjUwMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fresh bag of coffee left on a doorstep in morning light"
+  },
+  {
+    "id": "prod-ethiopia",
+    "url": "https://picsum.photos/seed/prod-ethiopia/1600/1000",
+    "alt": "A kraft bag of Ethiopia single-origin coffee"
+  },
+  {
+    "id": "prod-colombia",
+    "url": "https://picsum.photos/seed/prod-colombia/1600/1000",
+    "alt": "A kraft bag of Colombia single-origin coffee"
+  },
+  {
+    "id": "prod-house-blend",
+    "url": "https://picsum.photos/seed/prod-house-blend/1600/1000",
+    "alt": "A bag of the house blend coffee"
+  },
+  {
+    "id": "prod-espresso",
+    "url": "https://images.unsplash.com/photo-1524350876685-274059332603?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFnJTIwZXNwcmVzc28lMjByb2FzdCUyMGNvZmZlZXxlbnwwfDB8fHwxNzg2NDAxOTc4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of espresso roast coffee"
+  },
+  {
+    "id": "prod-decaf",
+    "url": "https://images.unsplash.com/photo-1605711599412-775918dbe770?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8YmFnJTIwZGVjYWYlMjBjb2ZmZWV8ZW58MHwwfHx8MTc4NjQwMTk4MXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A bag of decaf coffee"
+  },
+  {
+    "id": "prod-dripper",
+    "url": "https://images.unsplash.com/photo-1712664436441-ad3fcb96dff1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMHBvdXItb3ZlciUyMGRyaXBwZXJ8ZW58MHwwfHx8MTc4NjQwMTk4NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ceramic pour-over dripper"
+  },
+  {
+    "id": "prod-filters",
+    "url": "https://images.unsplash.com/photo-1748563223560-42d7a0828961?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFjayUyMHBhcGVyJTIwcG91ci1vdmVyJTIwZmlsdGVyc3xlbnwwfDB8fHwxNzg2NDAxOTg3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pack of paper pour-over filters"
+  },
+  {
+    "id": "prod-mug",
+    "url": "https://images.unsplash.com/photo-1495100497150-fe209c585f50?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RvbmV3YXJlJTIwY29mZmVlJTIwbXVnfGVufDB8MHx8fDE3ODY0MDI1MTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stoneware coffee mug in a warm glaze"
+  },
+  {
+    "id": "prod-subscription",
+    "url": "https://images.unsplash.com/photo-1745680636997-dca47973113d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y29mZmVlJTIwc3Vic2NyaXB0aW9uJTIwZ2lmdCUyMGJveCUyMHRocmVlJTIwYmFnc3xlbnwwfDB8fHwxNzg2NDAxOTk0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A coffee subscription gift box of three bags"
+  },
+  {
+    "id": "post-roast",
+    "url": "https://images.unsplash.com/photo-1561986810-4f3ba2f46ceb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8YmVhbnMlMjBtaWQtcm9hc3QlMjBkcnVtJTIwcm9hc3RlcnxlbnwwfDB8fHwxNzg2NDAxOTk4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Beans mid-roast in a drum roaster"
+  },
+  {
+    "id": "post-brew",
+    "url": "https://images.unsplash.com/photo-1504469089401-14f795f6ddee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xvdyUyMHBvdXItb3ZlciUyMHByb2dyZXNzJTIwY2FyYWZlfGVufDB8MHx8fDE3ODY0MDIwMDF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A slow pour-over in progress over a carafe"
+  },
+  {
+    "id": "post-origin",
+    "url": "https://images.unsplash.com/photo-1647220577886-6a5faaa7c141?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29mZmVlJTIwZmFybSUyMGdyZWVuJTIwaGlsbHNpZGUlMjBhbHRpdHVkZXxlbnwwfDB8fHwxNzg2NDAyMDA0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A coffee farm on a green hillside at altitude"
+  }
+]

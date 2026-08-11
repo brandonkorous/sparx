@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-b2b-coffee-wholesale",
+  "name": "sparx — Coffee Roaster (Wholesale)",
+  "version": "1.2.0",
+  "tagline": "A working trade storefront for a wholesale coffee roaster.",
+  "description": "A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order — with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme — cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "b2b",
+    "industry": "Wholesale coffee roaster"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Coffee Roaster (Wholesale) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Coffee Roaster (Wholesale) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#41261a",
+  "sortWeight": 86
+}

@@ -1,0 +1,2105 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "12b696cb-1e66-4f38-9976-0bc4aa3fdab0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "7619f478-74a1-4ff5-8b3b-783e930a0a6c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "d04005cf-f2cb-4f1c-a938-a01626d9c212",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "3c310817-c82d-4935-99c0-c166147c27a4",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "de629da8-481d-4cd8-a7e5-f37b764338e4",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "471eb022-a73c-49f9-acc8-9a3f6aadc7a2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "7d54d5e2-8790-411a-ab68-90360df90812",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "f60234c0-eddd-40f7-a612-8bbac72d98fd",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "cd3e34d1-f5d7-434a-8775-10166350c554",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "9c2870e7-4e1b-4137-9016-de0c855ae6d5",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b679cdf3-41ca-4e34-a8f3-9b18e0af3d2c",
+                  "ord": "a2"
+                }
+              ],
+              "id": "13f35bd9-ebb8-43da-9e99-fae861d6c6cd",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "fe02486c-d071-4d42-9f59-956994bdb8b3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "ade8a31c-3441-47cb-8f36-5098a24a3fc0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "863c0ae5-8707-4c57-bc15-604a84e74c4d",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "2d9a4e64-ed6e-4af0-b9c0-f27b8d8aa716",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "eab4add8-662d-45ce-b553-37ab79d5e032",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "f718403c-c9a0-425e-8ca9-eaa543df4494",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "7f6a6a43-0434-44e9-aeca-0034e6484506",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "5fad64a6-3c64-452a-8194-5d462697833a",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "ee4d1300-3123-4606-b211-e6687c882116",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "11c13731-259d-4833-a22b-221dec56de24",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "ad73714d-fa16-4283-9fe6-8465305d8392",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "ee64df18-cfa9-4af5-a827-26c35cb7c006",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9359cd8d-cf17-4f03-afbc-7496e5cd6dee",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "fbf8be62-fb09-49ea-a000-8e32872a1a2b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "03ba1594-d443-48f2-a2b1-240a3a25a70b",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "33a86251-e07d-4c3f-a830-1396784255c7",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "faefd692-7276-4a56-98e8-8caa7b5f005b",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "ab5c22b9-ecad-4233-842a-8ae2764706f9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "070c48b8-d1f6-40f4-8dd5-e6020a43d031",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "a6c89aad-58e3-4a56-8bcf-8f64fc03ff50",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ab6b805d-88aa-4f42-81bf-3a7bbd959ae4",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "d2702896-09da-4613-961e-2f3ceccddd55",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "8218eef8-1df9-41be-80bd-a5c787eaa7b6",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "b767ee7d-6bba-4e8f-95fd-075d3eee4638",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "85231d06-9f0b-4c87-b55c-1fcc54ea8c14",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "ba35a1aa-05f9-4851-b116-25ea49adea0b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d0415fc8-bc2e-4589-86dc-34071f8bc477",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "e85021b4-2b77-438e-8fe1-61d550f95c67",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4d8988ce-cd86-4e6b-b14a-d98f4582c284",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "102606ef-b26b-442f-a4e3-b53221dbfd95",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "d4f08859-1a3f-40fe-a98c-171b8dbae071",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "7389ad30-ac2c-4d01-8946-daf70cd2c927",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "caf45e29-4971-4766-84a8-5c06435e35a5",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "66182717-14c3-40fc-bb6d-77f2b9118b1f",
+                  "ord": "a1"
+                }
+              ],
+              "id": "d43aad3e-8c96-416d-980c-d5aedeeea738",
+              "ord": "a0"
+            }
+          ],
+          "id": "8a28e7b9-6d8e-4aae-bec6-d420aebb7cbb",
+          "ord": "a2"
+        }
+      ],
+      "id": "b6a9bda6-8815-48af-aa64-9c78c7b276b7"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Ledger & Co. — friendly bookkeeping & taxes for small business",
+      "seoDescription": "Ledger & Co. handles the bookkeeping, payroll and taxes for freelancers and small businesses — in plain English, at one flat monthly price. Book a free consult online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "ed36e673-7aac-4c6b-ae20-d63a658296f1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1713947503588-8ff8196dc4a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNjb3VudGFudCUyMHdvcmtpbmclMjBkZXNrfGVufDB8MHx8fDE3ODYzOTAwNDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A friendly, sunlit workspace with a laptop, a coffee and a small stack of paperwork",
+                  "loading": "eager"
+                },
+                "id": "afd98e64-393f-4993-ada0-fa30f9f1d38e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "e42212cb-49a5-4b62-ac41-1852ceb53805",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["The numbers, off your plate"],
+                    "id": "77f0211c-3340-4ba3-ad31-860168fa0a50",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Friendly bookkeeping, payroll and taxes for freelancers and small businesses — so you can get back to running the thing you actually love."
+                    ],
+                    "id": "ec2d392c-6e75-482b-99f3-c2df0424ed64",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a free consult"],
+                        "id": "ed7d6e39-1a8b-4786-b758-48f26d857e8c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we do"],
+                        "id": "ac9b3396-a8f4-478f-8d23-8d07a78f6452",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "74a0f871-fa69-4d4b-a85a-410cbcf662e8",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0efca208-8b6b-4de6-bbab-b19389e43dbd",
+                "ord": "a2"
+              }
+            ],
+            "id": "624864ab-b1ec-460d-b131-f72425aa9634",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One flat monthly price"],
+                            "id": "5b86c823-36d8-4326-9859-44552d1c1554",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No surprise invoices, no hourly meter running. You’ll know exactly what you pay every month — and it won’t change because you asked a question."
+                            ],
+                            "id": "2823ca90-61d0-4ecf-9d8d-880dcfff4cdd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8674fc32-17c3-499d-a089-ae7ae9adfb03",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We speak plain English"],
+                            "id": "19115513-f431-408a-8e74-2b967bfb7c75",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No jargon, no lecture. We explain your numbers the way we’d explain them to a friend — clearly, honestly, and without making you feel behind."
+                            ],
+                            "id": "c52699ae-696c-4562-a4ef-2b238ace6d79",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ad346e17-b31d-4f4b-842b-6f697a97f2a3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Deadlines we never miss"],
+                            "id": "45aaf53b-7bf8-43bc-a29e-84453098451a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Quarterly taxes, payroll filings, year-end — we track every date so you don’t have to. No late fees, no last-minute scramble, ever."
+                            ],
+                            "id": "121259b9-8e32-4f53-8d01-b5751736ee3b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a6c69cb9-6500-4e6a-b5b3-cb866a1c2934",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "cabc9b25-ee11-4207-92c5-8c83f42c6b2d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c14af3ef-8ee4-41cb-9c54-6cc765bdfe98",
+                "ord": "a0"
+              }
+            ],
+            "id": "4327a245-151a-4a86-8192-a8aed4f98cd9",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["How we help"],
+                        "id": "53098deb-19db-4d32-8211-35f44476149d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Pick a service to see how long it takes and what it costs. Not sure where to start? Book the free consult — that’s what it’s for."
+                        ],
+                        "id": "88b94d4e-3c2c-4416-b2d7-398e5275e896",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0d7b5f80-e88f-4552-b5af-62b9afffb103",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free consultation"],
+                                "id": "15b4ebd1-13d1-4deb-97e3-cc13eb3b7e11",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "a5cbcd1e-564b-432b-8333-17f05d3329a8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f6488860-cac7-4555-98ba-956dbba59234",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "6540349a-54fd-4e03-a8a1-7b220810dfe9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A no-pressure chat about where your books are and how we can help."
+                            ],
+                            "id": "896650fc-a52b-4973-988a-a32ceb626ee9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7bd96dad-e8a9-4590-96c3-a7d66adfc009",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Bookkeeping setup"],
+                                "id": "bd0ef627-b1e0-4638-a91c-e822fd50cbd6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$200"],
+                                "id": "a5bedb7b-ee72-40af-8e37-a5e606a5652a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "eb3bc427-d087-4109-af21-4d8823743ada",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "2969936b-8a3e-4144-b1bf-e061dbdfeb1c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Clean books from day one, with a monthly rhythm you can keep."
+                            ],
+                            "id": "0830087f-0791-4bdc-a228-5bc3e3a6c236",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "56d35293-d9c9-4bfa-8f95-54e88fd3142a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Tax prep consultation"],
+                                "id": "b2338fa0-0fbd-4886-acbd-8ee3c3e1931e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$125"],
+                                "id": "6ee6df9f-4614-4635-83e9-9f05fd9ba816",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "85bdc6dc-7fe2-46c7-b2cc-4f15dfaf0dac",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "95447594-9da8-40c6-8ff0-a0b5cea76544",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Get ahead of tax season and keep more of what you earn."],
+                            "id": "92145ea0-84fc-43f1-89df-1fb8bbcdf7da",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "50725ea9-8a10-4542-84a0-4fee01a19647",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["New business setup"],
+                                "id": "ddc58cef-f7d5-422e-bafd-ca4cb5b16592",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$250"],
+                                "id": "e4684f42-802e-4633-9933-ee55e0c6f625",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d39321fe-518a-4208-8ad6-70b3bfff83c4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "b89c1f11-6122-4e21-9324-9b5472ec8233",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The right structure, registered properly, from the start."
+                            ],
+                            "id": "e590ea5a-b5ae-42d9-bc0d-04373a52ed2c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "396c3b88-e8af-4ac8-bf8b-db454dd8b93e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "1d9a387c-9706-4b5c-8a31-82aae09638c6",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "e911e178-59e4-43f7-ad53-9d2a733bb34b",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "38ce828c-bd2f-4990-8f6a-34f96d0ec05a",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f94c3120-90a9-43bd-8271-c37c4c4ae1ac",
+                "ord": "a0"
+              }
+            ],
+            "id": "da123ebe-c571-4b7c-bd23-3209ea4c9f98",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1707157284454-553ef0a4ed0d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va2tlZXBpbmclMjBjYWxjdWxhdG9yJTIwZGVza3xlbnwwfDB8fHwxNzg2MzkwMDQ5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A tidy desk with a calculator, notebook and a cup of coffee",
+                      "loading": "lazy"
+                    },
+                    "id": "0f222fcd-10b0-4629-ae09-0d694ab168fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["You run the business. We’ll run the books."],
+                        "id": "3993344f-3457-411b-8500-d1e1b5afd57e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most small-business owners didn’t start out to become part-time accountants — but somehow the spreadsheets, the receipts and the quarterly taxes landed on their desk anyway."
+                        ],
+                        "id": "d3d081ce-7d66-4c8e-a16f-e3f4d4c01993",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That’s where we come in. We take all of it off your plate, keep it tidy and up to date, and tell you in plain language exactly where you stand. No stress, no jargon, no April panic."
+                        ],
+                        "id": "fab9a2db-71ae-4c75-a9e7-69ef39b9fff4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free consult"],
+                            "id": "0f24b8ea-531a-4035-9ba8-de279d9a3902",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "534c0696-d30f-4710-8a3a-13588a3d7c4f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "3fb1fd52-9d96-4f16-92de-d892e5635a65",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "80da4872-d6c6-46e0-86af-a0b133fc5ebf",
+                "ord": "a0"
+              }
+            ],
+            "id": "1de6c746-3f7d-48b7-828b-e75726948247",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The people behind your books"],
+                        "id": "fd984425-8f9d-41ca-a13a-f6fcfdb8e971",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A small, friendly team that actually gets to know your business. Book with whoever fits — we’ll point you to the right person."
+                        ],
+                        "id": "43b7d482-9e40-4714-b88e-520a663e120b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "79697afd-e3f9-4fb6-9a80-3c3644d0dd3d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1484863137850-59afcfe05386?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBhY2NvdW50YW50JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDA1Mnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dana Whitfield, tax and small-business lead",
+                              "loading": "lazy"
+                            },
+                            "id": "ddf8f739-67ab-4bf3-8a33-f177488c56ab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dana Whitfield"],
+                                "id": "7d7f01da-94f3-44a9-9f38-11c210615d72",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Tax & small business"],
+                                "id": "5dbf3225-e301-4546-9821-9914794ae757",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fifteen years of small-business taxes, and a knack for making them feel simple."
+                                ],
+                                "id": "46e5baf0-f604-45f5-9038-1b59702fdfe4",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "8516a33b-b19f-4d71-aa61-349aa8c937f8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "37ccf8ce-6341-465a-972b-028735b92d22",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1676989880361-091e12efc056?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNjb3VudGFudCUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTAwNTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Bell, bookkeeping and payroll",
+                              "loading": "lazy"
+                            },
+                            "id": "ee5fe564-ea22-48f1-a054-32bb30695741",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Bell"],
+                                "id": "82254643-427c-4d2a-b198-4211f52d085d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Bookkeeping & payroll"],
+                                "id": "ecc54864-2f3d-4ec9-aa9b-b28ee63eb6b6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Keeps your books clean and your team paid — on time, every time."
+                                ],
+                                "id": "47ce4f67-ff1c-4a14-aefd-12452390e024",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0f33aa9b-e035-4fdd-902e-60993a1e184e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ebc73c91-025c-471d-a16a-acd3a3b97f7a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1630939687530-241d630735df?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnVzaW5lc3N3b21hbiUyMHBvcnRyYWl0JTIwc21pbGluZ3xlbnwwfDB8fHwxNzg2MzkwMDU4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Rosa Nguyen, new-business setup and advisory",
+                              "loading": "lazy"
+                            },
+                            "id": "c5405998-c8f2-4ea6-8081-2fd4f6e51e50",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Rosa Nguyen"],
+                                "id": "7f04c3f3-4942-4ec2-9863-a5ef8d58ac0e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Setup & advisory"],
+                                "id": "a3278959-eac2-4bd9-b567-e6102007ed5b",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Helps new owners start right and growing ones make the next smart move."
+                                ],
+                                "id": "4692ca31-7741-40f6-9f5f-97ae864a43cb",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "125332d6-7606-43a2-bbde-6b8a2f0b2b44",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b2dc7fac-c40a-434a-add1-7bbb56ea8d85",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d18e1a59-7d28-4d21-8cb3-7a432738147a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "03756143-54ee-4241-98ef-5c7887863189",
+                "ord": "a0"
+              }
+            ],
+            "id": "70978a22-4196-4bab-93c3-2799c9ec7ff6",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I used to dread every tax season and lose whole weekends to my books. Now I honestly don’t think about it — they just handle it, and I finally feel on top of my money.”"
+                    ],
+                    "id": "db4f5ec7-bbe2-4ea1-9e99-146259db5ecf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Priya, bakery owner & client since 2022"],
+                    "id": "6451178a-9694-4a6b-9c5d-1d6928e9ba01",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ac3694e0-1cca-497f-a536-984063c83d27",
+                "ord": "a0"
+              }
+            ],
+            "id": "7e2d0630-b3df-4c62-bf11-e06b167d6c0d",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Let’s take a look at your books"],
+                    "id": "be1f6957-4164-4cc6-a488-a5d0d9c1970c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a free 30-minute consult. We’ll talk through where you are and how we can help — no cost, no commitment."
+                    ],
+                    "id": "0060f186-e0bc-4786-a56e-185670bae3ee",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free consult"],
+                    "id": "4fb3da10-472a-4745-91ec-f8592a9810c2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "beee5cb5-b07b-4572-b370-7218bad10108",
+                "ord": "a0"
+              }
+            ],
+            "id": "ef84f7c4-a0f5-48ea-b234-df81fbd1f7f5",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Ledger & Co.",
+      "seoDescription": "See what Ledger & Co. offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "dd9d0cfe-3aa0-41c1-b19e-246fb38da8b8",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1707157284454-553ef0a4ed0d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ym9va2tlZXBpbmclMjBjYWxjdWxhdG9yJTIwZGVza3xlbnwwfDB8fHwxNzg2MzkwMDQ5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A tidy desk with a calculator, notebook and a cup of coffee",
+                  "loading": "eager"
+                },
+                "id": "52d3503c-85e8-4eb4-82f6-a8105e13e3fc",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "8eea4154-af6b-40a7-a6e3-9dddebe19270",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your consultation"],
+                    "id": "6915086c-eeb6-42fe-81b3-0b18028a3d5d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service below to see what it costs and how long it takes, then pick your accountant and a time that works for you."
+                    ],
+                    "id": "0ad8a2a1-19f4-4761-8a44-0148bac1fb0f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "3a791dae-431d-446e-8c1f-f75a860f6519",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "83ef80b7-a6e1-412b-882a-3628a27b519d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "04d4fdb3-942e-4779-bd0e-c1578af3efcf",
+                "ord": "a2"
+              }
+            ],
+            "id": "006de3b0-8956-4381-83e5-539e08955a74",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "fe985417-b6a9-41ad-bb13-e0d2934c35e7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Ledger & Co.",
+      "seoDescription": "Who Ledger & Co. is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d5fdde8a-425e-4f3a-940b-4e32fe1ed1f3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1713947503588-8ff8196dc4a3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YWNjb3VudGFudCUyMHdvcmtpbmclMjBkZXNrfGVufDB8MHx8fDE3ODYzOTAwNDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A friendly, sunlit workspace with a laptop, a coffee and a small stack of paperwork",
+                      "loading": "lazy"
+                    },
+                    "id": "7d3348aa-e883-42e5-832e-39d2354ce55a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Ledger & Co."],
+                        "id": "26afefd2-5542-4ed1-bd10-ac0d55fd65b8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Ledger & Co. because we kept meeting small-business owners who were brilliant at their craft and completely underwater on their books — not because they weren’t smart, but because nobody ever made the money side feel human."
+                        ],
+                        "id": "d36c6cf1-6b9b-4a9b-8535-194400a61f35",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "So that’s what we do. We handle the bookkeeping, payroll and taxes, and we explain it all in plain English. You get your evenings back, your numbers make sense, and tax season stops being something to fear."
+                        ],
+                        "id": "3fec841e-fc1e-4dc1-bf34-510df21481ee",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free consult"],
+                            "id": "c69ab3cd-4216-4ba0-8d08-b5e13b7fe2ef",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "ceb85628-7623-4c96-a493-24b9fbac93e7",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2b258edf-9270-486f-ad2c-c2f5c4384ea9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "18436c3d-59d2-413a-b963-a03c51e2f77a",
+                "ord": "a0"
+              }
+            ],
+            "id": "2b67d81a-d442-4307-9420-629f7d258f09",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "711b65b3-1ef2-4c82-bd40-fbd71b4655f6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A real person, every time"],
+                            "id": "1cedb6b5-054f-4c7a-b83a-3b64ca3a5031",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll work with the same friendly team who knows your business — not a call center and never a different stranger each month."
+                            ],
+                            "id": "92984cbd-c72a-4f31-8b02-914f73470f0c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e5be5c5c-756a-43a9-bff8-e66bc20562af",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Everything in the cloud"],
+                            "id": "6fe3fb84-f9f7-463c-b4f1-803021fc9bd2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Your books live online, always current, always accessible. Check in whenever you like, or leave it to us — either way it’s handled."
+                            ],
+                            "id": "1a1914f7-4f50-4333-a646-701544c395fa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7018349a-0529-4ef3-acc5-001f80bc735b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Honest, upfront pricing"],
+                            "id": "aeb81408-946a-40fb-9461-c9e6875c3093",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Flat monthly plans, spelled out before you commit. Ask us anything without watching a clock — questions are part of the service."
+                            ],
+                            "id": "4d7ee343-9add-42dd-b2bf-0c803ed66c20",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "feb6d5ea-b12b-49b2-adb5-6fd3831471d6",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5676d095-bd5c-474d-bccd-18af91b0b423",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "34ffc134-1169-428d-b38f-136c1c084407",
+                "ord": "a0"
+              }
+            ],
+            "id": "576116ed-0c71-43d6-9b8d-21d210ee1247",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Ledger & Co.",
+      "seoDescription": "Where to find Ledger & Co., our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6927e3c5-83d4-4cba-9954-4018bd73c457",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Come say hello"],
+                        "id": "6ee4593d-ac97-4b43-b7bd-8fe68ef5098e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Ledger & Co."],
+                            "id": "a7f0090e-00da-4b46-a512-f5320cde41e4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Maple Avenue"],
+                            "id": "34855cab-d354-4f19-b74d-322e1155eb09",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 5 · Asheville, NC 28801"],
+                            "id": "c5b2e264-54f9-4dd2-b4db-08b07dfc28ba",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "5c058df5-b3bb-42ac-b002-9fbcb988115c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Thursday"],
+                                "id": "66435cd7-c0d6-4d39-b44a-c72a5e5bf23a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 6:00"],
+                                "id": "39572d4b-7e03-424e-b02a-d6294d88239d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e3331dae-51a6-4eb2-955c-a8d9710ac684",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday"],
+                                "id": "2925430e-c90f-4ea9-8901-546d192ff714",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 5:00"],
+                                "id": "5a58f637-cd2b-431e-b6a1-cb6d78661737",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6686f602-9c07-4c2c-98c9-a88941154f14",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "bc87accd-2812-4e2e-acc9-31b97b7b25eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "c81791b6-bad8-48bb-a5a8-64af578132b5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bb07507b-2d97-4bfa-9dae-14cfeaa28485",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "672aec5c-e4b6-44eb-b8a0-1e5151ef12a1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "643bdbdc-e61a-43b9-8b59-da81825e868d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "57da8e85-3e83-44fb-9107-20e5aa4fdabc",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "dbcd33cf-41aa-4f5c-b1db-e73fc82687f7",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "76c800a2-c287-4280-a7fa-1d7a4ad2affe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Maple Avenue, Asheville, NC 28801",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "b1bb8c96-9764-4b22-8d19-5ac9556ca388",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "71238a90-bb7e-460e-a439-02f6df913bab",
+                "ord": "a0"
+              }
+            ],
+            "id": "f4c6a177-a9dd-44f2-a3f9-52b5cb732a96",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather just book a time?"],
+                    "id": "e433b2b7-48bd-440c-bcfe-594002e25023",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Grab a free consult online and pick a slot that suits you — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "8ce7b8bd-dc35-4465-882a-61b5b0e0e628",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free consult"],
+                    "id": "a385fe40-71fd-409c-8e5a-7e7d61d34f80",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "89d59ce0-8a7a-4dff-b5d0-11c02e44f6bb",
+                "ord": "a0"
+              }
+            ],
+            "id": "fcf93091-393d-4294-a985-b32b81f456bc",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "ledgerco",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.006 95)",
+      "--color-base-200": "oklch(95% 0.01 130)",
+      "--color-base-300": "oklch(90% 0.014 150)",
+      "--color-base-content": "oklch(27% 0.02 200)",
+      "--color-primary": "oklch(58% 0.11 185)",
+      "--color-secondary": "oklch(34% 0.025 210)",
+      "--color-accent": "oklch(70% 0.14 45)",
+      "--color-neutral": "oklch(30% 0.02 210)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.625rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "0.875rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Outfit\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 185)",
+      "--color-secondary-content": "oklch(98% 0.01 210)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(98% 0.01 210)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(70% 0.14 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(90% 0.014 150)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Outfit\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.02 210)",
+      "--color-base-200": "oklch(20% 0.018 210)",
+      "--color-base-300": "oklch(16% 0.015 210)",
+      "--color-base-content": "oklch(95% 0.008 130)",
+      "--color-primary": "oklch(70% 0.11 185)",
+      "--color-secondary": "oklch(80% 0.02 150)",
+      "--color-accent": "oklch(76% 0.13 45)",
+      "--color-neutral": "oklch(82% 0.015 150)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 185)",
+      "--color-secondary-content": "oklch(15% 0.02 150)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(15% 0.015 150)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(76% 0.13 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(16% 0.015 210)"
+    }
+  }
+}

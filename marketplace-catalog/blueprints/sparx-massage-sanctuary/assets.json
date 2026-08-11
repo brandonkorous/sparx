@@ -1,0 +1,32 @@
+[
+  {
+    "id": "massage-sanctuary-hero",
+    "url": "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwbWFzc2FnZSUyMHJlbGF4YXRpb258ZW58MHwwfHx8MTc4NjM4NzQxNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dim, candlelit treatment room with warm towels and soft light"
+  },
+  {
+    "id": "massage-sanctuary-ritual",
+    "url": "https://images.unsplash.com/photo-1591020330942-e9c3bce82096?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwc3RvbmVzJTIwY2FuZGxlc3xlbnwwfDB8fHwxNzg2Mzg3NDE3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Warm oil and smooth stones laid out on folded linen"
+  },
+  {
+    "id": "massage-sanctuary-sanctuary",
+    "url": "https://images.unsplash.com/photo-1630835425197-50feeba99ecd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwaW50ZXJpb3IlMjBjYWxtfGVufDB8MHx8fDE3ODYzODc0MjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet lounge with low light, plants and a pot of tea"
+  },
+  {
+    "id": "massage-sanctuary-calm1",
+    "url": "https://images.unsplash.com/photo-1665824249476-a7951ab0aaaa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwY2FuZGxlcyUyMGZsb3dlcnN8ZW58MHwwfHx8MTc4NjM4NzQyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A made massage table under a window with sheer curtains"
+  },
+  {
+    "id": "massage-sanctuary-calm2",
+    "url": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwdG93ZWxzJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM4NzQyN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A shelf of essential oils and a single lit candle"
+  },
+  {
+    "id": "massage-sanctuary-calm3",
+    "url": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXJvbWF0aGVyYXB5JTIwb2lsc3xlbnwwfDB8fHwxNzg2Mzg3NDMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Folded warm towels and a bowl of water with floating petals"
+  }
+]

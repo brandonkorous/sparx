@@ -1,0 +1,337 @@
+{
+  "policies": [
+    {
+      "handle": "pt-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel a visit. We’ll send a gentle reminder the day before and again two hours ahead."
+    },
+    {
+      "handle": "pt-no-show",
+      "name": "Evaluation hold",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Your evaluation time is held just for you. If you can’t make it, please let us know 24 hours ahead so we can offer it to someone else. A missed visit without notice may be recorded as a no-show."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Marsh, PT, DPT",
+      "kind": "staff",
+      "skillTags": ["pelvic", "womens", "manual", "wellness"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "ruth",
+      "name": "Ruth Okafor, PT, DPT",
+      "kind": "staff",
+      "skillTags": ["geriatric", "balance", "manual"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dana",
+      "name": "Dana Feldman, PT, DPT",
+      "kind": "staff",
+      "skillTags": ["chronic-pain", "wellness", "manual"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "room-willow",
+      "name": "Willow Room",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "room-cedar",
+      "name": "Cedar Room",
+      "kind": "space",
+      "skillTags": ["treatment-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "initial-evaluation",
+      "name": "Initial evaluation",
+      "description": "An unhurried first visit — we listen to your whole history, assess gently, and build a plan together. Where the care begins.",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["manual"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-no-show"
+    },
+    {
+      "handle": "follow-up-session",
+      "name": "Follow-up session",
+      "description": "A one-on-one treatment visit as your plan progresses — hands-on work, guided movement, small steady wins.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["manual"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    },
+    {
+      "handle": "pelvic-health-visit",
+      "name": "Pelvic & women’s-health visit",
+      "description": "Private, respectful care for pelvic health, pregnancy and postpartum recovery — with a therapist who specializes in it.",
+      "durationMinutes": 60,
+      "priceCents": 13500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["pelvic"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    },
+    {
+      "handle": "balance-fall-prevention",
+      "name": "Balance & fall prevention",
+      "description": "Gentle, confidence-building work for steadier standing and safer walking — thoughtfully paced for all ages and abilities.",
+      "durationMinutes": 45,
+      "priceCents": 10000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["balance"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    },
+    {
+      "handle": "chronic-pain-session",
+      "name": "Chronic-pain session",
+      "description": "A calm, whole-person approach to persistent pain — pacing, hands-on care and movement that meets you where you are.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["chronic-pain"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    },
+    {
+      "handle": "manual-therapy-session",
+      "name": "Manual-therapy session",
+      "description": "Focused hands-on treatment to ease stiffness and restore easy, comfortable movement.",
+      "durationMinutes": 30,
+      "priceCents": 7500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["manual"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    },
+    {
+      "handle": "wellness-consult",
+      "name": "Wellness consult",
+      "description": "A friendly, no-cost conversation about your goals — the easiest way to see if we’re the right fit before you book care.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["wellness"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["treatment-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "pt-standard"
+    }
+  ]
+}

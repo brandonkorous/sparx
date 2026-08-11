@@ -1,0 +1,2128 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "01456eb6-754f-426a-9dc5-7a526c2f6839",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "d89b354a-ba7b-4e46-bee7-2a5356089e52",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "e8086c10-8847-4815-83d0-72b452c7ffc2",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "9cdc6254-7880-44ad-84a3-0e65f562e1da",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "683b89d3-3eea-4760-9691-357c9abbb666",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "19dd6514-84ee-40f8-a936-9dfe4faf5244",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "44f5798b-6298-473c-b910-adc39131ea2c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "469a0146-0f62-4a6b-8b75-0658123e04b1",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "10662b36-8f58-45de-aa91-2a27effdf510",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "e76fc1f4-821e-458c-880e-e0f98243b524",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e68ea31c-0480-41b3-8596-00e56a95e072",
+                  "ord": "a2"
+                }
+              ],
+              "id": "8cd9b02c-90f7-4161-95d4-2acfcda1bcfb",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "ba8fc62d-552a-4cc0-864f-17538e17677b",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "2e048e12-f32e-49b6-a455-5bdeab8d90b4",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "d666badc-57b7-4620-bd78-393374e64f93",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "85c7bff6-9d11-4ac9-8571-b9b010e454cc",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "2f919e64-1154-4346-8002-a64b30496779",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "ea5863a2-5557-4451-b36a-b687869ece1c",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "4bfd7bf6-bba5-476b-9032-6f5cb22235ea",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "b0faddc5-6a5d-47f1-880e-f6d38e47c647",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "b50a9890-a3c7-4c4f-9f31-dda4b1724408",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "57faafda-0298-4fcd-8420-def737c382bd",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "8189cfa9-a3fb-41de-8df5-1015e1a4fd7b",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "c123b224-badb-408a-88e8-6469c3166604",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "0f851110-c5a3-4784-b5a9-89d02157af80",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "da599097-bac8-4eb6-aa78-511e24d9be5b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "dc0c8362-d4ca-4453-a7a5-76d3c6fffe23",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "95f76c07-ef6a-4f6e-8664-8debce2dcc10",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "58babb10-f2c4-466e-afe9-bb25999dc14d",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "a49c2e67-0c32-4b44-adb2-2f7f4acab19a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d685830c-a3b3-4001-8eb6-74e483e39adc",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "707111cd-d8d5-408c-8be3-3b241adf83e9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f135d6e5-b3ae-430f-83dd-d3ac5f091c65",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "d9066da6-f669-406f-9b3e-b6134823d55d",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "ebff46c2-13be-44c7-858d-3c32c70e5109",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "f2b27ddf-1405-4992-b98d-9138977dcfc4",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a3e94b34-d5b9-467a-b827-ef448d61bf08",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "a0cdd687-a97d-4ac3-a6d3-a1668f0952d6",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "5e6d631c-04d9-4c93-98e2-985dd0877ccd",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "7759a8ba-2f5c-4b6b-98e0-fd2b407fc440",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ebd261e5-8922-4541-bef3-b56301074e9d",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e0da6ed3-db4f-479a-bf44-73d660a3a17d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "017971e5-a440-47b7-9934-ead39f650b51",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "fd0ef67f-42ba-4f6c-877f-ce4b2ca1c0d5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "f2eb0aad-65f5-4baf-9f35-44063296ebc0",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "24498b45-1484-443f-9436-1ae795c93745",
+                  "ord": "a1"
+                }
+              ],
+              "id": "2e054b27-5b20-46fa-8ed5-45def9843dc2",
+              "ord": "a0"
+            }
+          ],
+          "id": "412a90eb-1a74-4a35-a593-f3c0bb007334",
+          "ord": "a2"
+        }
+      ],
+      "id": "c5f158a7-62dc-459d-bdd7-cc371d9e7569"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Summit Learning — K–12 tutoring center",
+      "seoDescription": "Summit Learning is a warm, caring tutoring center for grades K–12 — math, reading, writing, science and homework help. Book a free assessment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2c16b594-b148-4588-a29f-53e36d56c44b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1560785496-3c9d27877182?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpbGQlMjBzdHVkeWluZyUyMHR1dG9yfGVufDB8MHx8fDE3ODYzOTMyNDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A tutor sitting beside a smiling student, working through a problem together",
+                  "loading": "eager"
+                },
+                "id": "9d964ccb-532d-4d9c-8aa0-414325df31a4",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "fa3a4515-ff90-40bf-a814-bbd07dd36ae5",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Where kids find their confidence"],
+                    "id": "d04c5a93-0e79-453e-8fdd-845b2b762937",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Caring, one-to-one tutoring for grades K–12 — math, reading, writing, science and homework help, from tutors who make learning feel good again."
+                    ],
+                    "id": "e7e1860c-d444-488b-a5bc-001515368c76",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a free assessment"],
+                        "id": "d2061af0-fa63-4bb1-b30e-a608113c5da1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See our subjects"],
+                        "id": "ea9f349c-7d9f-4611-8e12-e71a1e3cd8b0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "56478b83-489d-4d63-813f-e6a9d513131b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "148c3d6b-5b1c-4a34-92bb-45d5faf2bb66",
+                "ord": "a2"
+              }
+            ],
+            "id": "14b56bd5-51d6-4293-a84b-8bdaf49664b3",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Certified, caring tutors"],
+                            "id": "f6b506d7-03a1-4d89-9ef1-1931ebb49698",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every tutor is qualified, background-checked and — just as important — genuinely kind. Your child looks forward to coming back."
+                            ],
+                            "id": "fcaf5d8d-f778-42d9-9754-8f5897d21614",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "33bc2498-df7f-4105-a888-bc26905422e2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A plan made for your child"],
+                            "id": "7b4a09fa-aab9-4b66-813d-f2608cde33b8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We start with a free assessment, then build a personalized learning plan around exactly what your child needs, not a one-size-fits-all worksheet."
+                            ],
+                            "id": "a8e34bf2-af09-455d-8460-b537af04200e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "da526b58-f7df-4003-81e8-d27df2a416ce",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Small-group & one-to-one"],
+                            "id": "452d5f60-ca48-4eea-adfa-c18d669889d7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Choose focused one-to-one attention or a friendly small group of four. Both keep every child seen, supported and moving forward."
+                            ],
+                            "id": "654b6597-15e3-478b-b15a-dd2d0cdef6f9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d4f1b52b-5fe9-4295-9804-bd36c1f39572",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Progress you can see"],
+                            "id": "1a183e8f-c40d-4bbf-841a-a0b878808cf4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll always know how it’s going — the wins, the next steps, and the growing confidence that shows up in schoolwork and at home."
+                            ],
+                            "id": "e33e1c15-c0ba-4e1a-9d1e-66236d5fbf22",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "112e9505-ad43-41bf-8a28-fbbee3572e5d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "e4b9d3a2-69fb-4d4a-a3c8-3c4d3bb111d5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "912aea4c-b88a-42d4-af7a-d99300116393",
+                "ord": "a0"
+              }
+            ],
+            "id": "5b86714d-c472-48c2-aa5e-e09bbcb95301",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we help with"],
+                        "id": "fc92e872-fae9-4e81-9ff8-f26cb32b6a9d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every subject your child brings us, taught with patience. Full prices and live availability are on the booking page."
+                        ],
+                        "id": "d2973402-a9b8-4dfa-bcff-b86113b2b0bb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6f51c1e2-711d-426b-8330-d01dbad3cfad",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free assessment"],
+                                "id": "9a80bc89-ba1f-4019-87db-bd8c6f923025",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "f3f3a72c-673b-499a-b119-ddff4665629e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "625a5df4-a4de-4e8e-9f77-20ff8c971d77",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "fd35bf94-c91c-414a-a5ed-753bf0c4e43a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A no-pressure first visit and a plan built for your child."
+                            ],
+                            "id": "4b2c964d-aa13-4fa1-9bb7-177f8c455bc9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2ee1a3ba-1181-4801-91d6-0c5744cabe5e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Math tutoring"],
+                                "id": "e8b0e036-1423-4497-b8d8-280992ec4f27",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$65"],
+                                "id": "d0c6e2e2-fd11-49a4-9026-3edcf2108ff4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4b36cf7b-1318-40d6-8641-a601b842b152",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "d39466d6-a1d1-437a-9dc2-a269192aa0e2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Times tables to algebra, built on real understanding."],
+                            "id": "3e1c5c9f-f0d8-4e90-800e-faab82f3a103",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d39c0d49-eb63-4b4d-a8fe-4882b3a907e0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Reading tutoring"],
+                                "id": "9c126fe3-cd02-4f38-916f-5e1ad45ba17f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$60"],
+                                "id": "7d1733d1-c798-43f7-9d1c-66ebd789dd30",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "988e86bb-20b3-40ee-811a-776a7a71ec4b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "1c02a278-cfa5-4d14-b46e-193e8fc194fb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Phonics, fluency and comprehension, at their pace."],
+                            "id": "6596529b-44f3-4534-b175-a8aec08eaead",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f88de72a-9639-4cbe-8360-61b614aba6de",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Homework help"],
+                                "id": "314016ad-71c4-4ba3-b5c1-e4563f51bc67",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$45"],
+                                "id": "bf4f9d07-09dd-44fd-a2b8-5e6b0097ffa1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1b5fa11f-7cf5-457b-aec7-dd6164360c45",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "d3f88f61-8e03-48ee-8009-e8ec7b3c5f9e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Get today’s homework done — and actually understood."],
+                            "id": "623c595f-3c57-48a2-8869-ca7f4e0d5061",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "ddb6e0d9-24a9-4b86-a588-4b9915bab60b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5e22994f-a6af-4d19-bcda-e8cf235e59d7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "f7e2fe9f-9fd3-4e15-9bf4-19871cd61772",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ce9d0fab-11d1-4256-b32f-992df6c0de6f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c7a10578-97ad-487f-9438-e0cb3c30e557",
+                "ord": "a0"
+              }
+            ],
+            "id": "fa771a8d-6212-4895-88f0-bb47b05afd7d",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1598981457915-aea220950616?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3R1ZGVudCUyMHdyaXRpbmclMjBkZXNrfGVufDB8MHx8fDE3ODYzOTMyNTF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A young student raising a hand with a confident grin",
+                      "loading": "lazy"
+                    },
+                    "id": "3c8fa0f7-93e6-48ae-a18a-aff9d9ebd0c8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Confidence first, grades follow"],
+                        "id": "8de4768b-3a26-420a-8c5b-443d66abf233",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A child who believes they can do it is a child who will. So before we drill a single problem, we build the belief — celebrating small wins, taking the fear out of mistakes, and showing your child that hard things get easier."
+                        ],
+                        "id": "cb56ce99-7768-4e64-b4f2-e8d82e290964",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The grades come, because the confidence comes first. Parents tell us the biggest change isn’t a report card — it’s a kid who now says “I’ve got this” at the kitchen table."
+                        ],
+                        "id": "3a178969-0501-487f-9706-63ddfd2c1385",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free assessment"],
+                            "id": "b39d3987-626b-4b86-84cd-5e10422ab070",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "771c4732-313c-4d5b-b517-bb49966c4fb2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "98759387-2836-4b1d-97b5-b5ff502bc91c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5b110772-3efd-4f7d-80a7-24b42e265d77",
+                "ord": "a0"
+              }
+            ],
+            "id": "fda1e64d-7576-40f1-ac59-ba265808a6a4",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet the tutors"],
+                        "id": "6baef7ef-791a-47f5-834d-36e65c54d91c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — your child sees the same friendly face each visit."
+                        ],
+                        "id": "7db6ef5e-2563-4605-b22e-85272745b3d1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8ff19eec-82d4-49aa-8fce-b184b521069a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1590650213165-c1fef80648c4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0ZWFjaGVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MzI1M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Elena Marsh, math and science tutor",
+                              "loading": "lazy"
+                            },
+                            "id": "9b275f66-9699-4ff4-b813-104741924dd1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Elena Marsh"],
+                                "id": "10c97ee0-7751-4087-b423-fb06c07b6aa1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Math & science tutor"],
+                                "id": "c702d3ac-6ce0-4dfa-aa9a-9efa1ef826c0",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Makes the tricky stuff click — algebra, geometry and science, with endless patience."
+                                ],
+                                "id": "51f0fee0-a98f-4ca8-8996-5a0f3b4dfd63",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "8b0f43bf-e476-42b2-9e08-2a0f1a596082",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9783ed63-d07c-4f15-99f8-7d1da5874016",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1623366302587-b38b1ddaefd9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHV0b3IlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkzMjU3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Bell, reading and writing tutor",
+                              "loading": "lazy"
+                            },
+                            "id": "8e2aa5d6-201e-4099-a15c-642a9ec546bc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Bell"],
+                                "id": "c0d01808-e0b0-4b30-896d-c89a59232ed9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Reading & writing tutor"],
+                                "id": "7c6e2ffa-4378-4d5f-a851-be144e423027",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Turns reluctant readers into eager ones and takes the scary out of writing."
+                                ],
+                                "id": "b0e36499-35cd-4c9c-8fee-364895b40cd2",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c509c875-7050-4e21-9274-d74155db440e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b3e06b49-75f3-46ab-a953-e64b173450d3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB0dXRvciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTMyNTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Priya Nair, math and homework coach",
+                              "loading": "lazy"
+                            },
+                            "id": "62f3e07c-92e6-4d36-8b5b-47dd78df3d7f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Priya Nair"],
+                                "id": "05c4aca8-e6c9-464c-86ee-3b35ae432d28",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Math & homework coach"],
+                                "id": "5f7f3064-e13d-45b3-b5d4-9d689a477c21",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "The calm in a busy week — keeps homework on track and confidence growing."
+                                ],
+                                "id": "528307fd-cc19-4970-ba33-5790c78c2af6",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "6ef713be-b7d9-4228-aa1a-51dbeeb39d46",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e6578988-526f-4fc3-8feb-5b753f6ed547",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "865789c9-f3a6-4fd3-a81f-76320d4c5e47",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f743c992-7685-42b5-9fe4-0df1f3476477",
+                "ord": "a0"
+              }
+            ],
+            "id": "65b1f7a6-55ce-411d-8b95-3e5e44d2e943",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“My son used to dread math. Six months at Summit and he’s the one reminding me about his session. His grades are up, but honestly it’s the confidence that changed everything.”"
+                    ],
+                    "id": "16a32032-7484-4d94-8d89-e69ada1fc1ea",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Danielle, parent of a 5th grader"],
+                    "id": "d0539f04-fd04-42d6-8fb3-e52739584ca1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6d3e0750-9c49-4136-86c5-594856ff4bc3",
+                "ord": "a0"
+              }
+            ],
+            "id": "fd2d104d-c38b-4091-a5d6-b72ac1ab008f",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Start with a free assessment"],
+                    "id": "cdaf76d2-c123-433c-9348-9020e950df90",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Tell us where your child is, and we’ll show you where they can go. Booking takes about a minute."
+                    ],
+                    "id": "9c206153-b3bc-481d-bc2a-aa41847f5ed0",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free assessment"],
+                    "id": "e661b3e9-eb26-4ec4-a59b-a73c81411739",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c8f459db-da44-4042-aa59-51c1e7a67918",
+                "ord": "a0"
+              }
+            ],
+            "id": "0f67081d-d24d-4e72-892d-e691fb6b6fe5",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Summit Learning",
+      "seoDescription": "See what Summit Learning offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "235b6b0c-50d8-4a03-ba66-44dfa0edf813",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1763310225230-6e15b125935a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGVhcm5pbmclMjBjZW50ZXIlMjBjbGFzc3Jvb218ZW58MHwwfHx8MTc4NjM5MzI0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright, welcoming learning room with a shared table and books",
+                  "loading": "eager"
+                },
+                "id": "0253856e-c227-4191-ae13-9971715b7fc4",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "d42dea4e-a97c-45bf-acec-3c5b1a1d1b02",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book a session"],
+                    "id": "4dfdab22-dc8e-4b5d-9d53-4cf05824e8fa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Start with a free assessment, or choose a subject to see prices and live availability, then pick your tutor and time."
+                    ],
+                    "id": "c0397ebb-b1c8-4923-b774-5cd5fe5792a5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See sessions below"],
+                        "id": "4fefaf50-d92e-46c7-8e19-afa04422bfe5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "34a4125c-16ff-4ab2-9c02-23c803423f19",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0b814c4f-82fa-461e-8712-41027373f5eb",
+                "ord": "a2"
+              }
+            ],
+            "id": "70213471-d3ef-430a-860e-f5f78f60f22b",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "3b39105d-7021-41ae-9a51-8f0310441114",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Summit Learning",
+      "seoDescription": "Who Summit Learning is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "fe009a4e-cf58-44a8-acf7-c032da461177",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1763310225230-6e15b125935a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGVhcm5pbmclMjBjZW50ZXIlMjBjbGFzc3Jvb218ZW58MHwwfHx8MTc4NjM5MzI0M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A bright, welcoming learning room with a shared table and books",
+                      "loading": "lazy"
+                    },
+                    "id": "92d192c3-12fa-4863-9369-8d2b2161779b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Summit Learning"],
+                        "id": "05fe3fcf-0425-464b-a2a5-a826f8643632",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We started Summit Learning because we believe every child can learn — they just need the right person beside them, a little patience, and a place that feels safe to try, get it wrong, and try again."
+                        ],
+                        "id": "1f65dcdf-08ad-458a-8268-510d63ae2ff3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That’s what we built: a warm learning center, not a test factory. Real tutors who care, plans made for one child at a time, and a room where a kid can go from “I can’t” to “watch me.”"
+                        ],
+                        "id": "ecb3b8fa-6b25-473e-aaa1-14cfe19632d9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a free assessment"],
+                            "id": "cb2df6f6-bab5-40fd-b4f0-d22c45989e63",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f230fa7f-e717-4c8e-8034-21ffcc17eb0d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "892a37ba-edb2-4587-a2fb-f88e2bd8b26a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bcdd7a67-efc3-4a33-a0be-0fa413ab9e6d",
+                "ord": "a0"
+              }
+            ],
+            "id": "6b4dc770-f0f3-43cc-80cd-d9ee621e2d7f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "a7ec5244-b948-4491-9f2e-caae62a7709b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A free assessment first"],
+                            "id": "2c3f9846-dd85-4042-989d-4401fe094a75",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every child starts with a relaxed assessment so we understand their strengths, their gaps and how they learn best — before a single session is booked."
+                            ],
+                            "id": "53993893-4397-45bd-9629-955037e5b52c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d759352f-21eb-473e-9e1a-912a0f5112b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Patience over pressure"],
+                            "id": "1a9de6de-684c-43e9-9e70-215ad9720b4b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We never rush a child or make them feel behind. Learning sticks when it’s calm, encouraging and paced for the kid in the chair."
+                            ],
+                            "id": "d98e4e87-4574-478b-b2b7-477ebaccb7e3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2392fdda-a50c-4549-9ec5-1447f2ba5504",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Parents in the loop"],
+                            "id": "83ec9a29-f9d5-47a3-b35e-d86c4b1c3570",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You’ll hear how each session went and what’s next. We’re a team — you, your child, and a tutor who’s genuinely in your corner."
+                            ],
+                            "id": "ac74bcc1-0562-4cae-adc7-c7acbe79452e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b743ff60-7651-43c6-bb3f-51be83912a5e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "40d9e4fb-09bc-4217-b678-20f1a24b9114",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "efc973c6-fe39-492b-979b-f146c4ee9f4e",
+                "ord": "a0"
+              }
+            ],
+            "id": "49c218f6-a789-4573-9bdf-1726d8c45eaf",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Summit Learning",
+      "seoDescription": "Where to find Summit Learning, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a657d4da-03e0-4d6e-81f7-6a94775e846f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the center"],
+                        "id": "f8c633e9-eab0-48d0-b459-0e06391de8d4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Summit Learning"],
+                            "id": "3e6f2674-c287-44a8-a869-f12bf6007138",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["210 Maple Avenue"],
+                            "id": "324a5df8-7ea5-4874-94ac-d7ec63e8b2cc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Suite 4 · Madison, WI 53703"],
+                            "id": "61dcee47-62e2-4b94-84dd-00903a3b4cb1",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "34ce8a0e-4790-48c3-a656-16dcc662ba50",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "0e7c245c-3cee-426c-92e0-b2d6218dd67a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["3:00 – 8:00"],
+                                "id": "f2f20a6f-172a-4c54-b893-cd364e58afea",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "00496f48-040c-4fac-b90e-bfe2ccfb50e0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "130dc5f9-a1ce-41c7-b321-f4c50f864104",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 2:00"],
+                                "id": "bcc8154a-83e3-401c-b76a-50d98cda76e0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bb3fff1d-becc-40b8-8345-57ae14a93dc3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "0592046d-016b-481c-beea-39f0882f419e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 2:00"],
+                                "id": "7e9e95a3-353c-4c5c-9737-02a5994c46a4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6628f2f5-8e3f-4869-88cb-14d5d6730e07",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Weekday mornings"],
+                                "id": "cdbffaeb-9fae-4f18-976d-252b2279787c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["By appointment"],
+                                "id": "07ed019c-978c-4d92-94b9-d34da9366dc1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2a738e75-2a69-4838-9546-4cec151d5797",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "612194a3-8de0-4066-bbb6-1afefa137443",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "be4f9845-1c2b-405d-8901-b2691902136d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "210 Maple Avenue, Madison, WI 53703",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "ca059727-2269-4536-967d-bab4fd7b0b9a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "cada9973-bc9d-47ea-82c5-380a062d865d",
+                "ord": "a0"
+              }
+            ],
+            "id": "3274c685-ed81-464e-b2da-cbfa655a718d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Questions before you book?"],
+                    "id": "9ccb7cad-3522-44c5-a787-c8ac0d1b0ede",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Reach out any time — or skip the phone tag and reserve a free assessment online."
+                    ],
+                    "id": "50c11d2d-8588-4aa6-83b5-44c21ee40b93",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a free assessment"],
+                    "id": "603f8f1c-fd38-45e9-8817-cd52ea106f35",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8668ffa1-963d-4cab-bc3d-0c354ff099e1",
+                "ord": "a0"
+              }
+            ],
+            "id": "ca5b304b-fe4e-4261-aa88-09ce085d808a",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "summit",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.008 85)",
+      "--color-base-200": "oklch(95% 0.012 82)",
+      "--color-base-300": "oklch(90% 0.016 80)",
+      "--color-base-content": "oklch(28% 0.02 250)",
+      "--color-primary": "oklch(58% 0.115 235)",
+      "--color-secondary": "oklch(38% 0.03 245)",
+      "--color-accent": "oklch(80% 0.13 82)",
+      "--color-neutral": "oklch(30% 0.018 250)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Nunito\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 235)",
+      "--color-secondary-content": "oklch(98% 0.01 245)",
+      "--color-accent-content": "oklch(15% 0.02 82)",
+      "--color-neutral-content": "oklch(98% 0.01 250)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(80% 0.13 82)",
+      "--color-highlight-content": "oklch(15% 0.02 82)",
+      "--color-border": "oklch(90% 0.016 80)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Nunito\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(24% 0.02 250)",
+      "--color-base-200": "oklch(20% 0.016 250)",
+      "--color-base-300": "oklch(16% 0.012 250)",
+      "--color-base-content": "oklch(95% 0.01 85)",
+      "--color-primary": "oklch(72% 0.12 235)",
+      "--color-secondary": "oklch(80% 0.02 250)",
+      "--color-accent": "oklch(83% 0.12 84)",
+      "--color-neutral": "oklch(82% 0.016 250)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 235)",
+      "--color-secondary-content": "oklch(15% 0.02 250)",
+      "--color-accent-content": "oklch(15% 0.02 84)",
+      "--color-neutral-content": "oklch(15% 0.016 250)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(83% 0.12 84)",
+      "--color-highlight-content": "oklch(15% 0.02 84)",
+      "--color-border": "oklch(16% 0.012 250)"
+    }
+  }
+}

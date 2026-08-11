@@ -1,0 +1,352 @@
+{
+  "policies": [
+    {
+      "handle": "consult-none",
+      "name": "Consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Consultations are complimentary. If your plans change, let us know at least 24 hours ahead so we can offer the time to someone else."
+    },
+    {
+      "handle": "treatment-deposit",
+      "name": "Treatment deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Treatments hold a $50 deposit that comes off your total on the day. Reschedule with 48 hours’ notice and it carries over; inside that window it’s forfeited."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elise",
+      "name": "Dr. Elise Warren",
+      "kind": "staff",
+      "skillTags": ["consult", "analysis", "peel", "microneedling", "laser"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "jordan",
+      "name": "Jordan Pierce, RN",
+      "kind": "staff",
+      "skillTags": ["consult", "analysis", "iv"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "simone",
+      "name": "Simone Alvarez",
+      "kind": "staff",
+      "skillTags": ["consult", "analysis", "facial", "peel", "microneedling"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room 1",
+      "kind": "space",
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Treatment Room 2",
+      "kind": "space",
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Consultation",
+      "description": "A free, no-pressure sit-down with a provider to map out a plan for your skin. Book this first if you’re not sure where to start.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["consult"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-none"
+    },
+    {
+      "handle": "skin-analysis",
+      "name": "Skin analysis",
+      "description": "A structured assessment with imaging and measured baselines, so every result after it is something you can actually see.",
+      "durationMinutes": 30,
+      "priceCents": 7500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["analysis"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-none"
+    },
+    {
+      "handle": "hydrafacial",
+      "name": "HydraFacial",
+      "description": "A medical-grade cleanse, exfoliation and hydration in one session — visibly fresher skin, zero downtime.",
+      "durationMinutes": 60,
+      "priceCents": 19900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "chemical-peel",
+      "name": "Chemical peel",
+      "description": "A tailored peel to smooth tone and texture, dialed to your skin and your downtime — light to medium depth.",
+      "durationMinutes": 45,
+      "priceCents": 17500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["peel"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "microneedling",
+      "name": "Microneedling",
+      "description": "Collagen-induction therapy for fine lines, scarring and texture — a series builds firmer, clearer skin over time.",
+      "durationMinutes": 75,
+      "priceCents": 29900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["microneedling"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "laser-hair-removal",
+      "name": "Laser hair removal",
+      "description": "Comfortable, effective laser hair reduction for face or body, safe across skin types — priced per area.",
+      "durationMinutes": 30,
+      "priceCents": 14900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["laser"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "iv-therapy",
+      "name": "IV therapy",
+      "description": "A registered nurse–administered vitamin drip for hydration, energy and recovery — chosen to fit how you feel that day.",
+      "durationMinutes": 45,
+      "priceCents": 12500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["iv"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    }
+  ]
+}

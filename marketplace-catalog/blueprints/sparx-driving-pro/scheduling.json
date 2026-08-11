@@ -1,0 +1,357 @@
+{
+  "policies": [
+    {
+      "handle": "lesson-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to reschedule or cancel. We send a reminder the day before and two hours ahead so you’re never caught out."
+    },
+    {
+      "handle": "no-show",
+      "name": "No-show policy",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full — the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "ricardo",
+      "name": "Ricardo Vega",
+      "kind": "staff",
+      "skillTags": ["adult", "defensive", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dana",
+      "name": "Dana Whitfield",
+      "kind": "staff",
+      "skillTags": ["anxiety", "adult", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "theo",
+      "name": "Theo Marsh",
+      "kind": "staff",
+      "skillTags": ["advanced", "highway", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "car-1",
+      "name": "Training car 1 — dual-control sedan",
+      "kind": "asset",
+      "skillTags": ["training-car"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "car-2",
+      "name": "Training car 2 — dual-control hatchback",
+      "kind": "asset",
+      "skillTags": ["training-car"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "driving-assessment",
+      "name": "Driving assessment & plan",
+      "description": "A no-pressure sit-down and short drive so we can see where you’re at and map the exact lessons you need. Free, and there’s no obligation to book more.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "adult-lesson",
+      "name": "Adult driving lesson",
+      "description": "A focused hour behind the wheel for adult learners — building real road confidence at your pace, in a calm dual-control car.",
+      "durationMinutes": 60,
+      "priceCents": 8500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["adult"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "defensive-driving-course",
+      "name": "Defensive driving session",
+      "description": "Hazard awareness, space management and crash-avoidance technique — the skills that keep you safe long after the test. Great for a ticket dismissal or an insurance discount.",
+      "durationMinutes": 90,
+      "priceCents": 13500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["defensive"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "anxious-driver-session",
+      "name": "Nervous-driver coaching",
+      "description": "For anyone who’s put driving off or lost their nerve. A patient, judgement-free hour that starts exactly where you’re comfortable and grows from there.",
+      "durationMinutes": 60,
+      "priceCents": 9500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["anxiety"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "senior-refresher",
+      "name": "Senior refresher lesson",
+      "description": "A relaxed check-in and tune-up for experienced drivers who want to stay sharp and independent, with honest, respectful feedback.",
+      "durationMinutes": 60,
+      "priceCents": 8500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["adult"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "advanced-highway-lesson",
+      "name": "Advanced & highway lesson",
+      "description": "Merging, lane discipline, high-speed judgement and complex interchanges — the confidence to take on freeways and long trips.",
+      "durationMinutes": 120,
+      "priceCents": 16500,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["advanced"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    },
+    {
+      "handle": "license-transfer-lesson",
+      "name": "License-transfer lesson",
+      "description": "New to the state or the country? A targeted session on local road rules and habits so you pass the transfer test the first time.",
+      "durationMinutes": 90,
+      "priceCents": 12500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "instructor",
+          "kind": "staff",
+          "skillTags": ["adult"],
+          "count": 1
+        },
+        {
+          "role": "car",
+          "kind": "asset",
+          "skillTags": ["training-car"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "lesson-standard"
+    }
+  ]
+}

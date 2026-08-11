@@ -1,0 +1,353 @@
+{
+  "policies": [
+    {
+      "handle": "consult-none",
+      "name": "Consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Consultations are free and carry no deposit. If your plans change, just give us 24 hours’ notice. We send a reminder the day before and two hours ahead."
+    },
+    {
+      "handle": "treatment-deposit",
+      "name": "Treatment deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Treatments hold a $50 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over to your new time."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elise",
+      "name": "Élise Marchetti",
+      "kind": "staff",
+      "skillTags": ["facial", "laser"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "nadia",
+      "name": "Nadia Okafor",
+      "kind": "staff",
+      "skillTags": ["injectables", "iv"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "camille",
+      "name": "Camille Rousseau",
+      "kind": "staff",
+      "skillTags": ["facial", "laser", "iv"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "room-1",
+      "name": "Treatment Room I",
+      "kind": "space",
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "room-2",
+      "name": "Treatment Room II",
+      "kind": "space",
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Consultation",
+      "description": "A relaxed, no-pressure sit-down to understand your skin, map your goals and plan the treatments that actually get you there.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-none"
+    },
+    {
+      "handle": "signature-facial",
+      "name": "Signature facial",
+      "description": "A tailored deep-cleanse, mask and lymphatic massage — calibrated to your skin for a lit-from-within finish.",
+      "durationMinutes": 60,
+      "priceCents": 18500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "chemical-peel",
+      "name": "Chemical peel",
+      "description": "A resurfacing peel to smooth tone, soften texture and refresh fine lines, with a calming finish.",
+      "durationMinutes": 45,
+      "priceCents": 22500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "microneedling",
+      "name": "Microneedling",
+      "description": "Collagen-boosting micro-channels for firmer, brighter, more even skin — with a serum infusion to finish.",
+      "durationMinutes": 60,
+      "priceCents": 35000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["facial"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "injectables-consult",
+      "name": "Injectables consultation",
+      "description": "A private consult with our nurse injector to talk through options, expectations and a plan — booked with approval first.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["injectables"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-none"
+    },
+    {
+      "handle": "iv-drip",
+      "name": "IV drip therapy",
+      "description": "A hydrating vitamin-and-mineral infusion to restore, replenish and leave you glowing from the inside out.",
+      "durationMinutes": 45,
+      "priceCents": 15000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["iv"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    },
+    {
+      "handle": "laser-session",
+      "name": "Laser session",
+      "description": "Targeted laser for tone, pigment and clarity — a quick, considered session with real results over time.",
+      "durationMinutes": 30,
+      "priceCents": 27500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["laser"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "count": 1
+        }
+      ],
+      "policyHandle": "treatment-deposit"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+[
+  {
+    "id": "kit-hero",
+    "url": "https://images.unsplash.com/photo-1708915965975-2a950db0e215?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhaW5sZXNzJTIwY29tbWVyY2lhbCUyMGtpdGNoZW4lMjBsaW5lJTIwcmVhZHklMjBzZXJ2aWNlfGVufDB8MHx8fDE3ODY0MjE5Nzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stainless commercial kitchen line ready for service"
+  },
+  {
+    "id": "kit-tile-cooking",
+    "url": "https://images.unsplash.com/photo-1589109807644-924edf14ee09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Y29tbWVyY2lhbCUyMHJhbmdlJTIwY29va3RvcCUyMGJ1c3klMjBraXRjaGVuJTIwbGluZXxlbnwwfDB8fHwxNzg2NDIxOTgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A commercial range and cooktop on a busy kitchen line"
+  },
+  {
+    "id": "kit-tile-prep",
+    "url": "https://images.unsplash.com/photo-1760001553414-5634201efc36?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c3RhaW5sZXNzJTIwcHJlcCUyMHRhYmxlcyUyMGZvb2QlMjBzdG9yYWdlJTIwYmFjayUyMGtpdGNoZW58ZW58MHwwfHx8MTc4NjQyMTk4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Stainless prep tables and food storage in a back kitchen"
+  },
+  {
+    "id": "kit-tile-foh",
+    "url": "https://images.unsplash.com/photo-1519233991914-26a44330ccd7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhdGVkJTIwZGlzaCUyMHVuZGVyJTIwaGVhdCUyMGxhbXAlMjBwYXNzfGVufDB8MHx8fDE3ODY0MjE5ODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A plated dish under a heat lamp at the pass"
+  },
+  {
+    "id": "kit-tile-smallwares",
+    "url": "https://images.unsplash.com/photo-1644258676710-ffb99d7d7a1b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZiUyMGtuaXZlcyUyMHNtYWxsd2FyZXMlMjBsYWlkJTIwb3V0JTIwYmVuY2h8ZW58MHwwfHx8MTc4NjQyMTk5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Chef knives and smallwares laid out on a bench"
+  },
+  {
+    "id": "kit-band-trade",
+    "url": "https://images.unsplash.com/photo-1589792923962-537704632910?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FyZWhvdXNlJTIwdGVhbSUyMGxvYWRpbmclMjBraXRjaGVuJTIwZXF1aXBtZW50JTIwZGVsaXZlcnl8ZW58MHwwfHx8MTc4NjQyMTk5M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warehouse team loading kitchen equipment for delivery"
+  },
+  {
+    "id": "prod-prep-table",
+    "url": "https://images.unsplash.com/photo-1754153266020-6e782d825601?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8c3RhaW5sZXNzJTIwc3RlZWwlMjBjb21tZXJjaWFsJTIwcHJlcCUyMHRhYmxlfGVufDB8MHx8fDE3ODY0MjE5OTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stainless steel commercial prep table"
+  },
+  {
+    "id": "prod-induction",
+    "url": "https://images.unsplash.com/photo-1666479258732-5ea17469b610?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Y291bnRlcnRvcCUyMGNvbW1lcmNpYWwlMjBpbmR1Y3Rpb24lMjByYW5nZXxlbnwwfDB8fHwxNzg2NDIyMDAwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A countertop commercial induction range"
+  },
+  {
+    "id": "prod-fry-pan",
+    "url": "https://images.unsplash.com/photo-1624031000828-dba1b7a3e4ce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGNvbW1lcmNpYWwlMjBhbHVtaW5pdW0lMjBmcnklMjBwYW5zfGVufDB8MHx8fDE3ODY0MjIwMDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of commercial aluminium fry pans"
+  },
+  {
+    "id": "prod-sheet-pans",
+    "url": "https://images.unsplash.com/photo-1529685594910-3b12ce0b9120?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBmdWxsLXNpemUlMjBhbHVtaW5pdW0lMjBzaGVldCUyMHBhbnN8ZW58MHwwfHx8MTc4NjQyMjAwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of full-size aluminium sheet pans"
+  },
+  {
+    "id": "prod-chef-knife",
+    "url": "https://images.unsplash.com/photo-1622021142947-da7dedc7c39a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGVpZ2h0LWluY2glMjBjaGVmfGVufDB8MHx8fDE3ODY0MjIwMDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of eight-inch chef's knives"
+  },
+  {
+    "id": "prod-food-containers",
+    "url": "https://images.unsplash.com/photo-1771142061210-95e97225641e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzZSUyMGNsZWFyJTIwcG9seWNhcmJvbmF0ZXxlbnwwfDB8fHwxNzg2NDIyMzE1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A case of clear polycarbonate food storage containers"
+  },
+  {
+    "id": "prod-mixer",
+    "url": "https://images.unsplash.com/photo-1739294525052-770fcecdd6b6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29tbWVyY2lhbCUyMHBsYW5ldGFyeSUyMGZsb29yJTIwbWl4ZXJ8ZW58MHwwfHx8MTc4NjQyMjAxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A commercial planetary floor mixer"
+  },
+  {
+    "id": "prod-heat-lamp",
+    "url": "https://images.unsplash.com/photo-1547186577-a3f4fa07c2ef?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RyaXAlMjBoZWF0JTIwbGFtcHxlbnwwfDB8fHwxNzg2NDIyMzE5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A strip heat lamp over a service pass"
+  },
+  {
+    "id": "prod-dinner-plates",
+    "url": "https://images.unsplash.com/photo-1614548539644-ef528186523a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjB3aGl0ZSUyMGNvdXBlJTIwZGlubmVyJTIwcGxhdGVzfGVufDB8MHx8fDE3ODY0MjIwMjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of white coupe dinner plates"
+  },
+  {
+    "id": "prod-smallwares-kit",
+    "url": "https://picsum.photos/seed/prod-smallwares-kit/1600/1000",
+    "alt": "A line-cook smallwares starter kit laid out"
+  },
+  {
+    "id": "post-open-kitchen",
+    "url": "https://images.unsplash.com/photo-1768314669089-480e608a0143?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmV3bHklMjBmaXR0ZWQlMjBjb21tZXJjaWFsJTIwa2l0Y2hlbiUyMGJlZm9yZSUyMG9wZW5pbmd8ZW58MHwwfHx8MTc4NjQyMjAyN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A newly fitted commercial kitchen before opening"
+  },
+  {
+    "id": "post-cookware",
+    "url": "https://images.unsplash.com/photo-1584990347193-6bebebfeaeee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8aGVhdnklMjBjb21tZXJjaWFsJTIwY29va3dhcmV8ZW58MHwwfHx8MTc4NjQyMjMyNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Heavy commercial cookware on a hot range"
+  },
+  {
+    "id": "post-smallwares",
+    "url": "https://images.unsplash.com/photo-1762922425155-d03e6997e33e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGx3YXJlcyUyMHN0YWNrZWQlMjBvcmdhbmlzZWQlMjBwcmVwJTIwc2hlbGZ8ZW58MHwwfHx8MTc4NjQyMjAzM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Smallwares stacked and organised on a prep shelf"
+  }
+]

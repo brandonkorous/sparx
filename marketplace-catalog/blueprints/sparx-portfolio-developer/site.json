@@ -1,0 +1,2200 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "4e8ddc40-0d27-48cc-ab54-0ef0ec6d0534",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/work"
+                      },
+                      "children": ["Work"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "69fc5961-d087-4f37-af19-e7f252140ac2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "64ea27f6-2589-4ddd-bf68-e5bf3db1393c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "adf3f65c-9232-4dd0-bea7-77afa2bc92a3",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "0a0e7b22-dd58-4291-bc28-cde3cf174a7a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "d8c70e58-b3e6-4686-87d8-979ab15fd579",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "e158d8a3-3d42-4307-a2c9-85a59004ece3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "3b392a77-7550-47fc-9650-aa56bc4619b2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "83d408d2-8689-4b0e-a29f-b60ad499d2c7",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "a8428038-74af-4355-9c09-afdd0e82be68",
+                  "ord": "a2"
+                }
+              ],
+              "id": "cea05c29-096c-411e-a856-2ba9f237a4a2",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/work"
+                  },
+                  "children": ["Work"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "8faa5315-983c-4b77-92d8-8b4da1f69332",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "38abf5a7-eb50-46a4-a8c5-9af755bf31bd",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "5427ffb4-0226-4079-946d-71923585586d",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "d3da3b70-3d2c-4f5f-8f10-3842687cb78f",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "e651c670-af25-400d-80ee-8ec3460254aa",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "85cdb0dd-e8a6-4d01-9f45-11867aa9b07a",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "6758f7e8-69b1-4242-bef5-db383dfb9499",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "ec8c1abd-f283-4ea4-a070-de8079451a3d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "b80a6b33-2ccc-4fe3-ab27-da309c133377",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "209ff5e5-5420-43cd-a172-23cb06c48541",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "3f1bb799-fda3-43b8-a1f9-5261e784a934",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "226b7c32-d8e1-467c-adeb-c9146e1ded99",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/work"
+                                  },
+                                  "children": ["Work"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "b3b7ccea-761a-496a-ada4-b9172e2041e3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "18236415-9347-46ed-8e15-96081e690fdf",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "74adba79-5856-4366-bdf7-14d026e5ef1a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "621ebbc9-07fa-4e8f-b532-358e5ae31eb4",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "a6cd424d-ddbd-4263-999a-7f3c3deddebd",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "1a653dca-04d5-4005-8292-8da04aedf958",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "0f9551e0-2fc9-4155-8f47-d94fdb6609b8",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "da09cb5d-c3e5-4943-b529-04588fcd666f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "048fe633-4611-49ad-88d4-f8e8f3c480f2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "65f9a65e-28ba-403a-9066-c9b30d274e43",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "cd419528-0e4a-42bc-88fd-cefda6f8ebe4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "30a315cd-e97f-45f2-87eb-92c3055b241e",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "36bee4e8-d952-4409-82e3-2c7aa532d8b2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "f89b2fc7-8b1d-40d4-acc3-e8238711da7f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "517728aa-fc1e-4df9-a46d-1cac35a45aa1",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "a4e9f195-4d24-44d5-b226-240258090592",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e78a5c4e-10d0-4f93-8300-3aacee1663e9",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "b14b0d00-e49e-475d-9a00-0fe55e839433",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "6e630a51-a2cb-4b1f-895c-05ddcb6e4f41",
+                  "ord": "a1"
+                }
+              ],
+              "id": "53950c67-fab3-41df-b236-6dc93d57ffcc",
+              "ord": "a0"
+            }
+          ],
+          "id": "a922150c-9a58-4f4b-b030-c85764dee9bf",
+          "ord": "a2"
+        }
+      ],
+      "id": "eb5692f1-5215-47c1-844d-7bd3c2942cac"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Kade Nakamura — creative developer",
+      "seoDescription": "Kade Nakamura builds real-time WebGL, interactive interfaces and developer tooling — selected builds, the breakdowns behind them, and how to start a project.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "00530c12-541a-4934-9378-4cea7507e5da",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-16 @3xl:pt-28",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex w-fit max-w-full flex-col gap-2 rounded-box border border-base-300 bg-base-200 px-5 py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["❯"],
+                            "id": "d6973d7d-7546-43ee-a50c-605dfe427a32",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base text-base-content",
+                            "children": ["whoami"],
+                            "id": "b7e6e86a-5ae6-421e-b9b5-20c6a53530de",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ac49ab4c-5fe8-4f24-902f-e6e848e2b179",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-accent",
+                            "children": ["~"],
+                            "id": "1a0d0ec6-d947-4577-a932-ae77e97519c5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base text-secondary",
+                            "children": [
+                              "kade — creative developer · webgl / interactive / tooling"
+                            ],
+                            "id": "e5561b1b-55e9-4481-8830-84e5398272c9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d07ed2a-d89f-44c9-b470-03e6f41029ef",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "8268981a-4b68-4c38-8e36-41aea538e29a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "max-w-4xl text-5xl font-bold leading-none tracking-tight text-base-content @2xl:text-7xl @3xl:text-8xl",
+                        "children": ["Kade Nakamura"],
+                        "id": "fb56e9e8-9e62-4ae3-959b-a46427b7bd27",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
+                        "children": [
+                          "I build things that run in a browser — real-time WebGL, interactive interfaces, and the tools other developers use to make them. Ten years of shipping the demo AND the production build behind it."
+                        ],
+                        "id": "0e935e22-2fa8-47dc-ae53-8a6b35d4577e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "aa917bb5-5be5-4d71-a851-40fd5ec11d4f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap items-center gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["View builds"],
+                        "id": "023e0526-0394-412b-ae6e-9e1c4142b2ea",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": ["About"],
+                        "id": "abfea35f-3dbb-4df4-a594-44b830607934",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c1570f09-4a79-4030-b38f-68f635774f9e",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-4 flex flex-col gap-3 border-t border-base-300 pt-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                        "children": ["Runs on"],
+                        "id": "38e0e2cc-9622-4734-ac11-823693987013",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                            "children": ["TypeScript"],
+                            "id": "576ccf28-c8ff-46da-85cb-6e5e07f6ea4f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                            "children": ["WebGL / GLSL"],
+                            "id": "93a909ac-da1d-4249-b71a-0f5db98bd4b9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                            "children": ["Three.js"],
+                            "id": "a1cb89af-b228-4dab-bcb2-7a34d060a1b9",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                            "children": ["Rust / WASM"],
+                            "id": "9eb4a7e7-6c75-4483-ad12-31fcd0146cb6",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                            "children": ["Node"],
+                            "id": "3a9c79ad-9bf5-43ce-bec9-00af5e9d6190",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "17812d54-c389-44b6-8ff3-627520c7170a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6f3faee6-f645-42cb-838c-cb0dae19da61",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "10cb8e51-c3d3-42e1-a649-23348cc8b857",
+                "ord": "a0"
+              }
+            ],
+            "id": "7f65b924-ae9f-423d-b086-56b3ed55762a",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Selected builds"],
+                        "id": "47c0a36d-11ec-4ebc-b3fd-0d21dd7e8c5f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Three recent things I built and shipped. Each one opens to the full breakdown — what it is, the part that was actually hard, the stack, and what went live."
+                        ],
+                        "id": "dc5ac9f2-3450-41ec-88de-386d28400d83",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b14d6a14-5924-4a2e-bef3-1b9e86d0ccc2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 transition hover:-translate-y-1 hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/drift-particle-field"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["WebGL"],
+                            "id": "34c06399-69f4-4bf8-9f6c-7712f04faa21",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
+                            "children": ["Drift"],
+                            "id": "3fffd323-4f7b-4fa9-9a6a-8f2a57bf3969",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Three.js"],
+                                "id": "1d93749a-1482-431d-afd6-7541fd1ba675",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["GLSL"],
+                                "id": "3a32db4a-c1f8-4f24-8d8a-aa98b14935ae",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["GPGPU"],
+                                "id": "6039dd84-450d-4b73-b315-c7ffa3efbe92",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "3f743673-9568-4f42-8d6d-a5721c33e823",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A GPU particle field that pushes a million points at 60fps by simulating them entirely on the graphics card."
+                            ],
+                            "id": "f048268d-5097-4851-9a1e-c8a96c75eee8",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "mt-2 inline-flex items-center gap-2 text-base font-semibold text-primary",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the build"],
+                                "id": "b9d85332-07bc-4beb-84c8-abb0787d434d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "c1561e2d-3516-4704-8f5e-8a8ea68a9beb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d5a1287c-1604-4543-a715-6d5071900d0e",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "75d47c03-f073-4e4b-910e-75fe0509684b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 transition hover:-translate-y-1 hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/loom-terminal-ui"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Open source"],
+                            "id": "cae2ab30-ac80-4406-924d-9302211afaea",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
+                            "children": ["Loom"],
+                            "id": "8a2a3e84-8e2f-4c0a-a0cc-9d3956d3dac1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Rust"],
+                                "id": "f9647249-ee38-431c-87c4-57b6e618a269",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["TUI"],
+                                "id": "f36701c1-89af-4d82-bbd8-1c9736e833ca",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["CLI"],
+                                "id": "f44182d5-3b67-45d8-bbe1-81dd3bfd7b2f",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "7726ad8a-aa47-47e5-9084-0feca093ee42",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A terminal-UI toolkit for building fast, keyboard-driven console apps — panes, tables and a real layout engine."
+                            ],
+                            "id": "08ae0291-dd48-4a7a-a37e-7cc9d1a1c164",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "mt-2 inline-flex items-center gap-2 text-base font-semibold text-primary",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the build"],
+                                "id": "774bdad7-b1da-4643-b500-8bba0a9dfdd7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "ef0d6bc1-9f85-487d-ac93-6a3d43401402",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2c9d1582-2806-465f-b9f8-e4964a35a90f",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "bd292616-bc80-4672-bdac-d562005a77af",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 transition hover:-translate-y-1 hover:border-primary",
+                        "attrs": {
+                          "href": "/blog/prism-shader-playground"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Tooling"],
+                            "id": "5c4a0420-6236-4833-97cb-47c9b5c3d2c4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-bold leading-tight tracking-tight text-base-content",
+                            "children": ["Prism"],
+                            "id": "5f11c3a5-0299-4c60-895e-525b29f15e55",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["WebGL2"],
+                                "id": "082baf84-ebdb-4e07-b968-bcb3aee78740",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["TypeScript"],
+                                "id": "16613117-c69f-4d76-a184-c9f73cf1d785",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Monaco"],
+                                "id": "51216461-6ac1-4fb4-95a2-edca9ac88e6d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "73ec8420-e043-4e17-8344-3a9c026b839f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A browser shader playground with a live fragment-shader preview, hot reload, and shareable links."
+                            ],
+                            "id": "69cbacd8-3b42-4b72-93f7-11dbb3db57dd",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "mt-2 inline-flex items-center gap-2 text-base font-semibold text-primary",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["Read the build"],
+                                "id": "43ba7b75-5d34-473c-adb8-27e3bc70bc34",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "children": ["→"],
+                                "id": "020265e3-1898-4de4-9079-4c0dd8200741",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "94ca6b62-adf8-42da-aefe-c280be86e28d",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "3674cfbc-a7dc-4faa-bed1-5646efbfef83",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ed4e12f6-ca00-4f22-a8ae-1d96b4da6467",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                    "attrs": {
+                      "href": "/work"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["See every build"],
+                        "id": "b0cb92fe-4e65-43a4-947e-a6a8792c6b92",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["→"],
+                        "id": "b794c74b-6631-4265-816c-6c9d6d20f09b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0f35e2f4-4fb3-489b-a6c2-fdd9f8790c18",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8b135a34-c171-4ac8-99de-8d556ef8836c",
+                "ord": "a0"
+              }
+            ],
+            "id": "6f42eccf-da8a-4dd0-8635-3dba5a63614b",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "max-w-3xl text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Now"],
+                        "id": "f91702fa-a681-4607-baad-d4298c3f421f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": ["A snapshot of what I have open in the editor this month."],
+                        "id": "8e340ec3-28b2-47b2-ae84-5758ee0c9f5e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "58568dc5-4532-474d-8d11-8890c0e5b93a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid gap-6 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Building"],
+                            "id": "e78b7392-2dd2-44cc-a43c-6dd1eea69c0f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A WebGPU renderer for a generative-art studio — compute shaders doing the heavy lifting so a browser tab can drive a wall of screens."
+                            ],
+                            "id": "06d641ab-7a6e-42ea-a1e1-d407e29cf34d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6e120653-32f5-4bbe-ba02-2adffe8b1ef0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                            "children": ["Tooling"],
+                            "id": "0a84d178-6e47-4af0-beb0-9f63b44ee075",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Reaching for TypeScript, Three.js and raw WebGL2 daily, with Rust and WASM whenever a hot path needs to leave JavaScript behind."
+                            ],
+                            "id": "7a0585d7-7203-4e61-9c8d-890752afd9cd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5a7470f0-a497-4ba8-ae03-5b24ce36940f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-8",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-primary",
+                            "children": ["Open source"],
+                            "id": "1a449716-bf5e-4308-997a-1ac7f1429e72",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Maintaining Loom and a handful of smaller libraries — issues answered, PRs reviewed, and the occasional 2am refactor when a bug is too interesting to leave."
+                            ],
+                            "id": "614c4298-dfdd-4780-aa90-7d437734db82",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fda8b337-a675-4279-963a-fe6795fbf8e4",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8604731d-e90f-47b1-838b-c6c15a93158c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "59aef6b5-cde3-4435-bd25-08d649ee70f1",
+                "ord": "a0"
+              }
+            ],
+            "id": "89063713-373c-4756-ac6a-d84d4edd0b15",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-primary-content @3xl:text-4xl",
+                    "children": ["Got something that has to run in a browser?"],
+                    "id": "dc46cbff-615d-4945-8367-f8d79477ec5a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-primary-content",
+                    "children": [
+                      "I take on a few build-heavy projects at a time — the ones where the demo has to survive contact with production. If that sounds like yours, let’s talk."
+                    ],
+                    "id": "178708b3-b736-496f-82a4-4eaea56cea03",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-lg mt-2 bg-base-100 text-base-content",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Start a build"],
+                    "id": "64cdb55e-71e0-428b-8a7e-762f4f8368e5",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ad64402f-a46d-4f23-9733-89981be81f48",
+                "ord": "a0"
+              }
+            ],
+            "id": "4d24c744-717d-4bcb-8672-f12bf4b88785",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Work",
+      "kind": "singleton",
+      "slug": "work",
+      "seoTitle": "Work — Kade Nakamura",
+      "seoDescription": "Selected projects and case studies by Kade Nakamura — the work, the thinking, and the outcome.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "200bcc60-1174-488a-a4af-2b7196e3fd25",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Builds"],
+                    "id": "82892c4d-30b2-461e-880b-0eac889e96f4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Real-time graphics, interactive interfaces, and developer tooling. Each build opens to the full breakdown: what it is, the hard part, the stack, and what shipped."
+                    ],
+                    "id": "1b505ce7-6cfa-467a-b3fc-4dac6d70a581",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "95b70bcf-4967-47ce-a6ff-effb9ff1c7bc",
+                "ord": "a0"
+              }
+            ],
+            "id": "53a9855f-749a-4e38-9c8c-83a34e801aed",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "047a2f02-d453-4a33-9fbe-534217fd57a1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "eb70adc1-d8bc-419c-a50e-1424bd8badb1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a86606f5-9141-4d44-8e64-0783c2306976",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "399a4e87-00b4-4000-b76f-9f35a527d2d1",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "4a639703-3e79-4e68-8480-36bfbc720838",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "ecf59e73-1b2f-4d34-9190-c3417667199b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "74dfbb8f-3dfd-498c-a566-2f68d0cada04",
+                "ord": "a0"
+              }
+            ],
+            "id": "3403226f-42cf-4f64-a9fc-c1aa99abddfb",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Kade Nakamura — creative developer",
+      "seoDescription": "Ten years in real-time graphics and the web platform, end to end: the shader that renders it, the budget that keeps it fast, and the pipeline that ships it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3594294a-f23b-49c0-b294-d385829f2a16",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-3 @3xl:items-start",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:col-span-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["About Kade"],
+                        "id": "a08cddb2-e962-466b-a872-5edb829892a9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I’m a creative developer. That means I live in the seam between design and engineering — the demos that look impossible, the interfaces that feel alive, and the tools that make building them faster. Ten years in, mostly real-time graphics and the web platform."
+                        ],
+                        "id": "dac5fa35-aba7-4e4c-9210-92b761b96ae4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "I care about the whole path, not just the pretty frame: the shader that renders it, the memory budget that keeps it at 60fps, and the build pipeline that ships it to a phone. A prototype that can’t survive production was never finished — it was a screenshot."
+                        ],
+                        "id": "abea8b98-add5-45cd-b1b4-51d959737487",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Before going independent I built rendering tech at a games studio and interactive work at a creative agency. Now I take on a handful of build-heavy projects a year, and I keep a few open-source libraries alive between them."
+                        ],
+                        "id": "ee20ab0f-28d2-43d7-88ba-db1cb72d4e09",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "166211b7-6969-4e3d-b33d-aa41b02be3e7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full rounded-box border border-base-300 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1623479322729-28b25c16b011?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGV2ZWxvcGVyJTIwcG9ydHJhaXQlMjBkYXJrfGVufDB8MHx8fDE3ODYzOTk3ODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                          "alt": "Portrait of Kade Nakamura, creative developer",
+                          "loading": "lazy"
+                        },
+                        "id": "e390187f-4366-4dfb-8092-17fe7ca85fc1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
+                            "children": ["Stack"],
+                            "id": "57fdb9e0-904f-413e-a298-4d09d032da20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-wrap gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["TypeScript"],
+                                "id": "72b72136-33f7-49f5-be96-5b783ccff598",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["WebGL / GLSL"],
+                                "id": "1110d6f6-368c-4564-a759-fef96f593cb2",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Three.js"],
+                                "id": "80844be7-57f7-4c1d-bd50-35df5e718101",
+                                "ord": "a2"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["WebGPU"],
+                                "id": "34580034-c70d-4d29-bae6-e2acef656594",
+                                "ord": "a3"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Rust"],
+                                "id": "47f43dd3-6b06-408f-b683-c35e1971e0e2",
+                                "ord": "a4"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["WASM"],
+                                "id": "19b1aa8d-5ca1-4a7c-85a1-8e1eea8eb798",
+                                "ord": "a5"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-primary",
+                                "children": ["Node"],
+                                "id": "f625fdad-3568-4e6d-a355-4135ea2fcbdd",
+                                "ord": "a6"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "rounded-full border border-base-300 px-3 py-1 text-sm font-semibold text-accent",
+                                "children": ["GSAP"],
+                                "id": "36a1f608-2f68-44e7-a0bf-589205534dbe",
+                                "ord": "a7"
+                              }
+                            ],
+                            "id": "17b87503-eacf-4d59-bdeb-275d6767bb78",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "And enough Blender, Figma and shader math to hand off work that renders the same in the build as it did in the pitch."
+                            ],
+                            "id": "33397f35-99b3-4562-ade9-05e4a38078fd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f37236f1-b140-4548-a4a8-e396b3e9644a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "bf92b332-c80a-4ab1-863b-2707afbe5d40",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1f95edd6-3a84-4629-b801-6f23f9f15df2",
+                "ord": "a0"
+              }
+            ],
+            "id": "fa77b5aa-9780-4800-9a6b-aae2bd40364e",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Kade Nakamura",
+      "seoDescription": "Start a project with Kade Nakamura — availability, what a good brief looks like, and where to reach them.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "8dc504bb-2600-4e06-bfcd-73531493913c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-2xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Let’s build something"],
+                    "id": "34a59c51-cff9-4148-aaf6-436a95108921",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too."
+                    ],
+                    "id": "9016d0b6-da5b-4b8c-867d-2b131d7b5f2b",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 px-5 py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-primary",
+                            "children": ["❯"],
+                            "id": "ca29eff8-e4bf-49f4-bb83-e8d907a8f082",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base text-base-content",
+                            "children": ["contact --kade"],
+                            "id": "79af09b1-2455-4545-add5-f551777fed86",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5173bcbc-e022-4e06-ba93-89c2daf667ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base font-semibold text-accent",
+                            "children": ["~"],
+                            "id": "01de1664-f6c2-42ca-8881-431596943e46",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-base text-secondary",
+                            "children": [
+                              "email me, or find me on the usual places — repos, feeds, the odd conference hallway."
+                            ],
+                            "id": "e4d0a982-5b8d-4160-8036-a9d210a20f0f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c4a4772e-542c-4eb5-9365-44264dac2eed",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "de78777a-13d4-497f-91cb-f7168aa6dd21",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "mailto:kade@voidbuilds.example"
+                        },
+                        "children": ["Email me"],
+                        "id": "82ae77ee-a24a-4d1d-95e2-461fbf119fea",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": ["See the builds first"],
+                        "id": "3666703a-dd47-4ef9-9371-08c6f0115657",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4fa4959e-9ef4-4b7f-b837-30babebd3cc7",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "5414f031-bea4-4b29-9116-c08af5f54f6b",
+                "ord": "a0"
+              }
+            ],
+            "id": "a0f4b32d-cf85-46b9-a26c-7e8a719e3798",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Project",
+      "kind": "collection",
+      "recordType": "cms.blog_post",
+      "isDefault": true,
+      "seoTitle": "Project — Kade Nakamura",
+      "seoDescription": "A project by Kade Nakamura — the brief, the process, and the result, in one case study.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "div",
+            "class": "flex flex-col",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 pt-16 pb-12",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-primary",
+                        "attrs": {
+                          "href": "/work"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["←"],
+                            "id": "a34dae1e-091c-4e11-9f3e-bfb2995df8ab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["All builds"],
+                            "id": "1cebdd1e-91c6-4729-82dc-8ad3871ca794",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "257b7c76-744f-496b-91bb-c3daac608b6a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "class": "text-sm font-semibold uppercase tracking-wide text-accent",
+                        "children": ["Section"],
+                        "data": {
+                          "kind": "visible",
+                          "ref": "category"
+                        },
+                        "id": "0c7b4e87-15af-4f2d-875f-b61636931969",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-6xl",
+                        "children": ["Post title"],
+                        "data": {
+                          "kind": "value",
+                          "ref": "title"
+                        },
+                        "id": "7261d84b-fa03-48a3-8771-1212e1e25d3d",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-xl leading-relaxed text-base-content",
+                        "children": ["The short summary of this post, written in the CMS."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "excerpt"
+                        },
+                        "id": "24f2a8f3-aa2f-4154-b537-096d029bb8e9",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "h-11 w-11 rounded-full border border-base-300 object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "visible",
+                              "ref": "authorAvatar"
+                            },
+                            "id": "e42a0025-e9f5-46ac-85da-e31233e62d28",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Author name"],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "authorName"
+                                },
+                                "id": "4ccb4558-cd30-4ef5-b5e6-7f1742d1cd0c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-sm text-secondary",
+                                "children": ["Published date"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "date"
+                                },
+                                "id": "8d492881-a175-4da2-a59c-50d65391b6c3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5fc11a01-f4bf-455e-af0e-3db6a5413c78",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bd5847e2-144e-44fa-8cb2-a95dd85db7f3",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "69003f34-a0cb-4422-8c2c-adf7a8b439d4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "edfcf407-b513-463c-ad2d-69a27716e544",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "section",
+                "class": "bg-base-100 @container px-6 py-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto w-full max-w-5xl",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "featuredImage"
+                        },
+                        "id": "207580db-96ba-4374-a9bc-9f377682c6d4",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "5af37338-25ac-48b0-ab87-f8b0a05d1ff9",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "89a5749c-c796-4d51-b32d-dd25bdf9558c",
+                "ord": "a1"
+              }
+            ],
+            "id": "f24d26c9-0d91-4dd6-8f24-0743985b570b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24",
+                "children": [
+                  {
+                    "kind": "host",
+                    "component": "cms.article-body",
+                    "class": "w-full",
+                    "locked": "host",
+                    "id": "9b8ad360-1489-4001-a77a-4f544af2632e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "a24f5fd5-8d44-4db4-ad8d-d9d7b44a4fc8",
+                "ord": "a0"
+              }
+            ],
+            "id": "4c3d8cbc-c79e-4313-bf57-2f88b1be46fa",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pb-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-3xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-6 @2xl:flex-row @2xl:items-center",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "h-16 w-16 rounded-full border border-base-300 object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": ""
+                        },
+                        "data": {
+                          "kind": "visible",
+                          "ref": "authorAvatar"
+                        },
+                        "id": "ffe16f08-6d53-473c-8b24-10c2f28fea39",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Author name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorName"
+                            },
+                            "id": "dd49b92b-7638-4fb5-8a8b-c58511ed19af",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["About the author."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "authorBio"
+                            },
+                            "id": "8620bc9e-5d85-41eb-bd49-095beaa3d873",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "aeceb175-5225-41e3-b4b2-52b1207fd5cb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "authorBio"
+                    },
+                    "id": "15508371-32c5-40f7-9dc8-5b1458deb817",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "99e13fc4-a30a-4313-8ac4-cdc08aa4b355",
+                "ord": "a0"
+              }
+            ],
+            "id": "bf9bca9e-44a3-413a-91ae-6cf55903f727",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-200 text-base-content",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
+                        "children": ["Keep reading"],
+                        "id": "a8a97361-2ff9-4413-81f8-d76101d218b1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/work"
+                            },
+                            "children": ["More stories"],
+                            "id": "ee39ac35-5f5d-4f6f-9a69-aae7c4e70f07",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e6581e7c-99bb-4dad-b028-fe3ff43a05d8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "66c34c57-429b-426e-a999-f108e01e8eec",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dfe6fbab-87e9-4606-9a95-bcefb61f004d",
+                "ord": "a0"
+              }
+            ],
+            "id": "6dd7acf8-adbe-4a7a-b2b4-a8399b088e09",
+            "ord": "a3"
+          }
+        ],
+        "data": {
+          "kind": "collection",
+          "ref": "blog_post"
+        },
+        "id": "7ff9b7d2-f567-42b1-85e7-54ac8bf420f3"
+      }
+    }
+  ],
+  "theme": {
+    "name": "void",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(16% 0.012 160)",
+      "--color-base-200": "oklch(13% 0.012 160)",
+      "--color-base-300": "oklch(10% 0.012 160)",
+      "--color-base-content": "oklch(94% 0.02 150)",
+      "--color-primary": "oklch(80% 0.19 150)",
+      "--color-secondary": "oklch(82% 0.03 160)",
+      "--color-accent": "oklch(78% 0.14 195)",
+      "--color-neutral": "oklch(30% 0.012 160)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.375rem",
+      "--radius-field": "0.375rem",
+      "--radius-box": "0.5rem",
+      "--depth": "0",
+      "--font-sans": "\"JetBrains Mono\", monospace",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(15% 0.02 160)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(98% 0.01 160)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(78% 0.14 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(10% 0.012 160)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(13% 0.012 160)",
+      "--color-base-200": "oklch(10% 0.012 160)",
+      "--color-base-300": "oklch(7% 0.012 160)",
+      "--color-base-content": "oklch(95% 0.02 150)",
+      "--color-primary": "oklch(82% 0.19 150)",
+      "--color-secondary": "oklch(84% 0.03 160)",
+      "--color-accent": "oklch(80% 0.14 195)",
+      "--color-neutral": "oklch(28% 0.012 160)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 150)",
+      "--color-secondary-content": "oklch(15% 0.02 160)",
+      "--color-accent-content": "oklch(15% 0.02 195)",
+      "--color-neutral-content": "oklch(98% 0.01 160)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(80% 0.14 195)",
+      "--color-highlight-content": "oklch(15% 0.02 195)",
+      "--color-border": "oklch(7% 0.012 160)"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "dogtraining-behavior-hero",
+    "url": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2luZyUyMGRvZyUyMHRyYWluaW5nJTIwZm9jdXN8ZW58MHwwfHx8MTc4NjM5MTUxMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A focused working dog holding a steady sit, eyes locked on its handler"
+  },
+  {
+    "id": "dogtraining-behavior-method",
+    "url": "https://images.unsplash.com/photo-1620289052446-202137ffa876?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHdvcmtpbmclMjBkb2d8ZW58MHwwfHx8MTc4NjM5MTUxNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A trainer coaching a dog and owner through a calm leash exercise at home"
+  },
+  {
+    "id": "dogtraining-behavior-dana",
+    "url": "https://images.unsplash.com/photo-1551779891-b83901e1f8b3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2clMjB0cmFpbmVyJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MTUxOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dana Cole, lead behavior specialist"
+  },
+  {
+    "id": "dogtraining-behavior-marcus",
+    "url": "https://images.unsplash.com/photo-1535812859-6bfd2f132e78?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwdHJhaW5lciUyMHBvcnRyYWl0JTIwbWFufGVufDB8MHx8fDE3ODYzOTE0OTh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Reyes, reactivity & aggression specialist"
+  },
+  {
+    "id": "dogtraining-behavior-priya",
+    "url": "https://images.unsplash.com/photo-1660849636221-9a1fc064d57a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZG9nJTIwaGFuZGxlciUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTE1MjF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Shah, obedience & board-and-train specialist"
+  }
+]

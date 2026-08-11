@@ -1,0 +1,2215 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "2f554526-d2e0-4238-abc9-615ab73fc5fc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "4d0ee07b-d84f-4c04-9f56-5af7ca27e84f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "579db9cd-7b4a-4e24-bef4-f6041c06fcd7",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "10625016-64f6-474d-893e-42df0eded3ab",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "b617600b-9fae-48b3-bbc6-c1591ec17975",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "2baa7323-9cb8-40b4-87c4-4946773d4052",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "4b677d58-796a-44aa-bd00-8879d5000d75",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "a1a713bc-3508-41e2-9169-b594340399d3",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "9dff56ad-0f89-4580-b2af-f92512d5dbe0",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "382164b0-516e-40e4-a845-0450f525a008",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "ddc40cd2-933c-4894-bc0c-2355b62801ac",
+                  "ord": "a2"
+                }
+              ],
+              "id": "6da42120-293a-4cf6-9007-ee5890c41ad0",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "354108c7-d71f-4398-bef6-067ddd89856d",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "7f69f37e-f3a6-4539-a1a0-17a9bd1ee89a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "7f525b54-f80c-429a-b1fe-f40298f9d4b8",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "a198f012-5850-489b-b0ad-c0db685cf39f",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "c3d2074a-534b-495f-b775-202a6cc463c2",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "a5af724e-1353-4166-be2f-2a5236315533",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "79b5bd81-3bd5-4bfc-8353-ebc072de87c7",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "e4bbe1f7-3bee-4c18-8028-197338a19560",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "ecfcd703-5938-420c-8390-281440c2318f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "f1d478c0-9122-4aab-9bec-c7597b45350e",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "3533a4c6-0e44-4660-a231-a7224be29254",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "176b3780-30c5-4c06-93a3-6f5b0b9870d3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "bd2d3f50-5a2e-4f48-a1b2-9a0d8e13ab51",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "df6ca30a-1197-4e59-ade0-b54a395792f1",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c6fb644a-5248-4405-b002-87a2b2c68232",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "c2bb821f-f355-41b6-aa90-e8a7f70bd146",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d6bbdaf8-0f99-440a-9327-27f6714ce685",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "3d111e3c-3651-4ead-9263-64f5667f4342",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "509b9b4c-04c6-48aa-ad77-1c4363ff6e70",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "d10b07cc-6a72-4ea4-ad5b-a3294b184afd",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "6a33f2f4-081c-4801-a1a7-1cf0f4558620",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "b7be791c-40b5-47e2-9833-b00c0b8dafef",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "b9b55e10-792a-4e91-be14-24fb931ab56c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "b41ba693-d55f-4ab8-b09c-a123df55e08a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "2e7047a1-c26d-4ccf-9854-7806f72fc6e6",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "5695aa69-4aa7-49e8-a072-5faad752f27b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9819817f-2657-4dd6-92f1-edd96a6f9a7b",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "7e3c396a-a9fc-4643-99f8-712404b2cf49",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "eb407595-bf83-403c-8816-6f46c0a80e1b",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "4635c51c-f627-4ef9-9ada-6531c176153f",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "f8af1470-cedc-4c4a-a98b-13ab1c351fea",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "636d3101-d8af-4c36-a102-6d806148451e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "4c4bfa03-fa05-4942-8b53-460da85dd825",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "799e7e52-2d8a-4c54-b618-0452404312e8",
+                  "ord": "a1"
+                }
+              ],
+              "id": "95173c60-0f06-4b84-9373-5e7245ae9e52",
+              "ord": "a0"
+            }
+          ],
+          "id": "357c5490-dc67-4b0e-92fd-198519f296cb",
+          "ord": "a2"
+        }
+      ],
+      "id": "0b0199f1-66f4-44b4-a0e5-c391629041e3"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Blast Master Pressure Washing — driveways, siding & roofs",
+      "seoDescription": "Blast Master Pressure Washing cleans driveways, siding, decks and roofs the safe way — soft-wash where it matters, flat-rate quotes up front. Licensed, insured, and easy to book online. Get a free quote.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "83a6bf42-8a5f-454b-8780-c748ab5da9f2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1781637202423-33ec5b47e52e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJlc3N1cmUlMjB3YXNoaW5nJTIwZHJpdmV3YXl8ZW58MHwwfHx8MTc4NjM5NTczMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A driveway freshly pressure-washed to a clean, bright grey — the dirty half still visible",
+                  "loading": "eager"
+                },
+                "id": "74abc5f5-a6f0-4126-b3f3-275f8212ff3c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/50",
+                "id": "b6afc5fe-9fe9-4777-89b4-b15674e72c92",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Make it look new again"],
+                    "id": "18b82992-04fd-4652-9701-864349566b30",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Driveways, siding, decks and roofs washed the safe way — with a clear flat-rate quote up front and results you can see the moment we’re done."
+                    ],
+                    "id": "df62b27e-8cee-4743-bbc3-f6dc412bc58f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get a free quote"],
+                        "id": "c2b79bb9-3c85-404b-825a-09861d8d50ff",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we clean"],
+                        "id": "786e7c4c-bf7b-4ce3-bc36-1f6a51aa5255",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e69b5279-ecd5-4c78-a5a6-5f9463029189",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c6c1430b-5b32-4a19-a054-0d0ac526c3e2",
+                "ord": "a2"
+              }
+            ],
+            "id": "1374c198-2639-4590-b706-b62a324ca4fe",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Soft-wash safe for your home"],
+                            "id": "03fb4827-461b-4b7e-8060-5a5bde55f83a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We match the pressure to the surface — gentle soft-wash on siding and roofs, real power where concrete can take it. Deep-clean results, zero damage."
+                            ],
+                            "id": "43685599-deee-44eb-9707-c6cc6de93e6c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "49b42c2d-8806-4b56-8a7e-e1675bd949d1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Licensed & fully insured"],
+                            "id": "2eed3505-754f-4169-bf2d-20c5b1685cc1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A real, insured local company on your property — not a truck that shows up once and disappears with your deposit."
+                            ],
+                            "id": "1a5022a4-f513-4375-b71f-b3c602bdad2d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1f86aa02-df16-456e-bde5-e80c400ff5d1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Upfront flat quotes"],
+                            "id": "dd6ccc36-a1db-4c85-8a42-833dfc5ce9ac",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One clear price before we start — no hourly surprises, no add-ons at the end. You always know exactly what it costs."
+                            ],
+                            "id": "3c3a1087-411b-4b4f-8fcf-e76ab3593c84",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9a7f867a-9e9b-40c9-8407-0aa2dccbc56b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Satisfaction guaranteed"],
+                            "id": "6676d541-5dc3-4deb-b033-e5fd9868caf7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "If a spot isn’t right, we come back and make it right. You don’t pay to be happy — being happy is the whole job."
+                            ],
+                            "id": "1d5a2628-33d8-4627-8952-b792eace2ccf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d4cded6f-9981-4817-8cb7-66d29b365d2d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b4d831a3-d793-4627-97d8-5d20b64e049f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "26ee1b83-5036-4907-806c-96c65763d60b",
+                "ord": "a0"
+              }
+            ],
+            "id": "4725018c-47d4-445e-8a2d-0b0ded2a037a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What we clean"],
+                        "id": "26c8a4d9-4f95-4a3a-9b03-6ebfc9fee267",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Pick a service to see how long it takes and start booking. A free quote is always the easiest first step."
+                        ],
+                        "id": "aa90b9a3-c22c-4ba8-a822-1ca1dd73664d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "70d84a8f-4f48-4ace-b597-dd7220e9789d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Free washing quote"],
+                                "id": "186663c3-227f-4972-9f75-a9eb9df89bc9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$0"],
+                                "id": "eb3e6e5e-4bf7-46dc-b044-6ea0c1652ee1",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "77adcb88-5a7c-4dfc-9b50-13dda751face",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "295fac9d-2454-4822-9298-bece0e5dd18f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We walk your property and send a flat-rate price — no obligation."
+                            ],
+                            "id": "a54f7bab-0f74-4888-a58d-9cfa9abd61a9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "783082a8-8ef5-479f-90c9-558fb1837c94",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Driveway & concrete"],
+                                "id": "92c778d4-1af8-4f9f-affc-f942af74fbd0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$159"],
+                                "id": "75dc7813-4397-4346-bbc7-add819fa5092",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d13b3ea4-1c82-4ad2-a123-954bd03e2e6f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "fa602a0c-eb35-4e95-b107-89a5d0e776a0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Oil, algae and tire marks lifted — bright, even and new."
+                            ],
+                            "id": "2f020a3a-8296-4644-afa4-c91a0ee5f076",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "3bca5a4c-9777-4a6c-9096-e3089500d431",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["House soft-wash"],
+                                "id": "624be22a-1f85-4a0a-b8cb-a7f984faa2fc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$299"],
+                                "id": "629b5abb-49bf-4079-997c-84d76d4270c9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6157fb36-37fc-4605-8d63-fc3b91f49173",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr"],
+                            "id": "827d83e0-1f07-47b9-b657-126c0e463c0d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Grime, mildew and green safely stripped off siding."],
+                            "id": "b8790aa1-d0db-4f1e-b8be-eec78e0cd898",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c3e05c88-e4fa-42c1-90fd-45139bbe8808",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Deck & patio"],
+                                "id": "00acc11e-f8e9-4618-9c35-065ad7228e3d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$229"],
+                                "id": "ec8a02be-3803-404a-810b-3e9b37debbdc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c6f7e33e-9309-4be3-9432-2c82a4fb9edc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr 30 min"],
+                            "id": "6c9e85c2-90e3-47be-abad-b62e8ac270af",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Wood, composite and stone cleaned at the right pressure."
+                            ],
+                            "id": "c4af74aa-e18f-4055-8b2f-5a82261153c2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c3994efc-02b6-4e0d-a36a-7e302357ab59",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Roof soft-wash"],
+                                "id": "0bb31c3d-c224-46ba-bb0a-59d07e0203ee",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$399"],
+                                "id": "655540b3-9b96-44e4-b5af-0d3e9019f6c5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b34197c3-b48b-438a-a21a-6fe4fffa543f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["2 hr 30 min"],
+                            "id": "56d77f33-0241-48c8-b226-6cd924a9fcdb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Black streaks and moss gone — no damage to shingles."],
+                            "id": "172ecaf2-cb26-4925-a4f7-fd76cb21b3c3",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2b296487-cef0-406d-bbc2-15016f0be3bc",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Gutter clean & brighten"],
+                                "id": "61c1f3e8-40e7-4b1c-9723-5d34063c1bc9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$129"],
+                                "id": "8e03c30e-9e6a-4f24-9bec-6977a75a661c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ed0f1c80-79c4-44c1-97a9-5d03480f9838",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "880211f6-2fcc-4db8-9967-e6849cfd746e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Cleared to flow, plus the tiger-stripe stains wiped away."
+                            ],
+                            "id": "03d2c43c-c1f9-4d06-ad60-3608dbe6cd3a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f69c3a37-0f81-4c92-8aa9-b1c17b1a56df",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "2bb862da-6b36-4720-b044-db0bc8e7a573",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Get your free quote"],
+                        "id": "b3c8b1f2-9ff4-474c-8336-36bd90cdb450",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "a5b6f88f-699f-4b60-a55e-a3b23bfdb280",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "51277a9b-379c-480c-a8bf-2d8129884ea2",
+                "ord": "a0"
+              }
+            ],
+            "id": "9ba1a5aa-ba96-46c7-9e6e-884e5bef80f1",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1767559806487-4bbba537f5c1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG93ZXIlMjB3YXNoaW5nJTIwcGF0aW98ZW58MHwwfHx8MTc4NjM5NTczNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A house exterior mid soft-wash, one side dingy and one side bright and clean",
+                      "loading": "lazy"
+                    },
+                    "id": "1393a91f-0191-49b0-8e05-e6870406837a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The before-and-after you’ll want to show off"],
+                        "id": "989412fc-06d6-44c6-9ca9-aa83cf2f98f3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "There’s a moment on every job — the clean line where the dirty half meets the fresh half — and it never stops being satisfying. Green turns to bright siding, grey concrete comes back, black streaks vanish off the roof."
+                        ],
+                        "id": "e44c00c8-7c06-42fc-8e5a-1b5944bba5bd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "That transformation is the whole point. We finish, walk it with you, and you get to see your home look the way it did the day you moved in — sometimes better."
+                        ],
+                        "id": "dc868898-6c32-4de3-aab2-4732c44de2d2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your transformation"],
+                            "id": "77ef5dd0-1192-4f04-ac14-d1a93f37b290",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8a95dfc8-295c-4984-973f-dcae59996c62",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "236fbbe6-6809-441d-bf67-993a50d098af",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "cb26ba74-f7a1-4034-8ae8-653f4376a318",
+                "ord": "a0"
+              }
+            ],
+            "id": "e132a196-b0b9-47f8-8a6a-a6f69c100618",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Meet your crew"],
+                        "id": "81bbd1c8-72a6-4df1-a6a5-8c34ce6e16eb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The same friendly, careful faces on your property each visit — people who take real pride in a clean line."
+                        ],
+                        "id": "958e6f84-bf9c-4bfc-b54e-39116ed35a4b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c2929199-f05b-4c5a-a45c-f0865904e401",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1530983822321-fcac2d3c0f06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5NTcxMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Marcus Vance, lead pressure-wash technician",
+                              "loading": "lazy"
+                            },
+                            "id": "6e2fbe83-9a6a-4cb3-aa08-6acd6639dcd5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Vance"],
+                                "id": "733b5022-be83-4704-8dcf-c4f66fc86124",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Lead technician"],
+                                "id": "7d6a4830-e20a-4b95-a514-c3f5d9f32ea6",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Driveways, walkways and whole-house jobs. Marcus runs a tidy, on-time route and never leaves a streak."
+                                ],
+                                "id": "55559500-3eb2-466b-af44-9ffd54dfd60e",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "386c63a1-7303-4cc0-981b-39ebf2a75579",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9ae41288-3d42-4f3c-8cf0-7f83b13f7968",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1615464670798-6e92fafa2a89?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB3b3JrZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2Mzg4MjQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dana Whitfield, soft-wash & roof specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "f2a459ac-bb5c-47ce-9afc-2f0421ed9e26",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dana Whitfield"],
+                                "id": "6d08e8f7-2ad7-4eba-ad28-923089110a9c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Soft-wash & roof specialist"],
+                                "id": "d5143b63-958a-42a8-b1a1-69ae65a2a944",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Low-pressure siding and roof treatments — the safe, gentle side of getting your home spotless."
+                                ],
+                                "id": "7416db07-32e1-4af5-afbb-95d6a6e8d435",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0002e8f8-0bcf-4ea1-9a8a-0d9dc2590848",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "52c6e96d-e59f-485c-9770-1a838110cf48",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1759521296144-fe6f2d2dc769?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29ya2VyJTIwcG9ydHJhaXQlMjB1bmlmb3JtfGVufDB8MHx8fDE3ODYzODkyNjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Ty Okafor, deck & patio technician",
+                              "loading": "lazy"
+                            },
+                            "id": "47b3c9d9-6e49-4bfa-8059-96afe8908f61",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Ty Okafor"],
+                                "id": "0e4acfc1-bb52-45b7-a175-3de6c485150e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Deck & patio technician"],
+                                "id": "a4d13481-448f-46f3-9c30-d3f715d4ee1c",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Wood, composite and stone brought back to life, with an eye for detail on every board and seam."
+                                ],
+                                "id": "5b6cbab8-49e7-422c-a7fb-4ad168def1e1",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "d8dc4f35-5aaf-473e-865d-74b6bd795443",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "23724ede-1279-450f-b5ef-612267e00f6b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "489224f1-c065-447a-85e9-d510fe302aef",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ee885405-dfef-4263-9820-5690ebae53d9",
+                "ord": "a0"
+              }
+            ],
+            "id": "87e70427-1297-4e07-844b-02013e7e1b86",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“I could not believe it was the same driveway. Booked the free quote online in a minute, got a clear price, and the whole crew was polite and thorough. My house looks brand new.”"
+                    ],
+                    "id": "1314f49f-9278-4349-abf5-99e3df78b385",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Renée T., homeowner since 2024"],
+                    "id": "c8c1a89b-1f08-4f8d-aef6-512ab25a837e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5fd7e466-0a52-4da3-bc7e-f5d9b6cfcf6e",
+                "ord": "a0"
+              }
+            ],
+            "id": "6aa14413-16d4-4af4-971d-b0f8a4d95301",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Ready to make it look new again?"],
+                    "id": "f6f79f3b-0a37-4bb0-818d-60c26981dc7f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Get a free, no-pressure quote in about a minute. Pick a day and we’ll take it from there."
+                    ],
+                    "id": "5b823bb9-638b-4c5a-a490-8dede43108e9",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Get a free quote"],
+                    "id": "d7a0918a-b3c2-419a-b97c-ad0d15a95a32",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f1085531-2c2e-4045-ab43-2b465fa1f2c8",
+                "ord": "a0"
+              }
+            ],
+            "id": "4f19c39c-db98-46e5-bdd7-a4a59aca3d6c",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Blast Master Pressure Washing",
+      "seoDescription": "See what Blast Master Pressure Washing offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b992aeb6-6aa8-412a-af07-6b0022070527",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1767559806487-4bbba537f5c1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG93ZXIlMjB3YXNoaW5nJTIwcGF0aW98ZW58MHwwfHx8MTc4NjM5NTczNHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A house exterior mid soft-wash, one side dingy and one side bright and clean",
+                  "loading": "eager"
+                },
+                "id": "124533a0-9243-4ce2-8b40-b09c1a2207e3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "951f2433-c7f0-4e7d-b838-7ef7950e3164",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Get a free quote or book a wash"],
+                    "id": "65c45a75-2bba-4ad4-8b4d-a076bfc580dc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose an option below to see how long it takes and pick a day. A free quote is always the easiest place to start."
+                    ],
+                    "id": "a5614664-2bfd-444a-abf0-e24723083ddb",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See options below"],
+                        "id": "93dbe1ca-9ac3-4e5f-b297-169208ff1960",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ce978fc7-9afa-4560-baac-b49b0c2a6bce",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1e13489e-a76e-44d0-8ad8-e055ea67fa2d",
+                "ord": "a2"
+              }
+            ],
+            "id": "4d363601-1fbf-46f3-94c3-9ab3f4b895ad",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "39d31468-262d-49f6-8a89-c72484ea2a59",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Blast Master Pressure Washing",
+      "seoDescription": "Who Blast Master Pressure Washing is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d0eec451-c93c-45b2-b545-235f6ce1703a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xlYW4lMjBob3VzZSUyMGV4dGVyaW9yfGVufDB8MHx8fDE3ODYzOTU3Mzh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A Blast Master technician soft-washing siding with a low-pressure wand on a sunny morning",
+                      "loading": "lazy"
+                    },
+                    "id": "20f41699-dc6f-4ea0-a115-193b23ae9e16",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Blast Master Pressure Washing"],
+                        "id": "637ef20f-a3f4-41a3-a9be-77da9b53338c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Blast Master started with a simple belief: your home should look cared for, and getting it clean shouldn’t mean risking damage or chasing a vague bill. So we do it the right way — the right pressure for every surface, a flat price up front, and a finish we’re proud to stand behind."
+                        ],
+                        "id": "eb94b925-0da2-45c1-b2f5-f129925f5c55",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We’re a local, licensed and insured crew that treats every property like our own. The same faces each visit, honest quotes you can count on, and a standing promise to make it right if it isn’t."
+                        ],
+                        "id": "e146c2a9-3804-42e6-b808-5dc7a03df9af",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Get a free quote"],
+                            "id": "409c7bde-7f25-4fe5-b405-f0ed668029d8",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "8ee8c471-e2dd-43dc-96c9-0e841142275b",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "76da1058-08aa-4867-80cb-382c11196e32",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0dab6962-19df-4144-a06a-d1de4dacc347",
+                "ord": "a0"
+              }
+            ],
+            "id": "cd131cc1-27c8-4726-93ee-b0066f24b1a1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "0aa33051-49f5-4ec1-890e-d34e51b11786",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["The right pressure, every surface"],
+                            "id": "6bd5681a-3e6c-451a-b9d6-10c716fb27be",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Soft-wash for siding and roofs, real power for concrete. We never blast something that can’t take it — and we get it cleaner anyway."
+                            ],
+                            "id": "281ea9f3-5937-4102-bbf2-6fd59d45f6d2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7009c49b-b4a3-401b-8365-c65573161587",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["One clear, flat price"],
+                            "id": "4ea1351b-4c19-401a-afe5-fda2967a162e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "You know what the job costs before we start — no hourly meter, no surprise add-ons, no haggling at the door."
+                            ],
+                            "id": "d4accf0a-3bf4-43ad-a81e-62ef6322f4d0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "581622a1-83c0-4886-99ad-2de6307bd983",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Guaranteed, every job"],
+                            "id": "b3e8b617-9a95-4efa-a953-7e768d526074",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "If something’s not right, we come back and fix it. Your home looking new is the whole point of the visit."
+                            ],
+                            "id": "9aff7de4-735d-4026-addf-e7ccd027bc68",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6735a98a-d4ec-40e6-92da-7e87b7556466",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9c2111c2-63cf-46a9-8b3e-4ff6828ce370",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5d51838f-0742-4e90-a264-cc1b35bb05f9",
+                "ord": "a0"
+              }
+            ],
+            "id": "df438033-706a-4774-a2fc-fd8c196ba70e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Blast Master Pressure Washing",
+      "seoDescription": "Where to find Blast Master Pressure Washing, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "273fa053-e7bc-4bd1-a4ca-7fbcfbd13617",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Where we work"],
+                        "id": "cfe9a3e9-8145-4859-a419-f44df73c86e1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Blast Master Pressure Washing"],
+                            "id": "eae5ab8a-5ba1-4189-b570-259b2821d00e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["2170 Harbor Bend Drive"],
+                            "id": "3c451866-e46c-48f0-bde4-b74eedeee98e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Clearwater, FL 33755"],
+                            "id": "f454e930-b9fb-4f22-b0c0-9e84109764a2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e0d59cb8-61fb-4824-8909-058c8a14b664",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Friday"],
+                                "id": "7567ed91-801f-4129-a498-8b8ed25ac701",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 5:00"],
+                                "id": "893764c7-01d7-4b44-a1d4-a78b8327134a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "989c0785-2995-4634-aba1-3c1f86f1dad0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "da45e5c3-eb17-4b46-aeef-f851346776eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 5:00"],
+                                "id": "2576c889-4428-4079-b93e-25184c0d9624",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8c79e5af-9ac8-4293-bc08-74e466f0722a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "624a6892-49ef-4283-a8b0-9fe43b4de8d7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "ab8855a9-5ae2-49d9-9909-fa8a4cc25ca4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "492720c5-c534-4480-90d5-6f205bc7e90c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "881ba075-e074-4120-ac64-4733efe17c75",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c81deb10-c076-445a-85aa-c21eb31a7d44",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "2170 Harbor Bend Drive, Clearwater, FL 33755",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "6445c564-ebff-4e0c-ba32-cf22a5e8b5d5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4acf95af-0e53-417a-a5f5-a287f8a992f4",
+                "ord": "a0"
+              }
+            ],
+            "id": "389486e7-adea-464b-aed1-7d12d96039d2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "bdb66044-1494-41a6-a5b8-353b7c70ef86",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Get a free quote and see the next available days online — no phone tag, no waiting on a callback."
+                    ],
+                    "id": "9598248b-95b3-464a-b67e-1569e3d5a921",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Get a free quote"],
+                    "id": "0c144a7e-6eef-4474-b528-f0f220b31fde",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "40ee0dfc-aba1-4bc8-ac39-4d046e4a4168",
+                "ord": "a0"
+              }
+            ],
+            "id": "51cb6c7b-2a4b-41d5-a19b-1f27738b8b88",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "blastmaster",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98.5% 0.008 210)",
+      "--color-base-200": "oklch(96% 0.016 205)",
+      "--color-base-300": "oklch(90% 0.024 202)",
+      "--color-base-content": "oklch(24% 0.03 222)",
+      "--color-primary": "oklch(68% 0.14 205)",
+      "--color-secondary": "oklch(38% 0.05 218)",
+      "--color-accent": "oklch(85% 0.16 96)",
+      "--color-neutral": "oklch(27% 0.02 222)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.625rem",
+      "--radius-field": "0.625rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Archivo\", sans-serif",
+      "--color-primary-content": "oklch(15% 0.02 205)",
+      "--color-secondary-content": "oklch(98% 0.01 218)",
+      "--color-accent-content": "oklch(15% 0.02 96)",
+      "--color-neutral-content": "oklch(98% 0.01 222)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(85% 0.16 96)",
+      "--color-highlight-content": "oklch(15% 0.02 96)",
+      "--color-border": "oklch(90% 0.024 202)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Archivo\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.03 222)",
+      "--color-base-200": "oklch(18% 0.024 222)",
+      "--color-base-300": "oklch(14% 0.018 222)",
+      "--color-base-content": "oklch(95% 0.01 205)",
+      "--color-primary": "oklch(77% 0.14 200)",
+      "--color-secondary": "oklch(80% 0.04 205)",
+      "--color-accent": "oklch(87% 0.15 96)",
+      "--color-neutral": "oklch(84% 0.02 205)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 200)",
+      "--color-secondary-content": "oklch(15% 0.02 205)",
+      "--color-accent-content": "oklch(15% 0.02 96)",
+      "--color-neutral-content": "oklch(15% 0.02 205)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(87% 0.15 96)",
+      "--color-highlight-content": "oklch(15% 0.02 96)",
+      "--color-border": "oklch(14% 0.018 222)"
+    }
+  }
+}

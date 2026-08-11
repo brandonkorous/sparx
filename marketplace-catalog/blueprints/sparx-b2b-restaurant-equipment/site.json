@@ -1,0 +1,2614 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "ae0560c4-2576-40a5-bd0e-550f3cfe0847",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "eed7e3b4-4e78-4198-b5e2-91f973fbf3b3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "eba1d944-32f1-46c3-b848-4e1c8148088e",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "20980833-ad03-48ff-bc98-948f0f842fae",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "24e1cc82-1977-4f0b-bfa9-ef699478d7a8",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e1634790-84c9-4344-8d14-b49b3bc66d39",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "62d4ba31-d82b-4524-8e8e-0aeffdac214a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "462ac5d3-a983-4ac1-aea3-729d41a4ac7c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Open a trade account",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "c00b9d66-bf66-4b04-8986-2255e26579e4",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "dea4e986-2a2d-41fe-bd78-522da6e34714",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "82ea5e37-978c-4498-8bdf-9e991cab40fe",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "901082f7-c083-4083-8445-b2965583c899",
+                  "ord": "a2"
+                }
+              ],
+              "id": "a0b2d6a3-b30f-40d5-aa27-8f6c6634033f",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "c1e2f6c3-bd3e-4bed-9779-2a6cc9d92079",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9887a94b-0b79-41a2-bdfc-0b0038d99273",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "82f523cd-72ac-47ed-a3b3-2bf028dda029",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "03364b32-9827-4843-9e5b-d8d281892ae0",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "01375a42-05f5-4a76-9982-2163343bc8b4",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Open a trade account",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "6b57e354-de27-4f45-b0ff-b689ec1462e5",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "8e280c79-1fff-4eae-a762-f3729940b7b0",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "75e3bf67-41aa-425c-843d-0679757f6ed1",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "feb81ad0-4f80-4426-9a16-0009b0b4cef8",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "99b79ee4-8a46-4eec-8e61-092f884bd6a5",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "1d3e3353-e791-4955-8a52-d42069ecb075",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "c5bbabe1-5977-43c6-8ccd-7702ade79eee",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "0cea1506-739d-481d-94d2-103350ec186e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "47ddfeae-1a92-4a13-8d76-717b9c497b3e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "f2abb33f-5f02-4aba-a721-0cc33eb6dfcb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "183ac60c-b686-48e9-8868-cc890befc8bb",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "ad13534f-aea3-4281-b3c9-5266de5d1dbb",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "15836ccc-3222-4f3b-bd78-a3763a924fd6",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "6aa3a704-950b-4e77-a44f-0531092ec169",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "9c06db5e-f120-4784-aeab-791983bf437d",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "3c8b83d6-7436-4d21-a06a-bc6de96c15c3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "74502e2d-198b-41c7-9816-a26c6e67b01d",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "73e9ff6d-da25-4e2b-ab9b-f4baa2547f8a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "023433f5-fb9b-4d22-ae78-c1b2f7cbcff2",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "38d0f1cb-4798-40d0-95d3-4caa560f2449",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "d048f32d-5ba5-4b03-ae7f-c0a55940f87c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "7b4beeb6-dd56-40bc-ac57-a1a6933e378b",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "99a1089b-01a1-4727-a140-5abbc9567249",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "96d465fd-69fb-420d-970c-9887171a8ad5",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "01a8aaab-9902-423c-8406-38abce4f9b27",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "42549b7f-e08c-478c-baed-71430a57f259",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "9fc9c5e3-bdc0-46c0-b721-0d3b19e7c919",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "cd5247e1-f8ea-4efc-88a4-63363819b075",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "590d0634-3d11-4b7f-a474-6339d390d0d9",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e671e6a1-21ab-44ea-bd58-0a930165b6ea",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "eec929e1-aebe-45bf-980f-8207dca58c10",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "704a2ca6-7071-4b81-a052-71b35949bffe",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "6f3327a8-7221-448f-90a5-85c8324fc939",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "12da5748-8ad8-4737-9b63-1359eea69b71",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5b99bbf2-adcb-472d-bafc-dd7d872956a3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "08020b6f-42e1-4407-a83b-031eb05ed0cb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "891cf7c2-d87e-4e1f-84b3-fce5afffd792",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "bdc3a6fd-ac7b-406a-ac57-bb80d36cd11a",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "de97b7ce-0104-4339-8bbc-f9c572f3cdb8",
+                  "ord": "a1"
+                }
+              ],
+              "id": "45ce1f3a-dae1-43c7-a8fa-4471d4c0c29b",
+              "ord": "a0"
+            }
+          ],
+          "id": "dfba78ec-acf7-4f18-998c-d8090d135d42",
+          "ord": "a2"
+        }
+      ],
+      "id": "31408c5d-4e5d-42ba-b64e-670d3a86a5fe"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Pass Supply Co. — commercial kitchen & restaurant equipment",
+      "seoDescription": "Pass Supply is a commercial kitchen and restaurant-equipment distributor — prep tables, cooking gear, food storage, front-of-house service and smallwares, sold by the unit and the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9fe636d7-391d-46af-ae02-9d86d7a4be0b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1708915965975-2a950db0e215?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhaW5sZXNzJTIwY29tbWVyY2lhbCUyMGtpdGNoZW4lMjBsaW5lJTIwcmVhZHklMjBzZXJ2aWNlfGVufDB8MHx8fDE3ODY0MjE5Nzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A stainless commercial kitchen line ready for service",
+                  "loading": "lazy"
+                },
+                "id": "6afd6b0a-94ee-42bf-ac9a-ce5859358b92",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Kit out the line. Keep it running."],
+                        "id": "88526450-8142-4d81-b63d-2fd12ea8cf06",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Pass Supply Co. outfits commercial kitchens — restaurants, cafés, caterers and ghost kitchens. The prep tables, cooking gear, storage and smallwares a working line runs on, sold by the unit and by the case, priced for the trade and dispatched fast."
+                        ],
+                        "id": "3cf84e54-78a6-4dc5-a186-c467c10ade08",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the catalog"],
+                            "id": "62127211-cdb5-469b-b230-2024ac59066c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Open a trade account"],
+                            "id": "96f5ddd5-2ffb-4ee8-9aca-392c7fd76e16",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4dcd15d7-ffed-41bf-b8c3-bfcd8e010132",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d295d0a8-115c-482e-b28a-f4ca28f5f0a2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5fa51e02-fdcf-4936-87c6-9595653d0295",
+                "ord": "a1"
+              }
+            ],
+            "id": "ddd7be99-25ce-46ae-88af-ee78b632cec3",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Shop by station"],
+                    "id": "e7ba20f0-272e-44d5-974f-95cc5b6fce71",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1589109807644-924edf14ee09?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Y29tbWVyY2lhbCUyMHJhbmdlJTIwY29va3RvcCUyMGJ1c3klMjBraXRjaGVuJTIwbGluZXxlbnwwfDB8fHwxNzg2NDIxOTgwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A commercial range on the line",
+                              "loading": "lazy"
+                            },
+                            "id": "bf58c496-1427-486e-8f9c-bdf2e8de0518",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Cooking"],
+                            "id": "9d53e1f6-f1eb-4ccb-9012-2ff2035160ca",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c4568dfa-4ad8-4935-b278-2639847c8c33",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1760001553414-5634201efc36?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NHx8c3RhaW5sZXNzJTIwcHJlcCUyMHRhYmxlcyUyMGZvb2QlMjBzdG9yYWdlJTIwYmFjayUyMGtpdGNoZW58ZW58MHwwfHx8MTc4NjQyMTk4M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Stainless prep tables and food storage",
+                              "loading": "lazy"
+                            },
+                            "id": "347a734e-9f83-4c49-a4f7-40c02389202d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Prep & storage"],
+                            "id": "d256228f-58a6-4c5a-b467-b60a2352a2a5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d4fb467-0a08-47bc-b4ea-d303c370c93f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1519233991914-26a44330ccd7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhdGVkJTIwZGlzaCUyMHVuZGVyJTIwaGVhdCUyMGxhbXAlMjBwYXNzfGVufDB8MHx8fDE3ODY0MjE5ODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A plated dish under a heat lamp",
+                              "loading": "lazy"
+                            },
+                            "id": "544d14db-c485-4629-a225-d5333bad57f2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Front of house"],
+                            "id": "b7cd5be9-036e-447f-bb09-77bc556a1516",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b75dce63-39d2-4e06-93f0-ed973585e17a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1644258676710-ffb99d7d7a1b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZiUyMGtuaXZlcyUyMHNtYWxsd2FyZXMlMjBsYWlkJTIwb3V0JTIwYmVuY2h8ZW58MHwwfHx8MTc4NjQyMTk5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Chef knives and smallwares on a bench",
+                              "loading": "lazy"
+                            },
+                            "id": "94e2e6d1-deaf-4232-b620-21f3654a744f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Smallwares"],
+                            "id": "df9629c2-c622-4161-885b-a6b70bc69f3a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5a728dfa-7c00-40b1-b7a7-6a3746d8e4fd",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4084e234-a372-4e15-9bff-56c67565457b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a873867a-9b0f-4e7d-86cf-6b776c6d6b5f",
+                "ord": "a0"
+              }
+            ],
+            "id": "ea683206-0f72-464e-b9ad-0d38b3f2d9a4",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Best sellers on the line"],
+                    "id": "633a84af-b7cd-43c0-8f0d-c9ef1b4cbcd0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "2d272730-a161-4564-8771-2b18cdb99a76",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "81b4436d-373f-4a17-b52c-f9b4827c89fa",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "3e53cbd6-ab19-4764-ab29-23a78895df44",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "3ae41880-dbcd-4ff9-a0f2-1cf3938804b6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d0c9b6f2-fd28-4da9-81a1-a1a11ca88dac",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7e0f626e-ab16-4a11-ae70-cdc12cd69778",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "dd6ccaad-e341-4080-b1df-23a6fbbeb3ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "09bc5e0b-cf98-4d95-a3a6-84349e423f82",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "fb185077-1e65-4b89-8caa-d621264d95ec",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "086beab3-99de-4472-b5f4-379bedf768e1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "df743bed-8b72-4df5-968c-ec17c7013462",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "d92f9e1c-152f-4c72-8d69-3620c265b858",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "77f29161-a6af-4554-94b8-61c53dece5ea",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-2xl flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Built for the way kitchens buy"],
+                        "id": "62df68e8-323b-46d0-868d-133e17abaaac",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Open a trade account and you buy the way an operator should — by the unit and the case, at wholesale rates, on terms. No consumer markups, no runaround when a line goes down mid-service."
+                        ],
+                        "id": "687733e0-40b6-43c7-84cf-953fa6cbd3cb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f36f73dd-a553-450e-9f52-ef3942cbc15a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold tracking-tight text-base-content",
+                            "children": ["Trade pricing"],
+                            "id": "0a902c32-b284-4955-a01c-6578007390e1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Per-unit and per-case wholesale rates with volume breaks that deepen as your order grows. Kit a whole line or restock a station — the more you buy, the less each piece costs."
+                            ],
+                            "id": "968c9936-aa41-4a9e-b64b-42f1547a8d00",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "54b84128-536c-43a6-a366-1633c3e8971d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold tracking-tight text-base-content",
+                            "children": ["Net-30 terms"],
+                            "id": "7665be97-9a50-4e84-81dc-19381384fc60",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Approved accounts order now and pay later on net-30. Open a second location or restock the walk-in without tying up the operating cash on every run."
+                            ],
+                            "id": "79e0bb86-0576-4f50-ac9c-155a6354e1eb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5ac84c2-6eca-4bf7-9475-57a88ff634b3",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold tracking-tight text-base-content",
+                            "children": ["Fast dispatch"],
+                            "id": "6ad7461f-ee67-40ab-a8bf-0c8724cf2722",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "In-stock lines ship the same or next business day from our warehouse, so a broken mixer or a short case of pans never idles a shift."
+                            ],
+                            "id": "fff9f70c-fb3a-413c-bb0c-44b890273187",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d750a223-8ec8-4860-a560-d75fad87b871",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-bold tracking-tight text-base-content",
+                            "children": ["Your account manager"],
+                            "id": "1c3324f1-523e-4f52-b12f-90dc1e33ef9c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A direct line to a real person who knows your kitchen, your standing order and what you burn through — not a ticket queue at 4pm on a Friday."
+                            ],
+                            "id": "a7845e13-afa9-41b9-b3f8-7278c662ec42",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "befab5e8-30d9-49dc-b2ec-cb17497d04f3",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "21538c57-132b-4b23-aa69-5dc04cca9229",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg w-fit",
+                    "attrs": {
+                      "href": "/contact"
+                    },
+                    "children": ["Open a trade account"],
+                    "id": "a803eed7-756c-4845-a0aa-e50418d8633c",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "5f24d2ff-2a3f-4975-86c7-b3fb8a903fb9",
+                "ord": "a0"
+              }
+            ],
+            "id": "e47cdbf0-7e94-4e02-ae69-54ee6dde06af",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Smallwares by the case"],
+                    "id": "312a7a5c-bfd8-49b8-ad6e-082d0c412c6b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "59a6bdcb-bf18-4f52-b72c-35c74d79147f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "60275b1f-970c-4f04-9efd-012df7674d68",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "817cfdcf-6631-48e8-8889-2bae42fb59dc",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "5507e37f-4e82-434a-bacb-dbde6b7b104d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2515c1de-8765-4aaa-ab70-7846bec9508d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a6ae3107-7bdb-45be-8251-301f53717fe9",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "3fa93927-adbd-4c42-97be-f9dd35ec3feb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "831182bc-d066-45bb-9d00-e4b2abaf0f67",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "898507c4-182d-4658-85ae-7c91ce4113a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "804ace71-3b88-462d-be11-d42cf5b15b28",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "da61698d-1e2f-4c12-b54c-f34dfe6fde59",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.smallwares"
+                },
+                "id": "4432ca8d-12ca-4bcf-a0b0-4d27efa89680",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "b4075ebe-fa07-4e26-b69d-16240d728bfa",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1589792923962-537704632910?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2FyZWhvdXNlJTIwdGVhbSUyMGxvYWRpbmclMjBraXRjaGVuJTIwZXF1aXBtZW50JTIwZGVsaXZlcnl8ZW58MHwwfHx8MTc4NjQyMTk5M3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A warehouse team loading kitchen equipment for delivery",
+                  "loading": "lazy"
+                },
+                "id": "3a791cc8-7fba-4cbe-b19e-efdc9adf9d6d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["One supplier for the whole kitchen"],
+                        "id": "974c23ad-ac4a-4526-a00e-1a8e6a40886d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "From the prep line to the pass, kit the whole kitchen from one trade account instead of chasing a dozen vendors. One catalog to buy from, one statement to reconcile, and one person who picks up the phone when a line is short before Friday service."
+                        ],
+                        "id": "7ece5299-21b5-4484-88c2-f390adf5d738",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": ["Open a trade account"],
+                        "id": "eb8bc5ae-36a0-4b06-94f3-a529d8603d7d",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2b9acc67-523a-4310-9507-765a5f08b6e2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d1a3ebea-5ec7-45eb-8530-e49322ee85a1",
+                "ord": "a1"
+              }
+            ],
+            "id": "e050b472-5c8f-45df-b736-ee9744623148",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Pass Supply Co.",
+      "seoDescription": "Browse everything Pass Supply Co. makes, with prices and options at a glance. Restaurant equipment & smallwares.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f490b955-202f-48b3-b8dd-aa0339392d6d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The catalog"],
+                    "id": "107917a3-17a4-40e8-821f-6fa102947123",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every line we stock — cooking, prep and storage, front of house, and smallwares, sold by the unit and the case. Filter by station or sort by price; trade accounts see their contract pricing at checkout."
+                    ],
+                    "id": "55a88899-d054-4232-bd7f-87c9c076d690",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9724fa6d-6999-4dcb-89d5-679266360c12",
+                "ord": "a0"
+              }
+            ],
+            "id": "b44dcc49-f338-4aef-ba24-c251a8517e7e",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "bd219936-34fd-4b7c-975d-bf6897a3dd38",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Pass Supply Co.",
+      "seoDescription": "Explore the collections at Pass Supply Co., grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "22bf96b5-289b-4eb9-a4a0-4cda484a57db",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "1df4d68e-bdca-4f66-907e-ee7de230e910",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The catalog grouped the way an operator actually buys — best sellers, new lines just in, everything to open a kitchen from empty, the front-of-house service kit, and the smallwares you reorder by the case."
+                    ],
+                    "id": "8ff4237b-16c3-4087-b83c-e190c0cc2a32",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "77d5177c-05b3-42fd-b4c4-edc2507639ab",
+                "ord": "a0"
+              }
+            ],
+            "id": "0b9dc0df-08ed-4a89-86aa-724e251b6f32",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "88db6a24-3881-458b-92ba-0b6a9d28d5cb",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Pass Supply Co.",
+      "seoDescription": "Review what is in your cart and check out securely at Pass Supply Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a78e7d25-8ede-4747-8e4c-e16ab0647f07",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your order"],
+                    "id": "c6a4e84a-33fc-4cc8-bea1-d06993187b65",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Review the equipment and cases in your order before you check out. Trade accounts see contract pricing and net-30 terms applied here; everyone gets fast dispatch on in-stock lines. Kitting a whole line? Your account manager can turn around a formal quote."
+                    ],
+                    "id": "09b54185-cd60-4735-9954-e689980133a9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2083cb5a-780b-488d-95be-c2b8a0c0e88b",
+                "ord": "a0"
+              }
+            ],
+            "id": "b0ee467a-9c8c-4902-9d58-99c5648cb11c",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "7478cf3e-66d3-4c76-986b-0c43db837318",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Pass Supply Co.",
+      "seoDescription": "Search Pass Supply Co. for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0d493eba-59e6-4825-8ca0-eccf4e67c6df",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search the catalog"],
+                    "id": "d99d81c6-4dbe-4208-aec5-30c9bc1b8bb0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Know the model, the size, or the spec you need? Search the whole catalog and the field notes below."
+                    ],
+                    "id": "9b4d121a-fdb4-4ae7-95f8-2de7b0467a5d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "260fa9f0-5043-4557-b48a-b23b99b4461e",
+                "ord": "a0"
+              }
+            ],
+            "id": "4813d6a6-b4b1-4e7d-a2ea-698c23fdcadb",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "14f01a7c-873d-4cee-9738-0d439fbb2bb2",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Pass Supply Co.",
+      "seoDescription": "Stories, guides and notes from Pass Supply Co..",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e8685001-dc4b-49ad-8f23-fe960bb4bfd0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Field notes"],
+                    "id": "c2835da4-7b5b-4cdc-8f5a-be5822fc6be1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Practical guidance from operators and our warehouse floor — how to kit out a new kitchen, choose cookware that survives service, and buy smallwares that last. Written for the people running the line, not for a catalog."
+                    ],
+                    "id": "809ee854-09f0-4a8b-b98a-f462ae18cc8a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a49948ff-1c4e-4c2f-8522-9329f8974f57",
+                "ord": "a0"
+              }
+            ],
+            "id": "e306e5eb-17d5-4c9e-b2f8-567dd849ab2e",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "a3d51ced-ef0c-46f4-b45a-293cd3776da1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "299044c3-3b84-4de0-8301-1d0de4a9e0a0",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "92d0cf35-196d-462d-b242-40a035b1f8d9",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "bd00d4fe-4b8a-4141-bbd0-3caab7223f5f",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "4d3aa239-0c39-40e3-b8ab-d5085136b604",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "8d33ac3a-bfd9-4f84-8937-c7c27240da2c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "67547c8c-7dad-4ec7-ba59-81c438196f52",
+                "ord": "a0"
+              }
+            ],
+            "id": "2a04b10d-ac80-4045-8405-9c41223fdac0",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Pass Supply Co.",
+      "seoDescription": "How Pass Supply stocks, prices and ships — one catalog, one account, one invoice, wholesale by the unit and the case, and kitchen-grade gear that is on the shelf when service depends on it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b95f2f11-0b1a-4281-a670-fe7d1046914d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Pass Supply"],
+                    "id": "75690833-929b-44f8-80b5-49224c49d025",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Pass Supply Co. is a commercial kitchen and restaurant-equipment distributor. We stock the durable, essential gear a working kitchen runs on — prep tables, cooking equipment, food storage, front-of-house service and smallwares — and we sell it to the trade by the unit and the case, at wholesale, on terms."
+                    ],
+                    "id": "2d96bb67-b99b-410a-867c-653232bdb6e6",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We built the business around one idea: an operator opening a room or restocking a line should not have to chase a dozen suppliers, eat consumer markups, or wait a week for a case of sheet pans. One catalog, one account, one invoice, and stock that is actually on the shelf when service depends on it."
+                    ],
+                    "id": "2650e3c5-b896-493e-a8df-29457f814868",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just kitchen-grade gear, priced fairly and out the door — the boring reliability a good kitchen is built on."
+                    ],
+                    "id": "1224c204-03a5-4498-bc75-82ec5ddb14f4",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "99dd934e-3418-44ee-a8f6-be3b3dd5f71c",
+                "ord": "a0"
+              }
+            ],
+            "id": "59f7f487-bd66-4be6-b2cb-09be5da47b72",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Open a trade account — Pass Supply Co.",
+      "seoDescription": "Set up a trade account with Pass Supply: wholesale per-unit and per-case pricing, volume breaks, net-30 terms and a dedicated account manager. Fit-out quotes and multi-location supply start here.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b3efd1ce-90d7-462e-8836-9ddeb56d109d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Open a trade account"],
+                    "id": "cda0df2a-c762-47ca-ae38-db18d832657a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Tell us what your kitchen goes through and we will price your regular lines, set you up on net-30 terms, and put a name and a number to your account. Fit-out quotes, standing orders and multi-location supply all start here."
+                    ],
+                    "id": "fa35ed57-fe64-4b8d-bf6d-79966858ec43",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:trade@passsupply.example"
+                    },
+                    "children": ["Email the trade desk"],
+                    "id": "e4332e07-4525-4020-88ad-0ab77439b6a0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "be93cac4-2564-4b6f-888e-a36e76d63c93",
+                "ord": "a0"
+              }
+            ],
+            "id": "8e711d57-0500-4a12-bd91-df64f85dde59",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Pass Supply Co.",
+      "seoDescription": "Product details at Pass Supply Co. — restaurant equipment & smallwares, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "637cc8c7-e7a5-4fa0-9fc6-1251d0e431d7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Pass Supply Co."],
+                            "id": "9c8266f3-82ab-4773-95ce-4a1396f6a14c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ebdcbf15-7676-47ce-abd1-bb2717d00b50",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "21d8c581-6cdf-411d-81fa-f96760b8c06f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "af1dafcf-4f3c-4d15-8424-6a65c50fd9bf",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "800c87bc-cf5e-4b59-8499-13273a9b4ed9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e8bd2ce8-6c29-41e4-9ffb-732269c5a239",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "389d83df-5e68-4438-aaf0-48d400fee601",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "f9be2465-c596-4c97-85e8-fdaf5b433603",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "33c5ae33-e815-467d-ba0c-291a56b88815",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "213e876f-176c-4d3d-9030-0ea1945ca09d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "adeb084a-2c19-4bc0-b154-a0396f0d654b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "73e51916-06cf-4b30-964b-454c805caf7c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2c09c7ef-90e8-4a3f-8623-18f5d264b211",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "e2dc0905-91af-4cd1-b448-3533368ce0cd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "24ae1797-e9f7-4fed-86e0-ee3e8112d5ca",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Trade pricing & terms"],
+                            "id": "ff7171ab-2fc6-4f82-9fde-960ed36e582f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The price shown is the list rate — per unit for equipment, per case for smallwares. Trade accounts unlock volume breaks — deeper pricing when you kit a full line, open a second location, or order to a standing schedule — set for your account in your dashboard."
+                            ],
+                            "id": "071d590e-85e7-4539-bf67-47bdeb80299b",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Approved accounts buy on net-30. Not set up yet? Open a trade account and we will price your regular lines and get you on terms."
+                            ],
+                            "id": "8ae9bd9d-e8bb-491e-9742-f4135014e848",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/contact"
+                            },
+                            "children": ["Open a trade account"],
+                            "id": "d14f3e18-db0d-4269-b5f8-e7dd55dd5d2b",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "e121bd3c-1981-4cc5-b527-3c593edfc5a7",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "3429c053-dad3-4b06-bc25-76493c8418a3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "fb8f9685-c2f2-4701-b45c-13f27ff5b47c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "91cb7c4f-82c5-41a8-9968-428b1efec1a4",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "d72de03a-c2ce-4930-8541-5dfdd4457a38",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c82b60d4-7ea8-4a5c-b1e1-8246e03285af",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "4eda3343-5a23-4346-b9c7-439b2b614360",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Outfitted together"],
+                    "id": "d3ef0f1a-bbd2-4cae-bb27-0b0c85e78d8d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "a0fcfad3-f4d0-4d4b-a336-c1cd14bfef5f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "099cd082-6e24-4fcb-aa1c-26bb9d23437f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "31128988-18e3-4690-a268-08bf9a04dcbe",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "490d8ac5-7ab2-44c8-b200-e8cafc9d50b9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e0b7c316-031f-4e34-a622-9c114e87b43c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e2ac4685-343a-496d-b438-54d2c422d695",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "69cee382-6a03-4187-9509-7a48e80e7a14",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "e46f199e-9aee-403c-8d26-c666b599c441",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "1f33d31d-4e74-4ca4-a138-d1a0e6c62a44",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cdbfdff9-6e28-466b-ade1-55613357bdd9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "3556b303-a356-4d1f-84c3-c716c599f6ac",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "30ea67e5-876f-45db-8ad3-1183128f6e05",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "72af0dc0-fead-4795-a808-cd09d17bc270",
+            "ord": "a1"
+          }
+        ],
+        "id": "4399ebb9-3301-4781-a599-80451da4c97b"
+      }
+    }
+  ],
+  "theme": {
+    "name": "linecook-trade",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.005 75)",
+      "--color-base-200": "oklch(94% 0.008 72)",
+      "--color-base-300": "oklch(89% 0.012 70)",
+      "--color-base-content": "oklch(23% 0.015 60)",
+      "--color-primary": "oklch(37% 0.025 60)",
+      "--color-secondary": "oklch(43% 0.025 60)",
+      "--color-accent": "oklch(52% 0.14 48)",
+      "--color-neutral": "oklch(27% 0.02 60)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 60)",
+      "--color-secondary-content": "oklch(98% 0.01 60)",
+      "--color-accent-content": "oklch(98% 0.01 48)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(52% 0.14 48)",
+      "--color-highlight-content": "oklch(98% 0.01 48)",
+      "--color-border": "oklch(89% 0.012 70)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.015 60)",
+      "--color-base-200": "oklch(18% 0.015 60)",
+      "--color-base-300": "oklch(15% 0.015 60)",
+      "--color-base-content": "oklch(95% 0.005 75)",
+      "--color-primary": "oklch(80% 0.03 72)",
+      "--color-secondary": "oklch(81% 0.025 72)",
+      "--color-accent": "oklch(72% 0.14 52)",
+      "--color-neutral": "oklch(32% 0.02 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 72)",
+      "--color-secondary-content": "oklch(15% 0.02 72)",
+      "--color-accent-content": "oklch(15% 0.02 52)",
+      "--color-neutral-content": "oklch(98% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(72% 0.14 52)",
+      "--color-highlight-content": "oklch(15% 0.02 52)",
+      "--color-border": "oklch(15% 0.015 60)"
+    }
+  }
+}

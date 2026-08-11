@@ -1,0 +1,27 @@
+[
+  {
+    "id": "chiro-wellness-hero",
+    "url": "https://images.unsplash.com/photo-1706353399656-210cca727a33?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpcm9wcmFjdGljJTIwd2VsbG5lc3N8ZW58MHwwfHx8MTc4NjM5MDcxN3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, bright chiropractic clinic with soft natural light"
+  },
+  {
+    "id": "chiro-wellness-interior",
+    "url": "https://picsum.photos/seed/align-interior/1600/1000",
+    "alt": "A quiet treatment room with an adjustment table"
+  },
+  {
+    "id": "chiro-wellness-ren",
+    "url": "https://images.unsplash.com/photo-1757620765404-a1ee66df5e27?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hpcm9wcmFjdG9yJTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDcyM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Ren Ishikawa, chiropractor"
+  },
+  {
+    "id": "chiro-wellness-sol",
+    "url": "https://images.unsplash.com/photo-1659353888906-adb3e0041693?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBkb2N0b3IlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwNzI2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Sol Marín, chiropractor"
+  },
+  {
+    "id": "chiro-wellness-mira",
+    "url": "https://images.unsplash.com/photo-1598901865264-4f5f30954532?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWFzc2FnZSUyMHRoZXJhcGlzdCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTA3Mjl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mira Novak, massage therapist"
+  }
+]

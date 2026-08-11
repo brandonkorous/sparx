@@ -1,0 +1,32 @@
+[
+  {
+    "id": "esthetics-results-hero",
+    "url": "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmFjaWFsJTIwc2tpbmNhcmUlMjB0cmVhdG1lbnR8ZW58MHwwfHx8MTc4NjM5MjY5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Clear, luminous skin in soft studio light"
+  },
+  {
+    "id": "esthetics-results-studio",
+    "url": "https://images.unsplash.com/photo-1630835425197-50feeba99ecd?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BhJTIwcm9vbSUyMGludGVyaW9yfGVufDB8MHx8fDE3ODYzOTI3Mzl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A clean, bright treatment room with a facial bed"
+  },
+  {
+    "id": "esthetics-results-plan",
+    "url": "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZXN0aGV0aWNpYW4lMjBmYWNpYWwlMjBjbGllbnR8ZW58MHwwfHx8MTc4NjM5MjY5NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "An esthetician reviewing a custom skin plan with a client"
+  },
+  {
+    "id": "esthetics-results-camille",
+    "url": "https://images.unsplash.com/photo-1762341113869-0bfa616b4457?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBzcGElMjB0aGVyYXBpc3QlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNzQwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Camille Fontaine, lead esthetician"
+  },
+  {
+    "id": "esthetics-results-rosa",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBza2luY2FyZSUyMHByb2Zlc3Npb25hbCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI3MDB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Rosa Vance, esthetician"
+  },
+  {
+    "id": "esthetics-results-ingrid",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2tpbmNhcmUlMjBzcGVjaWFsaXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MjcwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Ingrid Okafor, advanced-treatment esthetician"
+  }
+]

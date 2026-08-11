@@ -1,0 +1,676 @@
+{
+  "categories": [
+    {
+      "handle": "drink",
+      "name": "Drink",
+      "description": "Mugs, tumblers and jugs, thrown by hand.",
+      "featured": true
+    },
+    {
+      "handle": "dine",
+      "name": "Dine",
+      "description": "Plates, bowls, platters and sets for the table.",
+      "featured": true
+    },
+    {
+      "handle": "vessels",
+      "name": "Vessels",
+      "description": "Vases and objects for the shelf.",
+      "featured": true
+    },
+    {
+      "handle": "home",
+      "name": "Home",
+      "description": "Planters and pieces for the rest of the house.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New from the studio",
+      "description": "The latest pieces off the wheel.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["everyday-mug", "breakfast-bowl", "stem-vase"]
+    },
+    {
+      "handle": "everyday-table",
+      "name": "The everyday table",
+      "description": "Pieces made to be used every day.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "everyday-mug",
+        "breakfast-bowl",
+        "dinner-plate",
+        "pouring-jug",
+        "dinner-set"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["everyday-mug", "breakfast-bowl", "tumbler-pair"]
+    },
+    {
+      "handle": "drinkware",
+      "name": "Drinkware",
+      "description": "Everything to drink from.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["everyday-mug", "tumbler-pair", "pouring-jug"]
+    },
+    {
+      "handle": "entertaining",
+      "name": "Entertaining",
+      "description": "For the middle of the table.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["serving-platter", "dinner-plate", "dinner-set"]
+    },
+    {
+      "handle": "gift-ready",
+      "name": "Gift-ready",
+      "description": "Sets and pairs that give well.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "tumbler-pair",
+        "dinner-set",
+        "stem-vase",
+        "footed-planter",
+        "serving-platter"
+      ]
+    },
+    {
+      "handle": "home",
+      "name": "For the home",
+      "description": "Planters and vessels beyond the table.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["footed-planter", "stem-vase"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "everyday-mug",
+      "title": "Everyday Mug",
+      "description": "The one you’ll reach for every morning — a generous 12oz mug with a full, pulled handle that fits three fingers and a foot bare enough to feel the clay. Thrown a little heavy on purpose, so it holds the heat and sits solid on the table.",
+      "status": "active",
+      "productType": "Drinkware",
+      "vendor": "Kiln & Clay",
+      "tags": ["mug", "drinkware", "stoneware", "handmade"],
+      "categoryHandles": ["drink"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "everyday-table", "drinkware"],
+      "seoTitle": "Everyday Mug — hand-thrown stoneware | Kiln & Clay",
+      "seoDescription": "A generous 12oz hand-thrown mug with a full pulled handle and a bare clay foot. Made to order in three glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-MUG-OAT",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-MUG-ASH",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-MUG-SLT",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-mug",
+          "isPrimary": true,
+          "alt": "A hand-thrown stoneware mug with a pulled handle"
+        }
+      ]
+    },
+    {
+      "handle": "breakfast-bowl",
+      "title": "Breakfast Bowl",
+      "description": "A wide, low bowl that’s right for almost everything — cereal and porridge, a bowl of soup, roasted vegetables, or ice cream after. Deep enough to hold a proper serving, shallow enough to eat from comfortably, with a soft speckled glaze pooling in the well.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Kiln & Clay",
+      "tags": ["bowl", "tableware", "stoneware", "handmade"],
+      "categoryHandles": ["dine"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "everyday-table"],
+      "seoTitle": "Breakfast Bowl — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A wide, low everyday bowl for cereal, soup or supper, with a soft speckled glaze. Made to order in three glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-BOWL-OAT",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-BOWL-ASH",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-BOWL-SLT",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-bowl",
+          "isPrimary": true,
+          "alt": "A wide breakfast bowl with a speckled glaze"
+        }
+      ]
+    },
+    {
+      "handle": "dinner-plate",
+      "title": "Dinner Plate",
+      "description": "A proper dinner plate with a broad rim and a glazed well — the kind that makes an ordinary meal look considered. We leave the rim bare and lightly sanded so it stacks quietly and shows the clay it’s made from. Ten and a half inches; dishwasher-safe.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Kiln & Clay",
+      "tags": ["plate", "tableware", "stoneware", "handmade"],
+      "categoryHandles": ["dine"],
+      "collectionHandles": ["everyday-table", "entertaining"],
+      "seoTitle": "Dinner Plate — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A 10.5\" dinner plate with a broad bare-clay rim and glazed well. Made to order in three studio glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-PLATE-OAT",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-PLATE-ASH",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-PLATE-SLT",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-plate",
+          "isPrimary": true,
+          "alt": "A dinner plate with a bare clay rim"
+        }
+      ]
+    },
+    {
+      "handle": "serving-platter",
+      "title": "Serving Platter",
+      "description": "A long oval platter built for the middle of the table — a whole roast chicken, a spread of flatbreads, a pile of summer tomatoes. Thrown wide and low with a subtle lip to keep everything on board, in a matte glaze that hides the everyday marks of real use.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Kiln & Clay",
+      "tags": ["platter", "serving", "tableware", "handmade"],
+      "categoryHandles": ["dine"],
+      "collectionHandles": ["entertaining", "gift-ready"],
+      "seoTitle": "Serving Platter — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A long oval serving platter with a subtle lip and matte glaze, for the middle of the table. Made to order.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-PLATTER-OAT",
+          "priceCents": 8800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-PLATTER-ASH",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-PLATTER-SLT",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-platter",
+          "isPrimary": true,
+          "alt": "A long oval serving platter in a matte glaze"
+        }
+      ]
+    },
+    {
+      "handle": "stem-vase",
+      "title": "Stem Vase",
+      "description": "A tall, narrow-necked vase for a single stem or a small gathered bunch — the kind of quiet object that earns its place on a shelf even when it’s empty. Weighted in the base so a top-heavy branch won’t tip it, with a stone-grey glaze that lets the flowers do the talking.",
+      "status": "active",
+      "productType": "Vessel",
+      "vendor": "Kiln & Clay",
+      "tags": ["vase", "vessel", "decor", "handmade"],
+      "categoryHandles": ["vessels"],
+      "collectionHandles": ["new-arrivals", "gift-ready"],
+      "seoTitle": "Stem Vase — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A tall, narrow-necked vase for a single stem, weighted in the base. Made to order in three studio glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-VASE-OAT",
+          "priceCents": 6400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-VASE-ASH",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-VASE-SLT",
+          "priceCents": 6400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-vase",
+          "isPrimary": true,
+          "alt": "A tall bud vase with a narrow neck"
+        }
+      ]
+    },
+    {
+      "handle": "footed-planter",
+      "title": "Footed Planter",
+      "description": "A footed planter with a matching saucer, sized for a plant you actually care about — a fern, a trailing pothos, a herb on the kitchen sill. Raised on a small foot so air moves underneath, with a drainage hole and a saucer to catch the overflow. Six-inch inner pot.",
+      "status": "active",
+      "productType": "Vessel",
+      "vendor": "Kiln & Clay",
+      "tags": ["planter", "home", "plants", "handmade"],
+      "categoryHandles": ["home"],
+      "collectionHandles": ["home", "gift-ready"],
+      "seoTitle": "Footed Planter — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A 6\" footed planter with drainage hole and matching saucer. Made to order in three studio glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-PLANTER-OAT",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-PLANTER-ASH",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-PLANTER-SLT",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-planter",
+          "isPrimary": true,
+          "alt": "A footed planter with a matching saucer"
+        }
+      ]
+    },
+    {
+      "handle": "tumbler-pair",
+      "title": "Tumbler Pair",
+      "description": "A pair of faceted tumblers, cut by hand while the clay is soft so the sides catch the light differently as you turn them. Right for water, wine, whisky or a morning juice, and sized to sit under a coffee machine. Sold as two — because a good glass is better shared.",
+      "status": "active",
+      "productType": "Drinkware",
+      "vendor": "Kiln & Clay",
+      "tags": ["tumblers", "drinkware", "set", "handmade"],
+      "categoryHandles": ["drink"],
+      "collectionHandles": ["best-sellers", "drinkware", "gift-ready"],
+      "seoTitle": "Tumbler Pair — hand-faceted stoneware | Kiln & Clay",
+      "seoDescription": "Two hand-faceted stoneware tumblers for water, wine or whisky. Made to order in three studio glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-TUMBLERS-OAT",
+          "priceCents": 7200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-TUMBLERS-ASH",
+          "priceCents": 7200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-TUMBLERS-SLT",
+          "priceCents": 7200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-tumblers",
+          "isPrimary": true,
+          "alt": "A pair of stoneware tumblers with faceted sides"
+        }
+      ]
+    },
+    {
+      "handle": "pouring-jug",
+      "title": "Pouring Jug",
+      "description": "A small pinched-spout jug that does more than you’d think — milk for the table, dressing for a salad, a few stems of something from the garden. Thrown with a rounded belly and a handle sized for one finger, it pours clean and drips less than a jug has any right to.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Kiln & Clay",
+      "tags": ["jug", "pourer", "tableware", "handmade"],
+      "categoryHandles": ["drink"],
+      "collectionHandles": ["everyday-table", "drinkware"],
+      "seoTitle": "Pouring Jug — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A small pinched-spout jug for milk, dressing or a few stems. Pours clean. Made to order in three glazes.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-JUG-OAT",
+          "priceCents": 4800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-JUG-ASH",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-JUG-SLT",
+          "priceCents": 4800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-jug",
+          "isPrimary": true,
+          "alt": "A small pouring jug with a pinched spout"
+        }
+      ]
+    },
+    {
+      "handle": "dinner-set",
+      "title": "Small-Batch Dinner Set",
+      "description": "A four-piece set for two — two dinner plates and two bowls, thrown in the same batch so their tones and weights actually match, which pieces bought one at a time never quite do. The starting point for a handmade table, and the easiest way to give one as a gift.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Kiln & Clay",
+      "tags": ["set", "tableware", "gift", "handmade"],
+      "categoryHandles": ["dine"],
+      "collectionHandles": ["everyday-table", "entertaining", "gift-ready"],
+      "seoTitle": "Small-Batch Dinner Set — handmade stoneware | Kiln & Clay",
+      "seoDescription": "A four-piece dinner set for two — two plates, two bowls thrown in one batch to match. Made to order.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "KILN-SET-OAT",
+          "priceCents": 21000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Oatmeal"
+          }
+        },
+        {
+          "sku": "KILN-SET-ASH",
+          "priceCents": 21000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ash"
+          }
+        },
+        {
+          "sku": "KILN-SET-SLT",
+          "priceCents": 21000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kiln-prod-dinner-set",
+          "isPrimary": true,
+          "alt": "A four-piece dinner set of plates and bowls"
+        }
+      ]
+    }
+  ]
+}

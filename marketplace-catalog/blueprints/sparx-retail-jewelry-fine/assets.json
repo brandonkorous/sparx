@@ -1,0 +1,92 @@
+[
+  {
+    "id": "aurelia-hero",
+    "url": "https://picsum.photos/seed/aurelia-hero/1600/1000",
+    "alt": "A solid-gold signet ring resting on cream linen in soft daylight"
+  },
+  {
+    "id": "aurelia-tile-rings",
+    "url": "https://images.unsplash.com/photo-1592752411609-3c28358bb10a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjB0aGluJTIwZ29sZCUyMHJpbmdzJTIwZmluZ2VydGlwfGVufDB8MHx8fDE3ODY0MDM3NzF8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stack of thin gold rings on a fingertip"
+  },
+  {
+    "id": "aurelia-tile-necklaces",
+    "url": "https://images.unsplash.com/photo-1758995115543-983c55f98a33?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmluZSUyMGdvbGQlMjBwZW5kYW50fGVufDB8MHx8fDE3ODY0MDM5Njd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A fine gold pendant necklace lying on pale stone"
+  },
+  {
+    "id": "aurelia-tile-earrings",
+    "url": "https://images.unsplash.com/photo-1628872354761-c289e269092f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8Z29sZCUyMGhvb3AlMjBlYXJyaW5nc3xlbnwwfDB8fHwxNzg2NDAzOTcwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of gold hoop earrings against a neutral ground"
+  },
+  {
+    "id": "aurelia-tile-bracelets",
+    "url": "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z29sZCUyMGN1ZmYlMjB0ZW5uaXMlMjBicmFjZWxldCUyMGFycmFuZ2VkJTIwbGluZW58ZW58MHwwfHx8MTc4NjQwMzc3OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A gold cuff and a tennis bracelet arranged on linen"
+  },
+  {
+    "id": "aurelia-band-craft",
+    "url": "https://images.unsplash.com/photo-1623365545467-d0f2c7ecd677?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8amV3ZWxlciUyMHNldHRpbmclMjBzdG9uZSUyMGJlbmNoJTIwdW5kZXIlMjBsb3VwZXxlbnwwfDB8fHwxNzg2NDAzNzgyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A jeweler setting a stone at the bench under a loupe"
+  },
+  {
+    "id": "aurelia-band-gift",
+    "url": "https://images.unsplash.com/photo-1674620213535-9b2a2553ef40?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGllY2UlMjBqZXdlbHJ5JTIwbmVzdGVkJTIwY3JlYW0lMjBnaWZ0JTIwYm94JTIwcmliYm9ufGVufDB8MHx8fDE3ODY0MDM3ODV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A piece of jewelry nested in a cream gift box with a ribbon"
+  },
+  {
+    "id": "aurelia-prod-signet",
+    "url": "https://images.unsplash.com/photo-1705326455036-0fab8ecba04d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG9saXNoZWQlMjBnb2xkJTIwc2lnbmV0JTIwcmluZ3xlbnwwfDB8fHwxNzg2NDAzNzg4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A polished gold signet ring"
+  },
+  {
+    "id": "aurelia-prod-stacking",
+    "url": "https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwdGhyZWUlMjBmaW5lJTIwc3RhY2tpbmclMjByaW5nc3xlbnwwfDB8fHwxNzg2NDAzNzkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of three fine stacking rings"
+  },
+  {
+    "id": "aurelia-prod-pendant",
+    "url": "https://images.unsplash.com/photo-1662434923031-b9bf1b6c10e2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGwlMjBnb2xkJTIwcGVuZGFudCUyMGZpbmUlMjBjaGFpbnxlbnwwfDB8fHwxNzg2NDAzNzkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small gold pendant on a fine chain"
+  },
+  {
+    "id": "aurelia-prod-hoops",
+    "url": "https://images.unsplash.com/photo-1492714485642-dd6df6baafa2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpciUyMGV2ZXJ5ZGF5JTIwZ29sZCUyMGhvb3AlMjBlYXJyaW5nc3xlbnwwfDB8fHwxNzg2NDAzNzk3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of everyday gold hoop earrings"
+  },
+  {
+    "id": "aurelia-prod-tennis",
+    "url": "https://images.unsplash.com/photo-1570891836868-673ee4818f81?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8bGluZSUyMHNldCUyMHdoaXRlJTIwc3RvbmVzJTIwYWNyb3NzJTIwdGVubmlzJTIwYnJhY2VsZXR8ZW58MHwwfHx8MTc4NjQwMzgwMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A line of set white stones across a tennis bracelet"
+  },
+  {
+    "id": "aurelia-prod-birthstone",
+    "url": "https://images.unsplash.com/photo-1610661022658-5068c4d8f286?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwYmlydGhzdG9uZSUyMHBlbmRhbnQlMjBmaW5lJTIwY2hhaW58ZW58MHwwfHx8MTc4NjQwMzgwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single birthstone pendant on a fine chain"
+  },
+  {
+    "id": "aurelia-prod-cuff",
+    "url": "https://images.unsplash.com/photo-1655707063473-3ee2e5b5eeb8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21vb3RoJTIwb3BlbiUyMGdvbGQlMjBjdWZmJTIwYnJhY2VsZXR8ZW58MHwwfHx8MTc4NjQwMzgwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A smooth open gold cuff bracelet"
+  },
+  {
+    "id": "aurelia-prod-solitaire",
+    "url": "https://images.unsplash.com/photo-1677948655785-898116437d92?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29saXRhaXJlJTIwcmluZyUyMHNpbmdsZSUyMGJyaWxsaWFudCUyMHN0b25lfGVufDB8MHx8fDE3ODY0MDM4MDl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A solitaire ring with a single brilliant stone"
+  },
+  {
+    "id": "aurelia-post-metals",
+    "url": "https://images.unsplash.com/photo-1624365169873-d42588f4e866?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z29sZCUyMHNpbHZlciUyMHBpZWNlcyUyMGxhaWQlMjBzaWRlJTIwYnklMjBzaWRlfGVufDB8MHx8fDE3ODY0MDM4MTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Gold and silver pieces laid side by side on linen"
+  },
+  {
+    "id": "aurelia-post-care",
+    "url": "https://images.unsplash.com/photo-1769461766792-3993f0ab1b02?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c29mdCUyMGNsb3RoJTIwcG9saXNoaW5nJTIwZ29sZCUyMHJpbmd8ZW58MHwwfHx8MTc4NjQwMzgxNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A soft cloth polishing a gold ring"
+  },
+  {
+    "id": "aurelia-post-sizing",
+    "url": "https://images.unsplash.com/photo-1571504940504-7c91d1286bea?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmluZyUyMHNpemVyJTIwbWVhc3VyaW5nfGVufDB8MHx8fDE3ODY0MDM5NzN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ring sizer and a measuring tape on a bench"
+  }
+]

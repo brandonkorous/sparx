@@ -1,0 +1,269 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "kit-out-a-new-kitchen-line",
+    "status": "published",
+    "body": {
+      "title": "How to kit out a new kitchen line without overspending",
+      "excerpt": "Opening a room is where budgets get blown — on equipment you did not need or a spec you paid double for. Here is how to outfit a line that cooks well and costs right.",
+      "featuredImage": {
+        "$asset": "post-open-kitchen"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The equipment bill for a new kitchen is the easiest place to overspend, because everything looks essential when the room is empty and the opening date is close. It is not. A working line is built from a short list of things you genuinely use every service and a longer list of things a rep will happily sell you. Get the first list right, buy the second only when a dish demands it, and you open on budget."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with the stations, not the catalog"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Walk the menu, not the showroom. For each dish, ask what station cooks it and what that station physically needs — a flat surface to work on, a heat source, storage for mise, and the smallwares to handle it. That exercise turns \"a kitchen\" into a concrete list: this many prep tables, this cooking gear, this much food storage, these knives and pans. Buy that list. Everything not on it is a maybe, and a maybe can wait until you are open and know you need it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy the durable things once, the consumables by the case"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Split the list in two. The durable equipment — prep tables, a range, a mixer, a heat lamp — you buy once, so buy it in a spec that survives a decade of service; the cheap version fails in year two and costs you a closed station to replace. The consumables — pans, containers, knives, plates — you buy again and again, so buy them by the case at trade pricing and keep a backup on the shelf. The mistake is doing it backwards: over-speccing the disposable and cutting the corner on the thing that has to last."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Put it on one account"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sourcing a fit-out from a dozen vendors turns opening week into a spreadsheet of tracking numbers. Kit the whole line from one trade account instead — one catalog, one delivery window, one invoice, and one person to call when a table shows up scratched. Open the account before you order the first table; the volume pricing on a full fit-out is the whole reason to."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "commercial-cookware-that-survives-service",
+    "status": "published",
+    "body": {
+      "title": "Choosing commercial cookware that survives service",
+      "excerpt": "Home cookware dies in a commercial kitchen — wrong metal, wrong gauge, wrong handle. Here is how to spec pans and cookware that take the abuse of a real line.",
+      "featuredImage": {
+        "$asset": "post-cookware"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A commercial line destroys consumer cookware in weeks. The heat is higher, the pans get slammed on burners and stacked wet, and nobody babies them. Cookware that lasts is not about the brand on the handle — it is about matching the metal, the gauge and the handle to the work. Spec it right and a pan outlasts the cook using it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Metal and gauge do the work"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For most line cooking, heavy-gauge aluminium is the workhorse: it heats fast and even, responds instantly when you pull it off the flame, and it is cheap enough to replace without flinching. Reach for stainless where you need durability and a non-reactive surface for acidic sauces, and for induction where the top demands a magnetic base. The number that matters is the gauge — the thickness of the metal. A thin pan warps on a hot burner and cooks in hot spots; a heavier gauge stays flat and even for years. Pay for the gauge; it is the difference between a pan and a frisbee."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The handle is what fails first"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "On a busy line the handle is what gives out — it loosens, it heats up, or it snaps. Look for a riveted handle, not spot-welded, because rivets survive the thermal cycling and the drops that kill a weld. For anything going in a hot oven, skip the silicone sleeve that melts and spec a metal stay-cool handle instead. And check that the whole pan is dishwasher-and-oven rated, because in a real kitchen it will see both, whether the spec sheet expected it or not."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy the movers by the case"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sauté pans, sheet pans and the everyday sizes are consumables — they get used every service and they wear out. Keep a case of the ones you burn through on the shelf, set a reorder point, and buy them at trade pricing so a warped pan gets retired, not nursed along. The only real cookware mistake is running a station on the last good pan in the rack."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "buying-smallwares-that-last",
+    "status": "published",
+    "body": {
+      "title": "NSF, dishwasher-safe, and buying smallwares that last",
+      "excerpt": "Smallwares are cheap individually and ruinous in aggregate when you rebuy them every quarter. Here is how to spec knives, storage and tools that go the distance.",
+      "featuredImage": {
+        "$asset": "post-smallwares"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Smallwares are the quiet line item that adds up. Any single knife, container or pair of tongs is cheap, so nobody sweats the spec — and then the kitchen rebuys the whole drawer every few months because none of it was built to last. Buy smallwares the way you buy equipment: to a standard, in volume, once."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Look for the NSF mark"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The NSF certification on a piece of smallware is not red tape — it is a promise the thing can be cleaned and will survive being cleaned, over and over, in a commercial dish pit. It means smooth, non-porous surfaces with no seams for bacteria to hide in, and materials rated for the temperatures a sanitiser and a dishwasher hit. A health inspector looks for it; so should you. If a container or a handle is not NSF-rated, assume it will not last and may not pass."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Dishwasher-safe or it will not survive"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Everything in a kitchen goes through the machine, whatever the label says — so buy as if it will. Polypropylene and moulded handles take the heat; wood and cheap silicone do not. Polycarbonate food containers survive the walk-in and the wash; the clear ones you can see stock through save a cook from opening five lids to find the demi. Spec for the dish pit up front and you stop replacing warped, cracked and delaminated smallwares on a quarterly cycle."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Standardise, then buy by the case"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Pick one chef's knife, one container system, one plate, and kit the whole kitchen with it. Standardising means a lid always fits, a spare is always the same, and a new hire is not learning three different tools. Then buy your standard by the case at trade pricing and keep backups on the shelf — so a lost knife or a cracked container is a two-minute swap from stock, not a special order that leaves a station short through service."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

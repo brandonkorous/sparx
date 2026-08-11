@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-chiro-wellness",
+  "name": "sparx — Chiropractic (Wellness)",
+  "version": "1.0.0",
+  "tagline": "A calm, wellness-first template for chiropractors — book online from day one.",
+  "description": "A calm, clean chiropractic-clinic site — a soft-teal palette, a warm-coral accent and a bright near-white ground, built around gentle everyday care. Installs a working booking flow for adjustments, exams, posture and massage: two chiropractors and a massage therapist you book by name, two treatment rooms, and appointments that reserve a provider AND a room. Ships as \"Align Chiropractic\", a modern wellness clinic.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Chiropractic",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Chiropractic (Wellness) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Chiropractic (Wellness) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#42a3a3",
+  "sortWeight": 56
+}

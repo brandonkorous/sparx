@@ -1,0 +1,370 @@
+{
+  "policies": [
+    {
+      "handle": "session-standard",
+      "name": "Standard session",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Life happens — just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead."
+    },
+    {
+      "handle": "late-cancel",
+      "name": "Late-cancellation hold",
+      "depositType": "card_hold",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "For sessions that reserve a full hour, we keep a card on file. Reschedule with 48 hours’ notice at no cost; a missed session or a cancellation inside 48 hours is billed as the session fee."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "claire",
+      "name": "Claire Whitfield, LCSW",
+      "kind": "staff",
+      "skillTags": ["individual", "anxiety", "trauma", "consult"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "daniel",
+      "name": "Daniel Okafor, LMFT",
+      "kind": "staff",
+      "skillTags": ["couples", "individual", "depression", "consult"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "renata",
+      "name": "Renata Alvarez, LPC",
+      "kind": "staff",
+      "skillTags": ["teens", "individual", "anxiety", "consult"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 780
+        }
+      ]
+    },
+    {
+      "handle": "office-linden",
+      "name": "Linden Office",
+      "kind": "space",
+      "skillTags": ["office"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "office-harbor",
+      "name": "Harbor Office",
+      "kind": "space",
+      "skillTags": ["office"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "telehealth-room",
+      "name": "Telehealth Room",
+      "kind": "space",
+      "skillTags": ["office"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-consultation",
+      "name": "Free 20-minute consultation",
+      "description": "A no-pressure phone or video call to hear what’s going on, answer your questions, and help you find the right therapist. No commitment, no charge.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["consult"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-standard"
+    },
+    {
+      "handle": "individual-therapy",
+      "name": "Individual therapy",
+      "description": "A standard 50-minute session, one-on-one — a steady, confidential space to work through whatever you’re carrying, at your pace.",
+      "durationMinutes": 50,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    },
+    {
+      "handle": "couples-therapy",
+      "name": "Couples therapy",
+      "description": "A 60-minute session for two — a calm, even-handed space to be heard, understand each other again, and rebuild the way you talk.",
+      "durationMinutes": 60,
+      "priceCents": 18000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["couples"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    },
+    {
+      "handle": "teen-therapy",
+      "name": "Teen therapy",
+      "description": "A 50-minute session built for adolescents — a warm, judgment-free place for a teen to feel understood, with parents looped in as it helps.",
+      "durationMinutes": 50,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["teens"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    },
+    {
+      "handle": "anxiety-session",
+      "name": "Anxiety & stress session",
+      "description": "A focused 50-minute session for anxiety, worry and burnout — practical tools you can use between visits, alongside the deeper work.",
+      "durationMinutes": 50,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["anxiety"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    },
+    {
+      "handle": "trauma-session",
+      "name": "Trauma-focused session",
+      "description": "A gentle, carefully paced 60-minute session for processing trauma — always on your terms, never faster than feels safe.",
+      "durationMinutes": 60,
+      "priceCents": 17000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["trauma"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    },
+    {
+      "handle": "telehealth-session",
+      "name": "Telehealth session",
+      "description": "A 50-minute individual session over secure video — the same care as in the room, from wherever you feel most at ease.",
+      "durationMinutes": 50,
+      "priceCents": 15000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["individual"],
+          "count": 1
+        },
+        {
+          "role": "office",
+          "kind": "space",
+          "skillTags": ["office"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "late-cancel"
+    }
+  ]
+}

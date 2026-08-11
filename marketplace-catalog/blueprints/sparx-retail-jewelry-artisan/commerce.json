@@ -1,0 +1,771 @@
+{
+  "categories": [
+    {
+      "handle": "rings",
+      "name": "Rings",
+      "description": "Raw-stone rings, signets and forged bands.",
+      "featured": true
+    },
+    {
+      "handle": "earrings",
+      "name": "Earrings",
+      "description": "Hammered hoops and textured studs.",
+      "featured": true
+    },
+    {
+      "handle": "necklaces",
+      "name": "Necklaces",
+      "description": "Mixed-metal and raw-birthstone pendants.",
+      "featured": true
+    },
+    {
+      "handle": "cuffs",
+      "name": "Cuffs & bracelets",
+      "description": "Stamped cuffs and forged chains.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-at-the-bench",
+      "name": "New at the bench",
+      "description": "The newest work, straight off the bench.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "hammered-hoop-earrings",
+        "raw-stone-ring",
+        "raw-birthstone-pendant",
+        "forged-chain-bracelet"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["hammered-hoop-earrings", "hand-stamped-cuff", "carved-signet-ring"]
+    },
+    {
+      "handle": "everyday-metal",
+      "name": "Everyday metal",
+      "description": "Solid pieces made to never take off.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "pebble-stud-earrings",
+        "forged-chain-bracelet",
+        "mixed-metal-pendant",
+        "hammered-hoop-earrings"
+      ]
+    },
+    {
+      "handle": "one-of-a-kind",
+      "name": "One of a kind",
+      "description": "Pieces set with rough stones — no two the same.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "raw-stone-ring",
+        "raw-birthstone-pendant",
+        "hand-stamped-cuff",
+        "mixed-metal-pendant"
+      ]
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Wrapped in a pouch, ready to give.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["pebble-stud-earrings", "mixed-metal-pendant", "raw-birthstone-pendant"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "hammered-hoop-earrings",
+      "title": "Hammered Hoops",
+      "description": "The hoop you put in and forget about — a lightweight round of solid wire, hammered flat so it throws light from a dozen tiny facets, with a secure hook closure. Small enough for every day, characterful enough that people ask where you got them.",
+      "status": "active",
+      "productType": "Earrings",
+      "vendor": "Forge & Fold",
+      "tags": ["earrings", "hoops", "hammered", "everyday"],
+      "categoryHandles": ["earrings"],
+      "collectionHandles": ["new-at-the-bench", "best-sellers", "everyday-metal"],
+      "seoTitle": "Hammered Hoops — hand-forged silver or bronze | Forge & Fold",
+      "seoDescription": "Lightweight hand-hammered hoop earrings in recycled sterling silver or bronze, with a secure hook closure.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-HOOP-S",
+          "priceCents": 8800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        },
+        {
+          "sku": "FF-HOOP-B",
+          "priceCents": 5700,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-hoops",
+          "isPrimary": true,
+          "alt": "Hammered Hoops"
+        }
+      ]
+    },
+    {
+      "handle": "pebble-stud-earrings",
+      "title": "Pebble Studs",
+      "description": "A pair of tiny hand-formed studs with a molten, river-pebble texture — no two domes quite identical, because they’re shaped one at a time under the hammer. The everyday earring that goes with everything and never has to come out.",
+      "status": "active",
+      "productType": "Earrings",
+      "vendor": "Forge & Fold",
+      "tags": ["earrings", "studs", "textured", "everyday"],
+      "categoryHandles": ["earrings"],
+      "collectionHandles": ["everyday-metal", "gifts"],
+      "seoTitle": "Pebble Studs — textured hand-made stud earrings | Forge & Fold",
+      "seoDescription": "Tiny hand-formed pebble-textured stud earrings in recycled sterling silver or bronze. No two quite alike.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-STUD-S",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        },
+        {
+          "sku": "FF-STUD-B",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-studs",
+          "isPrimary": true,
+          "alt": "Pebble Studs"
+        }
+      ]
+    },
+    {
+      "handle": "raw-stone-ring",
+      "title": "Raw Stone Ring",
+      "description": "A rough-cut, uncut stone raised in a hand-built bezel on a chunky forged band — chosen for character, not clarity, so the one you receive is genuinely one of a kind. Substantial, a little wild, and made to become the ring you never take off.",
+      "status": "active",
+      "productType": "Ring",
+      "vendor": "Forge & Fold",
+      "tags": ["ring", "raw-stone", "statement", "one-of-a-kind"],
+      "categoryHandles": ["rings"],
+      "collectionHandles": ["new-at-the-bench", "one-of-a-kind"],
+      "seoTitle": "Raw Stone Ring — rough-cut stone, hand-forged band | Forge & Fold",
+      "seoDescription": "A rough-cut one-of-a-kind stone in a hand-built bezel on a chunky forged band, in silver or bronze.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5"
+            },
+            {
+              "value": "6"
+            },
+            {
+              "value": "7"
+            },
+            {
+              "value": "8"
+            },
+            {
+              "value": "9"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-RAW-S-5",
+          "priceCents": 13200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "FF-RAW-S-6",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "FF-RAW-S-7",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "FF-RAW-S-8",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "FF-RAW-S-9",
+          "priceCents": 13200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "9"
+          }
+        },
+        {
+          "sku": "FF-RAW-B-5",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "FF-RAW-B-6",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "FF-RAW-B-7",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "FF-RAW-B-8",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "FF-RAW-B-9",
+          "priceCents": 8600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "9"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-rawstone",
+          "isPrimary": true,
+          "alt": "Raw Stone Ring"
+        }
+      ]
+    },
+    {
+      "handle": "carved-signet-ring",
+      "title": "Carved Signet Ring",
+      "description": "A solid signet with a hand-carved, hammer-textured face — the ring you engrave with an initial or leave raw to wear in on its own. Weighty without being clumsy, and just as good stacked against the raw stone ring as worn alone.",
+      "status": "active",
+      "productType": "Ring",
+      "vendor": "Forge & Fold",
+      "tags": ["ring", "signet", "carved", "engravable"],
+      "categoryHandles": ["rings"],
+      "collectionHandles": ["best-sellers", "one-of-a-kind"],
+      "seoTitle": "Carved Signet Ring — hand-textured solid signet | Forge & Fold",
+      "seoDescription": "A solid hand-carved, hammer-textured signet ring in recycled sterling silver or bronze. Engravable.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "5"
+            },
+            {
+              "value": "6"
+            },
+            {
+              "value": "7"
+            },
+            {
+              "value": "8"
+            },
+            {
+              "value": "9"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-SIGNET-S-5",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-S-6",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-S-7",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-S-8",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-S-9",
+          "priceCents": 14500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Size": "9"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-B-5",
+          "priceCents": 9400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "5"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-B-6",
+          "priceCents": 9400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "6"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-B-7",
+          "priceCents": 9400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "7"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-B-8",
+          "priceCents": 9400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "8"
+          }
+        },
+        {
+          "sku": "FF-SIGNET-B-9",
+          "priceCents": 9400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Size": "9"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-signet",
+          "isPrimary": true,
+          "alt": "Carved Signet Ring"
+        }
+      ]
+    },
+    {
+      "handle": "mixed-metal-pendant",
+      "title": "Mixed-Metal Pendant",
+      "description": "A small forged disc where silver and bronze are fused and hammered together, so the two metals bleed into one another differently on every piece. Hangs on an 18\" oxidised silver chain — the everyday necklace that layers with anything and warms up as it wears.",
+      "status": "active",
+      "productType": "Necklace",
+      "vendor": "Forge & Fold",
+      "tags": ["necklace", "pendant", "mixed-metal", "layering"],
+      "categoryHandles": ["necklaces"],
+      "collectionHandles": ["everyday-metal", "gifts", "one-of-a-kind"],
+      "seoTitle": "Mixed-Metal Pendant — fused silver & bronze | Forge & Fold",
+      "seoDescription": "A hand-fused silver-and-bronze forged disc on an 18\" oxidised silver chain. One of a kind, made to layer.",
+      "variants": [
+        {
+          "sku": "FF-MIX-PENDANT",
+          "priceCents": 11800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-pendant",
+          "isPrimary": true,
+          "alt": "A mixed-metal pendant of silver and bronze on a chain"
+        }
+      ]
+    },
+    {
+      "handle": "raw-birthstone-pendant",
+      "title": "Raw Birthstone Pendant",
+      "description": "A single rough-cut birthstone set in a rustic hand-built bezel on a fine chain — pick the month that means something and the stone is chosen and set to match. Personal without being fussy, and worn far past the birthday it marks.",
+      "status": "active",
+      "productType": "Necklace",
+      "vendor": "Forge & Fold",
+      "tags": ["necklace", "birthstone", "raw-stone", "personalized", "gift"],
+      "categoryHandles": ["necklaces"],
+      "collectionHandles": ["new-at-the-bench", "one-of-a-kind", "gifts"],
+      "seoTitle": "Raw Birthstone Pendant — rough-cut, hand-set | Forge & Fold",
+      "seoDescription": "A rough-cut birthstone in a rustic hand-built bezel on a fine chain, set to your month, in silver or bronze.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        },
+        {
+          "name": "Birthstone",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "April — Rough Aquamarine"
+            },
+            {
+              "value": "June — Raw Moonstone"
+            },
+            {
+              "value": "August — Raw Peridot"
+            },
+            {
+              "value": "October — Raw Tourmaline"
+            },
+            {
+              "value": "December — Raw Turquoise"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-BIRTH-S-AP",
+          "priceCents": 10800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "April — Rough Aquamarine"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-B-AP",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Birthstone": "April — Rough Aquamarine"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-S-JU",
+          "priceCents": 10800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "June — Raw Moonstone"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-B-JU",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Birthstone": "June — Raw Moonstone"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-S-AU",
+          "priceCents": 10800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "August — Raw Peridot"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-B-AU",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Birthstone": "August — Raw Peridot"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-S-OC",
+          "priceCents": 10800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "October — Raw Tourmaline"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-B-OC",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Birthstone": "October — Raw Tourmaline"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-S-DE",
+          "priceCents": 10800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver",
+            "Birthstone": "December — Raw Turquoise"
+          }
+        },
+        {
+          "sku": "FF-BIRTH-B-DE",
+          "priceCents": 7000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze",
+            "Birthstone": "December — Raw Turquoise"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-birthstone",
+          "isPrimary": true,
+          "alt": "A raw birthstone in a rustic silver bezel pendant"
+        }
+      ]
+    },
+    {
+      "handle": "hand-stamped-cuff",
+      "title": "Hand-Stamped Cuff",
+      "description": "A solid open cuff, stamped by hand with a run of small marks and left with an oxidised, lived-in finish — the piece that reads as made, not bought. Gently springs on over the wrist and holds its shape for years; each one stamped a little differently.",
+      "status": "active",
+      "productType": "Bracelet",
+      "vendor": "Forge & Fold",
+      "tags": ["bracelet", "cuff", "stamped", "oxidised"],
+      "categoryHandles": ["cuffs"],
+      "collectionHandles": ["best-sellers", "one-of-a-kind", "everyday-metal"],
+      "seoTitle": "Hand-Stamped Cuff — oxidised open cuff | Forge & Fold",
+      "seoDescription": "A solid open cuff hand-stamped with small marks and an oxidised finish, in recycled silver or bronze.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-CUFF-S",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        },
+        {
+          "sku": "FF-CUFF-B",
+          "priceCents": 6200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-cuff",
+          "isPrimary": true,
+          "alt": "Hand-Stamped Cuff"
+        }
+      ]
+    },
+    {
+      "handle": "forged-chain-bracelet",
+      "title": "Forged Chain Bracelet",
+      "description": "A chunky bracelet built link by link from solid wire — each loop soldered closed, hammered and cleaned up by hand, then hung on a substantial lobster clasp. Has real weight and a satisfying rattle; wears bright or takes on a patina, whichever you leave it.",
+      "status": "active",
+      "productType": "Bracelet",
+      "vendor": "Forge & Fold",
+      "tags": ["bracelet", "chain", "forged", "everyday"],
+      "categoryHandles": ["cuffs"],
+      "collectionHandles": ["new-at-the-bench", "everyday-metal"],
+      "seoTitle": "Forged Chain Bracelet — hand-built solid links | Forge & Fold",
+      "seoDescription": "A chunky hand-forged chain bracelet built link by link in recycled sterling silver or bronze.",
+      "options": [
+        {
+          "name": "Metal",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Sterling Silver"
+            },
+            {
+              "value": "Bronze"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-CHAIN-S",
+          "priceCents": 9200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Sterling Silver"
+          }
+        },
+        {
+          "sku": "FF-CHAIN-B",
+          "priceCents": 6000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Metal": "Bronze"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "forge-prod-chain",
+          "isPrimary": true,
+          "alt": "Forged Chain Bracelet"
+        }
+      ]
+    }
+  ]
+}

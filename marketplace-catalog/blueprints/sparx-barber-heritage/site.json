@@ -1,0 +1,2186 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "f7d93cfb-c906-4be9-9fdc-166cc0b779f2",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "68f0ba70-c8aa-4b4b-b533-e70a1adff96e",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "8a74848e-857d-430d-8214-f429e77fb0c8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "71f6d2c4-0305-4861-a87c-b53bb81ac08e",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "76f57ad2-9210-4bac-a4d0-0162b17a118a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "7243993d-1544-4f11-935f-3781ed3112ee",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "ea0a6deb-68dc-41ba-b406-6e854c081ccf",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "54fdda3d-4aaa-4499-b93f-51e4262cbc34",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "74bface8-2b53-465b-b655-6449e1921ab0",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "dc866f0e-7df5-46eb-8557-f6f582846cc0",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "bbdd5dfe-716a-4513-b51e-a9f7c0870f43",
+                  "ord": "a2"
+                }
+              ],
+              "id": "c8c459df-3764-4270-82cc-fb0846c572c9",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "e97887aa-419b-449d-8c6b-8a9febbe09b3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "936f49e2-7c27-4c8e-b8eb-395ac5d5633c",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c04008e7-b0d7-4ca1-bc36-7b92399fd44e",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "6dc0729d-b347-4a38-9a75-8894a0ef9104",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "0f39b944-b208-4d03-abf8-7c7f6768275a",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "a8e37c7b-53c1-4aa6-9b39-f742d3440e8c",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "160a49b8-c4dd-4723-aba7-ee3bb3a1b3fa",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "4ccb9db0-6aca-4332-8509-30f0a1e8a770",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "0ea6f8a3-76f3-47be-987c-862723d5e7b2",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "765e370d-5cf7-4a1c-8062-86e760d8cb47",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "6e2bd2b8-793b-4fd3-b2a9-e87f05919de2",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "d820da3f-0cae-4fff-9eaa-9a3c5783ef00",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "ac29fc75-0bef-41ae-9d6e-604a7b856631",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "5db105d1-08c5-4b5c-906f-a3bf536dbc3d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "f2769888-5d69-4e67-8652-e616f6ea4975",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "cc033396-30ba-4265-929e-a5d02158a15d",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "75f83f9f-873a-442f-b742-a3ac79930ad9",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "382d94dd-4c3e-4eec-8b87-8f160f1a8103",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0f96e0e3-e217-4c9b-aaab-473b9e96619a",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "668d98e9-500e-4bed-ac5b-a0107a96b975",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8617736a-805d-4234-b346-67889f64efde",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "4bfee9fd-ffbb-42bc-9db9-8d269a73367f",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "67774002-cd74-4500-b073-ad509b79786b",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "a723e27f-170c-4aba-a314-9ac3c2251473",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "d0654c0f-6f83-4be9-a0f2-d4fbbfc61900",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "49af84f2-3697-486b-80f6-aef0ce5ab5e3",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "2df68817-d87e-4d89-9b5c-7afca373c3c7",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "92f32c59-ec5b-4cac-a167-87a2edb1d2c4",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "4bd9e731-f73d-4e8c-951c-05577516efd8",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "36e22c84-3dff-4f56-933a-8783e8b681af",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "a997a3cc-59eb-44d2-bbbb-57093021d210",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b8315e85-30bd-4a55-ac23-eb0e174daf9d",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "c350e070-ec85-4eb5-99c0-9547d872cbc8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "6fa15508-68e6-4825-adb4-e32f9ec5e72d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "4c0411aa-d5a2-46c8-af3a-fba8daf3f9f2",
+              "ord": "a0"
+            }
+          ],
+          "id": "3496126d-8f1f-43ce-b7c9-7651ffe844cb",
+          "ord": "a2"
+        }
+      ],
+      "id": "5cf41a6b-9058-4b8e-8b8b-10f838dd5c6f"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Copper & Cole — a heritage barbershop",
+      "seoDescription": "Copper & Cole is a heritage barbershop for sharp cuts, clean skin fades, beard work and a hot-towel straight-razor shave. Walk in or book your barber online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "17e91394-ca5a-4982-8a7d-053b8ada5dcf",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1781455793310-8427c96454c7?w=1600&q=80",
+                  "alt": "A dark, wood-and-brass barbershop with leather chairs",
+                  "loading": "eager"
+                },
+                "id": "c7d61027-cdd5-4e79-86c2-c4b8ece62b3c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "96fd9ab5-a3fe-4aab-8214-9d15f12a2116",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-widest",
+                    "children": ["EST. 2014"],
+                    "id": "044220d2-93d5-4dce-8a8a-069fb6ec4fd5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["A proper barbershop. Nothing less."],
+                    "id": "3ad1d481-afa9-4bd2-bfec-ad24e8b7fcea",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Sharp cuts, clean fades and a hot-towel shave that takes its time. Walk in, or book your chair and your barber."
+                    ],
+                    "id": "0b5b8af4-332c-480a-9aee-3049e7a6713a",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a chair"],
+                        "id": "e2dcc9ce-76b2-4f20-ba25-029fc0d048d4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See the menu"],
+                        "id": "43279b9c-bd93-4894-a569-cca36531b186",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b9f37d31-9d1b-4200-8064-3639f84098bf",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "2fc19a52-f5f0-481f-b17d-c26fd0984dca",
+                "ord": "a2"
+              }
+            ],
+            "id": "2c0a3b12-8aeb-4482-828f-d05570ceceb5",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Walk-ins welcome"],
+                            "id": "9ea30a27-ccd7-468c-badd-fb392d624a87",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Got a free hour? Come in. If a chair’s open we’ll take you — no appointment needed, no attitude at the door."
+                            ],
+                            "id": "fe0d392c-3796-44b4-a892-b5dcdd09ead1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b8fef6d4-fbc2-4312-834b-4f8800978134",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Hot-towel finish"],
+                            "id": "24305ffe-a334-4a9f-83d6-7231d4d780ae",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every cut ends the way it should: a hot towel, a clean neckline and a face that feels fresh, not just trimmed."
+                            ],
+                            "id": "0bd5dd9d-3eca-4780-a79c-bbad0d314891",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e87b005e-2c26-4d9c-8d54-f982b2c47e2f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["The straight razor"],
+                            "id": "63a880be-6d83-4664-8405-c0896d3fe412",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We still shave with a blade and a brush. Hot lather, steady hands, and the closest shave you’ll get anywhere."
+                            ],
+                            "id": "037f26f3-c971-48c7-b1dc-b0078734b186",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1fc76174-bb8f-40d8-825f-7739f8d8b824",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "9e880f89-9d95-4e16-9dc9-17cdebb327eb",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "269e5b28-7ddb-43d9-a87c-e5c4105c09a3",
+                "ord": "a0"
+              }
+            ],
+            "id": "b2a2444f-c67c-468d-a2cf-40a4290d82e6",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The menu"],
+                        "id": "b25259a7-a1d9-432d-8536-32b5788cb61d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "What we do most, with real prices. Live times and every service are on the booking page."
+                        ],
+                        "id": "e4646f48-ccff-47f2-a472-04c51ca11d46",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "701efaa1-c93b-467e-80aa-2291ec6d4179",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Haircut"],
+                                "id": "8a029c8d-bde7-4afa-95ab-fc4218156d14",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$35"],
+                                "id": "4ca4e9e4-88c5-4d51-b836-2afb29048e5d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8a65a7bb-b2dd-4f6c-9324-89e01a70659d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "f39e6ab1-de33-45b9-a067-6f92c8206805",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Scissor or clipper, washed and finished."],
+                            "id": "59aef1d8-fc75-40ba-a514-8c1c98b25bfc",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "c03473f1-8118-4726-8d48-9cc314165371",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Skin fade"],
+                                "id": "4a22f845-0fcf-44f2-8bad-817cf98856d1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$45"],
+                                "id": "16d7316a-f5f0-4d73-8e88-40820bf95013",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e7364ff5-65c9-488b-bad3-aff1c15c9323",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "a1452074-19e1-444b-a913-a5500a5c8b77",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Faded to the skin with a sharp line-up."],
+                            "id": "7c035bce-20ed-4afe-8086-0cb819f7d65b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6fb1074a-38c4-4506-a784-66119adb4fb1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Hot-towel straight-razor shave"],
+                                "id": "77e3c01f-b491-4b0d-b53b-66b25fc2f196",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$45"],
+                                "id": "bdc3c4a0-0661-4ef3-bdf5-0719c83ea7e4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0e2e24b3-6a09-4648-b1ba-c1ba6dc44550",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "8ab7e4d4-b713-40c0-8616-4056fa3a33ba",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Hot towels, lather and a straight razor."],
+                            "id": "15603136-c7e7-412f-bb68-d9d289a934ba",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "229df1e0-778d-44c9-8447-bd1c497fea2e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Cut + beard combo"],
+                                "id": "d6d7e404-989c-47ec-9085-33923b74699b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$60"],
+                                "id": "754c205d-e3c7-4a80-9a1b-b14e264be453",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "482e6d3e-a587-4da8-b916-cdd70c3e8026",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "dbf4eaaf-0857-41c5-87f1-a8524b23dd1e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Full cut and a shaped beard, one sitting."],
+                            "id": "9eb89e4c-40fd-46e8-b5f6-ece4b2e9b299",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "da3ab50e-2213-4aa1-a297-d551665500bd",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "bb5faca7-7b2d-4ae7-a997-038cb159f072",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "414546e0-7e41-4efb-9008-93441dc74154",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "321eb78a-5db9-4585-afd5-821ff6566928",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7efa2603-55d1-427c-b68b-9a9323a54b76",
+                "ord": "a0"
+              }
+            ],
+            "id": "d4a2f424-7922-43ef-8509-060bb6832d67",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1573586927918-3e6476da8395?w=1600&q=80",
+                      "alt": "A barber station with a straight razor and hot towels",
+                      "loading": "lazy"
+                    },
+                    "id": "e75709b6-040d-47a4-947d-e61721927dfe",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Brass, leather and a good blade"],
+                        "id": "70fc9448-d954-4d4c-ac7b-722551fe27a1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Copper & Cole has run the same way since 2014 — real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door."
+                        ],
+                        "id": "1e4dbcad-55f5-4369-b444-1c0e35256fd4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "You sit down, you get looked after, you leave sharper than you came in. That’s the whole job, and we take it seriously."
+                        ],
+                        "id": "821ab599-5845-4409-9153-dd0a046a8ee3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your chair"],
+                            "id": "06e2fe67-5cd4-4d22-b512-154063ea3fd2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "1015fbab-d32e-461c-8b87-70631574ff71",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "ef9d6f0a-1166-437f-b41e-f1afc5af7b93",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b40919f5-8a5b-4519-9ca9-6d442fa3e06f",
+                "ord": "a0"
+              }
+            ],
+            "id": "104be8ff-3ab4-462c-8d74-f5f29cd031d9",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your barbers"],
+                        "id": "0b371e67-49d4-4582-bfb8-e6e9ac8c3a77",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — the same hands every time, or take whoever’s open."
+                        ],
+                        "id": "bcd3e193-da22-4ecd-be27-7fd069c8c73b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e73b1c2c-1d85-493b-8e32-2150f415aef1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?w=1600&q=80",
+                              "alt": "Vince Cole, master barber",
+                              "loading": "lazy"
+                            },
+                            "id": "b9d9c8d2-e90e-4c2f-b261-049760573432",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Vince Cole"],
+                                "id": "73ea645c-201a-46f9-8bf1-32706c117530",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Master barber"],
+                                "id": "2e608945-732a-4b17-b501-26eb8191cd80",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Founded the shop in 2014. Classic cuts and a straight-razor shave nobody beats."
+                                ],
+                                "id": "ae0654f6-3703-4743-b4f7-52a216e1bb36",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "91f7250c-8a3b-4091-a00d-be9b3bcc1789",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d3fd62a3-8ae8-40ee-8c13-c617d97d3be2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1603899968034-1a56ca48d172?w=1600&q=80",
+                              "alt": "Marcus Reyes, barber",
+                              "loading": "lazy"
+                            },
+                            "id": "f1985bbb-9003-49b1-ab70-74d286ce0554",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marcus Reyes"],
+                                "id": "926a127a-8851-453d-9799-ac6bb28b860b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Barber"],
+                                "id": "51fb9318-2bc1-45ba-ab17-41c2391d26e8",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Fades, tapers and sharp line-ups. Fast hands, clean work."
+                                ],
+                                "id": "d3bc341f-6ed9-4c04-b85f-43be01107c60",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "0076c76b-35d7-4313-8db0-3f05ab756861",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "58c1c144-5111-46e4-b598-4be3f57d3c7c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1657105052497-f996284ffff8?w=1600&q=80",
+                              "alt": "Silas Cooper, barber",
+                              "loading": "lazy"
+                            },
+                            "id": "ecc98f71-a9fe-40ae-959a-d623d43991f7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Silas Cooper"],
+                                "id": "8281658d-b739-496f-a873-25cab9636ac8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Barber"],
+                                "id": "92673e1f-2209-430c-8cb1-bedd9e40a187",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Scissor work and beards. Takes his time, gets it right."
+                                ],
+                                "id": "31da6150-d7e2-401e-87fd-39e6f0b90555",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "292546ad-5c77-4650-9c76-7a8b657917ae",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b584ea17-4e5d-4479-a865-4d7076efdc43",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "af74ead1-891d-4bc6-ad25-e5cb8bbab4cd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ac0f16be-a8a9-4e33-ba1c-3d53a04d367b",
+                "ord": "a0"
+              }
+            ],
+            "id": "afb68ee4-6955-48c8-9739-9fe9e8aed7ef",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["From the chair"],
+                    "id": "7732fe8c-65d1-46f7-8b1d-b16a768a6314",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-3 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1780688373499-c570319873a3?w=1600&q=80",
+                          "alt": "A clean skin fade with a sharp line-up",
+                          "loading": "lazy"
+                        },
+                        "id": "5baad7f4-0b79-4888-a1eb-62d7e50d0896",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1621645582931-d1d3e6564943?w=1600&q=80",
+                          "alt": "A shaped beard after a hot-towel finish",
+                          "loading": "lazy"
+                        },
+                        "id": "a7028713-1b71-46b0-83ae-7023932f6d8f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "img",
+                        "class": "aspect-square w-full bg-base-200 object-cover",
+                        "attrs": {
+                          "src": "https://images.unsplash.com/photo-1524230616393-d6229fcd2eff?w=1600&q=80",
+                          "alt": "A classic scissor cut, tight on the sides",
+                          "loading": "lazy"
+                        },
+                        "id": "e4159a43-81cc-4f03-920d-ff728fa28dab",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "02342bbc-6cc7-402f-b2f5-0975fedf73b5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "41e6a5bd-9336-43da-9af6-866a734e05f7",
+                "ord": "a0"
+              }
+            ],
+            "id": "3a06ce19-34b1-402c-aa67-9f44a48a34cb",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center text-base-content",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Best cut in the city, hands down. The shave alone is worth the trip — hot towel, straight razor, the works. I don’t go anywhere else.”"
+                    ],
+                    "id": "545561d4-6d2b-411c-970b-a54a90530a94",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Dev, regular since 2018"],
+                    "id": "bc018f48-fba9-4dcd-ba7c-d0df3c6d5263",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "da323091-5e1d-4c74-9184-3883f2130cc8",
+                "ord": "a0"
+              }
+            ],
+            "id": "6a4dbd69-768a-4b27-bf07-3df9bca91fd8",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Grab a chair"],
+                    "id": "648b9b78-a496-4e13-85c0-fb47e0ca22f2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Pick your service, pick your barber, see live times. Or just walk in — we’ll sort you out."
+                    ],
+                    "id": "094dd4cd-c510-4be6-a282-44cd556ad900",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a chair"],
+                    "id": "9fde5ad4-07e8-4882-bb0f-10f473a99113",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "b94cd0c0-1259-4d7d-8458-d6ce6a9559bc",
+                "ord": "a0"
+              }
+            ],
+            "id": "80754526-4a96-43c4-a9ec-890824753f2a",
+            "ord": "a7"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Copper & Cole",
+      "seoDescription": "See what Copper & Cole offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9729c040-b604-45d3-9834-ee4f8cf62f8b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1573586927918-3e6476da8395?w=1600&q=80",
+                  "alt": "A barber station with a straight razor and hot towels",
+                  "loading": "eager"
+                },
+                "id": "49362b0d-a28a-4c9a-9c0c-0279b92d196a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "18f5629b-825a-4298-99f7-d4781a233a0a",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-widest",
+                    "children": ["EST. 2014"],
+                    "id": "b4ad0c0f-c14e-4a0c-92f9-a91d0609beb1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your chair"],
+                    "id": "b49f77af-c279-4e1c-bf69-e4c398b87538",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service to see prices and live times, then pick your barber and your slot."
+                    ],
+                    "id": "f54abb21-5c82-44a7-981a-e72e8faf6167",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "0ee93c19-c7ee-4f83-9987-b06c67ead562",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "5d65d2f7-0d6c-4037-82c1-655e54082b15",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "1de34457-cfd5-4446-820c-245c493239db",
+                "ord": "a2"
+              }
+            ],
+            "id": "e78aa23c-9055-463a-a4f6-3afdcb471ae1",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "bdc027f2-44a7-42d3-b0cc-3cb192e7e186",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Copper & Cole",
+      "seoDescription": "Who Copper & Cole is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9ff21a5b-671c-44a2-a9b4-cef5a852d424",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1781455793310-8427c96454c7?w=1600&q=80",
+                      "alt": "A dark, wood-and-brass barbershop with leather chairs",
+                      "loading": "lazy"
+                    },
+                    "id": "b3b6b6cb-af5a-46e2-b865-ff0a5179946e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Copper & Cole"],
+                        "id": "e43dcf95-1491-49c9-8770-eab4f4a1970f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We opened Copper & Cole in 2014 to run a barbershop the old way — real barbers, sharp tools, and time taken over every cut and shave."
+                        ],
+                        "id": "c2937e18-273f-4201-82ea-fe82989567d6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No franchise script, no upsell, no ten-minute turnaround. Just good work done properly, for men who want to look after themselves."
+                        ],
+                        "id": "ed1ca3a1-f51c-4373-b4f3-7aa61f32ab30",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a chair"],
+                            "id": "a53026f1-b276-42f6-b751-fcc9abe264eb",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e04e1845-dce2-4e11-9f72-c929cce9aa0d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4c0943a3-70c7-462f-9460-0a27afe8ef3f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "40c038d0-23b6-4ea6-98f2-eef6b89004cd",
+                "ord": "a0"
+              }
+            ],
+            "id": "18c7d0a6-2ef6-47a6-b7ea-6d83e66aea7d",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How the shop runs"],
+                    "id": "a96dae9d-1fb0-48d7-8dea-590fd74f92b5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Walk in or book"],
+                            "id": "c33664a4-cffa-48d9-aee9-b4cc2855b7f5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A chair’s a chair. Book ahead and it’s yours, or walk in and we’ll take you as soon as one opens."
+                            ],
+                            "id": "2ad2f764-57c7-4c68-872b-9441454ae98d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "88845e98-5f2f-418c-aff1-4dc9149e47d4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["The tools kept sharp"],
+                            "id": "76f06215-2f75-4f6f-9ca8-daa0561dec15",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Clippers, shears and a straight razor, all maintained the way they should be. It shows in the finish."
+                            ],
+                            "id": "a3d827f3-c3ca-4a35-a1eb-1fc5babf15f1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e2597430-541b-4457-9d2d-86b525d6c024",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Same barber, every time"],
+                            "id": "9cfc6f61-753c-4118-9404-95b433444fab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Find the one who gets your cut and book them by name. They’ll know your head before you sit down."
+                            ],
+                            "id": "b319224d-92f4-428c-9262-d0baf82e1b3d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a0df7428-18d1-4c23-a04f-a930e10b9261",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "604f1a06-467e-4e2b-9b8c-5a3612aed760",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bc368c31-0e2e-4ea6-be1b-05c668812930",
+                "ord": "a0"
+              }
+            ],
+            "id": "a2c20e62-b990-41ee-96aa-7b614ed0e3a3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Copper & Cole",
+      "seoDescription": "Where to find Copper & Cole, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "997e10d5-4db2-45b6-b52e-e3388416252c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find the shop"],
+                        "id": "07f3bb33-8c93-4d75-9063-256353adaf12",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Copper & Cole"],
+                            "id": "14f0bd46-2d80-45f5-b0a4-a1864ac30a57",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["412 Ironside Avenue"],
+                            "id": "ba27ea8b-7c17-4a8d-ba53-2325fe163b6d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Portland, OR 97214"],
+                            "id": "6f009ca7-9d60-469c-ae94-ea1bdbd8ade4",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a3783bc6-1d3a-4de4-8b2b-31d1530b5d58",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Tuesday – Friday"],
+                                "id": "43678497-23a3-44fe-8e55-288ddd687c28",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["9:00 – 7:00"],
+                                "id": "9ff80398-3025-4eef-9eea-9869e11e2eee",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "d7523e32-7b13-4176-bbe0-33f20fececc2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "9faf3532-5c12-4e74-a201-2cdcb22862e3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 6:00"],
+                                "id": "48a5bb40-cf59-49e6-8c8f-00a159eaf458",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b53c2732-27f9-4511-947e-22aeff96cef2",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "280a1075-5618-481f-af15-15838773ed1f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["10:00 – 4:00"],
+                                "id": "dcbdf4f1-7a90-4f3d-94cf-f80b79a8e658",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "53f1950d-0fc1-4b02-bd02-b86bd7090471",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday"],
+                                "id": "d718a7ca-ab2f-41cc-aa01-402e516cdd99",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "e7dd0131-f0ec-44a8-a72f-5ea5f5fc45a4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8ffbb107-ea26-4989-b373-03484627999e",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "95de7b66-0d86-41c9-bf6f-9125354512ee",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "30520a94-a772-4ef8-9cb0-b8ad0c4d6a59",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "412 Ironside Avenue, Portland, OR 97214",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "2ee29f37-53d3-4445-a6d9-37698a16b736",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1493cd77-a8c4-449b-82d3-2fc6b85862a6",
+                "ord": "a0"
+              }
+            ],
+            "id": "bba6fd01-6f2e-420c-8c02-8dd1d9e35665",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Skip the wait"],
+                    "id": "7ebe833b-7e41-46f1-b265-2595fe89f0be",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book your chair online and see live times — walk-ins still welcome whenever a chair’s open."
+                    ],
+                    "id": "a6c5b490-7816-44ee-9900-36a983a78569",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book a chair"],
+                    "id": "43c8c18b-015e-4e6c-b318-5aba10a2534b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a8e706fa-fe91-4140-8dad-68bac73ed65e",
+                "ord": "a0"
+              }
+            ],
+            "id": "06452b9e-b925-4082-b4d8-e0ad424d7aa8",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "copperandcole",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(22% 0.012 60)",
+      "--color-base-200": "oklch(18% 0.012 55)",
+      "--color-base-300": "oklch(32% 0.014 62)",
+      "--color-base-content": "oklch(92% 0.02 85)",
+      "--color-primary": "oklch(72% 0.11 78)",
+      "--color-secondary": "oklch(72% 0.04 72)",
+      "--color-accent": "oklch(48% 0.15 25)",
+      "--color-neutral": "oklch(80% 0.01 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.125rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.125rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Libre Baskerville\", serif",
+      "--color-primary-content": "oklch(15% 0.02 78)",
+      "--color-secondary-content": "oklch(15% 0.02 72)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(15% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(48% 0.15 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(32% 0.014 62)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Libre Baskerville\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.012 60)",
+      "--color-base-200": "oklch(15% 0.01 55)",
+      "--color-base-300": "oklch(28% 0.014 62)",
+      "--color-base-content": "oklch(93% 0.02 85)",
+      "--color-primary": "oklch(76% 0.11 80)",
+      "--color-secondary": "oklch(74% 0.04 74)",
+      "--color-accent": "oklch(55% 0.16 25)",
+      "--color-neutral": "oklch(84% 0.01 60)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 80)",
+      "--color-secondary-content": "oklch(15% 0.02 74)",
+      "--color-accent-content": "oklch(98% 0.01 25)",
+      "--color-neutral-content": "oklch(15% 0.01 60)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(55% 0.16 25)",
+      "--color-highlight-content": "oklch(98% 0.01 25)",
+      "--color-border": "oklch(28% 0.014 62)"
+    }
+  }
+}

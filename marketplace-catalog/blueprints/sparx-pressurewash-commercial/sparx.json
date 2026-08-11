@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-pressurewash-commercial",
+  "name": "sparx — Pressure Washing (Commercial)",
+  "version": "1.0.0",
+  "tagline": "A professional, contract-ready template for commercial exterior cleaning — book consultations from day one.",
+  "description": "A professional commercial exterior-cleaning site — a deep slate palette with a sharp amber accent, built around online booking. Property managers book a free site assessment, quote or service consultation in about a minute; three crew leads carry their own skills and hours as dispatchable resources. Leads with insured, scheduled service contracts from storefronts to fleets. Ships as \"ProWash Exterior Cleaning\", a commercial pressure-washing company.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Pressure washing",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Pressure Washing (Commercial) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Pressure Washing (Commercial) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#25364c",
+  "sortWeight": 7
+}

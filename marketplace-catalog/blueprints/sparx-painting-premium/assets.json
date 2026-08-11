@@ -1,0 +1,37 @@
+[
+  {
+    "id": "painting-premium-hero",
+    "url": "https://images.unsplash.com/photo-1666969442529-caa46ad29336?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMHBhaW50ZWQlMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2MzkzNzkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A beautifully finished sitting room with hand-painted panelling and soft daylight"
+  },
+  {
+    "id": "painting-premium-process",
+    "url": "https://images.unsplash.com/photo-1643312918957-9ccb79b08881?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpbnRlciUyMGRldGFpbCUyMGJydXNofGVufDB8MHx8fDE3ODYzOTM3OTN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A painter carefully cutting a crisp line along fine trim with a sable brush"
+  },
+  {
+    "id": "painting-premium-about",
+    "url": "https://images.unsplash.com/photo-1659930087003-2d64e33181f7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y3JhZnRzbWFuJTIwcGFpbnRpbmclMjB3b29kd29ya3xlbnwwfDB8fHwxNzg2MzkzNzk3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, light-filled room with freshly refinished woodwork and layered neutral tones"
+  },
+  {
+    "id": "painting-premium-work1",
+    "url": "https://images.unsplash.com/photo-1560185127-1902ccdc5094?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFpbnRlZCUyMGNhYmluZXRzJTIwa2l0Y2hlbnxlbnwwfDB8fHwxNzg2MzkzODAwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A refinished kitchen with hand-painted cabinetry in a deep muted green"
+  },
+  {
+    "id": "painting-premium-work2",
+    "url": "https://images.unsplash.com/photo-1776763018821-8feeaeeee0a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZWxlZ2FudCUyMGludGVyaW9yJTIwcm9vbXxlbnwwfDB8fHwxNzg2MzkzODA0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A restored staircase and banister with a flawless satin finish"
+  },
+  {
+    "id": "painting-premium-work3",
+    "url": "https://images.unsplash.com/photo-1597966923267-938fed07d98e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJpbSUyMG1vbGRpbmclMjBwYWludHxlbnwwfDB8fHwxNzg2MzkzODA3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A period drawing room with limewashed walls and gilded detailing"
+  },
+  {
+    "id": "painting-premium-work4",
+    "url": "https://images.unsplash.com/photo-1632829882891-5047ccc421bc?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmVmaW5lZCUyMGxpdmluZyUyMHJvb20lMjBpbnRlcmlvcnxlbnwwfDB8fHwxNzg2MzkzODEwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A study with built-in bookcases finished in a warm, hand-rubbed lacquer"
+  }
+]

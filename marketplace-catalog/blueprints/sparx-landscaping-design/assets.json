@@ -1,0 +1,47 @@
+[
+  {
+    "id": "landscaping-design-hero",
+    "url": "https://images.unsplash.com/photo-1778683326192-898fc982e6a6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlZCUyMGdhcmRlbiUyMGJhY2t5YXJkfGVufDB8MHx8fDE3ODYzOTE0NDJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A lush, layered garden with a stone terrace at golden hour"
+  },
+  {
+    "id": "landscaping-design-process",
+    "url": "https://images.unsplash.com/photo-1597201278257-3687be27d954?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGFuZHNjYXBlJTIwZGVzaWduJTIwcGxhbnxlbnwwfDB8fHwxNzg2MzkxNDQ1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A landscape designer marking up a planting plan on site"
+  },
+  {
+    "id": "landscaping-design-about",
+    "url": "https://images.unsplash.com/photo-1597201278257-3687be27d954?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwbGFuZHNjYXBpbmclMjB3b3JrfGVufDB8MHx8fDE3ODYzOTE0NDh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A finished backyard with mature plantings and a seating area"
+  },
+  {
+    "id": "landscaping-design-patio",
+    "url": "https://images.unsplash.com/photo-1780838446281-9394772d07a8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGF0aW8lMjBzdG9uZSUyMGhhcmRzY2FwZXxlbnwwfDB8fHwxNzg2MzkxNDUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A natural-stone patio with built-in seating and soft lighting"
+  },
+  {
+    "id": "landscaping-design-planting",
+    "url": "https://images.unsplash.com/photo-1438109382753-8368e7e1e7cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwZmxvd2VyJTIwcGxhbnRpbmd8ZW58MHwwfHx8MTc4NjM5MTQ1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A layered perennial border in full bloom"
+  },
+  {
+    "id": "landscaping-design-poolside",
+    "url": "https://images.unsplash.com/photo-1657383543368-7d929944be6a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFja3lhcmQlMjBwb29sJTIwbGFuZHNjYXBpbmd8ZW58MHwwfHx8MTc4NjM5MTQ1OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A poolside garden framed by ornamental grasses"
+  },
+  {
+    "id": "landscaping-design-path",
+    "url": "https://images.unsplash.com/photo-1663185776834-0c86f6ced17b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwc3RvbmUlMjBwYXRofGVufDB8MHx8fDE3ODYzOTE0NjJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A flagstone path winding through a shade garden"
+  },
+  {
+    "id": "landscaping-design-pergola",
+    "url": "https://images.unsplash.com/photo-1527359443443-84a48aec73d2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGVyZ29sYSUyMG91dGRvb3IlMjBsaXZpbmd8ZW58MHwwfHx8MTc4NjM5MTQ2NHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A cedar pergola over an outdoor dining area"
+  },
+  {
+    "id": "landscaping-design-water",
+    "url": "https://images.unsplash.com/photo-1624396593447-ae75dcd225a5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2FyZGVuJTIwd2F0ZXIlMjBmZWF0dXJlfGVufDB8MHx8fDE3ODYzOTE0Njd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A quiet water feature set among boulders and ferns"
+  }
+]

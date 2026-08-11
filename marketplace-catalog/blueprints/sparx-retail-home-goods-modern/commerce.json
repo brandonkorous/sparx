@@ -1,0 +1,607 @@
+{
+  "categories": [
+    {
+      "handle": "lighting",
+      "name": "Lighting",
+      "description": "Sculptural lamps and considered light for every room.",
+      "featured": true
+    },
+    {
+      "handle": "living",
+      "name": "Living",
+      "description": "Rugs, cushions, shelving and textiles for the living room.",
+      "featured": true
+    },
+    {
+      "handle": "table",
+      "name": "Table",
+      "description": "Glassware, trays and serving pieces with a clean line.",
+      "featured": true
+    },
+    {
+      "handle": "decor",
+      "name": "Decor",
+      "description": "Vases, clocks and the one bold object a room is built around.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The latest objects to land in the catalogue.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "aurora-arc-floor-lamp",
+        "monolith-ceramic-vase",
+        "field-wool-blend-rug",
+        "arc-wall-clock"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces people keep coming back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "aurora-arc-floor-lamp",
+        "field-wool-blend-rug",
+        "facet-cushion-pair",
+        "decant-carafe-set"
+      ]
+    },
+    {
+      "handle": "the-lighting-edit",
+      "name": "The lighting edit",
+      "description": "Sculptural lamps and warm, considered light.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["aurora-arc-floor-lamp"]
+    },
+    {
+      "handle": "the-table",
+      "name": "The table",
+      "description": "Glassware, trays and serving pieces with a clean line.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["plane-lacquer-tray", "decant-carafe-set"]
+    },
+    {
+      "handle": "the-living-room",
+      "name": "The living room",
+      "description": "Rugs, cushions and honest, on-show storage.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["field-wool-blend-rug", "grid-modular-shelf", "facet-cushion-pair"]
+    },
+    {
+      "handle": "gifting",
+      "name": "Gifts",
+      "description": "Design-led objects that are easy to give and better to keep.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "plane-lacquer-tray",
+        "decant-carafe-set",
+        "arc-wall-clock",
+        "facet-cushion-pair"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "aurora-arc-floor-lamp",
+      "title": "Aurora Arc Floor Lamp",
+      "description": "A slim steel arc that reaches out over the sofa and drops a spun-metal shade exactly where you read. The counter-weighted base keeps it planted, an in-line dimmer sets the mood, and the whole thing draws a single confident line across a room. The lamp you build the corner around.",
+      "status": "active",
+      "productType": "Lighting",
+      "vendor": "Form & Field",
+      "tags": ["lighting", "floor-lamp", "steel"],
+      "categoryHandles": ["lighting"],
+      "collectionHandles": ["new-arrivals", "the-lighting-edit", "best-sellers"],
+      "seoTitle": "Aurora Arc Floor Lamp — spun-metal reading light | Form & Field",
+      "seoDescription": "A slim steel arc floor lamp with a counter-weighted base and in-line dimmer. One confident line across a room.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Ochre"
+            },
+            {
+              "value": "Chalk"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-LGT-AURORA-GRA",
+          "priceCents": 28900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Graphite"
+          }
+        },
+        {
+          "sku": "FF-LGT-AURORA-OCH",
+          "priceCents": 28900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Ochre"
+          }
+        },
+        {
+          "sku": "FF-LGT-AURORA-CHA",
+          "priceCents": 28900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Chalk"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-floor-lamp",
+          "isPrimary": true,
+          "alt": "Aurora Arc Floor Lamp"
+        }
+      ]
+    },
+    {
+      "handle": "monolith-ceramic-vase",
+      "title": "Monolith Ceramic Vase",
+      "description": "A tall, deliberately heavy vase in matte-glazed stoneware — a single sculptural column that holds a spray of branches or stands entirely on its own. Thrown and finished by hand, so the surface catches light like poured concrete. The one bold object a bare shelf has been waiting for.",
+      "status": "active",
+      "productType": "Decor",
+      "vendor": "Form & Field",
+      "tags": ["ceramic", "vase", "decor"],
+      "categoryHandles": ["decor"],
+      "collectionHandles": ["new-arrivals", "best-sellers"],
+      "seoTitle": "Monolith Ceramic Vase — matte sculptural stoneware | Form & Field",
+      "seoDescription": "A tall, heavy matte-glazed stoneware vase — a single sculptural column for branches or on its own.",
+      "options": [
+        {
+          "name": "Glaze",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Slate"
+            },
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Ochre"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-DEC-MONOLITH-SLA",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Slate"
+          }
+        },
+        {
+          "sku": "FF-DEC-MONOLITH-BON",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Bone"
+          }
+        },
+        {
+          "sku": "FF-DEC-MONOLITH-OCH",
+          "priceCents": 9600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glaze": "Ochre"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-vase",
+          "isPrimary": true,
+          "alt": "Monolith Ceramic Vase"
+        }
+      ]
+    },
+    {
+      "handle": "field-wool-blend-rug",
+      "title": "Field Wool-Blend Rug",
+      "description": "A flat-woven wool-blend rug with a bold block pattern that anchors a room without shouting over it. Dense and hard-wearing underfoot, low enough to sit under a door, and reversible for twice the life. The graphic move a floor of greys and oak is asking for.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Form & Field",
+      "tags": ["rug", "wool", "living-room"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["new-arrivals", "the-living-room", "best-sellers"],
+      "seoTitle": "Field Wool-Blend Rug — flat-woven graphic rug | Form & Field",
+      "seoDescription": "A flat-woven, reversible wool-blend rug with a bold block pattern. Hard-wearing and graphic underfoot.",
+      "options": [
+        {
+          "name": "Colourway",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Slate & Sand"
+            },
+            {
+              "value": "Ochre & Bone"
+            },
+            {
+              "value": "Ink & Grey"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-LIV-FIELDRUG-SLA",
+          "priceCents": 34500,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Slate & Sand"
+          }
+        },
+        {
+          "sku": "FF-LIV-FIELDRUG-OCH",
+          "priceCents": 34500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Ochre & Bone"
+          }
+        },
+        {
+          "sku": "FF-LIV-FIELDRUG-INK",
+          "priceCents": 34500,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Ink & Grey"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-rug",
+          "isPrimary": true,
+          "alt": "Field Wool-Blend Rug"
+        }
+      ]
+    },
+    {
+      "handle": "plane-lacquer-tray",
+      "title": "Plane Lacquer Tray",
+      "description": "A rectangular serving tray in hand-lacquered wood, with a low lip and a surface so smooth it reads as a single plane of colour. Corrals the coffee things, carries drinks to the table, or lives on the ottoman as a place to set a room. Wipe-clean and quietly luxurious.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Form & Field",
+      "tags": ["tray", "lacquer", "serving"],
+      "categoryHandles": ["table"],
+      "collectionHandles": ["the-table", "gifting"],
+      "seoTitle": "Plane Lacquer Tray — hand-lacquered serving tray | Form & Field",
+      "seoDescription": "A hand-lacquered rectangular serving tray with a low lip and a smooth single-plane finish. Wipe-clean.",
+      "options": [
+        {
+          "name": "Lacquer",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ink"
+            },
+            {
+              "value": "Ochre"
+            },
+            {
+              "value": "Oxblood"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-TAB-PLANE-INK",
+          "priceCents": 7400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Lacquer": "Ink"
+          }
+        },
+        {
+          "sku": "FF-TAB-PLANE-OCH",
+          "priceCents": 7400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Lacquer": "Ochre"
+          }
+        },
+        {
+          "sku": "FF-TAB-PLANE-OXB",
+          "priceCents": 7400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Lacquer": "Oxblood"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tray",
+          "isPrimary": true,
+          "alt": "Plane Lacquer Tray"
+        }
+      ]
+    },
+    {
+      "handle": "grid-modular-shelf",
+      "title": "Grid Modular Shelf",
+      "description": "A powder-coated steel frame and solid oak shelves that bolt together into exactly the storage a wall needs — stack it tall, run it long, or keep it low under a window. Ships flat, assembles with the one included key, and reconfigures every time you move. Honest structure, on show.",
+      "status": "active",
+      "productType": "Storage",
+      "vendor": "Form & Field",
+      "tags": ["shelf", "storage", "steel", "oak"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["the-living-room", "new-arrivals"],
+      "seoTitle": "Grid Modular Shelf — steel and oak shelving | Form & Field",
+      "seoDescription": "A powder-coated steel and solid oak modular shelf that bolts together to fit any wall. Ships flat, reconfigures.",
+      "options": [
+        {
+          "name": "Frame",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Chalk"
+            },
+            {
+              "value": "Ochre"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-LIV-GRID-GRA",
+          "priceCents": 42000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Frame": "Graphite"
+          }
+        },
+        {
+          "sku": "FF-LIV-GRID-CHA",
+          "priceCents": 42000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Frame": "Chalk"
+          }
+        },
+        {
+          "sku": "FF-LIV-GRID-OCH",
+          "priceCents": 42000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Frame": "Ochre"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-shelf",
+          "isPrimary": true,
+          "alt": "Grid Modular Shelf"
+        }
+      ]
+    },
+    {
+      "handle": "facet-cushion-pair",
+      "title": "Facet Cushion Pair",
+      "description": "A pair of colour-blocked cushions with a clean geometric seam and a plump feather-blend fill — the quick, graphic way to bring one bold colour to a neutral sofa. Generous 18-inch squares with a hidden zip and a woven cotton face that holds its shape. Add one for a note, a pair for a statement.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Form & Field",
+      "tags": ["cushion", "geometric", "textiles", "living-room"],
+      "categoryHandles": ["living"],
+      "collectionHandles": ["the-living-room", "gifting", "best-sellers"],
+      "seoTitle": "Facet Cushion Pair — geometric colour-blocked cushions | Form & Field",
+      "seoDescription": "A pair of 18-inch colour-blocked cushions with a clean geometric seam and a feather-blend fill.",
+      "options": [
+        {
+          "name": "Colourway",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Ochre & Grey"
+            },
+            {
+              "value": "Slate & Bone"
+            },
+            {
+              "value": "Ink & Rust"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-LIV-FACET-OCH",
+          "priceCents": 6800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Ochre & Grey"
+          }
+        },
+        {
+          "sku": "FF-LIV-FACET-SLA",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Slate & Bone"
+          }
+        },
+        {
+          "sku": "FF-LIV-FACET-INK",
+          "priceCents": 6800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colourway": "Ink & Rust"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cushions",
+          "isPrimary": true,
+          "alt": "Facet Cushion Pair"
+        }
+      ]
+    },
+    {
+      "handle": "decant-carafe-set",
+      "title": "Decant Carafe Set",
+      "description": "A hand-blown glass carafe and two matching tumblers that read as one clean silhouette on the nightstand or the table. Thin-walled and perfectly weighted, with a stopper that doubles as a cup — water by the bed, wine at dinner, or a considered gift that always lands. Dishwasher-safe glass.",
+      "status": "active",
+      "productType": "Tableware",
+      "vendor": "Form & Field",
+      "tags": ["glass", "carafe", "tableware", "gift"],
+      "categoryHandles": ["table"],
+      "collectionHandles": ["the-table", "gifting", "best-sellers"],
+      "seoTitle": "Decant Carafe Set — hand-blown glass carafe and tumblers | Form & Field",
+      "seoDescription": "A hand-blown glass carafe with two matching tumblers and a cup-stopper. One clean silhouette, dishwasher-safe.",
+      "options": [
+        {
+          "name": "Glass",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Clear"
+            },
+            {
+              "value": "Smoke"
+            },
+            {
+              "value": "Amber"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-TAB-DECANT-CLE",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glass": "Clear"
+          }
+        },
+        {
+          "sku": "FF-TAB-DECANT-SMO",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glass": "Smoke"
+          }
+        },
+        {
+          "sku": "FF-TAB-DECANT-AMB",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Glass": "Amber"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-carafe",
+          "isPrimary": true,
+          "alt": "Decant Carafe Set"
+        }
+      ]
+    },
+    {
+      "handle": "arc-wall-clock",
+      "title": "Arc Wall Clock",
+      "description": "A minimalist wall clock stripped to essentials — a bare spun-metal face, two crisp hands and a silent sweep movement, so a quiet room stays quiet. Reads clearly across a kitchen or a studio, and hangs as a graphic full-stop on an empty wall. The rare clock you actually want to look at.",
+      "status": "active",
+      "productType": "Decor",
+      "vendor": "Form & Field",
+      "tags": ["clock", "wall", "decor", "gift"],
+      "categoryHandles": ["decor"],
+      "collectionHandles": ["gifting", "new-arrivals"],
+      "seoTitle": "Arc Wall Clock — minimalist silent wall clock | Form & Field",
+      "seoDescription": "A minimalist wall clock with a bare spun-metal face and a silent sweep movement. A graphic full-stop on a wall.",
+      "options": [
+        {
+          "name": "Face",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Brass"
+            },
+            {
+              "value": "Graphite"
+            },
+            {
+              "value": "Chalk"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "FF-DEC-ARCCLOCK-BRA",
+          "priceCents": 8200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Face": "Brass"
+          }
+        },
+        {
+          "sku": "FF-DEC-ARCCLOCK-GRA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Face": "Graphite"
+          }
+        },
+        {
+          "sku": "FF-DEC-ARCCLOCK-CHA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Face": "Chalk"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-clock",
+          "isPrimary": true,
+          "alt": "Arc Wall Clock"
+        }
+      ]
+    }
+  ]
+}

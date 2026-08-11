@@ -1,0 +1,2557 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "83309494-a147-42c6-9b59-ea829286cd6a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "c5a78fd9-69bf-4708-815f-a3a770543103",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "6efb8599-0809-4902-945a-812cf6af7b7c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "c68ab2e2-1224-49ce-b101-20915eef2e92",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "1d643049-127b-430a-a6f1-680f068f2d24",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "cad4138b-c08b-4469-96a5-444d52516914",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "7f807786-8a15-4325-8e58-f037f834a780",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "9a978d91-bbd2-49d8-909b-2b3c00353ca0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "d33265b0-705a-4acb-9303-b9d2a6560506",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "ffd47f64-e580-42bf-a120-44753eff3085",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "065298bd-a9db-4f83-bb13-9c6c0276cbb0",
+                  "ord": "a2"
+                }
+              ],
+              "id": "14bf5e95-7929-442b-9d8f-b1e755af71d2",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "c3ffb3f4-1b76-41a6-a5a1-5c6f1d40335e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "718e2e4f-c77f-4e42-8806-bde91b3483d7",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "c99b54eb-35a3-4c92-a03a-9ddab9d77d58",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "aba64c39-6519-416c-ac90-1509bc4e6fb4",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "f74c79da-d143-4110-b353-b63bc02b1ab4",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "fbdc6e57-0525-434c-8261-0694f00beaf1",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "ef68d677-bc29-4771-8c01-582d3a49749b",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "7ce6dc06-ce9a-4743-8655-bdf8faeb4a9a",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "1c74871b-8603-4efe-a01f-e219a8c3cf54",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "68d6a53f-abc3-4868-9afb-2eabeb47915c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "ea783a60-2f04-417e-be31-645f48bc1982",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "68d80b4d-7abf-4756-9e98-ca6febabe060",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "b83c4483-7b2c-4f06-ada5-36bba57dc6b8",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "c4c94942-e8e3-45a0-a14c-5e58f5fe95c5",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "d63dff87-143e-463f-98b7-d675b916f8ed",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "413c164f-c28b-452a-83cf-108c459108a2",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "2acc575a-92be-41cb-a5b8-bc2c9def5693",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "00918f6f-b1d7-4fa5-a7b3-4815d4ad2cfc",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "b32f26d6-16fa-425e-a45d-fa5b07c39457",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3f36ed6b-0bd6-417d-8733-19eea95e5f27",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "04b23ff7-c2cb-4a64-becd-361ddd1b00a7",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "5d83b1e2-9f0e-4703-89fc-941df242d707",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "c6852758-b963-4683-a487-0e6050cf3415",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e28902a0-0147-4850-838d-d1e80f39de38",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "19fe8768-2bd2-483b-9808-18d2e5d2138a",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "27b076b4-2a07-4eaa-aa0e-dd86fe1c3236",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "d42b8d86-6814-462e-b0bf-7a47aaff31dc",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "b6364d4a-b2c8-4a91-a67e-622901d5856e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "9b9ee194-6d09-417f-adfe-d1f32117b7b3",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "4f9857fc-4613-4fae-b91e-b955ac709bf7",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c8c878bc-8c1d-4a58-9009-8ba69b336fb9",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "9978b715-9d99-4a7d-b8b8-09ff1b82a265",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c65ab970-30b8-4a60-af05-f6984ca33885",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "1d780c55-8a68-4a98-8696-bdf714a1bcae",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e4fff8ef-2175-4cb5-9f55-c3bd8db53790",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "ea6a7d0e-804f-49a6-aeaa-f0c3f0e516c1",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "b4f10866-4f17-4fa1-a53d-231aef2baa55",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "c555041f-ed2d-4481-9625-9a4c7a7c70a8",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "97ef17b5-5bd2-4afd-b1ec-0880dc06f38e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "87d081d8-30fb-4f48-825c-3d4c89ef2bfb",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ea328776-f918-4fc6-8696-b75e0bfbca05",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "1065a26e-92b8-4f76-a9b7-5d31c02d1751",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "61ddb51f-6082-4df3-ae62-0ab229d6f740",
+                  "ord": "a1"
+                }
+              ],
+              "id": "1607566a-3475-4b83-b473-3a684861a68d",
+              "ord": "a0"
+            }
+          ],
+          "id": "f1e3cf0d-1ad7-4c8c-9a3d-0341290c2b9a",
+          "ord": "a2"
+        }
+      ],
+      "id": "9af1b65c-28ad-4350-810c-8f6da845f66b"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Kestrel — well-made essentials, built to be kept",
+      "seoDescription": "Kestrel makes a small wardrobe of essentials in honest cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. Buy less, wear it longer.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "54efaac5-f2dc-45f8-99cb-00d02b527a9f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://picsum.photos/seed/kestrel-hero/1600/1000",
+                  "alt": "A model in a bone knit and wide wool trousers",
+                  "loading": "lazy"
+                },
+                "id": "f7d0db6a-dd1b-40e8-a448-cfc88797957a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-24 @3xl:px-10 @3xl:py-32",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                        "children": ["The winter capsule"],
+                        "id": "72588fd9-2d9a-41af-9b4f-689fd92e0619",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                        "children": ["Fewer, better clothes."],
+                        "id": "7795963a-aba0-4733-9832-6f0f08c1b24d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Kestrel makes a small wardrobe of essentials in good cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. No logos, no seasons to chase. Buy less, wear it longer."
+                        ],
+                        "id": "f9d1a90c-a624-449a-b0a8-879bb6d52425",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the collection"],
+                            "id": "6712e911-b6c0-41c1-9f90-d5693f9c3257",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold uppercase tracking-widest text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/blog/the-case-for-fewer-clothes"
+                            },
+                            "children": ["Read the journal"],
+                            "id": "68f87328-e7bf-4ec3-afc5-8ae183838430",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4f6d52e5-cdc7-4e61-97b0-9368710fdf03",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "84ca2559-8197-4dc2-9afa-c43c5e8232e7",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8e947b6b-319a-4033-99c4-af6d559b7a20",
+                "ord": "a1"
+              }
+            ],
+            "id": "d13afeca-1d26-474c-ad3e-cf30aa9ba182",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-4xl font-normal tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["The wardrobe"],
+                    "id": "5f5dd2f0-275a-4234-a8aa-5542f5b0b6c7",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1602810316693-3667c854239a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9sZGVkJTIwc3RhY2slMjBwbGFpbiUyMGNvdHRvbiUyMHRlZXMlMjBveGZvcmQlMjBzaGlydHxlbnwwfDB8fHwxNzg2NDAyMDY1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A stack of cotton tees and an oxford shirt",
+                              "loading": "lazy"
+                            },
+                            "id": "6404a8d0-f91e-4eaa-bb75-a4157e4967c1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Tops"],
+                            "id": "794371dd-24da-45ff-9203-a9a7d5c80a26",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8a3e7007-4694-4ae5-8a2f-11f6714b0f83",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1595026525047-dfa997df8a4a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGVhdnl3ZWlnaHQlMjBjcmVhbSUyMGZpc2hlcm1hbiUyMGtuaXQlMjBsYWlkJTIwZmxhdHxlbnwwfDB8fHwxNzg2NDAyMDY3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A heavyweight cream fisherman knit",
+                              "loading": "lazy"
+                            },
+                            "id": "ed8838d6-d7f2-4728-8d45-a4bc2e123afd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Knitwear"],
+                            "id": "3a5b58bc-4021-4e95-8939-62e119e1c119",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fc95296f-9e61-4aff-9253-58a62775c8e4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1705408738824-c77f11ac5c65?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2lkZS1sZWclMjB3b29sJTIwdHJvdXNlcnMlMjBkcmFwZWQlMjBjaGFpcnxlbnwwfDB8fHwxNzg2NDAyMDcxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Wide-leg wool trousers over a chair",
+                              "loading": "lazy"
+                            },
+                            "id": "cb3b5c17-a5c9-48a6-8564-745bb08e576c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Trousers"],
+                            "id": "36feecab-325e-4381-a547-169466852c1b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5c901922-826b-46b3-b97b-5ccd82f94c24",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1689887883155-ea1e241b34d7?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FtZWwlMjBvdmVyY29hdCUyMGhhbmdpbmclMjB3b29kZW4lMjBwZWd8ZW58MHwwfHx8MTc4NjQwMjA3NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A camel overcoat on a peg",
+                              "loading": "lazy"
+                            },
+                            "id": "27446e7f-d1a4-4d0b-9e64-9e6ffabcff51",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Outerwear"],
+                            "id": "c47aff67-a12e-4dbd-87c8-d0d4cef51e72",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b84023c2-3a14-4631-a94d-7a999328f736",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "4d03c201-4796-4f54-a2be-986f556a5fca",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "14564258-5559-435a-8e88-87461295b102",
+                "ord": "a0"
+              }
+            ],
+            "id": "7c5d451c-f885-45d7-ba0a-95e1a5330602",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The essentials"],
+                    "id": "bb07e6a9-db96-448c-9801-e16a467f7197",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "126ea925-55bc-45a2-ae8e-315f01c3ed1f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "5c7b361d-3a8e-4f36-851c-1578775db50b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "9afe44ec-6560-4c1c-bfc9-29d109aaafb7",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "cfba9300-a837-43a0-b224-f68b8e9bf287",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ec8ecc5a-e8a9-4822-8fa1-7e06f5acfbaf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a0af8def-df3c-4b32-b245-df65a5d7afd2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "692d8172-7c91-4d60-b7f8-213022d6e40d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8d99796f-32f5-458c-86fe-e6baddca840d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "cbe49a21-e860-4f62-b9d1-c6cc9943bd48",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7aa5ffb5-5e9b-48d7-94d3-ffe0c2001116",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "b551eb80-b221-4bbc-a185-6cbf2c9e8d92",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "e9ace1c1-20e2-4d57-8505-8f36aafde5a3",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "8d694ca1-9f13-4a9a-94ce-5b9937d14985",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1739117441029-9f2a8e59e8b2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFpbG9yJTIwcGlubmluZyUyMHNlYW0lMjBnYXJtZW50JTIwdGFibGV8ZW58MHwwfHx8MTc4NjQwMjA3OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A tailor pinning a seam on a garment",
+                  "loading": "lazy"
+                },
+                "id": "e9664843-6634-4a45-88b4-fcad5bce7c1a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-24 @3xl:px-10 @3xl:py-32",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                        "children": ["How it’s made"],
+                        "id": "17a75363-1ee2-40e5-87f2-8f91b6245d3f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-normal leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Made to be kept"],
+                        "id": "7eff3018-3ac7-4596-8228-9bd0e1258d5f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We work with a handful of family mills and a small factory we visit ourselves — long-staple cottons, full-weight wools, seams finished to survive a decade of washes. A Kestrel piece is meant to be the last one you buy of its kind."
+                        ],
+                        "id": "5ac3151a-83be-4971-9a85-c1b23e40fe3e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold uppercase tracking-widest text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/how-to-read-a-fabric"
+                        },
+                        "children": ["Our making"],
+                        "id": "f6a08700-a1d0-4d13-9a5b-8bdefb925ea8",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "8428dd1a-4ea8-49f9-993d-2ecc4377601c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2c68cb91-389a-43ca-8695-71850ca51b89",
+                "ord": "a1"
+              }
+            ],
+            "id": "9f70d5fa-ef01-46ce-bdc3-3f77abd98e4d",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The knitwear edit"],
+                    "id": "3da6983c-0a51-4676-87e4-a343cb916d33",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "aac8480c-1323-4f26-a2e2-46df2671231b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "1d247395-2fac-47e7-b031-c91a4ab10e25",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cd6c73a2-6ce2-4cd5-9c8c-d25236166bc6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "3522709e-6826-402e-b539-d99460e34247",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "1535e497-3c43-4b33-936b-d2ac02e999db",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "dab22f15-23ea-4d70-8b66-e4aa1347d5a7",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "9c09d865-3315-46ce-94b6-b38d5e3c057f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d9402036-0cbf-4124-9ca3-e4d1555726f6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "53a43a30-0c96-4ab4-a69f-188137910e48",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1d6784c3-4c22-4361-8563-74bc66347b70",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "2eb7288f-0af2-4d72-a54b-116f0d2910a6",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.knitwear"
+                },
+                "id": "1482f748-d126-48e5-a992-3e582b8c17dd",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "7193a7f3-c438-4ce0-b13c-7eb4c1d9823f",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1643015862949-5c8d15a4242e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8a25pdCUyMHN3ZWF0ZXIlMjBkcnlpbmclMjBmbGF0JTIwbGluZW4lMjBjbG90aHxlbnwwfDB8fHwxNzg2NDAyMDgxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A knit sweater drying flat on linen",
+                  "loading": "lazy"
+                },
+                "id": "1a322135-7492-4f68-bd3e-bd5dfc4e5ce2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-24 @3xl:px-10 @3xl:py-32",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                        "children": ["Wear it well"],
+                        "id": "97cc79fc-ffe2-416a-b160-7031521c10ab",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-normal leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A wardrobe, not a haul"],
+                        "id": "7d51d612-63fd-493b-a729-2c44507bf4c4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Everything here is cut to work with everything else — one palette of bone, stone, charcoal and camel, so any two pieces already go together. Start with a few, add slowly, and get dressed in ten seconds flat."
+                        ],
+                        "id": "f7003326-737e-4fb4-a55b-6bb5a57d0e8a",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold uppercase tracking-widest text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/the-case-for-fewer-clothes"
+                        },
+                        "children": ["The capsule idea"],
+                        "id": "46ab01cc-0cda-487b-9035-69cb52008b6a",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "08ff3843-b853-4d7f-9802-6cfe9d84d864",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5d7ef27b-4730-4c0d-b7a2-a5a0b204081f",
+                "ord": "a1"
+              }
+            ],
+            "id": "bfc2b8f1-4b68-429a-8529-5c5d0058c66a",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Kestrel",
+      "seoDescription": "Browse everything Kestrel makes, with prices and options at a glance. Clothing boutique.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7a6321c3-66a7-4872-8f49-fdfa18e8cbf4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-8",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Everything, in stock"],
+                    "id": "e2d28df6-254a-4a48-8f84-833f377230f9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["The collection"],
+                    "id": "0ea9f8fa-b841-47e2-b440-c4d5a88923ca",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The whole wardrobe in one place — tees and shirts, knitwear, trousers, outerwear and a few good accessories. One palette, cut to layer. Filter by category or sort however you like."
+                    ],
+                    "id": "4416e8db-a97f-4338-bca6-42ea778ad6d3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7857e1b3-391b-4213-838b-1f508b531979",
+                "ord": "a0"
+              }
+            ],
+            "id": "1029de44-92f3-4762-9913-f59946e6b0f8",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "870d917f-d067-41ac-b699-69db0a65d11c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Kestrel",
+      "seoDescription": "Explore the collections at Kestrel, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "90711f64-6bd0-4cae-a040-34ea0086077a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-8",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Grouped to shop"],
+                    "id": "a6ebac56-fe38-4e28-8a46-b3589448f922",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Collections"],
+                    "id": "af9af49b-97e1-4114-a012-002ab85118ca",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The pieces gathered the way people actually get dressed — the everyday essentials, this season’s new cuts, the knitwear edit and the tailoring. Start anywhere."
+                    ],
+                    "id": "4720647d-2a37-4b0b-a55a-ef0c5b0f2ff5",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f9ef7a33-5c9e-48fb-8212-3558cf2eba0b",
+                "ord": "a0"
+              }
+            ],
+            "id": "1732cc42-892b-41a9-a636-151658d768ba",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "9b7b3e50-15f7-4091-b3aa-b4b94a677883",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Kestrel",
+      "seoDescription": "Review what is in your cart and check out securely at Kestrel.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d702b189-f1f3-4852-afd4-a344210d1587",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-8",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Nearly there"],
+                    "id": "fe00f746-8e7e-448a-a48c-a115210f0072",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Your bag"],
+                    "id": "66ccbb17-88f0-4d0d-8e6a-15aff1f9f259",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping over $150 and free returns within 30 days — try it on at home, send back what isn’t right, no questions. Everything is packed in recycled, plastic-free wrap."
+                    ],
+                    "id": "faa8f34a-ee8c-4185-894d-b92472893cf1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "fcb55916-5192-4961-9c20-c1af0f95d3d9",
+                "ord": "a0"
+              }
+            ],
+            "id": "6f9cbf9c-306b-4961-a852-ceb6e33848da",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "ed48cd57-7873-4c15-9ac9-575fee5abab3",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Kestrel",
+      "seoDescription": "Search Kestrel for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6c303faa-022b-41d6-bcb2-00aeea66201f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-20 pb-8",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Find it fast"],
+                    "id": "13ebdb3b-e5d2-4b05-9412-36605aa67b41",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Search Kestrel"],
+                    "id": "35eeedd4-60dd-44f3-a69e-ffbe13db6af7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a colour, a size or a particular cut? Search the whole shop and the journal below."
+                    ],
+                    "id": "4c95894e-81c8-4ba7-8d5e-599af920c6e3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "cd7cd9e4-17b4-4bb5-9804-43a7eb3eea02",
+                "ord": "a0"
+              }
+            ],
+            "id": "690c3e84-ba45-4390-8e68-6c8095def11c",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "83c6c0a1-3550-49c0-bf3b-f3e92d704414",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Kestrel",
+      "seoDescription": "Stories, guides and notes from Kestrel.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "19cdd0a1-985f-464e-a1a3-21a67832aff0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Notes & guides"],
+                    "id": "000f4398-28e8-4dab-84ba-0963255cd57a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["The Kestrel journal"],
+                    "id": "81267e72-b81d-4d75-9ede-58dc70bc97db",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "On building a wardrobe you actually wear — how to read a fabric, why fewer is better, and how to make good clothes last. Plainly written, no trend-chasing."
+                    ],
+                    "id": "1add16e2-504f-49b0-b6d2-447bbb4b74c3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "143c828c-0f5e-42c3-9e72-db099802462b",
+                "ord": "a0"
+              }
+            ],
+            "id": "0b96d1b8-fb8b-4829-bdeb-f44f84430606",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "baa7e19e-c162-4752-ae56-6b5a97892996",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "cf3ee449-c2c5-4b57-91f9-a62692ab6256",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a79f9d26-db58-4e2c-b64a-f2274476c578",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "f3b84a7d-d618-46dc-917d-1e2f17f74c2d",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "a97878f7-6354-4a77-978f-6ca8814fb121",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "1851f08f-ee69-42cb-9a75-b840f3e94567",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "2d4b7de6-ea02-4b51-b2d9-558b95efba49",
+                "ord": "a0"
+              }
+            ],
+            "id": "c2d4ee05-6b1d-4cb8-a89d-997a8ab757dd",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Kestrel — clothes that stay",
+      "seoDescription": "Why Kestrel keeps the range small: essentials in honest cloth, made directly with the mills and factory, priced honestly, cut to be kept for years.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4d090fdd-6dda-4a30-96cf-00fa9ac8f697",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["About Kestrel"],
+                    "id": "aa738e75-4a18-40f2-84eb-a293a5ad18e2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Clothes that stay"],
+                    "id": "ab00984a-1ea7-4de0-90e0-3421e8b6aa2e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Kestrel began with a simple frustration: too much of what we owned fell apart, went out of style, or never quite went with anything else. So we set out to make the opposite — a short list of essentials, in honest cloth, cut to wear together for years."
+                    ],
+                    "id": "a21c1947-1d3e-402c-98ec-e2407679bcfb",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We keep the range small on purpose. Every piece has to earn its place: it has to be worth making well, worth keeping, and worth wearing beside everything else we make. If it doesn’t, it doesn’t get made."
+                    ],
+                    "id": "5b8d3bbb-56f7-4c51-b662-2e27cc08cc4b",
+                    "ord": "a3"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We work directly with the mills and the factory that make our clothes, pay fairly for good work, and price honestly — no seasonal markdowns to disguise, no logo tax. Just good clothes, made to be kept."
+                    ],
+                    "id": "2af8bcd4-5eb5-4742-b31b-d374b32f4d3a",
+                    "ord": "a4"
+                  }
+                ],
+                "id": "32fc2aeb-a30d-40f0-ab71-67442106cec0",
+                "ord": "a0"
+              }
+            ],
+            "id": "a8ddbf81-54da-480c-be60-216f36dfa8ca",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Kestrel",
+      "seoDescription": "Get in touch with Kestrel — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0201dd7f-2dad-4ebf-a2c4-b53379233f4c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                    "children": ["Say hello"],
+                    "id": "034111c3-bc6b-46cd-8f9b-2932d760df9a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Get in touch"],
+                    "id": "71a970ef-08b4-4fe0-9839-b5c93ff30ffc",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Questions on sizing or fabric, a return to arrange, or a wholesale enquiry? Tell us what you need and a real person on our small team will write back within a day."
+                    ],
+                    "id": "dd8b6d00-a5ed-40d9-b32e-0fc9e2910499",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@kestrel.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "86c3760d-fcb0-4920-8079-ea2e7318bd95",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "5fde5ee1-0c47-499c-a4a4-8b81ef8becaf",
+                "ord": "a0"
+              }
+            ],
+            "id": "2162b93c-4b12-4332-b81d-02feec34a3c2",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Kestrel",
+      "seoDescription": "Product details at Kestrel — clothing boutique, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "0e2b96d3-998c-48c5-9ae3-2d2ea2175141",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Kestrel"],
+                            "id": "9c739e8d-5aee-439c-8049-81c67355baba",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-normal leading-none tracking-tight text-base-content @3xl:text-6xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "0ebd910d-3176-4150-8801-96af49219934",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-normal text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "a8f533d5-d0d7-4182-8a18-a81cdbeed105",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "475e5fc7-5421-4106-b57c-dd0b8d511ca2",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "8185e1ca-e6de-4e68-8d58-87492e4a6591",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "579dbffe-edf1-4ee1-bf88-60f20ffa6379",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "4e47a029-9d19-455b-8309-70e87a4f106e",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "ead45b37-bcad-464c-a052-8343ef83c736",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "1eed45fd-7b30-4437-9a89-f080e6057863",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "c234eda0-f187-4607-a1a8-b54457a35832",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "226ef314-70ff-41a4-8912-7dee2a754ac2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "e1c01a94-beff-4b07-93ea-fd91664d65fd",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "83122623-4761-4f9f-9c13-c67f2c9f102c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "72ea70a4-91b8-49ad-a7c6-2a82dedce286",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "b1071902-9a12-4f42-9b31-3a66d8a100e3",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 border-t border-base-300 pt-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xs font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Considered construction"],
+                            "id": "f7664b6c-2a0d-43c0-947f-9fbaa84354af",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Cut in full-weight cloth and finished with reinforced seams, so it holds its shape wash after wash. Fits true — take your usual size; between two, size down for a cleaner line. Free returns within 30 days if it isn’t right."
+                            ],
+                            "id": "215b3381-3493-4443-91df-ef5e60de669e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f2014eaf-5d3f-48f7-99db-4863233813d6",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-6 text-xs font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "f82edca0-4e8a-463b-93ed-2f149a77fd06",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "1d1cb202-1073-43ea-8d51-6ce538794b14",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "96863dac-33e9-49bc-856d-97b919514bc9",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "1f0cb425-f43c-48d6-bb9c-88f2e9178ada",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f3ce3f49-ec02-42ce-a86d-8bc38cf55b22",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "8fb7669e-315d-45e6-964c-28a3ef756e28",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Wears well with"],
+                    "id": "4c3d719f-fae7-42a6-8c5e-8a9510976696",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "20236b33-e8a6-46a7-8a06-bfade824772c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "29e92582-f724-40a9-b007-dc8b7060720a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "a3fd71ae-fbb5-4683-9706-8208ffb96a39",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "cf8ce6c3-8769-418b-a87f-96a9ee999ddd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "324dc7e3-9832-44ee-9549-c0285c675871",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "11dab42d-9d3c-4f96-a3bc-c6fdb0db5d16",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "e5a74bb3-b190-4cbd-8c23-6e38762ffbe9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "24b0ab50-53fd-4053-bcec-10b6f3b1a247",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "7738912c-51e2-48b4-a0d5-18dfa6e3bfa9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b3034496-961c-425a-9f33-b705fe4e7f17",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "a0777aae-0324-4d76-9f5a-1963799d57e0",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "8310253d-2021-49af-95eb-08efaa1b134d",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "3277ea26-46b2-4820-8000-f5f666c6e8d1",
+            "ord": "a1"
+          }
+        ],
+        "id": "1fb0e55f-9faf-4e92-b774-7a9ba4c4d65e"
+      }
+    }
+  ],
+  "theme": {
+    "name": "kestrel-mono",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.008 85)",
+      "--color-base-200": "oklch(94% 0.01 82)",
+      "--color-base-300": "oklch(88% 0.014 80)",
+      "--color-base-content": "oklch(20% 0.01 70)",
+      "--color-primary": "oklch(23% 0.008 70)",
+      "--color-secondary": "oklch(43% 0.016 70)",
+      "--color-accent": "oklch(54% 0.03 60)",
+      "--color-neutral": "oklch(26% 0.008 70)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0",
+      "--radius-field": "0",
+      "--radius-box": "0",
+      "--depth": "0",
+      "--font-sans": "\"Jost\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(98% 0.008 70)",
+      "--color-secondary-content": "oklch(98% 0.01 70)",
+      "--color-accent-content": "oklch(98% 0.01 60)",
+      "--color-neutral-content": "oklch(98% 0.008 70)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(54% 0.03 60)",
+      "--color-highlight-content": "oklch(98% 0.01 60)",
+      "--color-border": "oklch(88% 0.014 80)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.008 70)",
+      "--color-base-200": "oklch(15% 0.008 70)",
+      "--color-base-300": "oklch(12% 0.008 70)",
+      "--color-base-content": "oklch(95% 0.008 85)",
+      "--color-primary": "oklch(95% 0.008 85)",
+      "--color-secondary": "oklch(74% 0.016 78)",
+      "--color-accent": "oklch(74% 0.03 60)",
+      "--color-neutral": "oklch(30% 0.008 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.008 85)",
+      "--color-secondary-content": "oklch(15% 0.016 78)",
+      "--color-accent-content": "oklch(15% 0.02 60)",
+      "--color-neutral-content": "oklch(98% 0.008 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.03 60)",
+      "--color-highlight-content": "oklch(15% 0.02 60)",
+      "--color-border": "oklch(12% 0.008 70)"
+    }
+  }
+}

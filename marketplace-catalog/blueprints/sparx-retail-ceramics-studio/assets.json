@@ -1,0 +1,97 @@
+[
+  {
+    "id": "kiln-hero",
+    "url": "https://images.unsplash.com/photo-1611013621103-91e10668a120?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG90dGVyJTIwcyUyMGhhbmRzJTIwY2VudGVyaW5nJTIwd2V0JTIwY2xheSUyMHNwaW5uaW5nfGVufDB8MHx8fDE3ODY0MDIxODB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A potter’s hands centering wet clay on a spinning wheel"
+  },
+  {
+    "id": "kiln-tile-drink",
+    "url": "https://images.unsplash.com/photo-1530968831187-a937ade474cb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8M3x8c3RvbmV3YXJlJTIwbXVncyUyMHdhcm18ZW58MHwwfHx8MTc4NjQwMjU0Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A row of stoneware mugs in a warm oatmeal glaze"
+  },
+  {
+    "id": "kiln-tile-dine",
+    "url": "https://images.unsplash.com/photo-1769690176773-1c6e73bfb26a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZG1hZGUlMjBwbGF0ZXMlMjBib3dscyUyMHN0YWNrZWQlMjB3b29kZW4lMjBzaGVsZnxlbnwwfDB8fHwxNzg2NDAyMTg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Handmade plates and bowls stacked on a wooden shelf"
+  },
+  {
+    "id": "kiln-tile-vessels",
+    "url": "https://images.unsplash.com/photo-1687191883721-257d8cad5b54?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMGJ1ZCUyMHZhc2UlMjBob2xkaW5nJTIwc2luZ2xlJTIwZHJpZWQlMjBzdGVtfGVufDB8MHx8fDE3ODY0MDIxODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ceramic bud vase holding a single dried stem"
+  },
+  {
+    "id": "kiln-tile-home",
+    "url": "https://images.unsplash.com/photo-1668117653442-dd03862e957f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhemVkJTIwcGxhbnRlciUyMHRyYWlsaW5nJTIwaG91c2VwbGFudCUyMHdpbmRvd3NpbGx8ZW58MHwwfHx8MTc4NjQwMjE5MHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A glazed planter with a trailing houseplant on a windowsill"
+  },
+  {
+    "id": "kiln-band-studio",
+    "url": "https://images.unsplash.com/photo-1597257457828-ae134977674f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJpbW1lZCUyMHBvdHMlMjBkcnlpbmd8ZW58MHwwfHx8MTc4NjQwMjU0OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Trimmed pots drying on a plaster bat in a bright studio"
+  },
+  {
+    "id": "kiln-band-glaze",
+    "url": "https://images.unsplash.com/photo-1669393533135-7580ae7ca1c4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZCUyMGRpcHBpbmclMjBib3dsJTIwaW50byUyMGJ1Y2tldCUyMHBhbGUlMjBzYWdlfGVufDB8MHx8fDE3ODY0MDIxOTZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand dipping a bowl into a bucket of pale sage glaze"
+  },
+  {
+    "id": "kiln-prod-mug",
+    "url": "https://images.unsplash.com/photo-1495100497150-fe209c585f50?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8aGFuZC10aHJvd24lMjBzdG9uZXdhcmUlMjBtdWclMjBmdWxsJTIwcHVsbGVkJTIwaGFuZGxlfGVufDB8MHx8fDE3ODY0MDIxOTl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A hand-thrown stoneware mug with a full pulled handle"
+  },
+  {
+    "id": "kiln-prod-bowl",
+    "url": "https://images.unsplash.com/photo-1519916478825-b1d7aef08f54?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2lkZSUyMGJyZWFrZmFzdCUyMGJvd2wlMjBzb2Z0JTIwc3BlY2tsZWQlMjBnbGF6ZXxlbnwwfDB8fHwxNzg2NDAyMjAyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A wide breakfast bowl with a soft speckled glaze"
+  },
+  {
+    "id": "kiln-prod-plate",
+    "url": "https://images.unsplash.com/photo-1705948730553-3ea0c89ae6fb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGlubmVyJTIwcGxhdGUlMjBiYXJlJTIwY2xheSUyMHJpbSUyMGdsYXplZCUyMHdlbGx8ZW58MHwwfHx8MTc4NjQwMjIwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A dinner plate with a bare clay rim and glazed well"
+  },
+  {
+    "id": "kiln-prod-platter",
+    "url": "https://images.unsplash.com/photo-1650218385764-ce069ab3e4da?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG9uZyUyMG92YWwlMjBzZXJ2aW5nJTIwcGxhdHRlciUyMG1hdHRlJTIwYXNoJTIwZ2xhemV8ZW58MHwwfHx8MTc4NjQwMjIwOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A long oval serving platter in a matte ash glaze"
+  },
+  {
+    "id": "kiln-prod-vase",
+    "url": "https://images.unsplash.com/photo-1526198049595-f32cde2a219d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGFsbCUyMGJ1ZCUyMHZhc2UlMjBuYXJyb3clMjBuZWNrJTIwc3RvbmUtZ3JleSUyMGdsYXplfGVufDB8MHx8fDE3ODY0MDIyMTJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tall bud vase with a narrow neck and stone-grey glaze"
+  },
+  {
+    "id": "kiln-prod-planter",
+    "url": "https://images.unsplash.com/photo-1670169603920-e2d4080e22d3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm9vdGVkJTIwcGxhbnRlciUyMG1hdGNoaW5nJTIwc2F1Y2VyJTIwc2xhdGUlMjBnbGF6ZXxlbnwwfDB8fHwxNzg2NDAyMjE0fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A footed planter and matching saucer in slate glaze"
+  },
+  {
+    "id": "kiln-prod-tumblers",
+    "url": "https://images.unsplash.com/photo-1610701596007-11502861dcfa?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RvbmV3YXJlJTIwdHVtYmxlcnMlMjBmYWNldGVkfGVufDB8MHx8fDE3ODY0MDI1NTN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A pair of stoneware tumblers with faceted sides"
+  },
+  {
+    "id": "kiln-prod-dinner-set",
+    "url": "https://images.unsplash.com/photo-1614548539924-5c1f205b3747?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Zm91ci1waWVjZSUyMGRpbm5lciUyMHNldCUyMHBsYXRlcyUyMGJvd2xzfGVufDB8MHx8fDE3ODY0MDIyMjB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A four-piece dinner set of plates and bowls"
+  },
+  {
+    "id": "kiln-prod-jug",
+    "url": "https://images.unsplash.com/photo-1572003414030-4175bcadd3cf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGwlMjBwb3VyaW5nJTIwanVnJTIwcGluY2hlZCUyMHNwb3V0JTIwb2F0bWVhbCUyMGdsYXplfGVufDB8MHx8fDE3ODY0MDIyMjR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small pouring jug with a pinched spout in oatmeal glaze"
+  },
+  {
+    "id": "kiln-post-making",
+    "url": "https://images.unsplash.com/photo-1563433337461-5b65f0834f3a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cG90dGVyJTIwdHJpbW1pbmclMjBmb290JTIwbGVhdGhlci1oYXJkJTIwYm93bHxlbnwwfDB8fHwxNzg2NDAyMjI3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A potter trimming the foot of a leather-hard bowl"
+  },
+  {
+    "id": "kiln-post-glazes",
+    "url": "https://images.unsplash.com/photo-1517340182-ddc4e441b011?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xhemUlMjB0ZXN0JTIwdGlsZXN8ZW58MHwwfHx8MTc4NjQwMjU1NXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Glaze test tiles laid out in rows of warm neutrals"
+  },
+  {
+    "id": "kiln-post-care",
+    "url": "https://images.unsplash.com/photo-1596290618848-fcda233549e3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RvbmV3YXJlJTIwbXVnJTIwYmVpbmclMjBoYW5kLXdhc2hlZCUyMHNvYXB5JTIwc2lua3xlbnwwfDB8fHwxNzg2NDAyMjMzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A stoneware mug being hand-washed in a soapy sink"
+  }
+]

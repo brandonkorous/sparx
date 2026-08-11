@@ -1,0 +1,227 @@
+{
+  "policies": [
+    {
+      "handle": "consultation-none",
+      "name": "Consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "A short, free consultation — no deposit. Give us a day’s notice if you need to move it, and we’ll find another time."
+    },
+    {
+      "handle": "session-deposit",
+      "name": "Session deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 4000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Tattoo sessions hold a $40 deposit that comes off your total. Reschedule with 72 hours’ notice and it carries over; inside that window it books your artist’s day, so it stays with us."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "iris",
+      "name": "Iris Devlin",
+      "kind": "staff",
+      "skillTags": ["fine-line", "lettering", "botanical"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 660,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "wren",
+      "name": "Wren Ashby",
+      "kind": "staff",
+      "skillTags": ["fine-line", "lettering"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "sol",
+      "name": "Sol Marés",
+      "kind": "staff",
+      "skillTags": ["fine-line", "botanical"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 720,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 720,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Consultation",
+      "description": "A short sit-down to talk through your idea, placement and sizing before anything is booked. Free, and there’s no obligation to book after.",
+      "durationMinutes": 20,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["fine-line"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consultation-none"
+    },
+    {
+      "handle": "fineline-small",
+      "name": "Fine-line — small",
+      "description": "A small single-needle piece — a stem, a symbol, a few words. About an hour in the chair.",
+      "durationMinutes": 60,
+      "priceCents": 12000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["fine-line"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "fineline-medium",
+      "name": "Fine-line — medium",
+      "description": "A more detailed line piece — a small composition or a set of elements. Around two hours.",
+      "durationMinutes": 120,
+      "priceCents": 24000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["fine-line"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "fineline-large",
+      "name": "Fine-line — large",
+      "description": "A larger, layered line piece across a full placement. A considered three-hour session.",
+      "durationMinutes": 180,
+      "priceCents": 36000,
+      "bufferAfterMin": 20,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["fine-line"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "lettering-script",
+      "name": "Lettering & script",
+      "description": "Fine cursive or hand-drawn script — a name, a date, a line worth keeping. Set with your artist.",
+      "durationMinutes": 90,
+      "priceCents": 18000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["lettering"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    },
+    {
+      "handle": "delicate-floral",
+      "name": "Delicate floral",
+      "description": "Botanical fine-line work — single stems, wildflowers, small clusters — drawn light and precise.",
+      "durationMinutes": 120,
+      "priceCents": 22000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "artist",
+          "kind": "staff",
+          "skillTags": ["botanical"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "session-deposit"
+    }
+  ]
+}

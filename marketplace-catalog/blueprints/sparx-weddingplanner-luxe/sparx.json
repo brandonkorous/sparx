@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-weddingplanner-luxe",
+  "name": "sparx — Wedding Planner (Luxe)",
+  "version": "1.0.0",
+  "tagline": "A romantic, editorial template for wedding planners — book consultations from day one.",
+  "description": "An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as \"Ever After Events\", a luxury full-service wedding planner.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Event planning",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Wedding Planner (Luxe) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Wedding Planner (Luxe) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#c28f92",
+  "sortWeight": 40
+}

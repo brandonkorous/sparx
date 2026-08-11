@@ -1,0 +1,253 @@
+{
+  "policies": [
+    {
+      "handle": "standard-visit",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Booked an inspection or estimate? We’ll confirm a two-hour arrival window and text you the morning of, then a heads-up when your estimator is on the way. Reschedule free with 24 hours’ notice."
+    },
+    {
+      "handle": "emergency-priority",
+      "name": "Emergency priority",
+      "depositType": "none",
+      "cancellationWindowHours": 4,
+      "reminderOffsetsMin": [240, 60],
+      "policyText": "Active leak or storm damage? Emergency visits go to the next available crew — we text a tight window and call before we roll to tarp and protect. Please give us 4 hours’ notice to release the slot."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "cole",
+      "name": "Cole Brennan",
+      "kind": "staff",
+      "skillTags": ["storm", "roofing", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marisol",
+      "name": "Marisol Vega",
+      "kind": "staff",
+      "skillTags": ["siding", "windows", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "deshawn",
+      "name": "Deshawn Pierce",
+      "kind": "staff",
+      "skillTags": ["insurance", "roofing", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-storm-inspection",
+      "name": "Free storm inspection",
+      "description": "We climb up, document every hit — hail, wind, lifted shingles — and tell you straight whether you have a claim. No charge, no pressure.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "emergency-priority"
+    },
+    {
+      "handle": "insurance-claim-consult",
+      "name": "Insurance claim consult",
+      "description": "Sit down with us to open or make sense of your claim. We explain your coverage, your deductible, and exactly what we handle for you from here.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "roof-replacement-estimate",
+      "name": "Roof replacement estimate",
+      "description": "A full measure-up and a written scope for a new roof — materials, timeline and the number your insurer sees, all in one visit.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "emergency-tarp-visit",
+      "name": "Emergency tarp visit",
+      "description": "Water coming in right now? We roll fast, tarp the roof and stop the damage from spreading while your claim gets moving.",
+      "durationMinutes": 60,
+      "priceCents": 19900,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "emergency-priority"
+    },
+    {
+      "handle": "siding-estimate",
+      "name": "Siding estimate",
+      "description": "Storm-dented, cracked or faded siding, measured and priced — matched to your home and your claim if there is one.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "window-estimate",
+      "name": "Window estimate",
+      "description": "Broken seals, cracked panes or wind-damaged frames — we assess and quote replacement windows that hold up next time.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    },
+    {
+      "handle": "full-exterior-consult",
+      "name": "Full exterior consult",
+      "description": "Roof, siding, gutters and windows walked as one — a single plan when the whole exterior took a beating and you want it handled together.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "roofer",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "standard-visit"
+    }
+  ]
+}

@@ -1,0 +1,346 @@
+{
+  "policies": [
+    {
+      "handle": "studio-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel. We send a reminder two days before, the day before, and two hours ahead."
+    },
+    {
+      "handle": "consult-deposit",
+      "name": "Cosmetic consult deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 5000,
+      "cancellationWindowHours": 72,
+      "reminderOffsetsMin": [4320, 1440, 120],
+      "policyText": "Longer cosmetic consultations hold a $50 deposit that comes off your treatment total. Reschedule with 72 hours’ notice and it carries over in full."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-elise",
+      "name": "Dr. Elise Marchetti",
+      "kind": "staff",
+      "skillTags": ["cosmetic", "veneers", "implants", "whitening", "exam"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dr-priya",
+      "name": "Dr. Priya Anand",
+      "kind": "staff",
+      "skillTags": ["aligners", "ortho", "exam"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "renae",
+      "name": "Renae Ford, RDH",
+      "kind": "staff",
+      "skillTags": ["cleaning", "whitening", "exam"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "suite-one",
+      "name": "Treatment Suite 1",
+      "kind": "space",
+      "skillTags": ["suite"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "suite-two",
+      "name": "Treatment Suite 2",
+      "kind": "space",
+      "skillTags": ["suite"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "smile-consultation",
+      "name": "Smile consultation",
+      "description": "A relaxed, no-pressure sit-down to talk through what you’d like to change, with a look at your options and honest pricing. Always free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "new-patient-exam",
+      "name": "New patient exam",
+      "description": "A thorough first visit: digital images, a full check of your teeth and gums, and a clear plan for keeping them healthy.",
+      "durationMinutes": 60,
+      "priceCents": 9900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "cleaning",
+      "name": "Cleaning & polish",
+      "description": "A gentle professional clean with one of our hygienists — plaque and stain removed, teeth polished, gums cared for.",
+      "durationMinutes": 60,
+      "priceCents": 14900,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["cleaning"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "whitening",
+      "name": "Professional whitening",
+      "description": "In-studio whitening that lifts everyday stains several shades in a single visit — brighter, but still natural.",
+      "durationMinutes": 90,
+      "priceCents": 39900,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["whitening"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "studio-standard"
+    },
+    {
+      "handle": "clear-aligner-consult",
+      "name": "Clear aligner consult",
+      "description": "For straightening without braces: we scan your teeth and show you a preview of the finish, plus timing and cost. Consult is free.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["aligners"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "veneers-consult",
+      "name": "Veneers design consult",
+      "description": "Veneers are thin, custom covers bonded to the front of your teeth. We design the look with you and map out each step. Consult is free.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["veneers"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    },
+    {
+      "handle": "implant-consult",
+      "name": "Dental implant consult",
+      "description": "An implant replaces a missing tooth with a fixed, natural-looking one. We assess what’s possible and talk timing, comfort and cost. Consult is free.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["implants"],
+          "count": 1
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "consult-deposit"
+    }
+  ]
+}

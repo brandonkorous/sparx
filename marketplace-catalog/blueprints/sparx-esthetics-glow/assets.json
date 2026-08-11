@@ -1,0 +1,27 @@
+[
+  {
+    "id": "esthetics-glow-hero",
+    "url": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z2xvd2luZyUyMHNraW4lMjBmYWNpYWx8ZW58MHwwfHx8MTc4NjM5MjcwNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Fresh, dewy, glowing skin in bright natural light"
+  },
+  {
+    "id": "esthetics-glow-studio",
+    "url": "https://picsum.photos/seed/dewy-studio/1600/1000",
+    "alt": "A bright, cheerful glow bar with a comfy treatment chair"
+  },
+  {
+    "id": "esthetics-glow-mila",
+    "url": "https://images.unsplash.com/photo-1762341113869-0bfa616b4457?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBiZWF1dHklMjB0aGVyYXBpc3QlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkyNzQzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Mila Fox, esthetician"
+  },
+  {
+    "id": "esthetics-glow-priya",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBza2luY2FyZSUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI3MTB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Anand, esthetician"
+  },
+  {
+    "id": "esthetics-glow-jade",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmVhdXRpY2lhbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTI3NDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Jade Nguyen, esthetician"
+  }
+]

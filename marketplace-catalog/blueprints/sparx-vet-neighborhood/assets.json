@@ -1,0 +1,27 @@
+[
+  {
+    "id": "vet-neighborhood-hero",
+    "url": "https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwZG9nJTIwY2F0fGVufDB8MHx8fDE3ODYzOTAwNzd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A happy dog resting a paw on a caring veterinarian during a check-up"
+  },
+  {
+    "id": "vet-neighborhood-care",
+    "url": "https://images.unsplash.com/photo-1596272875729-ed2ff7d6d9c5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0JTIwZXhhbWluaW5nJTIwcGV0fGVufDB8MHx8fDE3ODYzOTAwODB8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A veterinarian gently holding a cat in a bright, calm exam room"
+  },
+  {
+    "id": "vet-neighborhood-maya",
+    "url": "https://images.unsplash.com/photo-1673865641073-4479f93a7776?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjB2ZXRlcmluYXJpYW4lMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDgzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Maya Ellison, veterinarian"
+  },
+  {
+    "id": "vet-neighborhood-sam",
+    "url": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0ZXJpbmFyaWFuJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MDA4Nnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Dr. Sam Reyes, veterinarian"
+  },
+  {
+    "id": "vet-neighborhood-jordan",
+    "url": "https://images.unsplash.com/photo-1700665537604-412e89a285c3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dmV0JTIwdGVjaG5pY2lhbiUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTAwODl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Jordan Blake, veterinary technician"
+  }
+]

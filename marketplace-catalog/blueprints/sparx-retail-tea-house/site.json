@@ -1,0 +1,2486 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "685995ed-5ec4-42f5-b1a7-8f371ebd2fdd",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "13dd4cf6-3559-4e09-9728-b8672fc89d5e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "ca15d6ad-b5ec-4bb9-93de-ac1acb9208f6",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "424ec521-e22a-4239-933f-3fe34163b434",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "88749517-2260-4c1d-84da-d6e9db219883",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "14512ae4-24e2-4dad-8603-de8012865189",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "e54e1d77-7f9d-4288-a59d-23918c92cae6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "74eddaa3-55d9-4a7f-b30f-723427045a72",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "dc71245b-49c6-4eff-a120-c973c6893331",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "ce7333af-c8a0-4e0b-a943-a1da36ff2b58",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "39e4d427-2e25-46f4-940b-c5529d81c283",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7439b117-4aa8-46ac-a8de-21fc56cf34f2",
+                  "ord": "a2"
+                }
+              ],
+              "id": "a5349c3c-2d65-4430-ae45-d3ec1089947a",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b4759f35-5341-4a2f-98d1-1ca3181200e2",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "11c3d809-7e20-43b8-8703-120f241a75bc",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "921c0bfe-2acc-49b5-a0e0-bea6930f7387",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "ec677b02-6f3f-4c88-9aad-b75997e45ee3",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "48b9c0b4-a8ce-4584-ba3d-18d31411c65d",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "ff7d9b15-6d23-4d0d-b1f7-449b12506a7a",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "e0be306c-7f9e-413b-8e8c-4272957b4a4a",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "9fea92fa-8590-4a3a-9245-7ff73c8b16cb",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "47ff7488-4352-4302-87bb-be5ab58a9d58",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "bab714d5-8d4b-47c0-b05a-aeaa0c7a3335",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "d0e1edf6-0b47-46d1-b5b7-bae146e5eb7e",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "5e012463-432a-4f34-918f-59216c8dd9b8",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "d851bd5f-e044-4897-b7d9-9d8461b44163",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "30ec40d5-afeb-44fc-98ee-370511ab99d9",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "89870042-b736-4ab4-98f7-5875efa95c0a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "65ce31e7-5049-4e03-b012-90f6d2085338",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "886a2658-9941-431a-8f8c-57a4ad722470",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "07a7d448-34eb-40a0-be34-f4cb1a46a2b1",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "7dc50568-1c21-40e4-8c93-05029c8aa0a5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "cf462d57-d02a-4f87-94b9-45b6d8e9f10e",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "e8e3dfd3-30da-4b23-9aa6-4d6e857e3195",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "0e84c7e0-672e-41b9-af1a-1b3de6714972",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "e22b9ef3-4875-4714-924e-e2354ab9260d",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6ff76804-17f5-4d65-9878-c48273fe52ec",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "932d239b-bce9-4ece-99eb-b03bbd6da6af",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "0e560fe0-c176-4c64-bae3-c5b6a6d045c8",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "b808de0c-f129-4a56-8eff-19fa0d93cda9",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "e0776d6c-7ab8-43fd-b0dd-047a02fd9fb8",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "36ed0cae-5416-47e2-b5c2-69b1181c7757",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "ac678c65-fdab-4995-9480-9d1073348abe",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8ee61445-19fe-4150-a87f-707638835d76",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "3043d776-29e4-49be-9a65-f008250e9398",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "878af0c7-2e65-409b-b4a8-b7158e195f54",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "9b089f28-2135-402d-9f1e-51c92a0979e5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "06f9967f-c554-4421-9111-f2643d1336c4",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "5682f6ea-94ca-4c83-a852-13da5ecff803",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "8f07c588-e65b-44c8-96ca-1fa307f48135",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0373f107-b636-475a-8e6f-a582906b4b3e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "4f3db992-073f-426f-9784-ccb871577158",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "f0f7942f-63dc-4bbd-b6e4-9595e96542bd",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "e68dcf6a-5333-4552-a811-1d4ab28a6318",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "4c985d45-51d3-473e-a1de-46c472ca0e0e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "7ad8617c-7108-4bb3-9f3b-df42f9996e5e",
+                  "ord": "a1"
+                }
+              ],
+              "id": "22a9556b-8f7e-477d-94c3-d3eed34579d1",
+              "ord": "a0"
+            }
+          ],
+          "id": "820886ce-5fd6-47f1-be97-318b55543346",
+          "ord": "a2"
+        }
+      ],
+      "id": "3ca7a4ef-4af0-468c-b088-8d4f17f8618a"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Steepwell Tea House — loose-leaf tea, sourced and kept fresh",
+      "seoDescription": "Steepwell is a small loose-leaf tea house — single-origin greens, blacks, oolong, chai and caffeine-free herbals, a matcha, teaware and a flexible tea club. Source well, keep it fresh, never rush the cup.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "22558a81-e05d-4051-8b6f-5b977a58b3d3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1774526380338-ad8084ef6dd0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8Y3VwJTIwbG9vc2UtbGVhZiUyMHRlYSUyMHN0ZWVwaW5nJTIwYmVzaWRlJTIwc2NhdHRlciUyMGRyaWVkfGVufDB8MHx8fDE3ODY0MDYwODh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A cup of loose-leaf tea steeping",
+                  "loading": "lazy"
+                },
+                "id": "0fe87364-f276-45fe-8c41-cfa165911b8e",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Slow down. Steep well."],
+                        "id": "3ca41b3f-ebc9-4612-a344-63e57f9bfff2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh — so the cup in your hands tastes like the hillside it came from."
+                        ],
+                        "id": "44dfbbdc-6f89-40bb-87f2-8c22544436c8",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop tea"],
+                            "id": "22d58f97-8ba8-44c3-ad0b-f869740f2f11",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/subscription"
+                            },
+                            "children": ["Join the tea club"],
+                            "id": "0350ab85-cbf2-4f93-96f1-55403f450666",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "90a72a97-f19d-4448-a29d-8f6df5b232d9",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5536b99d-fbcf-4a55-a996-d75c22e4c32e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "da3cb0f0-0ba5-4dab-b476-df6716f638fc",
+                "ord": "a1"
+              }
+            ],
+            "id": "9f3cfc50-4f75-4cf8-a19a-8f8db5bc3891",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Find your tea"],
+                    "id": "c7c4565f-92b7-4754-b024-415b3a51242d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1546852199-2d8e8c4aaada?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y3VybGVkJTIwZ3JlZW4lMjB0ZWElMjBsZWF2ZXMlMjBzaGFsbG93JTIwZGlzaHxlbnwwfDB8fHwxNzg2NDA2MDkyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Curled green tea leaves in a dish",
+                              "loading": "lazy"
+                            },
+                            "id": "873e52e1-d5bb-44db-8cb5-5258458ce740",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Green & white"],
+                            "id": "024cb210-c262-4fff-95fb-6d3fcd250cdd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9eb9f52e-a1b0-46c0-b634-fddc0686c47d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1723879683020-b1e1ee37c641?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGFyayUyMHdob2xlLWxlYWYlMjBibGFjayUyMHRlYSUyMHdvb2RlbiUyMHNjb29wfGVufDB8MHx8fDE3ODY0MDYwOTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Whole-leaf black tea in a scoop",
+                              "loading": "lazy"
+                            },
+                            "id": "16ea9ad6-5175-42cd-b3d7-81ff38bc9c80",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Black & oolong"],
+                            "id": "c27ead72-2261-4b95-9359-2cc04e840c6a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "dc24d06c-b505-479c-adbd-eebf29308ebf",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1666818398121-2dbe78b47de3?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZHJpZWQlMjBjaGFtb21pbGUlMjBmbG93ZXJzJTIwYm90YW5pY2FscyUyMGJvd2x8ZW58MHwwfHx8MTc4NjQwNjA5OHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dried chamomile and botanicals",
+                              "loading": "lazy"
+                            },
+                            "id": "e6669ec9-7a5c-469b-b624-b92447fbe849",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Herbal"],
+                            "id": "a70b1a0e-472a-4cac-a8f4-3e5a3fe847f2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "caf9a09a-8eb0-4729-8b1d-cbe639c32c41",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1634742989591-ad02431f3158?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FzdC1pcm9uJTIwdGVhcG90JTIwZ2xhc3N8ZW58MHwwfHx8MTc4NjQwNjQyMHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A cast-iron teapot and infuser",
+                              "loading": "lazy"
+                            },
+                            "id": "7582b4ca-63c7-447e-9eeb-3bf6f5fa88e2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Brewing tools"],
+                            "id": "f8e318aa-3fe4-43c4-b382-345071d662d2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2ca3eb1b-4d6e-41c3-8dfc-8e7b16a17f6f",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "0a8736f2-ac6e-4760-af5b-b4252464eea1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "088efa4d-fb62-404d-aaeb-031af2ee3847",
+                "ord": "a0"
+              }
+            ],
+            "id": "c6c48213-ee0c-4797-b1ef-bd8b35fbade0",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["This season’s teas"],
+                    "id": "7132e5d7-f973-442d-9488-5b62ff2c12de",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "0f613f28-afd5-4f95-b208-9d7d1543ba33",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "3a68f22d-567f-449a-b760-dd16ec362d97",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "00de0653-2523-4739-841e-d559c39e9c9d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "f8752e13-bb17-42ca-ae03-53b4dc85c8d7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "ea5a921b-43e9-4449-8d8a-aef2bc8575e3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "49e090ef-7586-4fef-b30e-395c52b8768b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "81256ba6-dd7c-4938-96fe-25f6799d6b50",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "566907ad-6cc6-43ec-ba40-9f2f51eabf02",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "769012ad-56d8-4d8a-ba9c-8b141362647e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bc075953-a4a6-4c52-9b11-5616b7ada5f0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "971523ed-e59d-4300-85ed-6dd5a638ebb2",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "af08d9a9-8362-4310-acb2-272fc9c169c2",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "71ea3e3d-fd82-47e0-abb1-157e64bcf367",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1590408114655-e6375dd39abe?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RlYW0lMjByaXNpbmclMjBnbGFzcyUyMHRlYXBvdCUyMHNvZnQlMjBtb3JuaW5nJTIwbGlnaHR8ZW58MHwwfHx8MTc4NjQwNjEwM3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Steam rising from a glass teapot",
+                  "loading": "lazy"
+                },
+                "id": "15dc7f9e-1f60-413f-8e63-7aca2d80a8ee",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Whole leaf, small batches"],
+                        "id": "940b9b00-d3d4-4bcc-9038-25841ed826df",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned — if the cup isn’t right, it doesn’t go out."
+                        ],
+                        "id": "afea4495-467a-4517-883d-64c229f0f8aa",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/where-the-leaves-come-from"
+                        },
+                        "children": ["How we source"],
+                        "id": "ab110309-1756-42c1-aae6-61a9943f9e72",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f12afbe9-bad7-4b31-8e6c-66afda83be23",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d029e8d6-a055-4074-9d51-c3a17c060811",
+                "ord": "a1"
+              }
+            ],
+            "id": "50e421ac-5f04-40d0-b00b-794b3593b732",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Green & white"],
+                    "id": "5b0b9b40-c19f-4c59-a209-186d162f0a43",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "7a88da2e-ceda-41be-b43a-d90e5ce39637",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "8a7c56b1-a629-462e-8832-6aebd5034709",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "de8acde2-3bb3-4c89-928c-0fa4f81f6a0b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "817c8746-3e42-43c9-8d82-872a6b215a2a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "47c48a56-36fd-4827-a9a9-ded8f5529300",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e3d1998a-9082-4ca5-bddd-85026527d16b",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "a6cd8c8a-00e7-4a10-8297-a469c8fbfa77",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "700a1a80-fb61-460b-a66b-b290d1a286eb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "b21a7399-4401-423e-b1eb-f5a302c1099d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8af262d5-e6d6-4ec1-8157-1690e1a94603",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "ef9799ba-3bd8-4e19-b846-c981d5f9b212",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.green-white"
+                },
+                "id": "f47032ff-a3a4-40c0-a778-6e4708642134",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "7b44b26d-5a7a-45d2-bde5-6e51daabf0cf",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1728034261780-94beccf0eaec?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFyY2VsJTIwdGVhJTIwdGluc3xlbnwwfDB8fHwxNzg2NDA2NDIzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A parcel of tea tins on a doorstep",
+                  "loading": "lazy"
+                },
+                "id": "04df257a-3448-492d-9f6e-05f29597d8cb",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A pot a week, handled"],
+                        "id": "d6f6aef8-7561-4940-b331-8d7a92d8ac17",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite — skip, swap or cancel any time, no lock-in."
+                        ],
+                        "id": "4a444f72-8329-48af-bb9f-577eb3e3efcb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop/subscription"
+                        },
+                        "children": ["Join the tea club"],
+                        "id": "687bfbff-3854-4ab5-a242-46be81e538ca",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "17727c85-a336-4eff-9d9a-604836f6c28b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4ccfc5ae-a75b-4e5f-85ac-17707fcd77f7",
+                "ord": "a1"
+              }
+            ],
+            "id": "10c59f19-dfdf-4a66-a2fc-30dd99abeff0",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Steepwell Tea House",
+      "seoDescription": "Browse everything Steepwell Tea House makes, with prices and options at a glance. Tea house.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "101ddc92-2798-4965-b3ad-fb8e3c556e22",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Shop tea"],
+                    "id": "b9679ccb-bb00-46fb-8d9a-5386bdb8c051",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every tea on the shelf right now — green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches."
+                    ],
+                    "id": "2d6f3491-7eda-4dfa-8547-4db3b249598d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1cbe4726-6826-45b2-b511-f1b43e68c9d4",
+                "ord": "a0"
+              }
+            ],
+            "id": "26c5201a-ba0e-4a7c-97cb-1b32cff693e5",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e12815ce-8ddf-46ea-a6ae-e62e0530b68e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Steepwell Tea House",
+      "seoDescription": "Explore the collections at Steepwell Tea House, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c810f53e-0b04-462b-9fd6-b9ab19ed15cd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "bef65aa4-9319-452d-a4f2-4e45c915adfa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The teas grouped the way people actually drink them — this season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual."
+                    ],
+                    "id": "1036bac5-9dfb-4e6f-92bd-97ed60f2f659",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e90432ef-e019-4863-a31d-da57623d8d22",
+                "ord": "a0"
+              }
+            ],
+            "id": "e31bdcf6-018a-4b19-b045-6c947f76ea95",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "4cdd26ea-c628-46b7-8fd6-10b3c161c142",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Steepwell Tea House",
+      "seoDescription": "Review what is in your cart and check out securely at Steepwell Tea House.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "020297cd-e09b-42bc-9b66-47189adcd86d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "0f782418-e085-480f-ab56-1fb06f89f5b5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right — a good cup should be a small pleasure, never a gamble."
+                    ],
+                    "id": "bb9d481b-55ae-4fc7-8c80-26fb51e0652c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "455eca6b-fcdd-4afa-bf3c-3e3825abf840",
+                "ord": "a0"
+              }
+            ],
+            "id": "02136448-330b-4a95-9e83-8a67eb240046",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "900e9f9e-47b3-4fac-9cf3-9bc0a1b546b1",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Steepwell Tea House",
+      "seoDescription": "Search Steepwell Tea House for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0f80ad11-83fe-4a0c-98e1-e4f0d7aea771",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Steepwell"],
+                    "id": "1d431814-0ab0-44fc-9865-85bf3e1c0700",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a green, a chai, or a brewing guide? Search the whole shelf and the journal below."
+                    ],
+                    "id": "26893684-e1d1-4f29-8b0e-6bf97e746b46",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b25ba290-21bb-48f4-9624-4320c8ede4b8",
+                "ord": "a0"
+              }
+            ],
+            "id": "a2099b12-9f59-418d-a21d-e011ffa07ba0",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "be2076da-8701-4006-83e4-2469db9e6e25",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Steepwell Tea House",
+      "seoDescription": "Stories, guides and notes from Steepwell Tea House.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "6e3e656c-a28b-4d3a-ab16-e086e1d8d70d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Steepwell journal"],
+                    "id": "cda45942-cc77-479c-8a3b-df007809305f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the tea room — how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery."
+                    ],
+                    "id": "fd83c8bf-2c82-4655-b9ff-f117e3a835bf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0ac10b18-aae2-48e4-bae1-3c2600bd3152",
+                "ord": "a0"
+              }
+            ],
+            "id": "b5cb1eb9-c716-4391-9ff5-c81aa9b68f2f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "1a0da6eb-86a7-450f-b767-d114e9c5ae8a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "7c8e6ad0-2a67-4740-b23b-c6f2a4240b57",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "bc949eec-86b6-4b41-b41e-a36134b91c09",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "05b62588-4f8d-4436-b25f-55ce340ed4d8",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "e322550a-875c-4238-a757-939410b6aab0",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "4105ff34-502d-4ba1-8c99-3e150dc19f19",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "6cc94aeb-d540-4211-b31d-5fc5437044a3",
+                "ord": "a0"
+              }
+            ],
+            "id": "dcf0cf9b-00a9-44b4-8b05-83c5a5e7b6c5",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Steepwell Tea House",
+      "seoDescription": "How Steepwell sources, keeps and ships tea — whole leaf, named gardens, fair prices, and cups that taste the way the hillside meant them to.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "aebe0c26-3b70-455e-add6-f20d132126aa",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Steepwell"],
+                    "id": "4c2e31dc-74d7-4a73-ac49-c4063dd23494",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way — one garden, one regular, one shared pot at a time — and it still runs on the same idea: source well, keep it fresh, and never rush the cup."
+                    ],
+                    "id": "af12103f-8018-4d51-bafa-1987d1f85268",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We buy whole-leaf tea from growers and importers we can name, and we pay above the commodity rate because the people who tend these gardens deserve a living from them. Then we keep the tea in small sealed batches, taste every one, and only tin what’s worth pouring a second cup of."
+                    ],
+                    "id": "b29a04ac-0f61-402d-9499-d5203488aa1d",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen — and a quiet few minutes to enjoy it."
+                    ],
+                    "id": "957061e8-522f-42a1-bc6b-024bf1b40167",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "6373637b-32f4-49e1-b3e2-f01e1ac7a7d7",
+                "ord": "a0"
+              }
+            ],
+            "id": "3b242e88-a331-43e5-bca5-116b2c6e8ced",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Steepwell Tea House",
+      "seoDescription": "Get in touch with Steepwell Tea House — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "babfe9fe-5189-4677-8c37-0576cee7d8cb",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "934f0777-f0c7-4471-986b-9fb1d7ecd9e6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a tea, a wholesale enquiry, or want us to blend for your café or shop? Tell us what you’re after and a real person at the tea house will get back to you."
+                    ],
+                    "id": "643147f8-5a96-4cc8-b598-bc12d81b515d",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@steepwelltea.example"
+                    },
+                    "children": ["Email the tea house"],
+                    "id": "c0daf2ba-b6b3-40f9-bd5c-56a6484030ae",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e4243bbc-403e-4347-89c2-c4df65528bd2",
+                "ord": "a0"
+              }
+            ],
+            "id": "07ca2fa8-a0ab-4022-9899-8f49531692b3",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Steepwell Tea House",
+      "seoDescription": "Product details at Steepwell Tea House — tea house, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "0a1a1a03-9d74-4af0-8660-868ce5b6745c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Steepwell Tea House"],
+                            "id": "5bae0dbd-b696-4f0a-a8da-dee718c75c1f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "3cf272d5-930b-4d6f-bede-524e65831dcb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "61da4391-90f6-45b4-9702-a7777e9fa0aa",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "05e1f1b2-1fe3-4842-ba02-52f730d1c3ab",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "6395dd95-18b9-4839-9a88-af416dde0a3b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "84a0d611-feb1-4184-8596-0646fa5f51c3",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "ef5e25f5-e20d-484f-a4c9-7887f79f4974",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "adfd756d-3279-4857-9cd3-41dcb80690c7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "0135e9d0-e61d-4289-ac88-e52cbfe8014f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "b5049d4d-0fc5-4abd-8c6e-2a63a22ec03b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "b4ebd7cd-1ab8-4ce2-a313-d7679e5b4d55",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "e7d3a977-3d79-409b-8006-98de463fa06d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f3dc30fd-8276-4493-83b0-a9f0696550bb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "62bdfa3a-a417-41e4-8be5-384b002887de",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "5a60e89b-3960-48f0-8d05-797e48a8bdd2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["How to steep it"],
+                            "id": "0cd1226a-2dc6-4983-a6b7-dbf9e76fa809",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature — good tea forgives a little, so taste as you go and steep it the way you like it."
+                            ],
+                            "id": "91d1261f-de8a-4513-8a1c-1b34895a58c9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "96b5d8de-eda6-4348-9670-f19d2599eb77",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "6d2bb195-86ef-45da-a070-8cb320e76a7a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "c8bf8726-b819-4c60-931e-c35cb06fd3b2",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d5f3835d-3661-407b-a248-5d4ff22e5e2f",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "c8f747d1-065f-4e47-8671-28807aa3134e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "d47c6c32-a8e7-4069-b467-36b89517a69e",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "e6caaae8-85dd-47e4-bd5b-beb7a9c7a718",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Pairs well with"],
+                    "id": "52512ea4-eeb2-4c3c-8fd9-72422642f717",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "17b0630f-17b1-4fd2-94ad-c986b5b595a2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "1b80ce2f-f17c-490c-82ad-27ff2a3e5757",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "5f817ecb-3008-4802-98df-d70835f96191",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0ddd489f-17ab-47bc-a8ab-90e4e649ba7a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "bea43a6c-af18-4e08-93ff-778c50a2adc5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ba9b6382-165f-4e9a-a17e-4b6b46f4b9ab",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "09dc593f-073b-4800-a864-9d549b249bcb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "a871fff0-3fd3-4916-80af-9571a19bf832",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "a4552cb2-23dd-4cc6-896a-131acc4f342a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0a1602d1-03c5-477a-8df3-3e7da5c757c0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "bed04f68-40e1-45ea-8cdf-ec408789dd32",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "e1d60025-9e4b-4520-8925-49e4c4551e13",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "ed714362-914b-477e-89a3-838ce6b2af03",
+            "ord": "a1"
+          }
+        ],
+        "id": "4a2ee515-1c55-4d64-9ebb-9443b33b408a"
+      }
+    }
+  ],
+  "theme": {
+    "name": "steepwell-calm",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.022 122)",
+      "--color-base-200": "oklch(93% 0.028 118)",
+      "--color-base-300": "oklch(88% 0.034 114)",
+      "--color-base-content": "oklch(24% 0.03 150)",
+      "--color-primary": "oklch(44% 0.08 165)",
+      "--color-secondary": "oklch(45% 0.06 58)",
+      "--color-accent": "oklch(50% 0.12 45)",
+      "--color-neutral": "oklch(27% 0.025 150)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.75rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "1rem",
+      "--depth": "0",
+      "--font-sans": "\"Karla\", sans-serif",
+      "--font-head": "\"Spectral\", serif",
+      "--color-primary-content": "oklch(98% 0.01 165)",
+      "--color-secondary-content": "oklch(98% 0.01 58)",
+      "--color-accent-content": "oklch(98% 0.01 45)",
+      "--color-neutral-content": "oklch(98% 0.01 150)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.12 45)",
+      "--color-highlight-content": "oklch(98% 0.01 45)",
+      "--color-border": "oklch(88% 0.034 114)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Spectral\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(19% 0.02 155)",
+      "--color-base-200": "oklch(16% 0.02 155)",
+      "--color-base-300": "oklch(13% 0.018 155)",
+      "--color-base-content": "oklch(94% 0.02 122)",
+      "--color-primary": "oklch(78% 0.1 165)",
+      "--color-secondary": "oklch(78% 0.06 58)",
+      "--color-accent": "oklch(76% 0.12 45)",
+      "--color-neutral": "oklch(31% 0.022 155)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--color-primary-content": "oklch(15% 0.02 165)",
+      "--color-secondary-content": "oklch(15% 0.02 58)",
+      "--color-accent-content": "oklch(15% 0.02 45)",
+      "--color-neutral-content": "oklch(98% 0.01 155)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(76% 0.12 45)",
+      "--color-highlight-content": "oklch(15% 0.02 45)",
+      "--color-border": "oklch(13% 0.018 155)"
+    }
+  }
+}

@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-steep-a-better-cup",
+    "status": "published",
+    "body": {
+      "title": "How to steep a better cup",
+      "excerpt": "Most bad tea isn’t bad tea — it’s good leaf brewed too hot, too long, or with too little of it. Three dials and you’re there.",
+      "featuredImage": {
+        "$asset": "post-brewing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A better cup almost never comes from a fancier tea — it comes from brewing the tea you already have a little more carefully. There are really only three things to get right: how much leaf, how hot the water, and how long you leave it. Once you have a feel for those, everything on the shelf opens up."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Leaf, heat, time"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with about a teaspoon of loose leaf per cup — more than you think, because whole leaf is airy and a mean pinch makes thin, sour tea. Match the heat to the tea: water just off the boil for black, oolong, chai and herbals, and a little cooler — rested a minute off the boil — for green and white, which scorch and turn bitter if you pour boiling water straight on them. Then steep to the tin’s time, usually two to four minutes, and taste toward the end."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Taste, then adjust"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Tea tells you what it needs. Thin and sour means it was under — add more leaf or a little more time. Harsh and drying means it was over — pull it sooner, or cool the water. Change one thing at a time and taste again. And keep going with the same leaves: most good tea, especially oolong and green, gives you a second and third steep that’s often better than the first."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "where-the-leaves-come-from",
+    "status": "published",
+    "body": {
+      "title": "Where the leaves actually come from",
+      "excerpt": "A tin with a garden’s name on it should mean something. Here’s what we know about the people who grow ours, and why we pay more.",
+      "featuredImage": {
+        "$asset": "post-origins"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most tea is sold as a commodity — bought and blended with no reference to which garden it came from or how good it is, then packed into bags where broken dust is a feature, not a flaw. We buy the other way: specific lots, from gardens and cooperatives we can name, through importers who’ve spent years building relationships with the growers."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why we pay above the market"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Tea grown at altitude, plucked by hand to two leaves and a bud, and processed with care costs far more to produce than the commodity price rewards. If we want growers to keep making tea this good — and to keep improving it — they have to earn a living from it. Paying above the market isn’t charity; it’s simply what keeps the good leaf being made."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What that gets you"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Traceability, first: when you can name the garden, you can taste what a region, an altitude and a season actually do to a cup, year after year. And freshness: whole leaf, kept in small sealed batches and sold before it fades, tastes like something. The name on the tin is a promise that someone, somewhere, was paid fairly to grow something worth steeping."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "making-a-ritual-of-it",
+    "status": "published",
+    "body": {
+      "title": "Making a small ritual of it",
+      "excerpt": "Tea is one of the few good excuses left to stop for four minutes and do nothing else. Here’s how to make those minutes count.",
+      "featuredImage": {
+        "$asset": "post-ritual"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best thing about brewing loose leaf isn’t only the cup at the end — it’s the four unhurried minutes in the middle, when the only thing you have to do is wait. In a day built out of notifications, a pot of tea is a small, defensible pause, and it’s worth treating it as one rather than rushing it like everything else."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Set a small stage"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You don’t need a ceremony or a cabinet of teaware. A pot or an infuser mug, a cup you actually like holding, and a clear spot to put them is plenty. Warm the pot, measure the leaf, pour the water, and then — this is the part — leave your phone somewhere else while it steeps. Watch the leaves open if you’re using glass; it’s genuinely nice to look at."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Let the wait be the point"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Those few minutes are the ritual, not an interruption to it. Some people use them to look out a window, some to breathe, some to think through the day ahead before it starts making demands. However you spend them, the tea gives you a reason to stop that a screen never will — and the cup, brewed with a little attention, is better for the wait."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

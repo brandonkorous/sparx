@@ -1,0 +1,2126 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "20140476-b1ff-45bf-b91c-6328698982fc",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Book"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "ebffc2e5-22d7-48e3-83be-118dff637f96",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "d11146b6-9c0b-4d85-9bbd-d693067956d2",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "6f7eaa3a-ba12-400a-9fce-fdb62c9cc047",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "ace48f89-19cc-40ca-bf59-1f3b7876ed11",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "b2a5e95e-5231-45c2-9430-41919574e806",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "9ee5dca7-cd5b-45b9-963d-c7b06d260adb",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "f118ede3-5b22-4fa7-8a19-cb9028c735d6",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "3d735217-8f36-411c-ac95-717c80a25721",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "b00d3c7a-8b9d-4a1e-8cdc-34b62b2836a5",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "34047f25-5245-48c6-b930-af6e55b6666a",
+                  "ord": "a2"
+                }
+              ],
+              "id": "83b971f1-8b0f-4dc4-83ea-7fc43ddc8c74",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Book"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "ca738b19-bb65-4df5-80ed-16d9e72c5616",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "9639cbfb-d873-4b1f-85ac-367549f3a1e1",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "51d90bc2-0f77-4141-bfd8-e53235646984",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "a504fd88-22df-4dd9-9674-1edd5f6c0e6b",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "44a0e9b0-60ae-4f62-ac77-551698ee43cb",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "ea7e5c27-e6e1-434e-982b-99bb76210b8f",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "4847959f-179c-41d6-a44c-a5338038cafc",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "fc2d1430-22e6-48f9-b5a6-351ffbbced2e",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "0a2ae13e-5c00-413e-811d-284c6cb6c275",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "59e0db91-351d-44e8-a983-923d4d9c1245",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "2a4b8f58-219a-482e-b3d5-d6b201b6cdad",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "e46df67f-77da-416a-8a9c-37f398d48ca5",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "4eab4517-e45a-4fd4-a80d-958c49a0bed6",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Book"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "1b270440-985c-44bc-a9a8-92858bd9a992",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c6f46d75-246a-4b9f-a4de-ae875a2bcd71",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "9d79b0e8-2d78-444e-9ef6-dbe2e274a9ec",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "7a772d53-a555-412d-ae2e-dbd5b39d34e5",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "22b24488-c5b1-458d-9f2d-fe5f5ba9d3b8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "8260ce2d-30f4-4ce5-b157-851b8c848aa1",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "f5f6f6db-4ac5-45e4-b877-c8468b45ccc0",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "06db572b-a480-44f8-b3fa-34e03f88fdff",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "123b9945-a0e5-4e68-a564-f5b0a50b4452",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "9d12cd4d-704c-47a7-bc20-ae83481ad639",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "83c218ef-6166-4bb5-9275-911af4715873",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "a2b1aaff-7b3b-4b12-964a-82b8b28e8150",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "090623e3-0224-4d28-8e7d-6dd0b8c8dbec",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "77c8a5e8-43e3-4202-8a39-fd837e9486da",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "571b5a36-59c4-4871-a47f-58b007eb1ddf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "c9909d5c-91bb-4a6e-aacb-e3a80c04afb5",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c22a6861-f67c-4978-a57d-b082caa544d4",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "885989ec-b91d-4817-9a7e-0e7e574a5b1b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ea2d26f3-1962-4e63-82ab-f13c74376bab",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "73587419-207e-43e2-93c5-287288f03254",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "8552e177-be8c-4298-8697-021deeb0236d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "d97686ef-df79-4d72-b564-bca83835abe1",
+              "ord": "a0"
+            }
+          ],
+          "id": "2ed5202b-dbfa-4a5c-8449-91507b362f78",
+          "ord": "a2"
+        }
+      ],
+      "id": "e62f656e-2f38-4b02-a41a-7484e1cc9d4c"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Kinetic Spine & Sport — sports chiropractic & rehab",
+      "seoDescription": "Sports chiropractic, active-release, dry needling and progressive rehab for athletes and active people. Book a movement assessment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "400ea526-a146-4415-8cc9-31eca7ea3ba4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1649751361457-01d3a696c7e6?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BvcnRzJTIwcGh5c2ljYWwlMjB0aGVyYXB5fGVufDB8MHx8fDE3ODYzOTA3MzJ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A runner mid-stride during a rehab session on the clinic floor",
+                  "loading": "eager"
+                },
+                "id": "7b5e0a81-a22b-4083-b818-fa2368a7d834",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "cf08681b-d3b1-4d9e-8553-f0bcea745ea8",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-center text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Get back to training — stronger than the injury"],
+                    "id": "8cc92ba6-360f-43d4-8a2a-83cdaeffd1af",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Sports chiropractic, active-release, dry needling and progressive rehab for athletes and active people. We find the cause, fix it, and build you back to full speed."
+                    ],
+                    "id": "91a0c1de-d9a6-412c-92a9-db6e2ce6b1be",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book an assessment"],
+                        "id": "80c86742-e1d9-4c70-b1c9-c4da1f7596b0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-outline btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See what we do"],
+                        "id": "e0dbc8b5-5d3a-4f63-9ed9-6fa053bb978b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2356fce2-2198-43b0-848f-46102db04a6b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9a9defa5-faa3-47b6-b267-28aa34393eca",
+                "ord": "a2"
+              }
+            ],
+            "id": "643e989b-44e7-43af-9f83-07f046d8ae16",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Sports-injury specialists"],
+                            "id": "e9943411-259d-4e85-bcff-f9df7e6b50c5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We treat athletes every day — from weekend runners to competitive lifters. You get someone who understands the demand you’re training back toward."
+                            ],
+                            "id": "529a29e8-8438-4924-82e9-e2699a93b84b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "004e1d8d-a8f9-4d86-b198-f3d60c7ea8bd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Active-release & dry needling"],
+                            "id": "b6448951-8fc3-4c65-beb7-c47500885a84",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Hands-on soft-tissue work and precise needling to release what’s locked up, so the adjustment holds and the movement comes back."
+                            ],
+                            "id": "51370263-a91f-4df2-b991-af50c85803a0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3ac57f4a-b504-4982-972e-fcd221099f36",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Back to training fast"],
+                            "id": "10e9bf65-ebbf-44fe-82d3-6c2268226503",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "No endless maintenance plans. A clear diagnosis, a real plan, and a target date to be back doing the thing you came here to do."
+                            ],
+                            "id": "5c6d820c-3c5b-4fc2-8bbe-033ecfd0381a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bd364a3c-d374-455c-b4fe-479158cd0930",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Movement screening"],
+                            "id": "26e9aae8-fe81-43a8-b52a-f9b65cb5ec70",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We assess how you actually move under load and find the weak link — then load it, so the injury doesn’t come back."
+                            ],
+                            "id": "be0c7a3b-af3d-45ed-8e4d-39fddc5941df",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "333e3dd5-f5b9-42ac-b9fe-2b01f25565b9",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "b2837bde-1503-48a4-acc6-7f5fbd10b9f5",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e68de2df-00d3-4934-bb74-728519a3e27e",
+                "ord": "a0"
+              }
+            ],
+            "id": "565b10b0-8181-429c-9119-fbbdebd198c8",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["What you can book"],
+                        "id": "92419b06-ec90-457f-bb25-bde2dc9b0e03",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Straight-talking visits with clear times and prices. Full availability is on the booking page — pick a provider and a slot that works."
+                        ],
+                        "id": "c299bf7a-21e6-4e15-b310-c3c1988d1139",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b5e62eee-9811-458f-bb54-f1dd9fb73f31",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-4 @2xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Movement assessment"],
+                                "id": "d400b86d-fd12-45c8-ac0c-877019aff2f6",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$95"],
+                                "id": "eba1e0fa-dce5-42bd-afce-14a76496e58d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b28d1793-f3dd-4905-baa9-0f8ad2aaa67c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["45 min"],
+                            "id": "b2f9e83e-1b56-4a4a-8741-7890b811ec96",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The full screen — find the limit, build the plan."],
+                            "id": "fa46d242-0172-428a-8668-aa7450dd51a2",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b8766799-4be8-4b60-a003-38fa9b80e813",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Sports injury visit"],
+                                "id": "e69583b2-6881-452b-a6cf-c149e9aa7aaf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$120"],
+                                "id": "97af529a-b250-4f3d-8a60-117a424a5544",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "bfad161c-61cc-4d6e-90fa-f8bbc36004ad",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["40 min"],
+                            "id": "23a2171b-24a1-4e0a-9b9e-0750c536da11",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Diagnose it, calm it, start moving again."],
+                            "id": "26961f22-bcd8-49f3-af47-13b0d2bf2bd9",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "e2842d34-e781-46bb-ba69-7d0765320c27",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Active-release session"],
+                                "id": "39d09f16-2475-4bfc-83d1-f873884761eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$85"],
+                                "id": "41719d8c-551e-4c55-9a69-b0c8a876a8b9",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "649392ae-3cad-489a-850c-1daf92b4c8d5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["30 min"],
+                            "id": "a235d54d-9637-4710-a6e0-621bc9dbb7d1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Soft-tissue work to free up restriction."],
+                            "id": "aa9a10e4-6004-43e7-9049-e9f2f9f0c523",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "d4a6fd6d-f73a-49fb-9c27-f84ef82822e4",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-2 border border-base-300 bg-base-100 p-6",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Rehab session"],
+                                "id": "283dc973-6143-427d-8aa5-bc261630aad1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-bold text-base-content",
+                                "children": ["$110"],
+                                "id": "ac2e6fa6-8dc0-4d9f-9bc0-9d332c2acbcb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "85333139-d8cd-4bb8-a265-63c13ee11477",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                            "children": ["1 hr"],
+                            "id": "39a37ba4-79fd-442b-8479-6fc4d756d3ba",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Loaded rehab that keeps it from returning."],
+                            "id": "5b106225-61f6-4d0e-b73e-d6450b0c3604",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "680a198a-dd50-4771-a155-17ff74c6ead2",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "683ca35c-3fb3-408b-a4d9-45a8f0a2a807",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See everything & book"],
+                        "id": "bc66f1f1-5b5e-4811-973f-35e6a9c1d221",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "9c404478-eb39-4842-b72b-06f38978dac6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "3d7c58ef-b4e0-47b1-8ac0-e54192550059",
+                "ord": "a0"
+              }
+            ],
+            "id": "430e4524-6db9-4ae5-8aa9-e6013ec0b8d2",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXRobGV0ZSUyMHJlaGFiJTIwZXhlcmNpc2V8ZW58MHwwfHx8MTc4NjM5MDczOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A provider guiding an athlete through a loaded movement screen",
+                      "loading": "lazy"
+                    },
+                    "id": "504d8288-f94d-47ec-9c2a-2a87046c817c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Assess, treat, rebuild — the Kinetic method"],
+                        "id": "dd72ddc5-a7a1-4766-8d7d-93c9ed21274f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Most clinics chase the pain. We chase the cause. Every athlete starts with a movement assessment, so we treat the reason the tissue failed — not just the spot that hurts."
+                        ],
+                        "id": "ef613e6d-2075-4ff3-b27a-6ffc4e87ac71",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build capacity back. That last step is what keeps you off the table and on the field."
+                        ],
+                        "id": "f1358e81-d9f5-452f-ad95-c8a5b22e7bf6",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book your assessment"],
+                            "id": "abb89515-eff6-47a8-928f-f511a3e41f37",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "c5bdb34d-7248-48c5-9d8e-6ce08cfb3b97",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "dfaacacb-a468-4f93-b982-70b1aaab54eb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ff290e16-94fa-4cb0-8d44-29c31990c12e",
+                "ord": "a0"
+              }
+            ],
+            "id": "b28c8a80-4ba6-4cdd-8c35-1600e82f514f",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Your providers"],
+                        "id": "a28d1419-7334-4e05-b1f4-d21fdf19f244",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book by name — you’ll work with someone who knows your history and your goals."
+                        ],
+                        "id": "9f996a40-298e-49b5-b794-d30348ff7617",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4d38bcf5-746f-4eb9-81ff-25252fbf54ed",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1671869239603-8d73133e0e5e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGh5c2ljYWwlMjB0aGVyYXBpc3QlMjBwb3J0cmFpdCUyMG1hbnxlbnwwfDB8fHwxNzg2MzkwNzQxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Marcus Vela, sports chiropractor",
+                              "loading": "lazy"
+                            },
+                            "id": "5b953a3b-7b22-4076-ac4b-d454c4e53c2b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Marcus Vela"],
+                                "id": "457ee1ee-824d-4edd-ac88-f0f7fba9badd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Sports chiropractor"],
+                                "id": "7ece9de9-7b0d-49c8-8b45-64112900db39",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Adjustments and active-release for competitive and everyday athletes. Marcus leads the clinic."
+                                ],
+                                "id": "076bcc12-ffe7-47cc-b60d-81a4ea0a464d",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "c540ca7d-a6dc-4c28-b379-8f6a13f52597",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5f635b4-7fac-4f8b-9110-4081b0d59bd3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1526080652727-5b77f74eacd2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBwaHlzaWNhbCUyMHRoZXJhcGlzdCUyMHBvcnRyYWl0fGVufDB8MHx8fDE3ODYzOTA3NDR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Dr. Dana Okafor, rehab & dry-needling lead",
+                              "loading": "lazy"
+                            },
+                            "id": "cf5a2614-c058-4703-86fa-b4971a4e4ee1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Dr. Dana Okafor"],
+                                "id": "485af442-5e91-4223-b44c-7ded1e3e360c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Rehab & dry-needling lead"],
+                                "id": "99ea9cc5-8ae7-49c6-969b-d996d132bcec",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Dry needling and progressive rehab — the strength work that makes the fix stick."
+                                ],
+                                "id": "99bb1f62-eafa-4e5e-9aee-24e31300b6f8",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "b1196c5a-f17c-4708-b28f-9b4640e8b8d9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "523f8fa6-c9cc-4f7d-81a4-c29eed26c688",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1526080652727-5b77f74eacd2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3BvcnRzJTIwdGhlcmFwaXN0JTIwcG9ydHJhaXR8ZW58MHwwfHx8MTc4NjM5MDc0N3ww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Theo Reyes, performance & movement specialist",
+                              "loading": "lazy"
+                            },
+                            "id": "e058a8b5-22a7-44a6-b23b-f9b2471cb027",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Theo Reyes"],
+                                "id": "77a09274-3c09-46c1-957d-b0ecef2ba028",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-sm font-medium uppercase tracking-wide text-secondary",
+                                "children": ["Performance & movement specialist"],
+                                "id": "36ad26b5-061b-472c-acb0-7d637e3ff89d",
+                                "ord": "a1"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Movement screening and return-to-sport plans for people chasing a number."
+                                ],
+                                "id": "95c895f5-11ae-44b2-b111-a2e1e4730f83",
+                                "ord": "a2"
+                              }
+                            ],
+                            "id": "ab48cc0c-4e05-4e65-9845-13ff25d7d0c9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "966624d8-a1d7-40e7-a0a6-267a9c1b4f1f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "e5af9818-7ce1-4195-b0ec-33f9ee1f802e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "c8b5806c-58eb-4c55-b977-f6adeeae36da",
+                "ord": "a0"
+              }
+            ],
+            "id": "744e83e2-5254-4f0a-83a7-2949011dcbfd",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center ",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
+                    "children": [
+                      "“Tore my calf eight weeks out from my marathon and thought I was done. Kinetic had me back on the start line — and I ran a PR. They didn’t just patch me up, they rebuilt me.”"
+                    ],
+                    "id": "3fa4e608-9b4a-4f6b-9d70-0cc3a590afcf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
+                    "children": ["Renata M., marathon runner"],
+                    "id": "73eaa03b-d492-4bca-a368-21974a67a2e1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "df469b3b-f35b-436d-8a08-f7ed947fd3bb",
+                "ord": "a0"
+              }
+            ],
+            "id": "985879ea-e021-40e9-a995-1f37a33e44ae",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Stop training around it"],
+                    "id": "84a4d2b2-1fef-42aa-ae01-170526e3bb88",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "Book a movement assessment and get a real plan to be back at full speed. It takes about a minute."
+                    ],
+                    "id": "d3fdb761-3582-4af0-9934-26d7c09437ce",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-neutral btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book an assessment"],
+                    "id": "9fc24364-d688-4803-a496-d0ef3aaa2609",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "185b648e-496b-4eec-ba27-4e8982870ebc",
+                "ord": "a0"
+              }
+            ],
+            "id": "060df9d1-6026-4d12-b712-086f063e12dc",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Kinetic Spine & Sport",
+      "seoDescription": "See what Kinetic Spine & Sport offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "de83153c-a426-4781-b24c-6134211c78f0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1657803802395-5aae14a8d099?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGh5c2ljYWwlMjB0aGVyYXB5JTIwZ3ltfGVufDB8MHx8fDE3ODYzOTA3MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "An open rehab floor with treatment tables and training space",
+                  "loading": "eager"
+                },
+                "id": "f4eba4cd-5c90-422a-8be5-d541aa7510b5",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "absolute inset-0 bg-black/65",
+                "id": "9f366f8f-3b96-483c-99ba-686b10f9f85b",
+                "ord": "a1"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col justify-center gap-6 px-6 py-28 text-white @3xl:py-40 items-start text-left",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
+                    "children": ["Book your visit"],
+                    "id": "e83aaf85-0e21-4c3c-8e59-7898cd6f119a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
+                    "children": [
+                      "Choose a service to see prices and live availability, then pick your provider and time."
+                    ],
+                    "id": "9fd3c5d8-25a0-4e21-8733-8148e8aa9530",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-wrap gap-3 justify-start",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["See services below"],
+                        "id": "f7bf29c5-2154-4070-b492-ad8c56010324",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "53fb4fbc-e96d-4c07-8fe4-f41f0458b67f",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "e8daa954-44ea-4d26-987f-c924eb6df9de",
+                "ord": "a2"
+              }
+            ],
+            "id": "9e52df47-e824-452a-8054-34d923fec3f3",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "14b474f5-b1c0-490d-802a-90f2c97f0fee",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About — Kinetic Spine & Sport",
+      "seoDescription": "Who Kinetic Spine & Sport is, what we do and the people behind the work.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4ab71ca6-9824-40f3-8f22-298f6730b261",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl items-center gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full bg-base-200 object-cover ",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1657803802395-5aae14a8d099?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGh5c2ljYWwlMjB0aGVyYXB5JTIwZ3ltfGVufDB8MHx8fDE3ODYzOTA3MzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "An open rehab floor with treatment tables and training space",
+                      "loading": "lazy"
+                    },
+                    "id": "10e00bd5-0321-4504-a613-ac734a163fbc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["About Kinetic Spine & Sport"],
+                        "id": "e45274bf-f512-432f-a063-7590e880e30b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We built Kinetic for the people other clinics send home with a heat pack and a shrug. Athletes, lifters, runners, weekend warriors — anyone whose life doesn’t stop when something tweaks."
+                        ],
+                        "id": "42450bfd-d93d-40f9-95bd-4d14727f0c4c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity — because getting out of pain and getting back to performance are two different jobs, and we do both."
+                        ],
+                        "id": "fb549d98-6945-4a79-a5a9-24f64350dd07",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book an assessment"],
+                            "id": "4e681502-52e0-42e2-9c32-9a55e1d831b3",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "349d7f87-cc13-4c57-b9ea-48dadcb56c9e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c89c72ca-c491-433d-9bbc-1600fa704102",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a816e65a-a8ae-417e-a822-7a32c7b869b0",
+                "ord": "a0"
+              }
+            ],
+            "id": "3c5fed19-a535-47d3-93d7-096e13b6fdde",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["How we work"],
+                    "id": "a54866bd-7cfd-4a05-b9fe-44bf73b5d074",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Assessment first"],
+                            "id": "fe507b94-e1bc-4df7-91f8-35002ca91e49",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Every plan starts with how you move. We find the weak link before we touch the pain, so we fix the cause, not the symptom."
+                            ],
+                            "id": "c76b9673-6239-4bf3-bf03-d18d517ae7cb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "be261c39-ad96-4dad-b7ce-c0f34cf19975",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Hands-on, then loaded"],
+                            "id": "e8382a51-1065-4ff8-af55-fdcc2718fe1e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Active-release and dry needling to settle things down, then progressive rehab to build real capacity back."
+                            ],
+                            "id": "fd625a66-a5ec-4498-950e-51647ccdbbed",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d283251b-47e8-48d7-8fdb-45d0e26bfa6f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Back to your sport"],
+                            "id": "d7a89e35-6063-4930-aea3-4db27c102dbd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "We work to a target — a return-to-sport date, a lift, a race — not an open-ended schedule of maintenance visits."
+                            ],
+                            "id": "9bd6ab22-6d36-41a3-a794-eac565487b62",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "445cbfab-8f4b-4f6c-b452-5bc117c67b67",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "282e1ca1-04ad-45aa-953a-cbf38af6e190",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "86432ed4-1c72-4988-9936-69bfa8b505ff",
+                "ord": "a0"
+              }
+            ],
+            "id": "3bab07b3-7c33-47f6-bc52-b78b6cda5183",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Kinetic Spine & Sport",
+      "seoDescription": "Where to find Kinetic Spine & Sport, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "dea81352-e534-4309-9997-7cc388336b2c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Visit the clinic"],
+                        "id": "0654e882-e1c7-48b9-920d-61de6a78e1c1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Kinetic Spine & Sport"],
+                            "id": "6d7ebe72-f6cf-4922-8af4-06e639c7acf4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["410 Foundry Ave"],
+                            "id": "5d36a0f0-e735-4da7-819e-b9c117616c0a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg leading-relaxed text-base-content",
+                            "children": ["Unit 3 · Denver, CO 80205"],
+                            "id": "9f22948d-39f5-4a0e-917f-f5aff33c4117",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "8244c08d-9351-4459-8640-23d4e1880aeb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Monday – Thursday"],
+                                "id": "8b770f96-4333-4d2b-938f-42548d75be7c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 8:30"],
+                                "id": "47dc172e-663c-49d8-84f6-b7bbd277d921",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ab58d130-c81d-41e5-9595-0276a99e331c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Friday"],
+                                "id": "a928e0df-ba48-4807-ac54-d9680ca2815a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["7:00 – 7:00"],
+                                "id": "342f7649-443e-4632-af74-0d44c29957e6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5148c5f6-db29-41e6-a845-5552ffa0078d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Saturday"],
+                                "id": "147513c0-c757-4f3e-befa-d3e842345db5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["8:00 – 2:00"],
+                                "id": "e4eeb5ee-c715-4950-98db-1fbed455a54a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c125152c-0cb1-45de-b016-dbacdc23c772",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-6 border-b border-base-200 pb-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium text-base-content",
+                                "children": ["Sunday"],
+                                "id": "8868e1de-c7e3-42c9-8b4e-567b7395acc4",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base-content",
+                                "children": ["Closed"],
+                                "id": "06318bc2-13e7-4ac9-ab3e-99d0b571cdfb",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7dc924e2-8f7f-4700-8d05-c7aebebff9a0",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "a7d2ab9d-5dd5-4985-ad67-f9c33ffab21f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "07da8fc9-3f2a-41b8-8fa9-92c98b28e3a0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "host",
+                    "component": "site.map",
+                    "class": "w-full",
+                    "props": {
+                      "location": "410 Foundry Ave, Denver, CO 80205",
+                      "title": "Find us",
+                      "zoom": 15,
+                      "ratio": "classic"
+                    },
+                    "id": "6176ff9c-5ed8-4ea4-beb6-ffbff0997da1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "55bd20cd-0f74-4197-ab18-7315f3b17078",
+                "ord": "a0"
+              }
+            ],
+            "id": "3288dbd4-bbe0-4eb6-b9b2-1028e099921b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 text-base-content @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
+                    "children": ["Rather book than call?"],
+                    "id": "eaa7bbc8-8f89-4cba-b9e3-1b0e2a06612f",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-xl text-lg leading-relaxed opacity-90",
+                    "children": [
+                      "See live availability and reserve your time online — no phone tag, no waiting room hold music."
+                    ],
+                    "id": "b68919b9-d944-48d2-8f14-5b2b5eb982a7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "/book"
+                    },
+                    "children": ["Book an assessment"],
+                    "id": "0b7429ef-cb17-4752-b625-766016a965f6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0669afdf-e8c8-4a71-9be2-27a45d0ba906",
+                "ord": "a0"
+              }
+            ],
+            "id": "1a8a39a8-57af-42d7-b0b6-3f34e8a0367a",
+            "ord": "a1"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "kinetic",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.004 250)",
+      "--color-base-200": "oklch(95% 0.007 250)",
+      "--color-base-300": "oklch(90% 0.012 250)",
+      "--color-base-content": "oklch(22% 0.03 260)",
+      "--color-primary": "oklch(56% 0.19 255)",
+      "--color-secondary": "oklch(34% 0.035 260)",
+      "--color-accent": "oklch(80% 0.19 128)",
+      "--color-neutral": "oklch(24% 0.025 260)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.25rem",
+      "--radius-box": "0.375rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(100% 0 0)",
+      "--color-secondary-content": "oklch(98% 0.01 260)",
+      "--color-accent-content": "oklch(15% 0.02 128)",
+      "--color-neutral-content": "oklch(98% 0.01 260)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(80% 0.19 128)",
+      "--color-highlight-content": "oklch(15% 0.02 128)",
+      "--color-border": "oklch(90% 0.012 250)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(19% 0.02 260)",
+      "--color-base-200": "oklch(15% 0.015 260)",
+      "--color-base-300": "oklch(12% 0.01 260)",
+      "--color-base-content": "oklch(95% 0.005 250)",
+      "--color-primary": "oklch(66% 0.19 255)",
+      "--color-secondary": "oklch(80% 0.02 255)",
+      "--color-accent": "oklch(83% 0.19 128)",
+      "--color-neutral": "oklch(86% 0.02 255)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 255)",
+      "--color-secondary-content": "oklch(15% 0.02 255)",
+      "--color-accent-content": "oklch(15% 0.02 128)",
+      "--color-neutral-content": "oklch(15% 0.02 255)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(83% 0.19 128)",
+      "--color-highlight-content": "oklch(15% 0.02 128)",
+      "--color-border": "oklch(12% 0.01 260)"
+    }
+  }
+}

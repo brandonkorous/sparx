@@ -1,0 +1,399 @@
+{
+  "policies": [
+    {
+      "handle": "stillwater-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us 24 hours’ notice to change or cancel. We’ll send a gentle reminder the day before and two hours ahead so nothing sneaks up on you."
+    },
+    {
+      "handle": "ritual-deposit",
+      "name": "Ritual & couples deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 3000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer rituals and couples rooms hold a $30 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over to your next visit."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "maren",
+      "name": "Maren Voss",
+      "kind": "staff",
+      "skillTags": ["swedish", "hot-stone", "aromatherapy", "couples"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "ione",
+      "name": "Ione Bellamy",
+      "kind": "staff",
+      "skillTags": ["swedish", "prenatal", "ritual", "aromatherapy"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "delphine",
+      "name": "Delphine Marchetti",
+      "kind": "staff",
+      "skillTags": ["deep-tissue", "hot-stone", "ritual", "couples"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 660,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 660,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "room-linden",
+      "name": "The Linden Room",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "room-cedar",
+      "name": "The Cedar Room",
+      "kind": "space",
+      "skillTags": ["room"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "suite-stillwater",
+      "name": "The Stillwater Suite",
+      "kind": "space",
+      "skillTags": ["couples-suite", "room"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "swedish-60",
+      "name": "Swedish relaxation · 60 min",
+      "description": "Long, slow, flowing strokes that quiet a busy mind and let the whole body soften. Our most-loved unwind.",
+      "durationMinutes": 60,
+      "priceCents": 11000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["swedish"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "stillwater-standard"
+    },
+    {
+      "handle": "swedish-90",
+      "name": "Swedish relaxation · 90 min",
+      "description": "The full unhurried hour and a half — nowhere to be, nothing to do, every knot given the time it needs to let go.",
+      "durationMinutes": 90,
+      "priceCents": 15500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["swedish"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "stillwater-standard"
+    },
+    {
+      "handle": "hot-stone",
+      "name": "Warm stone massage · 90 min",
+      "description": "Smooth, sun-warm stones melt tension before a hand ever presses. Deep, radiant heat that reaches what pressure alone can’t.",
+      "durationMinutes": 90,
+      "priceCents": 17000,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["hot-stone"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "stillwater-standard"
+    },
+    {
+      "handle": "aromatherapy",
+      "name": "Aromatherapy massage · 75 min",
+      "description": "You choose the blend — calm, restore or breathe — and we work it in with slow, grounding pressure. You’ll carry the quiet home with you.",
+      "durationMinutes": 75,
+      "priceCents": 14000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["aromatherapy"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "stillwater-standard"
+    },
+    {
+      "handle": "scalp-face",
+      "name": "Warm scalp & face ritual · 60 min",
+      "description": "Warm oil worked through the scalp, then a slow face and neck release. The one you book when you can’t switch your head off.",
+      "durationMinutes": 60,
+      "priceCents": 12500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["aromatherapy"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "stillwater-standard"
+    },
+    {
+      "handle": "stillwater-ritual",
+      "name": "The Stillwater ritual · 120 min",
+      "description": "Our signature two hours: a warm foot soak, a full aromatherapy massage, warm stones and a scalp finish. A whole afternoon that dissolves.",
+      "durationMinutes": 120,
+      "priceCents": 24000,
+      "bufferAfterMin": 20,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["ritual"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "ritual-deposit"
+    },
+    {
+      "handle": "couples-retreat",
+      "name": "Couples massage · 90 min",
+      "description": "Two therapists, one candlelit suite, side by side. Arrive together, breathe out together — the most-gifted hour on the menu.",
+      "durationMinutes": 90,
+      "priceCents": 32000,
+      "bufferAfterMin": 20,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "therapist",
+          "kind": "staff",
+          "skillTags": ["couples"],
+          "count": 2
+        },
+        {
+          "role": "suite",
+          "kind": "space",
+          "skillTags": ["couples-suite"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "ritual-deposit"
+    }
+  ]
+}

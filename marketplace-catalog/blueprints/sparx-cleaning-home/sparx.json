@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-cleaning-home",
+  "name": "sparx — House Cleaning (Home)",
+  "version": "1.0.0",
+  "tagline": "A bright, friendly template for house cleaners — book cleans online from day one.",
+  "description": "A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as \"Tidy Nest\", with a recurring-plan angle — the same trusted cleaner every visit.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "House cleaning",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — House Cleaning (Home) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — House Cleaning (Home) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#00b8b4",
+  "sortWeight": 68
+}

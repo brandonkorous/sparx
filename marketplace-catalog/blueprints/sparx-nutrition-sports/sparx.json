@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-nutrition-sports",
+  "name": "sparx — Nutrition (Sports & Performance)",
+  "version": "1.0.0",
+  "tagline": "A bold, data-driven template for sports & performance nutrition — book consults from day one.",
+  "description": "A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as \"Fuel Performance Nutrition\".",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Nutrition",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Nutrition (Sports & Performance) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Nutrition (Sports & Performance) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#007be4",
+  "sortWeight": 19
+}

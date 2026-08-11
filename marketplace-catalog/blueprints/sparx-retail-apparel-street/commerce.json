@@ -1,0 +1,1810 @@
+{
+  "categories": [
+    {
+      "handle": "tops",
+      "name": "Tops",
+      "description": "Graphic tees and tops.",
+      "featured": true
+    },
+    {
+      "handle": "fleece",
+      "name": "Fleece",
+      "description": "Hoodies, crews and outerwear.",
+      "featured": true
+    },
+    {
+      "handle": "bottoms",
+      "name": "Bottoms",
+      "description": "Cargos and sweats.",
+      "featured": true
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Caps, bags and beanies.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-drop",
+      "name": "The latest drop",
+      "description": "Everything that just landed — move fast.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "logo-tee",
+        "static-tee",
+        "heavyweight-hoodie",
+        "coaches-jacket",
+        "utility-cargo",
+        "six-panel-cap",
+        "cuffed-beanie"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The pieces everyone is copping.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["logo-tee", "heavyweight-hoodie", "boxy-crewneck"]
+    },
+    {
+      "handle": "graphics",
+      "name": "Graphics",
+      "description": "The printed tees, all in one place.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["logo-tee", "static-tee"]
+    },
+    {
+      "handle": "fleece-shop",
+      "name": "Fleece",
+      "description": "Heavyweight hoodies, crews and layers.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "heavyweight-hoodie",
+        "boxy-crewneck",
+        "coaches-jacket",
+        "heavyweight-sweatpant"
+      ]
+    },
+    {
+      "handle": "bottoms-shop",
+      "name": "Bottoms",
+      "description": "Cargos and sweats built to take it.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["utility-cargo", "heavyweight-sweatpant"]
+    },
+    {
+      "handle": "accessories-shop",
+      "name": "Accessories",
+      "description": "Caps, totes and beanies to finish the fit.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["six-panel-cap", "canvas-tote", "cuffed-beanie"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "logo-tee",
+      "title": "Cardinal Logo Tee",
+      "description": "The one that started it — a heavyweight 240gsm cotton tee with our bird mark screen-printed big across the chest in plastisol that will not peel. Boxy body, ribbed collar, dropped shoulder. Wears in, never wears out.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Cardinal Supply",
+      "tags": ["tee", "graphic", "heavyweight"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["new-drop", "best-sellers", "graphics"],
+      "seoTitle": "Cardinal Logo Tee — heavyweight graphic tee | Cardinal Supply",
+      "seoDescription": "A boxy 240gsm cotton tee with a big screen-printed chest logo. In black, bone and cardinal red.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Cardinal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-TEE-LOGO-XS-BLA",
+          "priceCents": 4400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XS-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XS-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-S-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-S-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-S-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-M-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-M-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-M-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-L-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-L-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-L-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XL-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XL-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XL-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XXL-BLA",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XXL-BON",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-TEE-LOGO-XXL-CAR",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Cardinal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-logo-tee",
+          "isPrimary": true,
+          "alt": "Cardinal Logo Tee"
+        }
+      ]
+    },
+    {
+      "handle": "static-tee",
+      "title": "Static Print Tee",
+      "description": "A glitched, blown-out static graphic printed edge to edge on the same heavyweight blank. Loud front, hit on the back, built to be the reason someone stops you on the street. Small run — when it is gone, it is gone.",
+      "status": "active",
+      "productType": "Apparel",
+      "vendor": "Cardinal Supply",
+      "tags": ["tee", "graphic", "print"],
+      "categoryHandles": ["tops"],
+      "collectionHandles": ["new-drop", "graphics"],
+      "seoTitle": "Static Print Tee — all-over graphic tee | Cardinal Supply",
+      "seoDescription": "A blown-out static graphic on a heavyweight cotton blank, front and back. In black, white and acid.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "White"
+            },
+            {
+              "value": "Acid"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-TEE-STATIC-XS-BLA",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XS-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XS-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Acid"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-S-BLA",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-S-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-S-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Acid"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-M-BLA",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-M-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-M-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Acid"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-L-BLA",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-L-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-L-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Acid"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XL-BLA",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XL-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XL-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Acid"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XXL-BLA",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XXL-WHI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "White"
+          }
+        },
+        {
+          "sku": "CARD-TEE-STATIC-XXL-ACI",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Acid"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-static-tee",
+          "isPrimary": true,
+          "alt": "Static Print Tee"
+        }
+      ]
+    },
+    {
+      "handle": "heavyweight-hoodie",
+      "title": "Heavyweight Hoodie",
+      "description": "A 400gsm brushed-back fleece pullover with a double-lined hood, boxy fit and heavy metal-tipped drawcords. The kind of hoodie that stands up on its own. Printed small so it reads clean under a jacket or loud on its own.",
+      "status": "active",
+      "productType": "Fleece",
+      "vendor": "Cardinal Supply",
+      "tags": ["hoodie", "fleece", "heavyweight"],
+      "categoryHandles": ["fleece"],
+      "collectionHandles": ["new-drop", "best-sellers", "fleece-shop"],
+      "seoTitle": "Heavyweight Hoodie — 400gsm brushed fleece | Cardinal Supply",
+      "seoDescription": "A 400gsm brushed-back fleece pullover with a double-lined hood and boxy fit. In black, ash and cardinal.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Cardinal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-HOOD-XS-BLA",
+          "priceCents": 9800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XS-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XS-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-S-BLA",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-S-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-S-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-M-BLA",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-M-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-M-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-L-BLA",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-L-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-L-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XL-BLA",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XL-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XL-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XXL-BLA",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XXL-ASH",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-HOOD-XXL-CAR",
+          "priceCents": 9800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Cardinal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-hoodie",
+          "isPrimary": true,
+          "alt": "Heavyweight Hoodie"
+        }
+      ]
+    },
+    {
+      "handle": "boxy-crewneck",
+      "title": "Boxy Crewneck",
+      "description": "The hoodie’s quieter cousin — same 400gsm fleece, cropped a touch boxier, ribbed at the cuffs and hem so it sits right. Layer it, wear it solo, throw it under the coaches jacket. The workhorse of the fleece rack.",
+      "status": "active",
+      "productType": "Fleece",
+      "vendor": "Cardinal Supply",
+      "tags": ["crewneck", "fleece", "heavyweight"],
+      "categoryHandles": ["fleece"],
+      "collectionHandles": ["fleece-shop", "best-sellers"],
+      "seoTitle": "Boxy Crewneck — 400gsm heavyweight fleece | Cardinal Supply",
+      "seoDescription": "A boxy 400gsm fleece crewneck, ribbed at cuff and hem. In black, bone and forest.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Bone"
+            },
+            {
+              "value": "Forest"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-CREW-XS-BLA",
+          "priceCents": 8800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XS-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XS-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Forest"
+          }
+        },
+        {
+          "sku": "CARD-CREW-S-BLA",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-S-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-S-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Forest"
+          }
+        },
+        {
+          "sku": "CARD-CREW-M-BLA",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-M-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-M-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Forest"
+          }
+        },
+        {
+          "sku": "CARD-CREW-L-BLA",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-L-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-L-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Forest"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XL-BLA",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XL-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XL-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Forest"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XXL-BLA",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XXL-BON",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Bone"
+          }
+        },
+        {
+          "sku": "CARD-CREW-XXL-FOR",
+          "priceCents": 8800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Forest"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-crew",
+          "isPrimary": true,
+          "alt": "Boxy Crewneck"
+        }
+      ]
+    },
+    {
+      "handle": "coaches-jacket",
+      "title": "Sherpa Coaches Jacket",
+      "description": "A classic snap-front coaches jacket lined with heavy sherpa — wind-blocking nylon shell, deep hand pockets, our mark embroidered at the chest and printed big across the back. The outer layer the whole fit is built around.",
+      "status": "active",
+      "productType": "Fleece",
+      "vendor": "Cardinal Supply",
+      "tags": ["jacket", "outerwear", "sherpa"],
+      "categoryHandles": ["fleece"],
+      "collectionHandles": ["new-drop", "fleece-shop"],
+      "seoTitle": "Sherpa Coaches Jacket — snap-front, sherpa-lined | Cardinal Supply",
+      "seoDescription": "A snap-front nylon coaches jacket with a heavy sherpa lining and back print. In black and concrete.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Concrete"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-JKT-XS-BLA",
+          "priceCents": 14800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-XS-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-JKT-S-BLA",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-S-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-JKT-M-BLA",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-M-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-JKT-L-BLA",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-L-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-JKT-XL-BLA",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-XL-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-JKT-XXL-BLA",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-JKT-XXL-CON",
+          "priceCents": 14800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Concrete"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-jacket",
+          "isPrimary": true,
+          "alt": "Sherpa Coaches Jacket"
+        }
+      ]
+    },
+    {
+      "handle": "utility-cargo",
+      "title": "Utility Cargo Pant",
+      "description": "A relaxed, tapered cargo in tough cotton twill — six real pockets, reinforced knees, an adjustable hem so you can stack them or crop them clean over a boot. Made to haul gear and take a season of abuse without blinking.",
+      "status": "active",
+      "productType": "Bottoms",
+      "vendor": "Cardinal Supply",
+      "tags": ["cargo", "pants", "utility"],
+      "categoryHandles": ["bottoms"],
+      "collectionHandles": ["new-drop", "bottoms-shop"],
+      "seoTitle": "Utility Cargo Pant — tapered cotton twill | Cardinal Supply",
+      "seoDescription": "A tapered six-pocket cargo pant in tough cotton twill with an adjustable hem. In black, olive and concrete.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Olive"
+            },
+            {
+              "value": "Concrete"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-CARGO-XS-BLA",
+          "priceCents": 11800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XS-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XS-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-S-BLA",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-S-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-S-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-M-BLA",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-M-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-M-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-L-BLA",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-L-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-L-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XL-BLA",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XL-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XL-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XXL-BLA",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XXL-OLI",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Olive"
+          }
+        },
+        {
+          "sku": "CARD-CARGO-XXL-CON",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Concrete"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-cargo",
+          "isPrimary": true,
+          "alt": "Utility Cargo Pant"
+        }
+      ]
+    },
+    {
+      "handle": "heavyweight-sweatpant",
+      "title": "Heavyweight Sweatpant",
+      "description": "The bottom half of the fleece set — 400gsm brushed-back, tapered leg, ribbed cuff, deep zip pockets. Matches the hoodie and the crew colour for colour so you can run the full tracksuit or break it up.",
+      "status": "active",
+      "productType": "Bottoms",
+      "vendor": "Cardinal Supply",
+      "tags": ["sweatpant", "fleece", "heavyweight"],
+      "categoryHandles": ["bottoms"],
+      "collectionHandles": ["bottoms-shop", "fleece-shop"],
+      "seoTitle": "Heavyweight Sweatpant — 400gsm brushed fleece | Cardinal Supply",
+      "seoDescription": "A tapered 400gsm fleece sweatpant with a ribbed cuff and zip pockets. In black, ash and cardinal.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            },
+            {
+              "value": "XXL"
+            }
+          ]
+        },
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Cardinal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-SWEAT-XS-BLA",
+          "priceCents": 8200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XS-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XS-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-S-BLA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-S-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-S-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-M-BLA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-M-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-M-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-L-BLA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-L-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-L-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XL-BLA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XL-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XL-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL",
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XXL-BLA",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XXL-ASH",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-SWEAT-XXL-CAR",
+          "priceCents": 8200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XXL",
+            "Color": "Cardinal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-sweatpant",
+          "isPrimary": true,
+          "alt": "Heavyweight Sweatpant"
+        }
+      ]
+    },
+    {
+      "handle": "six-panel-cap",
+      "title": "Six-Panel Cap",
+      "description": "A structured six-panel cap in heavy cotton twill with an embroidered bird mark, a curved brim broken in just enough, and a metal buckle strap. The finisher on any fit, in colours that go with all of it.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Cardinal Supply",
+      "tags": ["cap", "hat", "accessory"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["new-drop", "accessories-shop"],
+      "seoTitle": "Six-Panel Cap — structured cotton twill | Cardinal Supply",
+      "seoDescription": "A structured six-panel cap with an embroidered mark and buckle strap. In black, concrete and cardinal.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Concrete"
+            },
+            {
+              "value": "Cardinal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-CAP-BLA",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-CAP-CON",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Concrete"
+          }
+        },
+        {
+          "sku": "CARD-CAP-CAR",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Cardinal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-cap",
+          "isPrimary": true,
+          "alt": "Six-Panel Cap"
+        }
+      ]
+    },
+    {
+      "handle": "canvas-tote",
+      "title": "Heavy Canvas Tote",
+      "description": "A 16oz cotton-canvas tote with a big screen-printed logo, boxed corners and webbing straps built to carry a laptop, a change of gear and a six-pack without giving out. The bag that comes with you everywhere.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Cardinal Supply",
+      "tags": ["tote", "bag", "accessory"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories-shop"],
+      "seoTitle": "Heavy Canvas Tote — 16oz printed cotton canvas | Cardinal Supply",
+      "seoDescription": "A 16oz cotton-canvas tote with a big printed logo and webbing straps. In natural and black.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Natural"
+            },
+            {
+              "value": "Black"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-TOTE-NAT",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Natural"
+          }
+        },
+        {
+          "sku": "CARD-TOTE-BLA",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-tote",
+          "isPrimary": true,
+          "alt": "Heavy Canvas Tote"
+        }
+      ]
+    },
+    {
+      "handle": "cuffed-beanie",
+      "title": "Cuffed Beanie",
+      "description": "A tight-knit ribbed beanie with a folded cuff and a woven bird tab — warm, low-profile, and the fastest way to finish a fit when it is cold. Runs true, stretches to fit, holds its shape wash after wash.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Cardinal Supply",
+      "tags": ["beanie", "hat", "accessory"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories-shop", "new-drop"],
+      "seoTitle": "Cuffed Beanie — ribbed knit | Cardinal Supply",
+      "seoDescription": "A tight ribbed cuffed beanie with a woven tab. In black, ash, cardinal and forest.",
+      "options": [
+        {
+          "name": "Color",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Black"
+            },
+            {
+              "value": "Ash"
+            },
+            {
+              "value": "Cardinal"
+            },
+            {
+              "value": "Forest"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CARD-BEAN-BLA",
+          "priceCents": 3000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Black"
+          }
+        },
+        {
+          "sku": "CARD-BEAN-ASH",
+          "priceCents": 3000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Ash"
+          }
+        },
+        {
+          "sku": "CARD-BEAN-CAR",
+          "priceCents": 3000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Cardinal"
+          }
+        },
+        {
+          "sku": "CARD-BEAN-FOR",
+          "priceCents": 3000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Color": "Forest"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cardinal-prod-beanie",
+          "isPrimary": true,
+          "alt": "Cuffed Beanie"
+        }
+      ]
+    }
+  ]
+}

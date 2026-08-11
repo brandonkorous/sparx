@@ -1,0 +1,610 @@
+{
+  "categories": [
+    {
+      "handle": "candles",
+      "name": "Candles",
+      "description": "Clean coconut-soy candles, refillable by design.",
+      "featured": true
+    },
+    {
+      "handle": "diffusers",
+      "name": "Diffusers & sprays",
+      "description": "Flame-free fragrance for every room.",
+      "featured": true
+    },
+    {
+      "handle": "refills",
+      "name": "Refills",
+      "description": "Top up a vessel you already own.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Ready-to-give sets and the small things.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New this season",
+      "description": "The latest scents and formats.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["everyday-candle", "travel-candle", "reed-diffuser", "gift-trio"]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best-sellers",
+      "description": "The ones people come back to refill.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["everyday-candle", "reed-diffuser", "candle-refill", "gift-trio"]
+    },
+    {
+      "handle": "the-scents",
+      "name": "The four scents",
+      "description": "Fresh Linen, Wild Sage, Sea Air and Pink Grapefruit — in every format.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["everyday-candle", "travel-candle", "discovery-set"]
+    },
+    {
+      "handle": "flame-free",
+      "name": "Flame-free",
+      "description": "Fragrance without a flame — diffusers and room sprays.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["reed-diffuser", "room-spray"]
+    },
+    {
+      "handle": "refill-reuse",
+      "name": "Refill & reuse",
+      "description": "Keep the vessel, replace the candle.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["candle-refill"]
+    },
+    {
+      "handle": "gift-ready",
+      "name": "Gift-ready",
+      "description": "Boxed, ribboned and ready to hand over.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["gift-trio", "discovery-set", "long-matches"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "everyday-candle",
+      "title": "The Everyday Candle",
+      "description": "The one that lives on the shelf and gets lit most nights. A clean, room-filling burn in a matte ceramic vessel, poured in coconut-soy wax with a cotton wick. Pick a scent and a size — the 8 oz for a bedroom or desk, the 11 oz for a living room that needs to carry.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Lumen",
+      "tags": ["candle", "signature", "refillable", "coconut-soy"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "the-scents"],
+      "seoTitle": "The Everyday Candle — clean coconut-soy candle | Lumen",
+      "seoDescription": "A clean, room-filling coconut-soy candle in a refillable matte vessel. Four fresh scents, two sizes.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fresh Linen"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Sea Air"
+            },
+            {
+              "value": "Pink Grapefruit"
+            }
+          ]
+        },
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 oz"
+            },
+            {
+              "value": "11 oz"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LUMEN-EVERYDAY-LIN-8",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen",
+            "Size": "8 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-LIN-11",
+          "priceCents": 4600,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen",
+            "Size": "11 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-SGE-8",
+          "priceCents": 3400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage",
+            "Size": "8 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-SGE-11",
+          "priceCents": 4600,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage",
+            "Size": "11 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-SEA-8",
+          "priceCents": 3400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air",
+            "Size": "8 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-SEA-11",
+          "priceCents": 4600,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air",
+            "Size": "11 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-GRP-8",
+          "priceCents": 3400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit",
+            "Size": "8 oz"
+          }
+        },
+        {
+          "sku": "LUMEN-EVERYDAY-GRP-11",
+          "priceCents": 4600,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit",
+            "Size": "11 oz"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-everyday",
+          "isPrimary": true,
+          "alt": "The Everyday Candle in a matte pale vessel"
+        }
+      ]
+    },
+    {
+      "handle": "travel-candle",
+      "title": "Ceramic Travel Candle",
+      "description": "A smaller candle with a press-on ceramic lid — made to go from a bag to a bedside table to a rented bathroom without a mess. Same clean coconut-soy pour as the Everyday, in a pocketable 4 oz. The one that makes anywhere smell like your place.",
+      "status": "active",
+      "productType": "Candle",
+      "vendor": "Lumen",
+      "tags": ["candle", "travel", "coconut-soy"],
+      "categoryHandles": ["candles"],
+      "collectionHandles": ["new-arrivals", "the-scents"],
+      "seoTitle": "Ceramic Travel Candle — lidded coconut-soy candle | Lumen",
+      "seoDescription": "A lidded 4 oz coconut-soy travel candle that goes anywhere cleanly. Four fresh scents.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fresh Linen"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Sea Air"
+            },
+            {
+              "value": "Pink Grapefruit"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LUMEN-TRAVEL-LIN",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen"
+          }
+        },
+        {
+          "sku": "LUMEN-TRAVEL-SGE",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage"
+          }
+        },
+        {
+          "sku": "LUMEN-TRAVEL-SEA",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air"
+          }
+        },
+        {
+          "sku": "LUMEN-TRAVEL-GRP",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-travel",
+          "isPrimary": true,
+          "alt": "Ceramic Travel Candle"
+        }
+      ]
+    },
+    {
+      "handle": "reed-diffuser",
+      "title": "The Reed Diffuser",
+      "description": "Fragrance with no flame to think about. Natural rattan reeds draw the scent up into the room for a low, constant throw that lasts three to four months — ideal for a hallway, a bathroom or anywhere a candle never quite gets lit. Alcohol-light, so it freshens without the sharp edge.",
+      "status": "active",
+      "productType": "Diffuser",
+      "vendor": "Lumen",
+      "tags": ["diffuser", "flameless"],
+      "categoryHandles": ["diffusers"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "flame-free"],
+      "seoTitle": "The Reed Diffuser — flame-free home fragrance | Lumen",
+      "seoDescription": "Natural rattan reeds and a clean scent for a low, constant throw that lasts months. Four scents.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fresh Linen"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Sea Air"
+            },
+            {
+              "value": "Pink Grapefruit"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LUMEN-DIFF-LIN",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen"
+          }
+        },
+        {
+          "sku": "LUMEN-DIFF-SGE",
+          "priceCents": 4200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage"
+          }
+        },
+        {
+          "sku": "LUMEN-DIFF-SEA",
+          "priceCents": 4200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air"
+          }
+        },
+        {
+          "sku": "LUMEN-DIFF-GRP",
+          "priceCents": 4200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-diffuser",
+          "isPrimary": true,
+          "alt": "The Reed Diffuser"
+        }
+      ]
+    },
+    {
+      "handle": "room-spray",
+      "title": "The Room Spray",
+      "description": "A quick change of air in a spritz — for the sofa, the entryway, or the minute before a guest arrives. A fine, water-based mist that lifts a room and settles fast, without hanging heavy or coating a surface. Phthalate-free, like everything we make.",
+      "status": "active",
+      "productType": "Room spray",
+      "vendor": "Lumen",
+      "tags": ["spray", "flameless"],
+      "categoryHandles": ["diffusers"],
+      "collectionHandles": ["flame-free"],
+      "seoTitle": "The Room Spray — clean water-based room mist | Lumen",
+      "seoDescription": "A fine, water-based room mist that lifts a room and settles fast. Phthalate-free, four scents.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fresh Linen"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Sea Air"
+            },
+            {
+              "value": "Pink Grapefruit"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LUMEN-SPRAY-LIN",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen"
+          }
+        },
+        {
+          "sku": "LUMEN-SPRAY-SGE",
+          "priceCents": 2200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage"
+          }
+        },
+        {
+          "sku": "LUMEN-SPRAY-SEA",
+          "priceCents": 2200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air"
+          }
+        },
+        {
+          "sku": "LUMEN-SPRAY-GRP",
+          "priceCents": 2200,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-spray",
+          "isPrimary": true,
+          "alt": "The Room Spray"
+        }
+      ]
+    },
+    {
+      "handle": "candle-refill",
+      "title": "The Candle Refill",
+      "description": "A fresh pour for a vessel you already own — the same clean coconut-soy candle, minus the ceramic, in a recycled kraft pouch. Wash out an empty Lumen, drop the refill in, and you’re set for another 45 hours for less money and no new glass. The whole point of the system.",
+      "status": "active",
+      "productType": "Refill",
+      "vendor": "Lumen",
+      "tags": ["refill", "sustainable", "coconut-soy"],
+      "categoryHandles": ["refills"],
+      "collectionHandles": ["refill-reuse", "best-sellers"],
+      "seoTitle": "The Candle Refill — refill your Lumen vessel | Lumen",
+      "seoDescription": "A coconut-soy refill pour for a vessel you already own — less money, no new glass. Four scents.",
+      "options": [
+        {
+          "name": "Scent",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Fresh Linen"
+            },
+            {
+              "value": "Wild Sage"
+            },
+            {
+              "value": "Sea Air"
+            },
+            {
+              "value": "Pink Grapefruit"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LUMEN-REFILL-LIN",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Fresh Linen"
+          }
+        },
+        {
+          "sku": "LUMEN-REFILL-SGE",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Wild Sage"
+          }
+        },
+        {
+          "sku": "LUMEN-REFILL-SEA",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Sea Air"
+          }
+        },
+        {
+          "sku": "LUMEN-REFILL-GRP",
+          "priceCents": 2400,
+          "isDefault": false,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Scent": "Pink Grapefruit"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-refill",
+          "isPrimary": true,
+          "alt": "The Candle Refill"
+        }
+      ]
+    },
+    {
+      "handle": "long-matches",
+      "title": "Long Matches",
+      "description": "The small thing that makes lighting a candle a pleasure instead of a fumble. Fifty long, pale-tipped matches in a minimalist matchbox with a striker on the side — long enough to reach the bottom of a burned-down jar without singeing a knuckle.",
+      "status": "active",
+      "productType": "Accessory",
+      "vendor": "Lumen",
+      "tags": ["accessory", "matches", "gift"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gift-ready"],
+      "seoTitle": "Long Matches — minimalist matchbox | Lumen",
+      "seoDescription": "Fifty long, pale-tipped matches in a minimalist striker box. Reaches the bottom of any jar.",
+      "variants": [
+        {
+          "sku": "LUMEN-MATCHES",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-matches",
+          "isPrimary": true,
+          "alt": "A box of long matches with pale tips"
+        }
+      ]
+    },
+    {
+      "handle": "discovery-set",
+      "title": "The Discovery Set",
+      "description": "All four scents in mini form, in a pale recycled tray — the low-commitment way to find the one you’ll want as a full candle. Each mini burns about ten hours, plenty to test how a scent lives in your actual rooms. The credit comes back: the set’s price is refunded against your first full candle.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Lumen",
+      "tags": ["gift", "set", "sampler"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gift-ready", "the-scents"],
+      "seoTitle": "The Discovery Set — all four scents in mini | Lumen",
+      "seoDescription": "All four Lumen scents as mini candles in a recycled tray. The easy way to find your one.",
+      "variants": [
+        {
+          "sku": "LUMEN-DISCOVERY",
+          "priceCents": 2800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-discovery",
+          "isPrimary": true,
+          "alt": "A discovery set of four mini candles"
+        }
+      ]
+    },
+    {
+      "handle": "gift-trio",
+      "title": "The Signature Trio",
+      "description": "The easy yes — three full-size Everyday candles in Fresh Linen, Wild Sage and Sea Air, boxed in plastic-free pale board and tied in cotton ribbon, with a card you can write on. The whole clean range in one gift, ready to hand over.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Lumen",
+      "tags": ["gift", "set", "candle"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "gift-ready"],
+      "seoTitle": "The Signature Trio Gift Set — three candles | Lumen",
+      "seoDescription": "Three full-size Everyday candles in Fresh Linen, Wild Sage and Sea Air, boxed and ribboned.",
+      "variants": [
+        {
+          "sku": "LUMEN-GIFT-TRIO",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-trio",
+          "isPrimary": true,
+          "alt": "A gift trio of three candles boxed in pale paper"
+        }
+      ]
+    }
+  ]
+}

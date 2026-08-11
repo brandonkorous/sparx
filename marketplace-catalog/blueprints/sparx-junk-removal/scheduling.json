@@ -1,0 +1,251 @@
+{
+  "policies": [
+    {
+      "handle": "haul-standard",
+      "name": "Standard pickup",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us at least 24 hours’ notice to move or cancel a pickup. We text a reminder the day before and let you know when the crew is on the way."
+    },
+    {
+      "handle": "sameday-priority",
+      "name": "Same-day priority",
+      "depositType": "none",
+      "cancellationWindowHours": 2,
+      "reminderOffsetsMin": [120],
+      "policyText": "Same-day pickups go to the first available crew. We confirm your arrival window by text so you’re never left guessing when we’ll show."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "jesse-crew",
+      "name": "Jesse’s Crew",
+      "kind": "staff",
+      "skillTags": ["pickup", "cleanout", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marta-crew",
+      "name": "Marta’s Crew",
+      "kind": "staff",
+      "skillTags": ["furniture", "appliance", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "tyrell-crew",
+      "name": "Tyrell’s Crew",
+      "kind": "staff",
+      "skillTags": ["debris", "cleanout", "general"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-quote",
+      "name": "Free quote",
+      "description": "We swing by, look at your pile and give you a flat, upfront price on the spot — no charge, no obligation, no pressure.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "single-item-pickup",
+      "name": "Single-item pickup",
+      "description": "One bulky item gone — a mattress, a couch, a treadmill or that fridge in the garage. We carry it out, you point.",
+      "durationMinutes": 30,
+      "priceCents": 7900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "furniture-appliance-removal",
+      "name": "Furniture & appliance removal",
+      "description": "Old sofas, dressers, washers, dryers and fridges hauled out of any room — up or down stairs, no scratched walls.",
+      "durationMinutes": 60,
+      "priceCents": 12900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "garage-cleanout",
+      "name": "Garage cleanout",
+      "description": "A whole garage cleared in one visit — boxes, bikes, broken tools and the pile you’ve been stepping around for years.",
+      "durationMinutes": 120,
+      "priceCents": 29900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "estate-cleanout-consult",
+      "name": "Estate cleanout consult",
+      "description": "A full-property cleanout, handled with care. We come out, walk it with you and put together a plan and a flat price — free.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "requiresApproval": true,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "construction-debris-removal",
+      "name": "Construction debris removal",
+      "description": "Post-project cleanup — drywall, lumber, flooring, tile and remodel debris loaded up and hauled off so you can hand over a clean site.",
+      "durationMinutes": 120,
+      "priceCents": 34900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "haul-standard"
+    },
+    {
+      "handle": "same-day-pickup",
+      "name": "Same-day pickup",
+      "description": "Need it gone today? We dispatch the first available crew and text your arrival window — usually within a few hours.",
+      "durationMinutes": 60,
+      "priceCents": 14900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "crew",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "sameday-priority"
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "policies": [
+    {
+      "handle": "shop-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 12,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Walk in or book ahead — either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
+    },
+    {
+      "handle": "no-show",
+      "name": "Longer-chair booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 180, 60],
+      "policyText": "The shave and the full combo hold your barber for the better part of an hour. No deposit — just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "vince",
+      "name": "Vince Cole",
+      "kind": "staff",
+      "skillTags": ["cut", "fade", "beard", "shave"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Reyes",
+      "kind": "staff",
+      "skillTags": ["cut", "fade", "beard", "shave"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    },
+    {
+      "handle": "silas",
+      "name": "Silas Cooper",
+      "kind": "staff",
+      "skillTags": ["cut", "fade", "beard", "shave"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "haircut",
+      "name": "Haircut",
+      "description": "Scissor or clipper, washed and finished. A proper cut, no rush.",
+      "durationMinutes": 30,
+      "priceCents": 3500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "skin-fade",
+      "name": "Skin fade",
+      "description": "A clean fade down to the skin with a sharp line-up. Tight and precise.",
+      "durationMinutes": 45,
+      "priceCents": 4500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["fade"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "beard-trim",
+      "name": "Beard trim & shape",
+      "description": "Line it up, shape it out, hot towel to finish. Walk-ins welcome.",
+      "durationMinutes": 20,
+      "priceCents": 2000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["beard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "straight-razor-shave",
+      "name": "Hot-towel straight-razor shave",
+      "description": "Hot towels, a proper lather and a straight razor. The old-school shave, done right.",
+      "durationMinutes": 45,
+      "priceCents": 4500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["shave"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "cut-beard-combo",
+      "name": "Cut + beard combo",
+      "description": "A full haircut and a shaped beard in one sitting. Walk out squared away.",
+      "durationMinutes": 60,
+      "priceCents": 6000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut", "beard"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "no-show"
+    },
+    {
+      "handle": "kids-cut",
+      "name": "Kids cut",
+      "description": "A patient cut for the young ones, twelve and under. In and out, no fuss.",
+      "durationMinutes": 30,
+      "priceCents": 2500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    },
+    {
+      "handle": "buzz",
+      "name": "Buzz cut",
+      "description": "One length, all over, clean neckline. Quick, sharp, done.",
+      "durationMinutes": 20,
+      "priceCents": 2000,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "barber",
+          "kind": "staff",
+          "skillTags": ["cut"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shop-standard"
+    }
+  ]
+}

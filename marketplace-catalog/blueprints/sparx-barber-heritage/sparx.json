@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-barber-heritage",
+  "name": "sparx — Barbershop (Heritage)",
+  "version": "1.0.0",
+  "tagline": "A dark, heritage template for barbershops — book online from day one.",
+  "description": "A dark, masculine heritage-barbershop site — a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as \"Copper & Cole\", a shop running the old way since 2014.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Barbershop",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Barbershop (Heritage) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Barbershop (Heritage) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#ca9c4e",
+  "sortWeight": 88
+}

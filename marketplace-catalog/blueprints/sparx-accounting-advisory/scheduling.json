@@ -1,0 +1,233 @@
+{
+  "policies": [
+    {
+      "handle": "advisory-standard",
+      "name": "Standard consultation",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Please give us at least 48 hours’ notice to reschedule or cancel. We send reminders two days and one day ahead, and again two hours before your call."
+    },
+    {
+      "handle": "engagement-deposit",
+      "name": "Engagement deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 15000,
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Paid advisory sessions hold a $150 deposit that applies to your engagement fee. Reschedule with 48 hours’ notice and it carries over in full."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "elena",
+      "name": "Elena Vasquez, CPA",
+      "kind": "staff",
+      "skillTags": ["tax-strategy", "advisory", "valuation", "entity-structuring"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 510,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 510,
+          "endMinute": 1050
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Anand, CFP",
+      "kind": "staff",
+      "skillTags": ["wealth", "retirement", "tax-strategy", "advisory"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "marcus",
+      "name": "Marcus Bell, CPA",
+      "kind": "staff",
+      "skillTags": ["cfo", "advisory", "valuation", "entity-structuring"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "strategy-consultation",
+      "name": "Strategy consultation",
+      "description": "A complimentary 45-minute call to understand your situation and map where we can add the most value — no obligation.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "advisory-standard"
+    },
+    {
+      "handle": "tax-strategy-review",
+      "name": "Tax strategy review",
+      "description": "A working session on proactive, forward-looking tax planning — entity elections, timing, deductions and multi-year strategy.",
+      "durationMinutes": 60,
+      "priceCents": 45000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "cfo-advisory-consult",
+      "name": "CFO advisory consult",
+      "description": "Outsourced-CFO guidance on cash flow, margins, forecasting and the numbers behind your next decision.",
+      "durationMinutes": 60,
+      "priceCents": 55000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "business-valuation-consult",
+      "name": "Business valuation consult",
+      "description": "A defensible valuation conversation for a sale, buy-in, succession or estate — what the business is worth and why.",
+      "durationMinutes": 60,
+      "priceCents": 75000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "wealth-planning-consult",
+      "name": "Wealth planning consult",
+      "description": "A personal-wealth session — investment structure, tax-efficient drawdown and a plan that ties your business and personal finances together.",
+      "durationMinutes": 60,
+      "priceCents": 50000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "retirement-planning-consult",
+      "name": "Retirement planning consult",
+      "description": "Retirement and succession modeling — contribution strategy, exit timing and the income you’ll actually live on.",
+      "durationMinutes": 60,
+      "priceCents": 45000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    },
+    {
+      "handle": "entity-structuring-consult",
+      "name": "Entity structuring consult",
+      "description": "The right structure for what’s next — S-corp vs. C-corp, holding companies and multi-entity design done for the long game.",
+      "durationMinutes": 45,
+      "priceCents": 45000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "advisor",
+          "kind": "staff",
+          "skillTags": ["advisory"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "engagement-deposit"
+    }
+  ]
+}

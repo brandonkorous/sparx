@@ -1,0 +1,248 @@
+{
+  "policies": [
+    {
+      "handle": "shieldguard-standard",
+      "name": "Standard visit",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Give us a day’s notice if you need to move your visit and we’ll happily reschedule. We text a reminder the day before and two hours ahead, and your technician calls when they’re on the way."
+    },
+    {
+      "handle": "shieldguard-plan",
+      "name": "Protection plan",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Protection-plan members get their recurring visits scheduled automatically, priority booking when something comes up between visits, and our re-treat-free guarantee. Change or skip a visit up to 24 hours ahead at no charge."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "marcus",
+      "name": "Marcus Reyes",
+      "kind": "staff",
+      "skillTags": ["general", "ants", "rodents"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 450,
+          "endMinute": 1050
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 450,
+          "endMinute": 1050
+        }
+      ]
+    },
+    {
+      "handle": "priya",
+      "name": "Priya Nair",
+      "kind": "staff",
+      "skillTags": ["termites", "general", "inspection"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "devon",
+      "name": "Devon Clarke",
+      "kind": "staff",
+      "skillTags": ["general", "recurring", "rodents"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 420,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 420,
+          "endMinute": 1080
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "free-inspection",
+      "name": "Free inspection",
+      "description": "A friendly, no-pressure home visit to check inside and out, find where pests are getting in, and give you a plain-language plan and quote — completely free.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "general-pest-treatment",
+      "name": "General pest treatment",
+      "description": "A thorough interior-and-exterior treatment for the everyday intruders — spiders, silverfish, earwigs and the rest — with a barrier that keeps working for weeks.",
+      "durationMinutes": 60,
+      "priceCents": 12900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "ant-roach-treatment",
+      "name": "Ant & roach treatment",
+      "description": "A targeted knock-down of an active ant or cockroach problem — baiting the trails and colonies at the source, not just the ones you can see on the counter.",
+      "durationMinutes": 60,
+      "priceCents": 14900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["ants"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "rodent-control-visit",
+      "name": "Rodent control visit",
+      "description": "Mice or rats? A tech seals up entry points, sets a discreet control program, and comes back to check it — so the problem ends instead of moving room to room.",
+      "durationMinutes": 75,
+      "priceCents": 18900,
+      "bufferAfterMin": 15,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["rodents"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "termite-inspection",
+      "name": "Termite inspection",
+      "description": "A detailed, WDO-style inspection for termites and wood-destroying pests — with photos, an honest assessment of any risk, and a treatment plan only if you actually need one.",
+      "durationMinutes": 90,
+      "priceCents": 0,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["termites"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "mosquito-treatment",
+      "name": "Mosquito treatment",
+      "description": "A yard treatment that knocks down biting mosquitoes and treats the shady, standing-water spots they breed in — so the backyard is usable again all season.",
+      "durationMinutes": 45,
+      "priceCents": 9900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["general"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-standard"
+    },
+    {
+      "handle": "recurring-plan-setup",
+      "name": "Protection plan setup",
+      "description": "Set up your year-round Shield Plan — a first full treatment plus scheduled seasonal visits, priority service between them, and our re-treat-free guarantee.",
+      "durationMinutes": 60,
+      "priceCents": 8900,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "technician",
+          "kind": "staff",
+          "skillTags": ["recurring"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "shieldguard-plan"
+    }
+  ]
+}

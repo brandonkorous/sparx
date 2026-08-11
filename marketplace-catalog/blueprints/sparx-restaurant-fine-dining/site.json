@@ -1,0 +1,2909 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "a38b2784-4336-4280-9a88-9a31406be747",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/menu"
+                      },
+                      "children": ["Menu"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "49181478-0470-4e41-ac9b-8aa4cf60af90",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Reserve"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "eaf037d1-74ea-470e-be8f-e0f036b917b3",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "116047ed-6e4c-46be-b1d1-e2ba33c2e95f",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Visit"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "b6213c4a-e6b0-459b-94fc-51e04ef8f391",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c13acf6a-db98-4fda-b041-a24c3ba6f606",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "46e158c2-b73b-4cf1-ab31-d77d619ecdee",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "6f4f3719-a7f5-4546-bdc5-ae70ef09a4bc",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Reserve",
+                        "href": "/book"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "c959d02f-9900-4f02-aa42-e4f24805574e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "c4fce4b7-4477-4cba-a904-5379a8cd8063",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "516ded0d-31e2-4267-89e4-c3651f21a51b",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "34065023-9837-498b-993d-4a0080722ffb",
+                  "ord": "a2"
+                }
+              ],
+              "id": "db4f008e-d2c8-4664-8ec4-8f5349012e9e",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/menu"
+                  },
+                  "children": ["Menu"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "a17d464a-4588-4497-a605-b759eeab6892",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Reserve"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "90e86720-ead9-4a4c-a8e3-731d900a6c8a",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "2b76432e-6940-4f05-bfcf-ce813434f273",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Visit"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "d14420de-b8a9-4797-850e-e6d5d4ee21cc",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "4bab5493-e14e-43e3-ada1-58506efdc5c7",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Reserve",
+                    "href": "/book"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "47686245-77a7-4045-94f3-c9507f2f1bcd",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "3bfb66fc-482d-42a2-b786-2eeebd06d091",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "f2bc3abb-97f6-4847-83dd-5d20b47525c1",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "e2ff745d-e9c6-4bc6-987f-6977775f107f",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "61eef65f-5403-4214-b749-64ef73a2e6dd",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9af40e9e-10a4-4c57-b733-23cf1053bca4",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "09165f6b-983f-4b25-aaa2-225645e5514e",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "cdd340df-f8a7-4a47-9b46-79ebdd1f0a5f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9c5ff086-69cb-4a70-b664-7af7a7b24c95",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/menu"
+                                  },
+                                  "children": ["Menu"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "599da5f8-44e0-4b4d-8e99-f3b49bc8f08a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4e972a89-ceb4-4c8f-a6ef-09fd208226c5",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Reserve"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "241ef317-b8a2-4af5-ab95-3f274a68d3c8",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d636e2c3-232a-4b95-8b6e-2e4234e77f64",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "c908f552-1e00-45ec-a0b4-a2625f698b4e",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "b514d94b-da06-40e4-811a-dcf4327c9a74",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Visit"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "adc28a2f-c086-4eff-ab56-00d661036c5c",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "06c477be-7bbf-4c34-8d15-b14ad67b7bdb",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "9bb8eedf-d5d8-49fd-a559-de1f891ab299",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "d4cb3866-ede0-4565-83b9-64681d1a5982",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "15be809c-277c-407a-b15b-d6f8dab369c9",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "cabad281-dd31-4397-9389-efc4d388a6f0",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "9478bc88-18ac-43fd-9730-a40d91aa69a4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "270cf7fa-a84e-4e43-83d0-a73dc5b2042a",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "3245d80e-cc0a-42c6-8e65-0f8a6c54114a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "0681fda3-ebbd-46f9-a4b1-168c84e6eded",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "9437bf13-f56e-4b15-bf99-39563e06d6f3",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "86761d33-a3fe-4647-a6f9-162ae7e6fc82",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "48a5fe86-84ac-4bab-86c9-9a1d11d6c0ea",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "76d08552-9354-4745-b366-0f56e4c4390b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "20dca7b5-695b-4f3a-96bc-b53560b0fd45",
+                  "ord": "a1"
+                }
+              ],
+              "id": "9864bb92-5e9a-4a53-a8e7-5da0e1b462a8",
+              "ord": "a0"
+            }
+          ],
+          "id": "e2bcb8c1-6ac2-438d-a756-33b759e4cb88",
+          "ord": "a2"
+        }
+      ],
+      "id": "ff395b61-2b15-4172-8d17-0141139a5d57"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Vesper — a tasting-menu restaurant",
+      "seoDescription": "Vesper is a tasting-menu restaurant — one nightly menu built around the day’s market, a deep cellar, and a chef’s counter. Open Tue–Sat for dinner. See the menu and reserve a table.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "552e80a6-fd8b-468d-b238-a2a2471389e2",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1681669778757-37a347f9002b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlLWxpdCUyMGZpbmUtZGluaW5nJTIwcm9vbSUyMGR1c2slMjB0YWJsZXMlMjBzZXQlMjB3aGl0ZXxlbnwwfDB8fHwxNzg2NDE1MjcyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A candle-lit fine-dining room at dusk",
+                  "loading": "lazy"
+                },
+                "id": "861940e4-aa75-4c0b-b5ac-3e711cac2cd6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col items-start justify-end gap-6 px-6 py-24 @3xl:px-10 @3xl:py-32",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-6 rounded-box border border-base-300 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-6xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                        "children": ["Vesper"],
+                        "id": "a40e070a-1048-4224-806e-82ca97f5fc2f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A tasting-menu restaurant. One nightly menu that changes with the day, a wine list read like a story, and a room kept low and quiet. Dinner, Tuesday through Saturday — as an occasion, not an errand."
+                        ],
+                        "id": "3c209400-908e-4366-86b0-c608d17cf5ab",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Reserve"],
+                            "id": "2fb6a952-01f8-4455-aea8-ad370ead23c3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/menu"
+                            },
+                            "children": ["View the menu"],
+                            "id": "0885854c-c052-4ae6-b5cf-4ba2f7bd7742",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "90cf844e-bc43-49b1-8c1d-f2b05eba726b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ab05211d-1e9d-4a46-b508-6b80c504fcd8",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f590c917-5479-48f4-88f0-d5bcbee50798",
+                "ord": "a1"
+              }
+            ],
+            "id": "19dba6b6-0c14-467f-a61a-c3587fb6887f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2 @3xl:items-center @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-square w-full rounded-box border border-base-300 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1601556126838-56939e7b43f0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVsaWNhdGUlMjB0YXN0aW5nLW1lbnUlMjBjb3Vyc2UlMjBwbGF0ZWQlMjB0d2VlemVycyUyMGRhcmslMjBjZXJhbWljfGVufDB8MHx8fDE3ODY0MTUyNzV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A delicate tasting-menu course plated on a dark plate",
+                      "loading": "lazy"
+                    },
+                    "id": "bdc2cec6-2f21-4c6a-a5b9-a002b75cba23",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["One menu, written each morning"],
+                        "id": "aad60dfb-85dc-4a92-9e0b-27b712b1eda5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Dinner at Vesper is a single tasting menu of seven courses, built around what the boats and the growers sent that day. There is no à la carte on the busiest nights — you sit, and we cook for you."
+                        ],
+                        "id": "b80f2f9b-2937-4a35-bb7c-c17407645b81",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A considered wine pairing follows the menu glass for glass; the cellar is open if you would rather choose your own. Tell us about allergies when you book and the kitchen writes around them."
+                        ],
+                        "id": "dd5b199b-a8d6-4990-bcc7-3373758ac5a6",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-baseline gap-x-8 gap-y-2 border-t border-base-300 pt-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-semibold text-primary",
+                                "children": ["£145"],
+                                "id": "9b6861b1-5052-49a1-9079-4e5cd7161749",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-secondary",
+                                "children": [" · the tasting menu, per person"],
+                                "id": "00b340b1-905b-420d-8d17-93ff3f60b44c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2e3a7331-8845-4ad9-a00d-5413f7e8bfc4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-semibold text-primary",
+                                "children": ["£95"],
+                                "id": "636f1c3f-3198-42c4-8451-c10b077b6ad1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-secondary",
+                                "children": [" · wine pairing"],
+                                "id": "fdb42648-d394-4a61-940c-2ebad95993ed",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "fc19bb23-42cd-46fb-88f8-0112a4e8070d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a0c3b951-413b-4524-9147-ef0a6a037bba",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["Read the full menu"],
+                            "id": "249fdb21-5006-491e-9a5e-6f6c30620261",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["→"],
+                            "id": "ccc0aa1e-da3f-44a9-a467-3dae7cee4b85",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fe52f2d3-6d44-401e-aa70-b8642e41be10",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "e08c1026-b06a-4340-a6e0-eeb85015f5dd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ad110812-eade-4f46-8f72-84e8b95d4a28",
+                "ord": "a0"
+              }
+            ],
+            "id": "243f8115-e4c7-405f-b0fa-c3a6e60b85b8",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-2xl flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["A few things off the pass"],
+                        "id": "a458578d-ebb4-44bf-9017-8423beefd1c1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The menu turns with the season, so no two visits are quite the same. A glimpse of the courses we are cooking this week."
+                        ],
+                        "id": "a46d3632-2e4e-4d2d-b493-12ccf2b105e6",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6a2c8972-79fc-464a-97dd-f4ab1fa032c6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-8 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1654772704042-0d536b77548b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmlzaCUyMGNvdXJzZSUyMGZpbGxldCUyMHR1cmJvdCUyMHBhbGUlMjBiZXVycmUlMjBibGFuY3xlbnwwfDB8fHwxNzg2NDE1Mjc5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A fish course — turbot in a pale butter sauce",
+                              "loading": "lazy"
+                            },
+                            "id": "ea66e16c-cb95-4899-bc5d-454988901a88",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["From the sea"],
+                            "id": "8494efdb-5abb-4772-b159-cbb3cb2ac142",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Cornish turbot roasted on the bone, mussels and a beurre blanc bright with sea herbs and a spoon of caviar."
+                            ],
+                            "id": "09ffb136-f385-4e06-b055-ebfedee78a06",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0c2953c2-2d4a-4f3f-b2e5-ddd45f95d819",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1547050605-2f268cd5daf0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWVhdCUyMGNvdXJzZSUyMGRyeS1hZ2VkJTIwYmVlZiUyMGJvbmUlMjBtYXJyb3clMjBnaXJvbGxlc3xlbnwwfDB8fHwxNzg2NDE1MjgyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A meat course — dry-aged beef with bone marrow",
+                              "loading": "lazy"
+                            },
+                            "id": "65da94f3-eab5-4d45-8e6f-fd6cbef6920b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["From the land"],
+                            "id": "950c0de9-228b-4158-89dd-6189bb288585",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Dry-aged Highland beef over embers, bone marrow, girolles and a sauce reduced from its own bones."
+                            ],
+                            "id": "7e3dffa6-9c1a-4ad7-90c6-9276b01aa1e7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "24328623-41e2-40a7-9b3f-03e5cf38a8cb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-4",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1660640138183-0ba509f94cb2?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y29tcG9zZWQlMjBkZXNzZXJ0JTIwZGFyayUyMGNob2NvbGF0ZSUyMGhhemVsbnV0JTIwcHJhbGluZSUyMHF1ZW5lbGxlfGVufDB8MHx8fDE3ODY0MTUyODZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A composed chocolate dessert",
+                              "loading": "lazy"
+                            },
+                            "id": "d2d19a04-50b8-4ccb-b2c0-fd1213f06a3d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-2xl font-semibold text-base-content",
+                            "children": ["To close"],
+                            "id": "5c30d1c3-6a27-4c00-ae4d-f338bb6e9c47",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Valrhona chocolate and hazelnut praline, a whisper of sea salt, and a quenelle churned to order."
+                            ],
+                            "id": "c52553f8-a051-4105-814d-8c2ef9ed268e",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "83ebf730-adf5-4424-8c4e-102507f12de0",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ecc2d6aa-ec7c-4ac8-b4cc-acde946963e2",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4",
+                    "attrs": {
+                      "href": "/menu"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["See the full menu"],
+                        "id": "afea39ac-7ecb-4fbf-9ed9-4ec8c821588f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["→"],
+                        "id": "b486a514-af72-4b76-ae40-aaeb1ee42a6d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "57199844-93d5-4cf4-b000-75a5e589c2d6",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "41021673-0451-46f2-a860-b1f1c5dd22e3",
+                "ord": "a0"
+              }
+            ],
+            "id": "fb3412db-0004-4b56-a506-453c19dc082c",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2 @3xl:items-center @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1723744910051-da35a92321af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZiUyMHMlMjBjb3VudGVyJTIwZGluZXJzJTIwc2VhdGVkJTIwcGFzcyUyMHdhdGNoaW5nfGVufDB8MHx8fDE3ODY0MTUyODl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "The chef’s counter — diners seated at the pass",
+                      "loading": "lazy"
+                    },
+                    "id": "f713feb7-5a82-4216-b94c-99b1a73f4a65",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["The best seat is at the pass"],
+                        "id": "6ace0ce7-cdc0-4f09-aebe-50342d00832d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Six stools sit at the chef’s counter, looking straight into the kitchen — the courses come from the hands that made them, with the story of each one told across the pass. Book a table in the room, or take a seat at the counter."
+                        ],
+                        "id": "501210d3-a6b8-4ef9-8687-93e64c412240",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-secondary",
+                        "children": [
+                          "Reserve online in under a minute; you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes straight off the bill on the night."
+                        ],
+                        "id": "0b48bfe6-0f30-4f8b-898b-7b83298e255e",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Reserve a table"],
+                            "id": "225380d0-6353-4e54-b0f9-d88aab669f8b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "b9a491aa-4d22-484c-90b5-ef7ab9108716",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "50b35e4d-4d81-497d-b02e-49f11c97b952",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "47cbb34c-a4ca-4559-b351-f356bb003465",
+                "ord": "a0"
+              }
+            ],
+            "id": "12d4bce1-401b-4f8f-9aff-9b890aa68110",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Hours"],
+                        "id": "f5040fc6-4a45-48a6-8b8a-18bb7af98fd3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "ul",
+                        "class": "flex flex-col",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Tue – Thu"],
+                                "id": "423761a6-434f-4481-9fa6-7515ede9cc95",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["Dinner · 18:00 – 22:00"],
+                                "id": "472fba92-083f-4843-a2de-964be07e71d7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "662c6e0e-c5c5-4502-ac78-262916d20a1e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Fri – Sat"],
+                                "id": "1f77dea9-82d8-4e3f-9d45-7ca02f2a4e5c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["Dinner · 18:00 – 22:00"],
+                                "id": "dd6848cf-8c29-4936-a7d2-9473e6afcf4f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "563866ef-599d-4fd5-b277-a0c6322d31b9",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sun – Mon"],
+                                "id": "7656aa58-49dd-4862-a64e-074282548184",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["Closed"],
+                                "id": "10673b09-d1c0-4a35-9bf7-b7cae167a6c0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "965999df-5e75-45b6-b3a5-478372be7d38",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "f1ca208a-1d59-46c8-abd9-7cf6e9a024dc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base leading-relaxed text-secondary",
+                        "children": [
+                          "One seating a night. The kitchen sends the last course close to eleven — stay for a final glass."
+                        ],
+                        "id": "36cdc4fb-bfc6-4b8a-be5b-588dc892c24f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8c241790-5cc6-4bc3-9ad2-d9ba8ebbc336",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Find us"],
+                        "id": "2dbc6d8f-2f67-43f4-a3ad-2a1475d83cc0",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No. 9 Vesper Court, behind the old exchange on the harbour side. There is no sign on the door — look for the single lit lamp. Valet from six; the last train leaves at midnight."
+                        ],
+                        "id": "495930dd-e420-4948-9894-e0ff2d4a3c7d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["Directions & contact"],
+                            "id": "6f005d2f-7ac0-4b18-8427-c9ddcb424bf1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["→"],
+                            "id": "df909a17-6279-456f-a2fb-41980433cf13",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b2b3fb01-5548-4e0a-aa1e-9c3b545bc8c0",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ac827792-e3e1-4a21-a33a-85a50bab77d5",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bb4d2f03-9bcb-47fc-a758-b88aa6e3d47a",
+                "ord": "a0"
+              }
+            ],
+            "id": "e041475c-c5b4-45c5-9497-2779f3d8ce5f",
+            "ord": "a4"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Menu",
+      "kind": "singleton",
+      "slug": "menu",
+      "seoTitle": "Menu — Vesper",
+      "seoDescription": "See the full menu at Vesper — dishes, drinks and prices — then reserve a table.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e74c47f5-445e-4b59-9cfe-c025b6a639e1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 @3xl:py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["The menu"],
+                    "id": "a9d8d5c4-9b97-455b-9e3f-4ad49d8dca1b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Dinner is a seven-course tasting menu, changing daily with the market and the season. On quieter nights a short à la carte is offered alongside it. Tell us about any allergies when you book and the kitchen will write around them."
+                    ],
+                    "id": "c58c01b5-6df7-40b1-af35-068faf94ca96",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0af3b493-2780-4742-a3a2-051cbbba118b",
+                "ord": "a0"
+              }
+            ],
+            "id": "6344ec5c-ba23-48a7-92fa-a1ce2894cefc",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
+                        "children": ["The tasting menu"],
+                        "id": "c52cf68d-f03f-4fa6-b9ce-85452e968645",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. £145 per guest; wine pairing £95."
+                        ],
+                        "id": "7c10ad41-acab-480d-8ca9-4b5832f5854a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "5bf35858-c53f-4470-9d5b-156169d6971e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Snacks at the counter"],
+                            "id": "55957f87-4025-4f7d-9464-02d299a77d4f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A handful of one-bite things to open — cured, fried, and cold from the pass, with a glass of something sparkling."
+                            ],
+                            "id": "dc2e559d-3196-43d8-878f-752bf8ac5286",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "084551dd-ba02-420a-959e-790581a30fc4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Oyster & cucumber"],
+                            "id": "2734f642-a0fb-49e9-97d8-31e74b1885c3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A native oyster, barely dressed, with cucumber, dill oil and a granita of its own liquor."
+                            ],
+                            "id": "a126ad4e-6772-4b47-a259-d800d049964d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "edebf770-6c54-473e-be9e-26bf686008ad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Hand-dived scallop"],
+                            "id": "64c86a66-927f-4d7d-9fdc-a64359db83ba",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Roasted in the shell, brown-butter hollandaise, toasted hazelnut and a squeeze of blood orange."
+                            ],
+                            "id": "ccb8cc46-a4ba-45b5-a9d9-3a2a5d3878c0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5cccce23-e58f-40eb-8369-f850ac870c84",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Turbot on the bone"],
+                            "id": "c3157790-80bb-4a98-b047-39c4f5d06aa1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Cornish turbot, mussels steamed in cider, a beurre blanc bright with sea herbs and a spoon of caviar."
+                            ],
+                            "id": "42270abe-f9e8-403c-a2a9-265f4036860c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "532da79f-7c0d-4a9c-a82b-edb8652f3645",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Dry-aged beef & marrow"],
+                            "id": "bdf9135f-9eb0-4d95-a8c2-04dd37bc312f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Highland beef over embers, roast bone marrow, girolles and a sauce reduced from its own bones."
+                            ],
+                            "id": "6386fe24-2a2f-49a3-b078-fe6eb7b7ee1e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0182261e-360f-4441-bf29-7f4376b1fed5",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Cheese from the trolley"],
+                            "id": "49c0cc3b-f680-45f3-9f43-ad6ae672115c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A short board of British farmhouse cheeses, quince, walnut and warm oatcakes — as much or as little as you like."
+                            ],
+                            "id": "b504e085-65ca-4f23-a5d5-5b02411e210b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b86da759-a18c-439f-8a23-709fd1f5058e",
+                        "ord": "a5"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-lg font-semibold text-base-content",
+                            "children": ["Chocolate & hazelnut"],
+                            "id": "0f3de73d-6c60-412e-96a1-82bbd9e91b0a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Valrhona chocolate, hazelnut praline, sea salt and a quenelle churned to order — coffee and petits fours to follow."
+                            ],
+                            "id": "ef6f7578-6511-443f-8bd6-10bca8496832",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b134eab6-986e-49c8-9b19-42e1423f0205",
+                        "ord": "a6"
+                      }
+                    ],
+                    "id": "e06c0435-1e02-4360-ae0c-abe905edddf2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2a06e48c-732d-44f1-996c-35b111d28f7f",
+                "ord": "a0"
+              }
+            ],
+            "id": "f41b8244-f844-42b7-aa7f-2ab771167080",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["À la carte — to begin"],
+                    "id": "3a48da43-cc44-43dd-adff-400db8a19362",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["Offered Tuesday to Thursday, alongside the tasting menu."],
+                    "id": "c2b2e99b-8c96-43f3-8837-633bd8819a13",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Native oyster, cucumber, dill"],
+                                "id": "2d344dcd-20d0-43bd-9f55-64c25644165e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["5"],
+                                "id": "d3d1e390-18ef-4992-aefc-4791670233d8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "95c4150a-c469-44e9-8610-4ba523f48c96",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["Barely dressed, with a granita of its own liquor. Each."],
+                            "id": "f62f4a40-6e1e-4587-b871-8ffff88bd5bc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7d0f8309-5d19-44e9-9057-1075a21248ac",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Hand-dived scallop, brown butter, hazelnut"],
+                                "id": "a0098708-3157-410c-b206-4a935542abca",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["24"],
+                                "id": "ca8726a0-0e2e-45b3-848a-f296f203ee20",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2d37593a-4984-4528-be57-a9f76084bcbf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["Roasted in the shell, blood orange, toasted hazelnut."],
+                            "id": "e1e4a76b-da12-4cab-a44c-ce9552cb3920",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "31a03338-c160-4cc4-a90d-76099fbf947b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Foie gras, quince, brioche"],
+                                "id": "3ae6385d-f730-4e38-845c-cfc15b94b6de",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["26"],
+                                "id": "d06575fe-e4bf-4961-bc4f-60ced73bc26b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8d601ca5-50bc-43cd-9ca0-224cdc000306",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Torchon of foie gras, poached quince, warm buttered brioche."
+                            ],
+                            "id": "7df4e1c4-7904-4755-a906-7086bb30689b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4a0920ba-a048-4d88-a453-82ce7351f4da",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Heritage beetroot, aged goat’s curd"],
+                                "id": "3d446718-68a0-4a4b-80cc-5b896fe296ec",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["18"],
+                                "id": "faa3640f-575d-4b7f-9946-ebca4d9d63e6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2db9b9f0-b3d3-4bf1-ac1e-4abcbbd74f6b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Roasted and raw beetroot, aged curd, walnut, a sharp leaf."
+                            ],
+                            "id": "c433c243-5312-43db-a466-570e641b9a34",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ca87b487-875d-47f9-9624-99c24b039afc",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9f3027e4-e112-4b60-9ee5-340299c06f97",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "a7764bf3-5e5f-4445-99d9-438e3e9d9b3e",
+                "ord": "a0"
+              }
+            ],
+            "id": "69020a69-58b3-43d9-9861-0e662bc16609",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Fish"],
+                    "id": "650a9dc9-1605-4de2-beb8-eb561c11d3f3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["From the day boats. Cooked simply, sauced with care."],
+                    "id": "01f65578-2a68-4f71-befc-7ba15f37f514",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Turbot on the bone, beurre blanc, caviar"],
+                                "id": "0be39323-4824-4305-bf6e-719b0dc117b7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["46"],
+                                "id": "69f4a0c8-da4f-4a7e-b094-750c63a0e301",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5d1a43e5-e8b3-4cf9-962c-377f0819b8b3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Cornish turbot, mussels in cider, sea herbs, a spoon of caviar."
+                            ],
+                            "id": "6c235b56-a713-49f6-85a1-2be0f5c09490",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6c7686ca-3321-4b64-8f1f-af37831a6e2d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Native lobster, bisque, tarragon"],
+                                "id": "1e3ce73d-3cab-4509-8a7d-00842d786d9d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["52"],
+                                "id": "41183af6-8b55-4449-aa81-29e94952cc6d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e19503f5-ee0f-45d7-92be-0f552e201369",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Half a lobster, a bisque reduced for hours, tarragon and brandy."
+                            ],
+                            "id": "d6d91921-8704-4421-8c66-d1d04a3baaba",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0e4a530d-5dce-4099-89a7-79273a5d06dc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Line-caught halibut, salsify, brown shrimp"],
+                                "id": "1fc0bbf5-dc6e-4bf2-8a62-d27fabe4061c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["42"],
+                                "id": "62c3957b-1877-4420-a4f6-48d2c2150064",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9c4819d6-216c-4bc9-8f54-aae7926a307a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Roasted halibut, salsify two ways, a warm brown-shrimp butter."
+                            ],
+                            "id": "41ca24ef-879f-4689-81cc-82999a8def54",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c8f3052a-9f26-40bb-86f0-9378d946f279",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "1ad04d24-a24a-46d4-9e54-0a80c3ffa4b2",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "c293ec95-c00a-4fe5-8f70-d714af34af44",
+                "ord": "a0"
+              }
+            ],
+            "id": "051de963-e536-43ce-b436-26d139513b2b",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Meat & game"],
+                    "id": "865242c8-926e-4fc3-8a44-3fc60f101565",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["Aged in-house, cooked over embers."],
+                    "id": "6ade5fb2-fec3-40a9-865b-7cf4432d817f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Dry-aged Highland beef, bone marrow, girolles"],
+                                "id": "ccd053d4-b8dc-430b-9565-c4c9a7ef2a61",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["54"],
+                                "id": "101d4a19-c35b-4ff0-af20-abd2845d1ac6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2d3e7a3f-6cd4-427e-8c2f-09df23d679d4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "35-day aged fillet, roast marrow, girolles, red-wine jus. For one."
+                            ],
+                            "id": "991aaec6-8ba8-4ec2-92dd-0360b3ad9e81",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0d20a51a-f439-41e1-b8ac-9907f243b866",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Anjou squab, cherry, foie gras"],
+                                "id": "983d206b-dfd7-4ed5-9ac0-61044f0aa67b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["48"],
+                                "id": "544c5593-9a94-42a7-9ef0-2f03689a6a95",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6b68b334-ee55-40a9-b0bf-1419c6d91db6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Roasted crown and confit leg, morello cherry, a foie-gras bonbon."
+                            ],
+                            "id": "8fbbafe2-8d28-4743-9681-934b556306a5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "25be463a-ed67-43cf-b82a-e16910cdcc3e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Herdwick lamb, wild garlic, sheep’s-milk"],
+                                "id": "6eed3f88-a246-4fcf-9599-f996a57b26e2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["46"],
+                                "id": "46bb234b-319e-4012-90bf-0c6c2f346a3a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "daa4aca8-9b18-4fbf-b431-e7f75b54f8fb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Rump and slow-cooked shoulder, wild garlic, a sheep’s-milk yoghurt."
+                            ],
+                            "id": "0ec65ee7-f186-43f0-8c07-498906c969f1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a9897d41-a355-44d5-b8d1-572979ac8c83",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "ecc67d8f-87ec-43ea-a75d-b51f890024ad",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "8c1cc506-8c8c-4f33-804a-c849966e676d",
+                "ord": "a0"
+              }
+            ],
+            "id": "84c3ad64-7adc-4949-81ee-1a6ffcef8b5b",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["To finish"],
+                    "id": "1f540b7a-4c76-440d-a47c-9ade17bc7974",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["Puddings, and a trolley of British farmhouse cheese."],
+                    "id": "a0eb3d83-0a24-49b9-b0c7-f3c71be5e673",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Valrhona chocolate, hazelnut praline"],
+                                "id": "551f97be-cffe-4b52-9bfc-c08dcdc8e88f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["16"],
+                                "id": "2a24a590-eefc-4362-a294-06a02a122238",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9cb302dd-e04b-42e4-afb1-f0a8aef1d75d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Dark chocolate délice, praline, sea salt, a quenelle to order."
+                            ],
+                            "id": "8cbaee67-4ef2-4f4a-b196-8cfce93ba315",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "30b5036d-193a-4a31-ac7e-4e3d601a0202",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["Poached pear, brown butter, verjus"],
+                                "id": "e42a125e-eeaa-4c0a-9477-9d0fb0a49310",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["15"],
+                                "id": "ff69771e-c947-4582-bb1a-7764b07e5a45",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2ca881d7-7365-4fa3-8c1e-4623d514e7af",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Vanilla-poached pear, brown-butter cake, verjus caramel."
+                            ],
+                            "id": "d0736b1e-b418-4f8a-92bb-0388334b6e4b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2ffa6518-5247-41f2-b72d-16f94d171614",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The cheese trolley"],
+                                "id": "bb01b147-166c-4f14-8dcc-db4c379fc20f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["22"],
+                                "id": "1bed6e49-8d15-4d06-99c5-7f9ec6a56249",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b535befe-46f2-430f-8c07-26536cdb4fbb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A selection of British farmhouse cheeses, quince, walnut, oatcakes."
+                            ],
+                            "id": "d2a6d26e-40b8-4d12-926b-8f28d80e3289",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "82c4b0e8-e98d-4833-89d7-b2def6bb8c47",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "3c7ce74a-88cd-4077-b6d7-c522df564d4b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "d9f12054-018c-498a-bc57-1a1ed4ffd6ac",
+                "ord": "a0"
+              }
+            ],
+            "id": "948eb27a-b32a-4535-b79a-a2525e9a378d",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Wine & pairing"],
+                    "id": "c991a28c-f4e1-4a95-b5c1-a655773d7c5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "A cellar built over years, poured by a sommelier who lives in it."
+                    ],
+                    "id": "39d3c204-cac1-4ee3-8459-6f56a5e7844f",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The tasting pairing"],
+                                "id": "fe285d84-53da-4597-9b86-8227fdffd72c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["95"],
+                                "id": "9f341b22-3a11-48a7-a397-f8dc5ae1e045",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "07f1ce75-eaba-47a4-8ac5-6d42d4338d20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Seven glasses chosen to follow the tasting menu, course for course."
+                            ],
+                            "id": "cf57a5ef-94f4-4e18-bf74-be78fe2da515",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "839085d8-c4a0-4cb3-916c-b65dbc96bfc2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["The reserve pairing"],
+                                "id": "938712ab-424c-44d6-a1bf-4439eaa5dcf8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "shrink-0 text-lg font-semibold text-primary",
+                                "children": ["165"],
+                                "id": "ec5d300d-eb55-4002-9ae2-405e92b37ee7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "96503f40-9c92-42ae-8dd2-d5651f2f5e41",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Older vintages and rare bottles, for the table that wants to go deeper."
+                            ],
+                            "id": "3fd20a63-6fa5-4c96-9a8a-8b39cbd3844e",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "640c15e3-bffc-4b5a-ad45-33a2b38f1f3e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["By the glass, by the bottle"],
+                                "id": "69227c16-d486-4889-a1c5-e518e503b761",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "2173a22e-f6e8-4b11-a860-f05527724170",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A long list, low-intervention and classic alike — ask the sommelier."
+                            ],
+                            "id": "34d0df69-a1e8-4be6-9b3b-a33cbe785427",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0e32b51b-fb72-4a3a-bb34-1b2105f3f913",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4976dcce-c4de-45c9-b2e3-c3ebae8fb8c4",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7d1274e3-566e-4eef-8161-fab07f76e01a",
+                "ord": "a0"
+              }
+            ],
+            "id": "c4dfc151-1c92-422e-acd2-03907d62bd36",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Vesper",
+      "seoDescription": "See what Vesper offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "37eebfd0-56a5-46b4-82bb-0a917f709c0f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl",
+                    "children": ["Reserve"],
+                    "id": "206a32ae-fd62-4ab7-874f-efecf4a52f29",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Choose your party size and a night below — you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes off your bill on the night."
+                    ],
+                    "id": "c2215fc2-645e-456a-b256-441db5198ecd",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-base leading-relaxed text-secondary",
+                    "children": [
+                      "For the chef’s counter, private dining, or a party of seven or more, write to us and we’ll arrange it personally."
+                    ],
+                    "id": "35c575ba-550a-44c1-9d8e-6733e34c3a29",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "288b13fa-afed-4b9d-b79c-3764e4cf3da5",
+                "ord": "a0"
+              }
+            ],
+            "id": "34ccedb7-125f-409b-a3fb-2fa577fa933b",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "76590596-eb86-4737-a9d8-303df4ce49fc",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Vesper — the tasting-menu restaurant",
+      "seoDescription": "A small, chef-led tasting-menu restaurant on the harbour side — one menu a night, written each morning, cooked over embers, with a cellar built over years.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "9591db01-c685-4cc6-9767-bb7464a59bf5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold tracking-tight text-base-content @2xl:text-7xl",
+                    "children": ["About Vesper"],
+                    "id": "41ab6261-7e1c-4d6b-8429-1724dbfdb984",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Vesper is a small tasting-menu restaurant behind the old exchange on the harbour side. We opened with a single idea: cook one menu a night, built entirely around what the day brought in, and serve it in a room quiet enough to hear the kitchen work."
+                    ],
+                    "id": "ace41801-d172-454d-a8f5-ad28eb2d5310",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "There is no fixed carte. The chef writes the menu each morning after the boats land and the growers call, so the courses turn with the tide and the season and are never quite the same twice. Nearly everything is made in-house — the bread, the butter, the pastry, the petits fours that close the night."
+                    ],
+                    "id": "0425f5bf-0bc1-46c5-859f-21919a6c7926",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The room seats a few more than thirty, with six stools at the chef’s counter for those who want to watch it happen. One seating a night means the evening is yours — book ahead, especially at the weekend, and come as you are for the long, unhurried kind of dinner an occasion deserves."
+                    ],
+                    "id": "ac299c9d-5900-4744-9441-548e89df66ca",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "32da4f20-a0bd-4aa7-8df4-52fbc950c4ae",
+                "ord": "a0"
+              }
+            ],
+            "id": "526e2753-4378-4242-bbc9-cb8fc942a632",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2 @3xl:items-center @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1758801305056-a9a1d4bc0c06?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FuZGxlLWxpdCUyMHdpbmUlMjBjZWxsYXIlMjBib3R0bGVzJTIwcmFja2VkJTIwZmxvb3IlMjBjZWlsaW5nfGVufDB8MHx8fDE3ODY0MTUyOTN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "A candle-lit wine cellar, bottles racked floor to ceiling",
+                      "loading": "lazy"
+                    },
+                    "id": "2ba4cbef-d671-47bf-bbd7-e6a768b56b09",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["The cellar"],
+                        "id": "39dc9729-ef28-4c21-a2db-f73f3e547d0c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Under the dining room is a cellar built over years — classic estates beside low-intervention growers, a deep bench of older vintages, and a sommelier who would rather talk you into something surprising than something safe."
+                        ],
+                        "id": "fabd5b7f-ea11-4b6f-b9d6-a3c4c597835d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Take the pairing and let the list follow the menu glass for glass, or come down before dinner and choose your own. Either way, nothing on it is off-limits to a curious table."
+                        ],
+                        "id": "b71cb5fe-ecf9-4d2c-bc8a-e6b0208f7123",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "da362cbc-a889-437e-b32d-73d962075de8",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "efe73f32-6c38-4c2a-a8ce-01bbfb7f27fd",
+                "ord": "a0"
+              }
+            ],
+            "id": "b1cc5517-7240-4ff5-9ea9-14ac97d75ded",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Vesper",
+      "seoDescription": "Where to find Vesper, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a3e5ee7c-db98-48c1-8148-b4454f4f6a5d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-24",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-6xl font-bold tracking-tight text-base-content @2xl:text-7xl",
+                    "children": ["Visit Vesper"],
+                    "id": "649eddc9-cdb8-47c0-b44e-b0c5cd28debf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No. 9 Vesper Court, behind the old exchange on the harbour side. Dinner Tuesday to Saturday, one seating a night; closed Sunday and Monday. There is no sign on the door — look for the single lit lamp."
+                    ],
+                    "id": "dc3105a6-906c-403a-b21c-3931a5f49dbe",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Reserve a table"],
+                        "id": "dff728d1-1c17-42b4-a871-244d2c8e9448",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "mailto:reservations@vesper.example"
+                        },
+                        "children": ["Email us"],
+                        "id": "5ea858fb-a50e-41bb-bfcf-bde9b9efeef8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f553f56b-7fff-435d-bf6d-5e4db6be9972",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "For the chef’s counter, private dining, larger parties or press, write to reservations@vesper.example and we’ll reply the same day."
+                    ],
+                    "id": "3e033145-dc97-4047-94d4-e645a2605476",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "910935c8-452c-4f40-ae77-ae2b4ec3f4ef",
+                "ord": "a0"
+              }
+            ],
+            "id": "5de23aa3-e172-4dfa-8588-b54c7cb9b5e1",
+            "ord": "a0"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "vesper-fine",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(22% 0.012 65)",
+      "--color-base-200": "oklch(26% 0.014 65)",
+      "--color-base-300": "oklch(32% 0.016 65)",
+      "--color-base-content": "oklch(94% 0.008 85)",
+      "--color-primary": "oklch(80% 0.11 82)",
+      "--color-secondary": "oklch(77% 0.02 75)",
+      "--color-accent": "oklch(77% 0.12 55)",
+      "--color-neutral": "oklch(30% 0.012 65)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Playfair Display\", serif",
+      "--color-primary-content": "oklch(15% 0.02 82)",
+      "--color-secondary-content": "oklch(15% 0.02 75)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 65)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(77% 0.12 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(32% 0.016 65)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Playfair Display\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(18% 0.012 65)",
+      "--color-base-200": "oklch(21% 0.014 65)",
+      "--color-base-300": "oklch(28% 0.016 65)",
+      "--color-base-content": "oklch(95% 0.008 85)",
+      "--color-primary": "oklch(82% 0.1 82)",
+      "--color-secondary": "oklch(79% 0.02 75)",
+      "--color-accent": "oklch(79% 0.11 55)",
+      "--color-neutral": "oklch(26% 0.012 65)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 82)",
+      "--color-secondary-content": "oklch(15% 0.02 75)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 65)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(79% 0.11 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(28% 0.016 65)"
+    }
+  }
+}

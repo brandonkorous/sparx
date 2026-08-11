@@ -1,0 +1,27 @@
+[
+  {
+    "id": "law-family-hero",
+    "url": "https://images.unsplash.com/photo-1775144657610-9a6f171e522f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3JTIwb2ZmaWNlJTIwd2FybXxlbnwwfDB8fHwxNzg2MzkwMDE1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A warm law office with two people talking across a table"
+  },
+  {
+    "id": "law-family-office",
+    "url": "https://images.unsplash.com/photo-1758518731462-d091b0b4ed0d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3eWVyJTIwZGVzayUyMGRvY3VtZW50c3xlbnwwfDB8fHwxNzg2MzkwMDE4fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A calm, sunlit meeting room with comfortable chairs"
+  },
+  {
+    "id": "law-family-eleanor",
+    "url": "https://images.unsplash.com/photo-1662104935883-e9dd0619eaba?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29tYW4lMjBsYXd5ZXIlMjBwb3J0cmFpdHxlbnwwfDB8fHwxNzg2MzkwMDIxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Eleanor Stone, estate planning attorney"
+  },
+  {
+    "id": "law-family-marcus",
+    "url": "https://images.unsplash.com/photo-1734159350022-0acc5f934da5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bGF3eWVyJTIwcG9ydHJhaXQlMjBtYW58ZW58MHwwfHx8MTc4NjM5MDAyNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Marcus Hearth, family law attorney"
+  },
+  {
+    "id": "law-family-priya",
+    "url": "https://images.unsplash.com/photo-1506863530036-1efeddceb993?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YXR0b3JuZXklMjBwb3J0cmFpdCUyMHdvbWFufGVufDB8MHx8fDE3ODYzOTAwMjh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "Priya Nair, estate and business attorney"
+  }
+]

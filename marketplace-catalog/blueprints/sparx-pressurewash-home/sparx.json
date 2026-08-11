@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-pressurewash-home",
+  "name": "sparx — Pressure Washing (Home)",
+  "version": "1.0.0",
+  "tagline": "A bright residential pressure-washing template — book a free quote from day one.",
+  "description": "A bright, satisfying residential pressure & soft washing site — a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as \"Blast Master Pressure Washing\" — make it look new again.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Pressure washing",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Pressure Washing (Home) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Pressure Washing (Home) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#00b0c1",
+  "sortWeight": 8
+}

@@ -1,0 +1,2756 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "b4c45271-62b5-4ccd-a7e9-2acac52dbd78",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/menu"
+                      },
+                      "children": ["Menu"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "cfe3a220-5c8c-4a63-9213-2c1bae8070c2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/book"
+                      },
+                      "children": ["Reserve"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "b748ba03-7d8a-4d13-8685-568003469ed4",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "cee6a58a-5a9e-4ab5-b9d2-ecc59bab6b6e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Visit"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "bd8fcf4f-a1b5-426e-8a2e-f1416b857962",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "fbd0d9aa-abe5-4083-aae3-5daadbf317ff",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "cac261a0-539b-48c2-b716-f815dbb4b6c8",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "1988a47c-d488-4dc7-aa20-24c0abce257f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Book a table",
+                        "href": "/book"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "5978d2be-8827-43ee-a486-28be900b217e",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "24227cba-a412-49b9-9ec8-5949240e6bdc",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "a9340b5f-2eeb-41d0-9c9e-4262e28d3789",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "30e4c289-6fb1-47bd-80bb-7b8b2c8b82e9",
+                  "ord": "a2"
+                }
+              ],
+              "id": "f8346fd5-d05a-43bf-9631-5f564a4dcd84",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/menu"
+                  },
+                  "children": ["Menu"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "060bb5ea-1e60-44e2-b528-bb0db1f22a83",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/book"
+                  },
+                  "children": ["Reserve"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "347e3b47-f695-4100-aed8-54dd48b8a5a2",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "b1e173b2-fe22-4580-98f9-82db59d41333",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Visit"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "4689dcd7-1e3c-4d21-af5f-130b865c5363",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "ead7ac89-2328-49ed-8434-bf858ea3e8ae",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Book a table",
+                    "href": "/book"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "ea8375fb-47dd-490d-abce-fe259dc45aa0",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "962d94c6-048b-407e-9b45-77d49dc310c8",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "b59e4125-dcfa-4262-ab14-77c93a4a93ec",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "c96adad2-8a62-4b69-8851-227ae9ddf449",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "67a60ca1-3afc-4e47-acfa-0e34e6f4b816",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "d73ca608-4feb-41d9-8fa4-6678ff612df5",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "c6589ab0-44a3-4d63-9b94-9a34f0c14375",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "208f62f8-0b59-4ba7-86b1-e008f90c6abe",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "bb23b286-c15a-49a2-8c3f-1346e491392f",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/menu"
+                                  },
+                                  "children": ["Menu"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "907f8751-ea1d-4faf-8280-1d33d8740157",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "c33b4ab6-d89d-45ab-a530-aa4475818679",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/book"
+                                  },
+                                  "children": ["Reserve"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "09b02648-df2e-4d8b-8e9f-936320f4bf83",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "0cef9586-2747-42bf-8303-a64c93853730",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "e900b01f-4344-4065-94f7-81b7e99fc48a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "7a915a21-246b-489b-b306-582b513aa06a",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Visit"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "511614f6-24d8-4eb8-956d-ba543791c6d4",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "32eca36b-979d-4b75-bc76-ea1e2cb5abee",
+                              "ord": "a3"
+                            }
+                          ],
+                          "id": "8b87428e-4bd7-4b09-97a8-e80f3e79c391",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "18cc1231-a94e-4897-9894-98fe6a44f8f8",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [],
+                          "id": "94e32a75-e784-4bbd-8f47-ac1a4d645c8e",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "75d1e2e1-1af1-4c50-9c09-f93710c30f66",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "9b803c99-8af2-4ba7-8b1c-689e15261650",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4164fde2-a9f0-4762-9521-930cbd7e6938",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "f399f235-90ba-4a1c-a159-60613766f66c",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "b4c55207-32eb-44be-b335-e732ebddbeab",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "7711a56d-5290-4b32-b28c-858b4031333e",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "46a2c561-babe-47ef-a4d6-c2469308cb53",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8211c667-509a-426e-959b-de250feba89a",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "d3f74ca5-31fb-482d-85e9-2abdbae356ee",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "d7d93b32-a41f-411f-9615-c423455222e3",
+                  "ord": "a1"
+                }
+              ],
+              "id": "37a3ab37-20de-4d08-a80a-cc02472737d9",
+              "ord": "a0"
+            }
+          ],
+          "id": "43ba7ba8-09a8-440a-bf93-145e9aa92251",
+          "ord": "a2"
+        }
+      ],
+      "id": "933ff5ec-5cbd-4375-b6cc-8a236e4ea646"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Forno — a wood-fired pizzeria & trattoria",
+      "seoDescription": "Forno is a wood-fired pizzeria and trattoria — Naples-style pizza, hand-rolled pasta, open Tue–Sun for lunch and dinner. See the menu and book a table.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f4d9742f-a97b-40af-b7b6-ee0928667950",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1622880833523-7cf1c0bd4296?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d29vZC1maXJlZCUyMG92ZW4lMjBnbG93aW5nJTIwYmFjayUyMHdhcm0lMjBidXN5JTIwcGl6emVyaWF8ZW58MHwwfHx8MTc4NjQxNTMyNXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A wood-fired oven glowing at the back of a warm pizzeria",
+                  "loading": "lazy"
+                },
+                "id": "fafd846e-4596-469c-92c6-92c959608969",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-5xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Forno"],
+                        "id": "8f76dee5-46a0-4cff-b9c6-9a9ab4e53780",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A wood-fired pizzeria and trattoria. Blistered pizzas from the oven, pasta rolled that morning, and a long table with your name on it. Open for lunch and dinner, Tuesday through Sunday."
+                        ],
+                        "id": "5ce8dbf0-74e7-4dc8-aa0a-c7934c05fe51",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a table"],
+                            "id": "50eab832-5838-415e-b49c-d17059c67407",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-accent underline underline-offset-4",
+                            "attrs": {
+                              "href": "/menu"
+                            },
+                            "children": ["View the menu"],
+                            "id": "00ac5fd4-24f5-41c4-83b9-a3d01cf374d7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cc6282cc-cfb4-435a-91a1-bb501ee75636",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "dafe421f-8d85-411b-8821-db50f8e0769b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "79d022fe-b4df-4143-a884-160dc4c8125e",
+                "ord": "a1"
+              }
+            ],
+            "id": "330eeadf-2f3c-4abd-9e63-821f0c614a5f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Straight from the fire"],
+                        "id": "c6fe04bc-3e85-4fed-bcba-684fad3d30a2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The oven runs at five hundred degrees and never really cools down. Three of the things we’re pulling out of it this week — the rest is on the menu."
+                        ],
+                        "id": "c6853390-fd3f-4983-8b77-f1b34ff68a3c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "10893d73-08b5-4775-ad40-29e34649c4eb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @3xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1630534592500-d0c57ec6f1b5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2hhcmVkJTIwYm9hcmQlMjBjdXJlZCUyMG1lYXRzJTIwb2xpdmVzJTIwYnVycmF0YXxlbnwwfDB8fHwxNzg2NDE1MzM3fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A shared board of cured meats, olives and burrata",
+                              "loading": "lazy"
+                            },
+                            "id": "08e07f12-9106-4864-a9b9-5f10fd89d576",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["To share first"],
+                            "id": "e6489979-4bc3-4146-a178-435aa610907f",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Boards for the middle of the table — burrata, cured meats, marinated olives and a pile of warm focaccia."
+                            ],
+                            "id": "3115ef56-6d1a-46ae-b1e1-89c52ba08924",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "71e8690d-7469-487e-85bb-511cc7e040c1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Ymxpc3RlcmVkJTIwbWFyZ2hlcml0YSUyMHBpenphJTIwZnJlc2glMjB3b29kJTIwb3ZlbiUyMGJhc2lsfGVufDB8MHx8fDE3ODY0MTUzMjh8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A blistered Margherita pizza fresh from the wood oven",
+                              "loading": "lazy"
+                            },
+                            "id": "b3f04e0f-03c8-405e-854a-974761b113a8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["From the oven"],
+                            "id": "f5687493-3165-4771-889a-d616e86e2ad1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Naples-style pizza, blistered and floppy in the middle. The Margherita, the ’nduja, and a white pie with fennel sausage."
+                            ],
+                            "id": "699332e1-1050-4b2e-a362-f6210279fa1c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "b5d4b48b-b17e-4352-bc89-3c85bfe7bab6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/menu"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1733197014598-b6dec85af156?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGxhdGUlMjB0aXJhbWlzJTIwZHVzdGVkJTIwY29jb2ElMjBiZXNpZGUlMjB0d28lMjBzbWFsbHxlbnwwfDB8fHwxNzg2NDE1MzQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A plate of tiramisù dusted with cocoa",
+                              "loading": "lazy"
+                            },
+                            "id": "697080ec-3d6a-4749-bc13-e05c01939cfa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["To finish"],
+                            "id": "99242ae2-05c5-41e6-b835-208ac81d83f3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Tiramisù made in trays out back, a lemon sorbetto, and affogato with a shot of proper espresso over the top."
+                            ],
+                            "id": "84c1bc53-fb3a-419c-b2e0-c8e57775088a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a720a4b4-8c90-467e-b180-5a40a8a7c45b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "f20cee2b-d75e-4798-b1f7-020610ad6de7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4",
+                    "attrs": {
+                      "href": "/menu"
+                    },
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["See the full menu"],
+                        "id": "7d15e8b3-624e-465e-a7fb-56f75fd3760e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "span",
+                        "children": ["→"],
+                        "id": "09ea9273-2f83-4db9-b05c-4777fa74e20c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "48e8f513-30cc-4264-884f-fdbfd99c3770",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "2589d430-9449-4582-884c-1aa4cb7a5540",
+                "ord": "a0"
+              }
+            ],
+            "id": "09b56e09-3d9e-46a5-8e5f-e76ed768bffd",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "img",
+                    "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
+                    "attrs": {
+                      "src": "https://images.unsplash.com/photo-1611596188718-840151555242?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhdHRvcmlhJTIwZGluaW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDE1NTA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                      "alt": "The trattoria dining room — long communal tables, warm light",
+                      "loading": "lazy"
+                    },
+                    "id": "c2cf9490-b427-46e6-9753-50259b8e40d5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["Pull up a chair"],
+                        "id": "457fdd06-17d8-46b9-9ec9-6708b04f0783",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome; we keep the front counter and a few tables back for people who just wander in hungry."
+                        ],
+                        "id": "9d27361f-814a-4624-bb10-5110d808be8d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/book"
+                            },
+                            "children": ["Book a table"],
+                            "id": "c8a889c9-e12a-4495-9272-bd0e76b78e8e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f56c8719-f90e-4a51-89e6-56465959b0df",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "d78ca2b8-b7d5-410c-b23f-495d83f6d8a0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9cd5023e-e1a5-4737-8003-979a75f990b0",
+                "ord": "a0"
+              }
+            ],
+            "id": "a7a7e2fc-2254-4edc-8ba4-2480906cb6bc",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
+                        "children": ["Hours"],
+                        "id": "6a88450b-62dd-41e4-9feb-53aab71d9f70",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "ul",
+                        "class": "flex flex-col",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Tue – Thu"],
+                                "id": "1a176b2d-6ca3-47db-8f0a-ea45e3084ecd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["12:00 – 15:00 · 17:30 – 22:00"],
+                                "id": "5549399d-231c-44a2-9e86-24ed101bd779",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "b60bb8c0-c8b1-4730-b1d8-dd7f4da0e56d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Fri – Sat"],
+                                "id": "0c1ae9aa-45e6-4ad9-939a-4789c26e958d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["12:00 – 15:00 · 17:30 – 23:00"],
+                                "id": "5f0cc25e-1744-4021-b2f4-a40a94c6c24d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ecf747d4-e66b-468b-bef7-023f54984fc3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Sunday"],
+                                "id": "d390d7d8-9c12-4f7e-8836-85c618d2d59c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["12:00 – 21:00"],
+                                "id": "9c1ecf28-3af1-4f5f-9eb1-cadf4e25bd2f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "cd233168-db0b-4600-beab-bccf5fb4e25d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "flex items-baseline justify-between gap-4 border-b border-base-300 py-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-semibold text-base-content",
+                                "children": ["Monday"],
+                                "id": "e09dfac8-4ad5-45ec-9d27-38686bf19509",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-secondary",
+                                "children": ["Closed"],
+                                "id": "06e580ea-29d7-4d8f-a8ca-3b27baa692d8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9196c551-ea50-4fca-968f-3c6954641021",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "bde86fe2-8de8-4ec8-9a4c-c1e05eeba87b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b96f1588-27cd-455b-b457-f8f3e6373c86",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
+                        "children": ["Find us"],
+                        "id": "f0200554-fda4-4109-a657-9c33ad471ab8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "9 Forge Street, on the corner where the old bakery used to be. Street parking after 6pm, and the tram stops right outside the door."
+                        ],
+                        "id": "21469a1c-0015-4c2c-a953-e13051f9f4c6",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/contact"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["Directions & contact"],
+                            "id": "e68b82ce-2a2e-4aab-9c78-94617e9d0895",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "children": ["→"],
+                            "id": "fd5ddf62-b4ce-443e-999b-7866a22bbbbf",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "01241ad5-b2f4-4bbb-8a6b-4fc7e5b7eaa3",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "efa54f39-4b84-4780-bf7e-873f8d63e3ab",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1b1432c2-669e-4039-86a5-807a519896d1",
+                "ord": "a0"
+              }
+            ],
+            "id": "96ef667d-82fb-4712-ba34-6169c5201d02",
+            "ord": "a3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Menu",
+      "kind": "singleton",
+      "slug": "menu",
+      "seoTitle": "Menu — Forno",
+      "seoDescription": "See the full menu at Forno — dishes, drinks and prices — then reserve a table.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e4ab46fc-0f7a-4b30-823f-d39ce22123f5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The menu"],
+                    "id": "54599911-259e-487f-99fb-0df58d775c50",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Flour, fire, and not much fuss. Dough proved for two days, sauce from San Marzano tomatoes, mozzarella pulled the same morning. The specials board fills in the rest — tell us about allergies and we’ll steer you right."
+                    ],
+                    "id": "c849b3e2-a93c-4c58-8817-43365a105148",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "103501c0-5809-44d7-aaee-916656d4d387",
+                "ord": "a0"
+              }
+            ],
+            "id": "44b6eaf2-27e3-4d7d-b4ef-55df9b2f5ca0",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-10",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Antipasti"],
+                    "id": "a88194b9-5116-45a2-b458-2e06d59a1d76",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["For the middle of the table, before the oven gets going."],
+                    "id": "405441ed-acf8-40a8-9eb3-3844d6bb1a6e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Focaccia, rosemary & sea salt"],
+                                "id": "0d4ec17c-b44f-4683-a824-99a8e4904279",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["7"],
+                                "id": "651198fc-5db6-416f-a251-331b030a827c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c0ed01eb-7581-432c-858e-3631eccec7c7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Baked all afternoon, dimpled with olive oil, torn to share."
+                            ],
+                            "id": "d60d95f1-2aa6-4f58-9a46-48f6219d57bb",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4f509fad-f056-4863-a137-499a12a13fff",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Burrata & marinated peppers"],
+                                "id": "0696a3ba-0103-42ab-8753-3afb74a381b9",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["14"],
+                                "id": "26c0c4a2-0944-444b-b042-c77b47beefe7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f97fb046-37d4-4ace-a25c-0508aeaa8dbe",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Whole burrata, wood-roasted peppers, basil oil, grilled bread."
+                            ],
+                            "id": "1dea76dc-a206-4250-9a40-184eafb43de6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "60f96a4b-551b-43e0-8ada-2e601689af16",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Salumi board"],
+                                "id": "8993a181-f7c5-44ad-a02e-ced10f2fef44",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["16"],
+                                "id": "88b99988-51a0-445a-b7ae-36c272357972",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4062baed-71d7-43f3-9d88-acf39aff5d94",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Soppressata, finocchiona and prosciutto, olives, pickled things."
+                            ],
+                            "id": "8af82e1d-a183-4430-99b5-ee1776764152",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "45c2bd54-d5e1-4a6a-b574-7f0ea1182d88",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Fritto misto"],
+                                "id": "9abfd2e2-86e9-4d3a-91bf-ecd2e6684027",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["11"],
+                                "id": "63c0c5d5-10e4-4deb-aeb1-b223109267d0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c0cbcd65-6138-42cb-8997-cae07b2684c6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Lightly fried zucchini, artichoke and lemon, with a garlic aioli."
+                            ],
+                            "id": "1d12f2f0-f505-471b-a397-7998ac90a112",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "58338969-8ad1-4cc0-be4b-ee50da2d5daf",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Tomato & bread salad"],
+                                "id": "bfdb26a7-9144-4eda-8931-6c51117a3868",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["10"],
+                                "id": "4c93023d-6269-4cf7-bc43-270bba6776c8",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "677e77a8-edae-4f30-bda1-46cc2b6aae20",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Panzanella — ripe tomatoes, torn focaccia, red onion, oregano."
+                            ],
+                            "id": "9be646bc-90ba-4b23-8805-3fd87ed9973d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ce8a3381-ece7-4831-9d5c-62c48d7398f4",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "0884863e-db7b-469e-bac3-f1e43baef7f0",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1e35a220-e265-4018-9ada-28cc8570d7c5",
+                "ord": "a0"
+              }
+            ],
+            "id": "fd9b8ed2-649e-4e95-bc05-4e8b3f4dc80f",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-10",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Pizza"],
+                    "id": "77ed8d96-716d-40c4-949d-6327363dc815",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "Naples-style — a 48-hour dough, thirty seconds in a 500° oven, blistered and floppy. Gluten-free bases on request."
+                    ],
+                    "id": "e63b5fce-b54d-480b-979b-3ee280a7e474",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Margherita"],
+                                "id": "66019ff5-9ab3-4d36-9a7f-20a4d812f8eb",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["14"],
+                                "id": "73f8a0d0-9257-4bad-87c1-506cd1542b69",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9c23bb77-b92f-4807-be6d-541238f5e093",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "San Marzano, fior di latte, basil, a slick of olive oil. The one we’re judged on."
+                            ],
+                            "id": "4e30f659-ef75-4cdd-90e5-046669baec15",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "44f7ed83-6912-4499-b93e-4d00204a93c8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Diavola"],
+                                "id": "9b714921-ac97-4823-842c-c146d6c71da0",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["17"],
+                                "id": "f11f18c3-06f4-4279-922e-fcd33f97b0a6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f9a7555b-9b07-47ef-b2ce-a065a27e9233",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Spicy soppressata, chilli, mozzarella, a drizzle of hot honey."
+                            ],
+                            "id": "b95878d8-9a8d-422e-85c1-ca7e0fb44aa1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c668d8dd-0c60-4305-bfe2-4e8f4298062e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Salsiccia e finocchio"],
+                                "id": "56ea738a-5a4d-4210-ae31-8b108015467f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["18"],
+                                "id": "9e2660bb-9d18-4b98-9349-0bb77d5d8680",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "38969a98-96a4-4f95-9440-b121985c6a90",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Fennel sausage, mozzarella, roasted onion, wild fennel — no tomato."
+                            ],
+                            "id": "137543cf-08a2-4f25-9b42-64b1ee54e8b1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c49386b0-7fb5-4832-9a26-018b87677aab",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Funghi"],
+                                "id": "e8c0ef05-c111-42ff-bac5-b8e7533527d2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["17"],
+                                "id": "db9162ac-d800-4262-9dc4-8227c608bf4c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "eb0b1452-cba1-4bcd-aae0-38970b32b36a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Mixed mushrooms, taleggio, thyme, garlic cream, no tomato."
+                            ],
+                            "id": "d98fcc8c-f26b-433e-aded-a2f617807795",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8ba6bba6-ac5c-46d3-8a29-39fc6893a9b8",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Marinara"],
+                                "id": "cffa8d4e-7115-4c7a-96db-ba77a6a1e258",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["12"],
+                                "id": "dc0ba418-3966-428f-8d0b-5e99faffc80d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "de6b0681-9183-4765-8ba2-35aedc6e674a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Tomato, garlic, oregano, olive oil — no cheese, all the way old-school."
+                            ],
+                            "id": "c8f14b48-7372-4703-88bf-5d9e3af11cfc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "155b18d6-290d-418e-9240-2ab9a58ed76b",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Ortolana"],
+                                "id": "6dc09223-52d3-4002-80f5-55a308de6474",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["16"],
+                                "id": "87350bff-0ae8-41d0-ba02-2eb7dc709e2d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "23b6ce3c-c537-4b19-8eab-b02e7227e929",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Grilled aubergine, courgette, peppers, mozzarella, basil."
+                            ],
+                            "id": "0e56b9a3-e68e-46a1-b504-d8984f879646",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1b4a3973-c62f-4f8c-a91f-6a9f5f8c1e56",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "82b2353e-ad18-4fda-aceb-1bfddd837d1d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "999924bb-759f-4c17-81fc-42fb22dd2901",
+                "ord": "a0"
+              }
+            ],
+            "id": "0d32e6cb-df35-458b-b9b3-0570d61daf5b",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-10",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Pasta"],
+                    "id": "30e3296b-8c70-4c0e-b376-6294f2f42132",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "Rolled and cut by hand out back each morning. Ask what’s on today."
+                    ],
+                    "id": "2517b43f-c8bc-472d-af48-6e3f96493d2e",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Rigatoni all’Amatriciana"],
+                                "id": "14d154d1-e637-46e4-ad33-b5106d91e5e1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["18"],
+                                "id": "89daf531-19a2-4927-8aeb-c33c83249dc7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "01a26894-aef4-410c-a059-c491155bf6d4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["Guanciale, tomato, pecorino, a lift of black pepper."],
+                            "id": "ff3529b4-7995-4b74-a724-d35d8e381a57",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cae2da3a-1371-4bfc-9ba6-6d2d2d585db8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Cacio e pepe"],
+                                "id": "64d68fe4-2180-483d-8e08-cbf96c6e2487",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["16"],
+                                "id": "085d3465-4476-499c-bc3d-e0bed7fa9979",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4f5a9552-fcfc-404c-a2e8-350495eccca3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Tonnarelli, pecorino romano, cracked pepper — three things, done right."
+                            ],
+                            "id": "d52f2c43-2bf6-4ca7-90ff-590c81997873",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "392bb505-0b66-4d8b-a6ec-2092a4185afd",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Tagliatelle al ragù"],
+                                "id": "0af6d386-e302-4723-971e-47e4d1880cbc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["19"],
+                                "id": "523c4791-6b70-4337-80a6-84c9ae6aa0e7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5eabdcdd-19d0-460d-b244-e463e0077963",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "A slow Sunday beef-and-pork ragù, parmesan, ribbons of fresh pasta."
+                            ],
+                            "id": "592bc204-99af-45b3-9905-0dbe4a90513d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cb9150f6-4a32-44c5-a91c-429d41894230",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Gnocchi al pomodoro"],
+                                "id": "5e235a18-d296-49b8-8bb1-0447c20fb111",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["17"],
+                                "id": "517ee304-ccc7-44dd-a9ae-f696f76ccfa4",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a7181567-ad6f-4bb8-975c-38bbc18ce863",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Pillowy potato gnocchi, simple tomato and basil, torn mozzarella."
+                            ],
+                            "id": "f5bc7fd5-54c2-4c8d-8662-0fb49fd7777a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "98d53883-7e8e-49d4-bebe-6af6a9870d03",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "096ab805-00c2-4064-9d33-687ad999f9cb",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "b4f1d288-ce54-4d34-b9e9-eb9995243c56",
+                "ord": "a0"
+              }
+            ],
+            "id": "617ae2e4-dc3d-4c01-8218-8cee9fb89672",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-10",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Dolci"],
+                    "id": "dfa7a4e6-4530-41fd-b62c-3287e3f9bcf9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": ["A short list — plus whatever the kitchen felt like making."],
+                    "id": "a16f4bb7-e4f9-4458-8136-3668cdbf4cd7",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Tiramisù"],
+                                "id": "72914934-a1de-4758-84dc-816be2f5d13e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["9"],
+                                "id": "be1b72be-3134-4a97-a5ff-daaf426cb79d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7ce0458d-7439-490e-bd32-942666ff2d81",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Made in trays out back — espresso, mascarpone, a heavy dust of cocoa."
+                            ],
+                            "id": "76dad8f9-0e56-442a-9c96-780f2108718c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "535c801f-9354-489d-bedf-6002c76f6671",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Affogato"],
+                                "id": "4d408b4d-d7a4-4b01-9378-553709a62caf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["7"],
+                                "id": "605f36ad-01f3-453e-a1a0-38fc8951bb4c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4fd4fada-6226-43e9-8858-fdea96da1257",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Vanilla gelato drowned in a shot of hot espresso. Add amaretto."
+                            ],
+                            "id": "41c8cfb3-0cfa-4145-a3b5-ba91503aa610",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3c58374a-ca7a-471a-bd66-10e3075e38b7",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Lemon sorbetto"],
+                                "id": "79fd9445-cf71-40ab-8cb8-78791821a39a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["6"],
+                                "id": "d389cdaf-2910-4665-acd4-53ebb5ad357b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "eb3cab1e-85cd-4683-9f97-742e6a2acd19",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["Sharp, bright, and cold — the way to end a big meal."],
+                            "id": "4776d39a-2361-411f-ae30-1026d7fc2e3b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "08deaad7-7fed-4697-8770-2f6a31040be9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Cannoli"],
+                                "id": "9344527a-cb62-4a2b-8e65-bf24bae47ad2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["8"],
+                                "id": "e9e767c5-6a2d-4b86-ac13-40fdb395b3bc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e07b2363-8042-4b3a-8370-1edd10288720",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "Crisp shells piped to order, ricotta and candied peel, pistachio."
+                            ],
+                            "id": "769c6a87-e445-4637-ac36-15b9943cdbbc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ff330571-4683-4f01-bfc9-3ffc2716d857",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "511659b5-6d05-427a-b4f2-e64a4b816645",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "9204a30b-88da-46ca-87ea-b84ecf25e6b9",
+                "ord": "a0"
+              }
+            ],
+            "id": "dfdc3cd7-2d7f-4051-a81e-aa710c08ca92",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-10",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
+                    "children": ["Drinks"],
+                    "id": "b60bd76f-3b32-430f-a714-1c933a545e79",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "A short Italian list — Negronis, a handful of growers’ wines, and beer from the brewery two streets over."
+                    ],
+                    "id": "f5c6db10-f2ca-46d8-9374-2bc4b23bcc59",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mt-2 flex flex-col",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Negroni / Americano / Spritz"],
+                                "id": "3989ffc6-17c2-4cdc-a829-2dfefe1c1668",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["11"],
+                                "id": "a5ff1f28-9da4-41de-9524-7118f4431be6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "613bee64-e7fa-4ea8-b3a0-e60642ae7ae8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": [
+                              "The three that belong before dinner. Ask which vermouth’s open."
+                            ],
+                            "id": "3b97105b-e306-4840-a9ff-4dc414d215b1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6c8ab65c-0be0-44ab-acde-2da648e1e019",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["House red / white / orange"],
+                                "id": "87a21cf8-9af6-4ef0-9ae5-2196d1818959",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["8"],
+                                "id": "3b095638-f30c-4b2b-9e9f-7bed49167b69",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5bd84d1c-456e-4c21-8ec8-813355c383bf",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["By the glass or carafe, low-intervention, all Italian."],
+                            "id": "baa66a65-e85f-4e23-a11a-83f70472ef2b",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e9d807ec-37de-4c1a-97d1-d9492107254d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Peroni / local pale ale"],
+                                "id": "e62e529e-86b5-458c-abfe-e729b5e604dc",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["6"],
+                                "id": "b7ceab54-08f2-49c5-a611-e4ab113c918f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "0c936536-cfff-4eef-b069-f6b6c0c16e74",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["On tap — one classic, one from two streets over."],
+                            "id": "95cebf6b-e535-49f9-8c0a-94c2981980ef",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "79a68960-4e23-4427-a735-b06dafbe7f39",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-1 border-b border-base-300 py-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline justify-between gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-lg font-semibold text-base-content",
+                                "children": ["Espresso / macchiato"],
+                                "id": "586860fd-f041-4fe7-94d0-3b2e80726977",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-semibold text-primary",
+                                "children": ["4"],
+                                "id": "e150eaf3-2283-4353-b0b1-913403a24cbe",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6afd8616-c984-4ce5-8971-dc11d3d80b17",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-secondary",
+                            "children": ["Single-origin, pulled properly, the only right ending."],
+                            "id": "7713181d-73ed-4f73-9d11-4e7354334f22",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a6993898-99fb-4283-a2dc-c39d60eb75fd",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "5da4529a-fc44-48ef-80cf-d5edd49da5e9",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "20efb75c-7556-4a0e-aa44-7da417af9416",
+                "ord": "a0"
+              }
+            ],
+            "id": "126bff20-1add-427d-ac3f-8af7c85cdf22",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Book",
+      "kind": "singleton",
+      "slug": "book",
+      "seoTitle": "Book — Forno",
+      "seoDescription": "See what Forno offers, with prices and how long each takes, and book your appointment online.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "c97e1873-d023-46b1-8c49-afbe207ad382",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-14 @3xl:py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Book a table"],
+                    "id": "19bc6045-7185-41f7-8438-95dcaa5e92e8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Pick your party size and a time below — you’ll see live availability for the next few weeks. For parties of seven or more, or to take over the long table for a birthday, drop us a line and we’ll sort it."
+                    ],
+                    "id": "150a6787-a65c-4c59-9886-21b69366ccd4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0212fa5b-4f76-4ce3-aac3-492417fec925",
+                "ord": "a0"
+              }
+            ],
+            "id": "25e452f8-6993-4464-b2bf-261dc1a67720",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "scheduling.services",
+            "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "locked": "host",
+            "id": "eb59837d-58bc-42da-bffa-8067286b842b",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Forno — the pizzeria",
+      "seoDescription": "A wood-fired pizzeria & trattoria built around a brick oven — two-day dough, San Marzano sauce, pasta rolled by hand each morning, long communal tables.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "87346038-6027-4fd3-b41f-13539f0e18a7",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Forno"],
+                    "id": "21630557-6a6e-49d6-ad72-c60518ea199a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Forno started with an oven and a stubborn idea: that a pizzeria should feel like someone’s kitchen, not a chain. We built the oven ourselves, brick by brick, on the corner where the old bakery used to be — so the room still smells of flour and fire the way it always did."
+                    ],
+                    "id": "b1108a1d-9529-44a8-84c8-be299379582c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The dough proves for two days. The sauce is San Marzano tomatoes and not much else. The pasta gets rolled and cut by hand every morning, and half the menu changes with whatever the market had that week. We keep it simple on purpose — good flour, real fire, and time."
+                    ],
+                    "id": "7c9a1c65-6abf-4821-9ede-5670d73dc55a",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The long communal tables are there so strangers end up passing the chilli oil. Book ahead for the weekend, but there’s always a stool at the counter for a walk-in — a pizza, a glass of something red, and a seat by the flames."
+                    ],
+                    "id": "608435d5-caf7-44c1-9165-bcea2df2d946",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "1a8633a4-d287-45ec-8da3-deaa74383805",
+                "ord": "a0"
+              }
+            ],
+            "id": "fe77b393-7e36-4620-8465-45112f142f22",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Visit — Forno",
+      "seoDescription": "Where to find Forno, our hours, and how to reach us.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "145624b0-1a20-485f-a733-c5c6e87a022e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Visit Forno"],
+                    "id": "d9352a0d-774c-4fa5-afa8-f6434e82672a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "9 Forge Street, on the corner where the old bakery used to be. Tue–Sun for lunch and dinner; closed Monday. Street parking after 6pm, and the tram stops right outside the door."
+                    ],
+                    "id": "889d0b71-9f2f-4fcf-b086-f03dd1b6426a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-wrap gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/book"
+                        },
+                        "children": ["Book a table"],
+                        "id": "f266565f-9e99-4932-92a1-c2b4d9314cfc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-neutral btn-outline btn-lg",
+                        "attrs": {
+                          "href": "mailto:ciao@forno.example"
+                        },
+                        "children": ["Email us"],
+                        "id": "bff42aa7-ca0a-484e-af83-f3ac1cb69be1",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "69bb1ddd-0968-4f57-8327-a78b3e723abc",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-base leading-relaxed text-secondary",
+                    "children": [
+                      "For big parties, the long table, private hire or press, email ciao@forno.example and we’ll get back to you the same day."
+                    ],
+                    "id": "6e368fe8-df6c-4f40-91a6-6a1566f90e33",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "cc71dad1-3b5e-4a98-82b4-9191cc49a972",
+                "ord": "a0"
+              }
+            ],
+            "id": "8aafe497-75bf-4a1b-a0dc-84996efdd272",
+            "ord": "a0"
+          }
+        ]
+      }
+    }
+  ],
+  "theme": {
+    "name": "fico-forno",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.016 70)",
+      "--color-base-200": "oklch(94% 0.022 65)",
+      "--color-base-300": "oklch(89% 0.03 60)",
+      "--color-base-content": "oklch(25% 0.035 50)",
+      "--color-primary": "oklch(48% 0.15 34)",
+      "--color-secondary": "oklch(43% 0.05 50)",
+      "--color-accent": "oklch(46% 0.1 145)",
+      "--color-neutral": "oklch(28% 0.03 50)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.375rem",
+      "--radius-box": "0.75rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Fraunces\", serif",
+      "--color-primary-content": "oklch(98% 0.01 34)",
+      "--color-secondary-content": "oklch(98% 0.01 50)",
+      "--color-accent-content": "oklch(98% 0.01 145)",
+      "--color-neutral-content": "oklch(98% 0.01 50)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(46% 0.1 145)",
+      "--color-highlight-content": "oklch(98% 0.01 145)",
+      "--color-border": "oklch(89% 0.03 60)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Fraunces\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(22% 0.02 45)",
+      "--color-base-200": "oklch(19% 0.02 45)",
+      "--color-base-300": "oklch(16% 0.02 45)",
+      "--color-base-content": "oklch(95% 0.016 70)",
+      "--color-primary": "oklch(70% 0.15 36)",
+      "--color-secondary": "oklch(78% 0.045 60)",
+      "--color-accent": "oklch(74% 0.12 145)",
+      "--color-neutral": "oklch(32% 0.02 45)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 36)",
+      "--color-secondary-content": "oklch(15% 0.02 60)",
+      "--color-accent-content": "oklch(15% 0.02 145)",
+      "--color-neutral-content": "oklch(98% 0.01 45)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.12 145)",
+      "--color-highlight-content": "oklch(15% 0.02 145)",
+      "--color-border": "oklch(16% 0.02 45)"
+    }
+  }
+}

@@ -1,0 +1,2509 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "c6c86303-0b1f-4fc2-bf11-b514f601054a",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "38c0e671-a62b-4af8-a502-741d42e00258",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "ea048f08-5f0d-4b2a-951f-ecaa71cff32f",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "2d89c928-b424-495d-be29-78a00c7679b7",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "83e41e80-a498-46a9-ad57-b568ce3750b7",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "dab308a0-a091-4bdd-842d-370abbee9f7f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "1cd16769-3ad3-4aa5-bcbe-fef06ff6eded",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "f46fd34a-a196-4030-bad8-865d76c82ed0",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "0f6dcf95-1b4c-4667-b964-a3c746baf9dd",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "132d62ff-7e57-4b9d-9c22-ee6ed594f2b6",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "de023515-fdb5-40d8-8f16-c60014973b03",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "58f28cef-11aa-4aa2-962b-02f51d306aea",
+                  "ord": "a2"
+                }
+              ],
+              "id": "6afb8f30-bc36-46f8-abac-01d6d3883688",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "567630aa-1de9-4bce-8382-a9c7e151dd25",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "32d76442-16dc-4f80-b558-c2077761c4bd",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "918a6f5a-ab1a-4b41-9459-d913e78a91f9",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "f6ea3298-26c2-4738-958c-d7f3d3bb5f8f",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "ddf009bb-b9f3-48d8-971b-8630426a1191",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "2aab468c-224c-4b0a-a181-76890f3dfd6a",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "47c6a210-411c-45dc-bba2-b9772d0cf08b",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "4f4b429d-ce90-4795-b247-7d4b4fd9a615",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "b14d1350-fd8e-4328-bb52-06691ae68fd6",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "325d78e4-d433-487a-a57f-8492e3df78bd",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "305977cb-da6c-4349-ac47-0d8cf623fb1c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "b11ed982-7dc5-45d3-a305-70cba5537368",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "a1bde1a7-7cf4-4b8e-b524-6b02ca81a96c",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "e68c0216-8342-4d81-a09b-8ccaa4059dcc",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "4ec2ba73-6e09-4e61-afd2-eb823e548b10",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "12fba099-b19f-4a30-909c-7a4ac29410b1",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "d60ac8ec-ce01-49e5-ac0f-4640b9523ace",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "fd688320-43ae-4a14-9580-bab8f7130356",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "dc330b6b-44ea-4d85-972c-bcf6c907e000",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "de30d657-ed81-45cb-9fdf-8770f77fd69f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "4f2ee509-07cc-4f6f-9c64-26af568a8738",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "9955de04-f0ae-4169-b298-dab3af76a2c0",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6afcda92-67ff-45c6-b990-b4695116980f",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "58143c93-f547-4b59-a75c-5b3ebce96eb1",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "817a4f42-ec70-4ee8-914e-a35843c1f1cc",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "8678e519-2386-485d-a22d-603535bfa4b9",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8ce5290f-d176-47dd-a8b7-9f7f11225bd3",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "8f5238ac-5b4c-43cf-a8b9-1d5fece676e1",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "40e24b9e-c55d-481a-96b7-484b2fde5f4e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "2ca82d9a-1b9a-4d8f-bd1e-c37994fec2f3",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "115c911b-0e24-4072-b731-8cfddbc09411",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "83e427fb-6945-4e7a-b2f0-cc0a013dc248",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "4964197b-41f6-4880-bd69-3a27d71227df",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "c7d33aa3-60fd-41d3-a42f-5cc2745ca6a7",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "982a5ff6-d9e2-49e2-b018-7f30bed585d5",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "ee0400f4-300f-4bcb-adeb-0c588d7eda6f",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "5166502e-b5b9-4919-9b07-88cbdbe96415",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "5657ac4d-7630-4329-8d9f-73a065f6b731",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "be62004b-aef6-4953-971a-e0e87b3c9a70",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "249013e9-dd7b-47ab-abaf-d1e6d270f208",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "a5a6fecd-6390-42d0-a71f-0bb0cdd18b64",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "db84e8ab-5f58-4362-bd2a-3d4f1874dd92",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "286666eb-e8c6-4de4-b957-12d1ca442476",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "f4efe82f-f02b-4844-b9ed-87c8c4dc5733",
+                  "ord": "a1"
+                }
+              ],
+              "id": "9ef006a4-174a-4b3b-81b3-28264c30e915",
+              "ord": "a0"
+            }
+          ],
+          "id": "755f6c23-817f-44b3-a522-8547fb8e862c",
+          "ord": "a2"
+        }
+      ],
+      "id": "7499aefc-b0df-49f7-a8a0-d6fe035126fb"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Matcha Club — ceremonial matcha & functional tea, shipped fresh",
+      "seoDescription": "Matcha Club is a modern matcha and tea brand — ceremonial and daily matcha, functional focus, calm and sleep blends, iced sachets, kits and a flexible club. Source well, grind small, ship bright.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "16c62269-a896-42e0-a9c0-517d6cc13667",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1566373049939-704ea187ef98?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YnJpZ2h0JTIwYm93bCUyMHdoaXNrZWQlMjBtYXRjaGElMjBmcm90aGluZyUyMGJlc2lkZSUyMGJhbWJvb3xlbnwwfDB8fHwxNzg2NDE2MTMwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A bright bowl of whisked matcha",
+                  "loading": "lazy"
+                },
+                "id": "f49783f2-5964-4a9d-8ac6-4ad824092951",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-primary p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold leading-none tracking-tight text-primary-content @3xl:text-6xl",
+                        "children": ["Ceremonial matcha, made for your morning."],
+                        "id": "eda78620-6ddd-4a5f-869e-a6ce744c5667",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-primary-content",
+                        "children": [
+                          "Matcha Club is a modern matcha and tea brand. We source stone-ground matcha and functional blends, whisk-test every batch, and ship it bright and fresh — so your daily cup does more than wake you up."
+                        ],
+                        "id": "f64b4bd7-0340-49f5-90b0-38cc2743866e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-accent btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop matcha"],
+                            "id": "968e5abe-6464-4d94-a13d-48e41c29eaef",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "text-base font-semibold text-primary-content underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shop/subscription"
+                            },
+                            "children": ["Join the club"],
+                            "id": "aac5dafa-2d08-4029-b55e-c0869d82fe0d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "09fc70de-993a-45bf-ac0d-0d77fd19fbd1",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2db03286-784f-4b5a-8d9a-83dfc5b12238",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "31a99744-24a2-44b5-b77a-e7b55c863075",
+                "ord": "a1"
+              }
+            ],
+            "id": "8875f587-f3a0-4aed-a7cd-36754e6a28d7",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-8",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
+                    "children": ["Pick your ritual"],
+                    "id": "8d08b950-1317-4c26-86b6-c3cf54f3f583",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1708573106073-e27e43ec7fda?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dml2aWQlMjBncmVlbiUyMG1hdGNoYSUyMHBvd2RlciUyMHNpZnRlZCUyMGludG8lMjBzbWFsbHxlbnwwfDB8fHwxNzg2NDE2MTMzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "Vivid green matcha powder in a bowl",
+                              "loading": "lazy"
+                            },
+                            "id": "50a47df6-ce72-4c89-b4df-904c8ca31cd2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Matcha"],
+                            "id": "228180b4-7a8f-4a38-9ee7-6358b7828858",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "fc16ae23-55df-484b-bea4-d16f5e1114a5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1680431217569-dff801acc0bf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bG9vc2UlMjBmdW5jdGlvbmFsJTIwdGVhJTIwYmxlbmQlMjBkcmllZCUyMGJvdGFuaWNhbHMlMjBzY29vcHxlbnwwfDB8fHwxNzg2NDE2MTM2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A loose functional tea blend in a scoop",
+                              "loading": "lazy"
+                            },
+                            "id": "035913be-2262-468b-bb34-b31dd83c3f90",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Functional blends"],
+                            "id": "b8636b9f-fcd4-4071-9e14-d51c847d6596",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b6599ec2-32cd-4244-9de7-36fb45429881",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1764512679985-ad1eb8d58cc4?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8YmFtYm9vJTIwd2hpc2slMjBzY29vcCUyMG1hdGNoYSUyMGJvd2wlMjBsYWlkJTIwb3V0fGVufDB8MHx8fDE3ODY0MTYxMzl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A bamboo whisk, scoop and bowl",
+                              "loading": "lazy"
+                            },
+                            "id": "a0e0663a-367e-4379-bade-c2598d85c5d8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Kits & tools"],
+                            "id": "9438361f-f3b0-4c04-937a-2cd9c544acb0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "f3442d1a-3e82-432c-8bec-ae84b6b91a03",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex flex-col gap-3",
+                        "attrs": {
+                          "href": "/shop/subscription"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box bg-base-200 object-cover transition group-hover:opacity-90",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1668127039852-0e7c8b3a1601?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c3RhY2slMjBicmlnaHQlMjBtYXRjaGElMjB0aW5zJTIwdGllZCUyMHJpYmJvbnxlbnwwfDB8fHwxNzg2NDE2MTQzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                              "alt": "A stack of bright matcha tins",
+                              "loading": "lazy"
+                            },
+                            "id": "b4d96974-8c50-4e86-a731-ddf81feb312f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-base font-semibold text-base-content",
+                            "children": ["Subscription"],
+                            "id": "1eb7000e-eaf5-4213-a764-133337af1706",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d1b5abe-f692-4718-94ec-cd29cc5a7c5e",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "c7f4b3b6-86fb-46f4-ab33-b4938a87ac8c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "81436dc9-3b98-408d-8e39-88d014a241c1",
+                "ord": "a0"
+              }
+            ],
+            "id": "cfad8c08-c8ea-4bb5-ad9f-9651012fcee7",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["This week’s drop"],
+                    "id": "8c0580d2-6874-46cc-abdf-afc65e3aed75",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "9fcb2bb4-6aad-41bc-80ba-469198fd6cfb",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "b3a20040-a4bd-40fe-975c-ab2c9ece5df6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "3b5f1a87-288d-4134-a8be-425f95e6b871",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "687bbd0a-bba2-4afd-a440-928a15d33c83",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d5bb6abf-a823-40d3-84b0-645147608814",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "00a30a05-a2f0-4f93-838e-0b75d2613c76",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "9706d073-81e8-4327-a7eb-0230790d552c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ba95fd05-61b3-456f-ab2f-f6d1f29d990c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e4557fcc-ed66-4eb5-804b-7a7c4df9d3c7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "90f38e59-0102-4381-93e2-b34bba6e0743",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "a2b97a98-9b78-4611-8614-0a1cf84b70ae",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "c24bacbf-b69e-424e-9a49-dbe0b11580f9",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "ba93d2ef-0151-423d-a8f7-7bac7a085139",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1589698272390-0501a07619bb?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2hpc2tpbmclMjBtYXRjaGElMjBicmlnaHQlMjBqYWRlJTIwZnJvdGglMjB3aWRlJTIwYm93bHxlbnwwfDB8fHwxNzg2NDE2MTQ2fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "Whisking matcha to a bright jade froth",
+                  "loading": "lazy"
+                },
+                "id": "c3753862-3eeb-436e-955c-f6a03a513737",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Ceremonial grade, no chalk"],
+                        "id": "7408da62-ff26-4ce3-8a7e-4d23cac6825c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We buy shade-grown leaf and stone-grind it into a bright, sweet matcha that whisks up smooth — none of the flat, chalky bitterness that gives cheap powder a bad name. Every batch is whisk-tested before it’s tinned, so the bowl you make is the bowl we tasted."
+                        ],
+                        "id": "578d90ec-74a4-4569-b6a6-475cd14b2e41",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-accent underline underline-offset-4",
+                        "attrs": {
+                          "href": "/blog/what-ceremonial-grade-means"
+                        },
+                        "children": ["What ceremonial grade means"],
+                        "id": "31c4afb5-9df6-42bc-8a33-8145e32d3d11",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2f69c8dd-f972-4fc1-a8dd-9b39c45ed6a4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "723fa5ba-1174-4703-a06b-7d284b00680f",
+                "ord": "a1"
+              }
+            ],
+            "id": "75fe3c43-37e9-4830-a97a-de32ae9e6683",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Functional blends"],
+                    "id": "bd49fa92-c548-4500-874a-e966bb92b18a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "9afb71c2-2b3e-4c2a-9ee6-0f5b08edea6c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "6d90eb21-8c2d-493e-8a7f-cbc89836a871",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "66fe9315-750a-402f-b513-4132a4303ffb",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "a31f01a3-f92a-4491-b3bf-13cd39829a29",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "51f5c160-fcc7-48ce-9bdd-d2ad456e8436",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "80d4f255-76e5-4ee6-83a1-7ac39eec5f09",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "43cd125e-dc0a-402f-bd71-d0b0b37a26c3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "91023ea4-3c87-4d63-b324-c0f535b9854a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "d9080aa2-6485-4d0c-8c7a-109661b4f3b5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "81df3b42-644e-4046-92c9-c0fffafcc58b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "25a56ca3-ce2e-4769-acda-1baa2f92bbee",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.blends"
+                },
+                "id": "4d369d84-c611-44e3-be0b-4d283d044371",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "068012c9-8415-42c4-a8a7-0fba164ec5a9",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1755685682321-d4a38aa26214?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cGFyY2VsJTIwbWF0Y2hhJTIwdGluc3xlbnwwfDB8fHwxNzg2NDE2MzEyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+                  "alt": "A parcel of matcha tins on a sunny doorstep",
+                  "loading": "lazy"
+                },
+                "id": "60b5dc2c-13c9-4197-98bf-e2edc714e39d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-primary p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold leading-none tracking-tight text-primary-content @3xl:text-5xl",
+                        "children": ["Your cup, on autopilot"],
+                        "id": "b6775f4e-bf5a-4172-b4c2-5d8370cd8eb2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-primary-content",
+                        "children": [
+                          "The club is the easy way to never run out: pick your matcha and blends, pick how often, and they land bright and fresh on your schedule. Rotate the whole shelf or stay with your daily — skip, swap or cancel any time, no lock-in."
+                        ],
+                        "id": "75afaa32-dd47-4998-a8ce-0bb67a3fffd9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold text-primary-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop/subscription"
+                        },
+                        "children": ["Join the club"],
+                        "id": "c4ac0043-2513-4be3-8750-e8095a4d033f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8ab63a86-4255-4c34-a0f7-5447e256af5f",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b92162bc-2fab-4b6f-a3b8-8b586c02ac7f",
+                "ord": "a1"
+              }
+            ],
+            "id": "f9c19207-d61c-485a-b1b9-9da44dad2567",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Matcha Club",
+      "seoDescription": "Browse everything Matcha Club makes, with prices and options at a glance. Matcha & tea brand.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "278e9640-9503-4f75-8372-08e3416540c5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Shop everything"],
+                    "id": "71bed25b-5aa9-4775-b203-681638eac208",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The whole shelf, right now — ceremonial and daily matcha, functional focus, calm and sleep blends, grab-and-go iced sachets, and the tools to whisk it all. Filter by type or caffeine, or sort however you like; it all ships bright and fresh from small batches."
+                    ],
+                    "id": "f3a1f084-9ee3-4a84-bf24-15be142f55cc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ba4b03fb-329e-4b4d-9fdd-04880786d10d",
+                "ord": "a0"
+              }
+            ],
+            "id": "713fb899-1263-49d8-8e69-d1a4874f9929",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "33564c48-7a71-43e4-b302-cf6111d3eb90",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Matcha Club",
+      "seoDescription": "Explore the collections at Matcha Club, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "4665fcc9-bb5f-4d22-b7ff-27c71153e64f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Collections"],
+                    "id": "dd8cef22-5813-4213-836d-f114b8aa2c6e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The shelf grouped the way people actually drink it — the club’s picks, the everyday best sellers, the functional blends by mood, and starter kits for a brand-new matcha habit."
+                    ],
+                    "id": "9853f8f8-d067-4922-8556-093d1c6ca057",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b72119c6-1fc6-44ea-a37e-a2f513031f26",
+                "ord": "a0"
+              }
+            ],
+            "id": "ccba2d56-428b-4537-926a-1693c2c0dc6f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e5523425-69b3-45e5-b801-a71089e8f3d8",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Matcha Club",
+      "seoDescription": "Review what is in your cart and check out securely at Matcha Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e9132447-ec91-421d-ace9-7f982f151a6b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "22c6d7be-8b64-4dc4-a1cb-2ef15d105fbd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a matcha is for you? Tell us and we’ll make it right — your daily cup should be a bright spot, never a gamble."
+                    ],
+                    "id": "dd5c78b3-a75e-48f3-9e1b-465994161b79",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "11e0145d-6bf2-41ce-997b-d2f6b6709e06",
+                "ord": "a0"
+              }
+            ],
+            "id": "4e9b0b3c-9611-46a4-a465-3b82e1e60702",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "24c05287-a812-4795-b616-82f3e3f42719",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Matcha Club",
+      "seoDescription": "Search Matcha Club for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "61ec92de-8504-4354-9a49-a19ded1b359f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Matcha Club"],
+                    "id": "9656a4a5-027c-43ab-80c2-a3b271ed99a8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a grade, a mood, or a how-to? Search the whole shelf and the journal below."
+                    ],
+                    "id": "50363242-fa42-4bc6-8e75-3d32e226341d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9707e3d7-5d11-4379-8feb-32faafe0a53d",
+                "ord": "a0"
+              }
+            ],
+            "id": "4567a665-b6ba-4ac7-9fd6-730fe8b1d8e1",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "e2aa53fb-ad36-4c39-9eeb-e3a6a08d09d9",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Matcha Club",
+      "seoDescription": "Stories, guides and notes from Matcha Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7a8261d3-b792-433a-941b-76a3510b1300",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Matcha Club journal"],
+                    "id": "2f11c4f5-7a7b-4f8e-a03b-50d28653ac29",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the whisk — how to make a smooth bowl, why matcha wakes you up without the crash, and what the grades on the tin actually mean. Bright, useful, no wellness jargon."
+                    ],
+                    "id": "b6af3923-0360-4a58-b40b-bb51a65c2c2a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3224474c-4f49-4f45-bcfa-92e90f3d0258",
+                "ord": "a0"
+              }
+            ],
+            "id": "0065673d-d349-4158-934f-b82e36e174d2",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "50f7d222-fa5a-48f5-93eb-7f6d94b72d87",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "36529a59-3485-4f6c-b658-1655c15919e4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "c7d69fcf-3f20-4496-9995-cee06ff46d74",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "b456145f-9c41-4077-ae45-77ee90d6af7c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "cdc5cb7e-04df-48c0-9773-c8918780d9f5",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "b2589a07-844a-44d1-a79e-8c9b4d00b740",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "f54e2d7c-b1f9-44fa-aebd-1360ab972b47",
+                "ord": "a0"
+              }
+            ],
+            "id": "59d8f134-21b7-4dcb-ad66-380f03f2d95f",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Matcha Club",
+      "seoDescription": "How Matcha Club sources, grinds and ships — shade-grown leaf, named growers, small batches, and a bright, functional cup made for a busy day.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f66eade3-a2a9-4351-b1a9-2fccff896458",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Matcha Club"],
+                    "id": "7d7fa5b5-ba82-4c2a-91df-60810e34aa66",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Matcha Club started with a simple frustration: the good matcha was hard to find and the easy matcha was chalky, dull and half-stale. So we went straight to the source, found shade-grown leaf worth grinding, and built a modern brand around one idea — a bright, functional cup that actually earns a place in your morning."
+                    ],
+                    "id": "1df201df-5de9-466e-8332-b8b6ed5b4f72",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We work with growers and mills we can name, and we pay above the commodity rate because the people who tend these fields deserve a living from them. Then we grind and blend in small batches, whisk-test every one, and only tin what tastes as bright as it looks."
+                    ],
+                    "id": "3d18761a-ee44-4dc9-a135-eaf433e4adbb",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "No dusty green powder, no mystery blends, no wellness theatre. Just genuinely good matcha and functional tea, handled with care from the field to your bowl — and made to fit an ordinary, busy day."
+                    ],
+                    "id": "fb49b734-aaca-4adc-9029-bfd76171eafe",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "ac243fcf-d4c0-4814-9c69-8b558d9b8816",
+                "ord": "a0"
+              }
+            ],
+            "id": "ae491821-8c03-4b8a-b412-276ebf5e8b59",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Matcha Club",
+      "seoDescription": "Get in touch with Matcha Club — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1312a168-0a35-40b5-b9b2-aee4573a1a1c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Say hello"],
+                    "id": "cf7ae36f-162c-48ba-a727-c95cb378ed27",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a grade, a wholesale enquiry, or want us to blend for your café or studio? Tell us what you’re after and a real person at Matcha Club will get back to you."
+                    ],
+                    "id": "ecb3c5ec-c045-4d9d-80a7-d5d5fe4a35f5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@matchaclub.example"
+                    },
+                    "children": ["Email the club"],
+                    "id": "1d34a142-49a2-4855-9fa6-e9d6fc208dd1",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "6247cf5b-01e8-4920-93d7-45a236597170",
+                "ord": "a0"
+              }
+            ],
+            "id": "c8e30476-d665-4ff3-816a-1eccd2fc7770",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Matcha Club",
+      "seoDescription": "Product details at Matcha Club — matcha & tea brand, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "1b7efa62-6285-4523-83f4-fe8b1ea10f88",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["Matcha Club"],
+                            "id": "152deefa-abb2-4ada-8bb2-646abbe234e6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "95eb6dc1-d32b-433d-8f36-70b37737dbc3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "70fa10a8-0b8f-4eaa-bf00-6ad4b5166425",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-secondary line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "3a869a62-fd5b-487c-a335-42775c4e84d0",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "df2e55ae-d856-409a-9b9c-7939500ab84c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6c53c657-0337-448e-af88-4840644bb5ec",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "inline-flex w-fit items-center gap-2 rounded-field border border-base-300 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-base-content",
+                            "children": ["Low stock"],
+                            "data": {
+                              "kind": "visible",
+                              "ref": "lowStock"
+                            },
+                            "id": "59693712-58f3-4277-ac6a-34a942fe53f3",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "fc0747a4-c2c5-4905-8fbe-975a2c29152c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "f9e57a8d-2499-41e2-8a24-48c306a39bbc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "671d5a86-f364-46c9-8f93-7595349ee775",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "6be20d36-ed55-4791-9a02-9715d68811e7",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "c0237983-fc42-4a49-b990-6d0ddb8f04a0",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "83918704-2fa5-45a0-8bff-4cecea5641c4",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "202bc1c6-1dc9-47de-b531-1a99e9893f25",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "65c255fb-099c-4e33-9816-57b9789b24a5",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
+                            "children": ["How to make it"],
+                            "id": "8232252f-c3b1-446b-8c0f-33ddddcbb0ce",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Sift one teaspoon into a bowl, add a splash of water just off the boil — around 70°C, not boiling — and whisk in a brisk W until it froths. Top with hot or cold water, or pour over ice and milk for a latte. Blends steep like any tea: one teaspoon, three minutes, taste as you go."
+                            ],
+                            "id": "1faf9855-f5e2-4382-94ae-29ce9141a6a8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9c1cc6f5-f23c-41ca-8fcb-a069d894c127",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-base-300 pt-5 text-sm font-semibold uppercase tracking-widest text-base-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/shipping-policy"
+                            },
+                            "children": ["Shipping & delivery"],
+                            "id": "b1222617-50b3-4d74-85a3-f03193518f67",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "underline underline-offset-4",
+                            "attrs": {
+                              "href": "/returns-policy"
+                            },
+                            "children": ["Returns & refunds"],
+                            "id": "af1083c9-c19d-4e93-97c0-c3369a2d26e9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ed344f81-eec4-4802-a3e9-ddff1b7f40c9",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "c5d47328-205d-4f14-91f2-ee12af4742c4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "fe4ba256-f7e3-4db7-99d7-0b27a62145cc",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "1dbb2566-cd04-4f5d-afce-82ddbc762774",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Goes with"],
+                    "id": "627b7286-acfc-41ce-9f9c-fb7009097d15",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "09bb1673-4c0d-4076-8aee-f49234d82d39",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f0389abc-91ac-4ea7-890a-778ef2368247",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "a6f9a151-f0fa-4e00-8015-82e80e8ab27f",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "fd7fc330-5259-435e-91f7-3df84e2a9617",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b1b484d0-5bcc-4360-88be-ab0296196b88",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "adb33294-0cd5-4129-82f5-f75398a81685",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "c5885da9-2f55-4e27-98a4-01670f018b21",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "3153a883-9f68-41cb-9a2c-cf6ef2bbdf5b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "72d9d1d8-dbed-4000-b7e0-bb0698b983c7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "71708c18-3da7-4dc2-a70b-671bbf910380",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "8782d0c4-139a-4cde-9ecc-56a44a7374b5",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "247f808f-27bf-4273-81ad-561ee7db22f4",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "70130a0b-88ed-4aeb-bf8f-dba2aeed9e5f",
+            "ord": "a1"
+          }
+        ],
+        "id": "2afac9ed-c3bf-421e-bb15-d4bfdabf8f4e"
+      }
+    }
+  ],
+  "theme": {
+    "name": "matcha-modern",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(98% 0.016 150)",
+      "--color-base-200": "oklch(95% 0.024 148)",
+      "--color-base-300": "oklch(90% 0.032 146)",
+      "--color-base-content": "oklch(24% 0.04 156)",
+      "--color-primary": "oklch(52% 0.15 146)",
+      "--color-secondary": "oklch(44% 0.06 152)",
+      "--color-accent": "oklch(50% 0.18 34)",
+      "--color-neutral": "oklch(27% 0.035 156)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.5rem",
+      "--radius-field": "0.375rem",
+      "--radius-box": "0.75rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Space Grotesk\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.01 146)",
+      "--color-secondary-content": "oklch(98% 0.01 152)",
+      "--color-accent-content": "oklch(98% 0.01 34)",
+      "--color-neutral-content": "oklch(98% 0.01 156)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(50% 0.18 34)",
+      "--color-highlight-content": "oklch(98% 0.01 34)",
+      "--color-border": "oklch(90% 0.032 146)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Space Grotesk\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(20% 0.03 156)",
+      "--color-base-200": "oklch(17% 0.028 156)",
+      "--color-base-300": "oklch(14% 0.024 156)",
+      "--color-base-content": "oklch(96% 0.02 150)",
+      "--color-primary": "oklch(80% 0.16 146)",
+      "--color-secondary": "oklch(80% 0.06 152)",
+      "--color-accent": "oklch(74% 0.17 36)",
+      "--color-neutral": "oklch(32% 0.03 156)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.02 146)",
+      "--color-secondary-content": "oklch(15% 0.02 152)",
+      "--color-accent-content": "oklch(15% 0.02 36)",
+      "--color-neutral-content": "oklch(98% 0.01 156)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(74% 0.17 36)",
+      "--color-highlight-content": "oklch(15% 0.02 36)",
+      "--color-border": "oklch(14% 0.024 156)"
+    }
+  }
+}

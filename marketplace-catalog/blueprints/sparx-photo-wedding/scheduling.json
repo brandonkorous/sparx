@@ -1,0 +1,238 @@
+{
+  "policies": [
+    {
+      "handle": "photo-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 48,
+      "reminderOffsetsMin": [2880, 1440],
+      "policyText": "Please give us at least 48 hours’ notice to change or cancel a consultation. We’ll send a reminder two days and one day before."
+    },
+    {
+      "handle": "date-deposit",
+      "name": "Date-reservation deposit",
+      "depositType": "deposit",
+      "depositAmountCents": 50000,
+      "cancellationWindowHours": 168,
+      "reminderOffsetsMin": [10080, 2880, 1440],
+      "policyText": "A $500 deposit reserves your date and comes off your collection total. Reschedule with a week’s notice and it carries over to your new date."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "rowan",
+      "name": "Rowan Ellis",
+      "kind": "staff",
+      "skillTags": ["wedding", "engagement", "elopement", "film"],
+      "windows": [
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    },
+    {
+      "handle": "lena",
+      "name": "Lena Marsh",
+      "kind": "staff",
+      "skillTags": ["wedding", "portrait", "film", "bridal"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "mateo",
+      "name": "Mateo Reyes",
+      "kind": "staff",
+      "skillTags": ["wedding", "engagement", "album"],
+      "windows": [
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 600,
+          "endMinute": 1200
+        },
+        {
+          "dayOfWeek": 0,
+          "startMinute": 600,
+          "endMinute": 1200
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "consultation",
+      "name": "Consultation",
+      "description": "A relaxed, no-pressure call or coffee to talk through your day, your story and how we work. Always free.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "photo-standard"
+    },
+    {
+      "handle": "engagement-session",
+      "name": "Engagement session",
+      "description": "A golden-hour hour-and-a-half together — a warm-up in front of the camera and photographs you’ll actually use.",
+      "durationMinutes": 90,
+      "priceCents": 45000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["engagement"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "date-deposit"
+    },
+    {
+      "handle": "wedding-collection-consult",
+      "name": "Wedding collection consult",
+      "description": "Sit with us to shape a full-day collection around your plans, your venue and the moments that matter most.",
+      "durationMinutes": 60,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "photo-standard"
+    },
+    {
+      "handle": "elopement-session",
+      "name": "Elopement session",
+      "description": "Just the two of you, somewhere beautiful, unhurried. Half a day of quiet, film-led coverage of your elopement.",
+      "durationMinutes": 120,
+      "priceCents": 120000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["elopement"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "date-deposit"
+    },
+    {
+      "handle": "bridal-session",
+      "name": "Bridal session",
+      "description": "A slow, portrait-led morning in your gown — a trial run and a set of timeless images before the day itself.",
+      "durationMinutes": 90,
+      "priceCents": 55000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["bridal"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "date-deposit"
+    },
+    {
+      "handle": "full-day-wedding-consult",
+      "name": "Full-day wedding consult",
+      "description": "A planning session for the whole wedding day — timeline, light and coverage, so nothing is left to chance.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["wedding"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "photo-standard"
+    },
+    {
+      "handle": "album-design-consult",
+      "name": "Album design consult",
+      "description": "Come choose your favourites and we’ll design a hand-bound heirloom album together, print by print.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "photographer",
+          "kind": "staff",
+          "skillTags": ["album"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "photo-standard"
+    }
+  ]
+}

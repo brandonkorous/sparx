@@ -1,0 +1,77 @@
+[
+  {
+    "id": "ek-hero",
+    "url": "https://images.unsplash.com/photo-1518291344630-4857135fb581?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2VyYW1pYyUyMG5vbnN0aWNrJTIwcGFuJTIwbW9kZXJuJTIwdG9vbHMlMjBsYWlkJTIwb3V0fGVufDB8MHx8fDE3ODY0MDc4ODd8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A ceramic nonstick pan and modern tools laid out on a bright counter"
+  },
+  {
+    "id": "ek-band-design",
+    "url": "https://images.unsplash.com/photo-1586868538513-51335a0c5337?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGVzaWduZXIlMjBzdHVkeWluZyUyMGtpdGNoZW4lMjB0b29sJTIwcHJvdG90eXBlJTIwd2hpdGUlMjB0YWJsZXxlbnwwfDB8fHwxNzg2NDA3ODkwfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A designer studying a kitchen tool prototype on a white table"
+  },
+  {
+    "id": "ek-band-engineered",
+    "url": "https://images.unsplash.com/photo-1650940925927-f4a30c930a4d?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Z29vc2VuZWNrJTIwa2V0dGxlJTIwcG91cmluZyUyMHByZWNpc2UlMjBzdHJlYW0lMjB3YXRlcnxlbnwwfDB8fHwxNzg2NDA3ODkzfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A gooseneck kettle pouring a precise stream of water"
+  },
+  {
+    "id": "ek-prod-pan-set",
+    "url": "https://images.unsplash.com/photo-1584990347193-6bebebfeaeee?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWF0Y2hlZCUyMGNlcmFtaWMlMjBub25zdGlja3xlbnwwfDB8fHwxNzg2NDA5MDUxfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A matched set of ceramic nonstick pans on a white surface"
+  },
+  {
+    "id": "ek-prod-frypan",
+    "url": "https://images.unsplash.com/photo-1688398846460-baab8638e30a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2luZ2xlJTIwY2VyYW1pYyUyMG5vbnN0aWNrJTIwZnJ5cGFuJTIwcGhvdG9ncmFwaGVkJTIwd2hpdGV8ZW58MHwwfHx8MTc4NjQwNzg5OXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A single ceramic nonstick frypan photographed on white"
+  },
+  {
+    "id": "ek-prod-kettle",
+    "url": "https://images.unsplash.com/photo-1559761340-1e6a341f0b51?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJlY2lzaW9uJTIwZ29vc2VuZWNrJTIwa2V0dGxlJTIwZGlnaXRhbCUyMGJhc2V8ZW58MHwwfHx8MTc4NjQwNzkwMnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A precision gooseneck kettle with a digital base"
+  },
+  {
+    "id": "ek-prod-knife-set",
+    "url": "https://images.unsplash.com/photo-1690983321709-0eccbcb20d00?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGhyZWUtcGllY2UlMjBtb2Rlcm4lMjBrbmlmZSUyMHNldCUyMGxpZ2h0JTIwYm9hcmR8ZW58MHwwfHx8MTc4NjQwNzkwNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A three-piece modern knife set on a light board"
+  },
+  {
+    "id": "ek-prod-bowls",
+    "url": "https://images.unsplash.com/photo-1762922425155-d03e6997e33e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bmVzdGluZyUyMHNldCUyMHByZXAlMjBib3dscyUyMG11dGVkJTIwdG9uZXN8ZW58MHwwfHx8MTc4NjQwNzkwOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A nesting set of prep bowls in muted tones"
+  },
+  {
+    "id": "ek-prod-scale",
+    "url": "https://images.unsplash.com/photo-1644395175647-7fc09bdae7c1?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2xpbSUyMGRpZ2l0YWwlMjBraXRjaGVufGVufDB8MHx8fDE3ODY0MDkwNTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A slim digital kitchen scale with a glass top"
+  },
+  {
+    "id": "ek-prod-tools",
+    "url": "https://images.unsplash.com/photo-1587742378970-0c834078a7ce?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwc2lsaWNvbmUlMjBjb29raW5nJTIwdXRlbnNpbHMlMjBzdGFuZGluZyUyMGNhZGR5fGVufDB8MHx8fDE3ODY0MDc5MTV8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of silicone cooking utensils standing in a caddy"
+  },
+  {
+    "id": "ek-prod-board",
+    "url": "https://images.unsplash.com/photo-1591291294701-4f651ddd3556?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMGNvbXBvc2l0ZSUyMGN1dHRpbmclMjBib2FyZCUyMGNvdW50ZXJ8ZW58MHwwfHx8MTc4NjQwNzkxOHww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A minimal composite cutting board on a counter"
+  },
+  {
+    "id": "ek-prod-storage",
+    "url": "https://images.unsplash.com/photo-1616459042391-e28c324a7952?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c2V0JTIwbW9kdWxhciUyMGdsYXNzJTIwc3RvcmFnZSUyMGNvbnRhaW5lcnMlMjBsaWRzfGVufDB8MHx8fDE3ODY0MDc5MjN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A set of modular glass storage containers with lids"
+  },
+  {
+    "id": "ek-post-nonstick",
+    "url": "https://images.unsplash.com/photo-1584990347955-2ec0431a6e8f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2xvc2UlMjB2aWV3JTIwY2VyYW1pYyUyMG5vbnN0aWNrJTIwY29va2luZyUyMHN1cmZhY2V8ZW58MHwwfHx8MTc4NjQwNzkyNnww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A close view of a ceramic nonstick cooking surface"
+  },
+  {
+    "id": "ek-post-tools",
+    "url": "https://images.unsplash.com/photo-1665768976778-22ab017f915a?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8c21hbGwlMjBlZGl0JTIwZXNzZW50aWFsJTIwa2l0Y2hlbiUyMHRvb2xzJTIwbGFpZCUyMGZsYXR8ZW58MHwwfHx8MTc4NjQwNzkyOXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A small edit of essential kitchen tools laid flat"
+  },
+  {
+    "id": "ek-post-counter",
+    "url": "https://images.unsplash.com/photo-1556912167-f556f1f39fdf?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dGlkeSUyMG1vZGVybiUyMGtpdGNoZW4lMjBjb3VudGVyJTIwZmV3JTIwd2VsbC1kZXNpZ25lZCUyMHRvb2xzfGVufDB8MHx8fDE3ODY0MDc5MzN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
+    "alt": "A tidy modern kitchen counter with a few well-designed tools"
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-therapy-practice",
+  "name": "sparx — Therapy Practice",
+  "version": "1.0.0",
+  "tagline": "A warm, human template for therapists — book consultations & sessions from day one.",
+  "description": "A warm, grounded template for a private therapy & counseling practice — a soft-cream palette, a calm sage primary and a humanist serif, carried by gentle photography. Installs online booking for free consultations and sessions (individual, couples, teen, anxiety, trauma, telehealth), with therapists and private offices as bookable resources for in-person & telehealth counseling. Ships as \"Anchor Counseling\".",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Counseling",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Therapy Practice icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Therapy Practice — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#60846c",
+  "sortWeight": 34
+}

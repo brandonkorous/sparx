@@ -1,0 +1,464 @@
+{
+  "categories": [
+    {
+      "handle": "fasteners",
+      "name": "Fasteners",
+      "description": "Bolts, nuts, washers and assortments.",
+      "featured": true
+    },
+    {
+      "handle": "abrasives",
+      "name": "Abrasives",
+      "description": "Cut-off and grinding wheels.",
+      "featured": true
+    },
+    {
+      "handle": "safety",
+      "name": "Safety",
+      "description": "PPE — gloves, eye protection and more.",
+      "featured": true
+    },
+    {
+      "handle": "consumables",
+      "name": "Consumables",
+      "description": "Rags, tape, ties and shop supplies.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The lines shops reorder most.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "grade-8-fastener-assortment",
+        "cut-off-wheels-box",
+        "nitrile-gloves-case",
+        "shop-rags-bale"
+      ]
+    },
+    {
+      "handle": "new-in",
+      "name": "New in",
+      "description": "Lines just added to the catalog.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": ["grinding-wheels-box", "safety-glasses-case", "mro-starter-kit"]
+    },
+    {
+      "handle": "shop-essentials",
+      "name": "Shop-floor essentials",
+      "description": "The consumables no floor runs without.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "grade-8-fastener-assortment",
+        "shop-rags-bale",
+        "cable-ties-bag",
+        "duct-tape-case",
+        "threadlocker-case",
+        "mro-starter-kit"
+      ]
+    },
+    {
+      "handle": "safety-ppe",
+      "name": "Safety & PPE",
+      "description": "Protect the crew, kit the shift.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["nitrile-gloves-case", "safety-glasses-case"]
+    },
+    {
+      "handle": "grinding-cutting",
+      "name": "Grinding & cutting",
+      "description": "Wheels for cut and dress work.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["cut-off-wheels-box", "grinding-wheels-box"]
+    },
+    {
+      "handle": "bulk-consumables",
+      "name": "Bulk consumables",
+      "description": "Buy the case, reorder on a schedule.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "nitrile-gloves-case",
+        "shop-rags-bale",
+        "cable-ties-bag",
+        "threadlocker-case",
+        "duct-tape-case"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "grade-8-fastener-assortment",
+      "title": "Grade 8 Fastener Assortment Box",
+      "description": "500-piece assortment of zinc-plated hex bolts, nuts and washers in the sizes a shop reaches for daily — 1/4\" through 1/2\", coarse thread — in a labelled sectioned case. MOQ 1 box. Pick Grade 5 for general assembly or Grade 8 where the load matters.",
+      "status": "active",
+      "productType": "Fasteners",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["fasteners", "bolts", "assortment", "grade-8"],
+      "categoryHandles": ["fasteners"],
+      "collectionHandles": ["best-sellers", "shop-essentials"],
+      "seoTitle": "Grade 8 Fastener Assortment Box, 500 pc | Ironworks Supply",
+      "seoDescription": "A 500-piece hex bolt, nut and washer assortment in a labelled case. Grade 5 or Grade 8, sold by the box.",
+      "options": [
+        {
+          "name": "Grade",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Grade 5"
+            },
+            {
+              "value": "Grade 8"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IWS-FAST-ASST-G5",
+          "priceCents": 7400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grade": "Grade 5"
+          }
+        },
+        {
+          "sku": "IWS-FAST-ASST-G8",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grade": "Grade 8"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-fasteners",
+          "isPrimary": true,
+          "alt": "A Grade 8 fastener assortment box"
+        }
+      ]
+    },
+    {
+      "handle": "cut-off-wheels-box",
+      "title": "Cut-Off Wheels, 4½ in — Box of 25",
+      "description": "Type 1 metal cut-off wheels, 4½\" x .045\" x 7/8\" arbor, aluminium-oxide grain for clean, fast cuts in steel and stainless. Box of 25. MOQ 4 boxes — buy the case and keep the grinders fed.",
+      "status": "active",
+      "productType": "Abrasives",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["abrasives", "cut-off", "metal", "consumable"],
+      "categoryHandles": ["abrasives"],
+      "collectionHandles": ["best-sellers", "grinding-cutting"],
+      "seoTitle": "Cut-Off Wheels 4½ in, Box of 25 | Ironworks Supply",
+      "seoDescription": "Type 1 metal cut-off wheels, 4½ inch, box of 25. Aluminium-oxide grain for steel and stainless.",
+      "variants": [
+        {
+          "sku": "IWS-ABR-CUTOFF-45",
+          "priceCents": 3450,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-cutoff",
+          "isPrimary": true,
+          "alt": "Cut-Off Wheels, 4½ in — Box of 25"
+        }
+      ]
+    },
+    {
+      "handle": "grinding-wheels-box",
+      "title": "Grinding Wheels, 4½ in — Box of 25",
+      "description": "Type 27 depressed-centre grinding wheels, 4½\" x 1/4\" x 7/8\" arbor, for weld dressing and heavy stock removal on steel. Box of 25. MOQ 2 boxes. The everyday wheel a fab shop burns through.",
+      "status": "active",
+      "productType": "Abrasives",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["abrasives", "grinding", "metal", "consumable"],
+      "categoryHandles": ["abrasives"],
+      "collectionHandles": ["new-in", "grinding-cutting"],
+      "seoTitle": "Grinding Wheels 4½ in, Box of 25 | Ironworks Supply",
+      "seoDescription": "Type 27 depressed-centre grinding wheels, 4½ inch, box of 25. Weld dressing and stock removal on steel.",
+      "variants": [
+        {
+          "sku": "IWS-ABR-GRIND-45",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-grinding",
+          "isPrimary": true,
+          "alt": "Grinding Wheels, 4½ in — Box of 25"
+        }
+      ]
+    },
+    {
+      "handle": "nitrile-gloves-case",
+      "title": "Nitrile Gloves, 6-mil — Case of 1000",
+      "description": "Heavy 6-mil powder-free nitrile gloves with a textured grip — the disposable that holds up to solvents, oils and shop grime without tearing. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size.",
+      "status": "active",
+      "productType": "Safety",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["safety", "ppe", "gloves", "nitrile", "consumable"],
+      "categoryHandles": ["safety"],
+      "collectionHandles": ["best-sellers", "safety-ppe", "bulk-consumables"],
+      "seoTitle": "Nitrile Gloves 6-mil, Case of 1000 | Ironworks Supply",
+      "seoDescription": "Heavy 6-mil powder-free nitrile gloves, textured grip, case of 1000. Solvent and oil resistant.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            },
+            {
+              "value": "X-Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IWS-PPE-NITR-M",
+          "priceCents": 11800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium"
+          }
+        },
+        {
+          "sku": "IWS-PPE-NITR-L",
+          "priceCents": 11800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        },
+        {
+          "sku": "IWS-PPE-NITR-XL",
+          "priceCents": 12400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "X-Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-gloves",
+          "isPrimary": true,
+          "alt": "A case of blue nitrile gloves"
+        }
+      ]
+    },
+    {
+      "handle": "safety-glasses-case",
+      "title": "Anti-Fog Safety Glasses — Case of 12",
+      "description": "Clear anti-fog, anti-scratch safety glasses rated ANSI Z87.1, with a wraparound lens and soft nose bridge crews will actually keep on. Case of 12. MOQ 2 cases — enough to kit out a shift and stock the spares drawer.",
+      "status": "active",
+      "productType": "Safety",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["safety", "ppe", "eye-protection", "ansi-z87"],
+      "categoryHandles": ["safety"],
+      "collectionHandles": ["new-in", "safety-ppe"],
+      "seoTitle": "Anti-Fog Safety Glasses, Case of 12 | Ironworks Supply",
+      "seoDescription": "Clear ANSI Z87.1 anti-fog, anti-scratch safety glasses, case of 12. Wraparound lens, soft nose bridge.",
+      "variants": [
+        {
+          "sku": "IWS-PPE-GLASS-12",
+          "priceCents": 4700,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-glasses",
+          "isPrimary": true,
+          "alt": "Anti-Fog Safety Glasses — Case of 12"
+        }
+      ]
+    },
+    {
+      "handle": "shop-rags-bale",
+      "title": "Reclaimed Cotton Shop Rags — 25 lb Bale",
+      "description": "Washed, lint-low reclaimed cotton wipers in a compressed 25 lb bale — the workhorse rag for solvents, spills and general clean-up. MOQ 1 bale. Cheaper by the pound than paper and it does not fall apart on the first wipe.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["consumables", "rags", "wipers", "bulk"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["best-sellers", "shop-essentials", "bulk-consumables"],
+      "seoTitle": "Reclaimed Cotton Shop Rags, 25 lb Bale | Ironworks Supply",
+      "seoDescription": "Washed low-lint reclaimed cotton shop rags in a 25 lb bale. The workhorse wiper for any shop floor.",
+      "variants": [
+        {
+          "sku": "IWS-CON-RAGS-25",
+          "priceCents": 5800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-rags",
+          "isPrimary": true,
+          "alt": "Reclaimed Cotton Shop Rags — 25 lb Bale"
+        }
+      ]
+    },
+    {
+      "handle": "cable-ties-bag",
+      "title": "Cable Ties — Bag of 1000",
+      "description": "UV-stabilised black nylon cable ties, 50 lb tensile, in a bulk bag of 1000 — for loom work, bundling and a hundred fixes a day. MOQ 1 bag. Choose the length your work calls for.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["consumables", "cable-ties", "nylon", "bulk"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["shop-essentials", "bulk-consumables"],
+      "seoTitle": "Cable Ties, Bag of 1000 | Ironworks Supply",
+      "seoDescription": "UV-stabilised black nylon cable ties, 50 lb tensile, bulk bag of 1000. 8 inch or 11 inch.",
+      "options": [
+        {
+          "name": "Length",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "8 in"
+            },
+            {
+              "value": "11 in"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "IWS-CON-TIE-8",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "8 in"
+          }
+        },
+        {
+          "sku": "IWS-CON-TIE-11",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "11 in"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ties",
+          "isPrimary": true,
+          "alt": "A bulk bag of black cable ties"
+        }
+      ]
+    },
+    {
+      "handle": "threadlocker-case",
+      "title": "Medium-Strength Threadlocker — Case of 10",
+      "description": "Blue medium-strength anaerobic threadlocker in 10 mL bottles, a case of 10 — locks and seals fasteners against vibration yet backs out with hand tools for service. MOQ 1 case. The blue bottle every toolbox needs.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["consumables", "threadlocker", "adhesive", "maintenance"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["shop-essentials", "bulk-consumables"],
+      "seoTitle": "Medium-Strength Threadlocker, Case of 10 | Ironworks Supply",
+      "seoDescription": "Blue medium-strength anaerobic threadlocker, 10 mL bottles, case of 10. Vibration-proof, service-removable.",
+      "variants": [
+        {
+          "sku": "IWS-CON-TLOCK-10",
+          "priceCents": 9600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-threadlocker",
+          "isPrimary": true,
+          "alt": "Medium-Strength Threadlocker — Case of 10"
+        }
+      ]
+    },
+    {
+      "handle": "duct-tape-case",
+      "title": "Industrial Cloth Duct Tape — Case of 24",
+      "description": "11-mil silver cloth duct tape, 2\" x 60 yd, a case of 24 rolls — a strong, hand-tearable, weather-resistant tape for seaming, bundling and the fix that has to hold today. MOQ 1 case. Buy the case; you always need more.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["consumables", "duct-tape", "tape", "bulk"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["shop-essentials", "bulk-consumables"],
+      "seoTitle": "Industrial Cloth Duct Tape, Case of 24 | Ironworks Supply",
+      "seoDescription": "11-mil silver cloth duct tape, 2 inch x 60 yd, case of 24 rolls. Strong, hand-tearable, weather-resistant.",
+      "variants": [
+        {
+          "sku": "IWS-CON-DUCT-24",
+          "priceCents": 7200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ducttape",
+          "isPrimary": true,
+          "alt": "Industrial Cloth Duct Tape — Case of 24"
+        }
+      ]
+    },
+    {
+      "handle": "mro-starter-kit",
+      "title": "MRO Shop Starter Kit",
+      "description": "A curated kit of the consumables a new shop or satellite site runs out of first — a fastener assortment, cut-off wheels, nitrile gloves, shop rags, cable ties and threadlocker, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a floor from empty.",
+      "status": "active",
+      "productType": "Consumables",
+      "vendor": "Ironworks Supply Co.",
+      "tags": ["consumables", "kit", "starter", "bundle"],
+      "categoryHandles": ["consumables"],
+      "collectionHandles": ["new-in", "shop-essentials"],
+      "seoTitle": "MRO Shop Starter Kit | Ironworks Supply",
+      "seoDescription": "A curated starter kit of essential MRO consumables — fasteners, abrasives, PPE, rags and more, priced below the sum.",
+      "variants": [
+        {
+          "sku": "IWS-KIT-MRO-STARTER",
+          "priceCents": 14900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-mro-kit",
+          "isPrimary": true,
+          "alt": "MRO Shop Starter Kit"
+        }
+      ]
+    }
+  ]
+}

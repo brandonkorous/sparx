@@ -1,0 +1,386 @@
+{
+  "policies": [
+    {
+      "handle": "fauna-standard",
+      "name": "Standard booking",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [1440, 120],
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel a visit. We send a reminder the day before and two hours ahead, so nothing sneaks up on you."
+    },
+    {
+      "handle": "wellness-plan",
+      "name": "Wellness plan & no-show",
+      "depositType": "none",
+      "cancellationWindowHours": 24,
+      "reminderOffsetsMin": [2880, 1440, 120],
+      "policyText": "Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free — repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it."
+    }
+  ],
+  "resources": [
+    {
+      "handle": "dr-wren",
+      "name": "Dr. Wren Delgado",
+      "kind": "staff",
+      "skillTags": ["wellness", "integrative", "nutrition"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1020
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1020
+        }
+      ]
+    },
+    {
+      "handle": "dr-sol",
+      "name": "Dr. Sol Okafor",
+      "kind": "staff",
+      "skillTags": ["exam", "sick", "senior"],
+      "windows": [
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 960
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 960
+        }
+      ]
+    },
+    {
+      "handle": "dr-marisol",
+      "name": "Dr. Marisol Reyes",
+      "kind": "staff",
+      "skillTags": ["exam", "wellness", "telehealth"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 600,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 600,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-willow",
+      "name": "Willow Exam Room",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "exam-room-fern",
+      "name": "Fern Exam Room",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 480,
+          "endMinute": 1080
+        },
+        {
+          "dayOfWeek": 6,
+          "startMinute": 480,
+          "endMinute": 1080
+        }
+      ]
+    },
+    {
+      "handle": "virtual-room",
+      "name": "Telehealth Room",
+      "kind": "space",
+      "skillTags": ["exam-room"],
+      "windows": [
+        {
+          "dayOfWeek": 1,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 2,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 3,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 4,
+          "startMinute": 540,
+          "endMinute": 1140
+        },
+        {
+          "dayOfWeek": 5,
+          "startMinute": 540,
+          "endMinute": 1140
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "handle": "wellness-visit",
+      "name": "Wellness visit",
+      "description": "An unhurried preventive check-up — nose to tail, vaccines if they’re due, and a calm conversation about how your pet is doing at home.",
+      "durationMinutes": 30,
+      "priceCents": 6500,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["wellness"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fauna-standard"
+    },
+    {
+      "handle": "new-patient-consult",
+      "name": "New patient consult",
+      "description": "A relaxed first meeting for you and your pet — we review history, get to know each other with no rush, and set a plan together. Always free.",
+      "durationMinutes": 45,
+      "priceCents": 0,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["exam"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fauna-standard"
+    },
+    {
+      "handle": "nutrition-consult",
+      "name": "Nutrition consult",
+      "description": "A sit-down about food, weight and gut health — honest, practical guidance tailored to your dog or cat, with no upsell. Free introductory session.",
+      "durationMinutes": 30,
+      "priceCents": 0,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["nutrition"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fauna-standard"
+    },
+    {
+      "handle": "sick-visit",
+      "name": "Sick visit",
+      "description": "Something’s off? A focused, gentle exam to find out what’s wrong and get your pet comfortable, with clear next steps and honest pricing.",
+      "durationMinutes": 30,
+      "priceCents": 8500,
+      "assignmentStrategy": "any_available",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["sick"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fauna-standard"
+    },
+    {
+      "handle": "senior-wellness",
+      "name": "Senior wellness",
+      "description": "Extra time and care for older pets — mobility, comfort and quality of life, plus the bloodwork and screening that catch changes early.",
+      "durationMinutes": 60,
+      "priceCents": 14000,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["senior"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-plan"
+    },
+    {
+      "handle": "telehealth-consult",
+      "name": "Telehealth consult",
+      "description": "A quick video visit for questions, follow-ups and small worries — real advice from your vet without a car ride or a stressed carrier.",
+      "durationMinutes": 20,
+      "priceCents": 4000,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["telehealth"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "fauna-standard"
+    },
+    {
+      "handle": "integrative-consult",
+      "name": "Integrative consult",
+      "description": "A whole-pet session that blends conventional medicine with supportive therapies — for chronic issues, recovery, or simply thriving longer.",
+      "durationMinutes": 45,
+      "priceCents": 9500,
+      "bufferAfterMin": 10,
+      "assignmentStrategy": "customer_choice",
+      "resourceRequirements": [
+        {
+          "role": "provider",
+          "kind": "staff",
+          "skillTags": ["integrative"],
+          "count": 1
+        },
+        {
+          "role": "room",
+          "kind": "space",
+          "skillTags": ["exam-room"],
+          "count": 1
+        }
+      ],
+      "policyHandle": "wellness-plan"
+    }
+  ]
+}

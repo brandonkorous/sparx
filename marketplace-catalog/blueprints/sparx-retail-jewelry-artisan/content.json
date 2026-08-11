@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "made-at-the-bench",
+    "status": "published",
+    "body": {
+      "title": "How a piece is made, start to finish",
+      "excerpt": "From a length of raw wire to a finished ring — the forging, the hammering, the stamping and the patina, and why doing it slowly by hand is the whole point.",
+      "featuredImage": {
+        "$asset": "forge-post-bench"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People sometimes assume handmade means a piece was assembled from ready-made parts. It doesn’t — not here. Everything starts as raw metal: a length of solid sterling or bronze wire, or a flat sheet. From there it’s heated, hammered, filed, stamped and set entirely by hand at one bench. No casting a hundred at a time, no plating, no shortcuts that would let two pieces come out identical."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Forging and shaping"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A ring begins as a straight length of wire, annealed soft in the torch flame, then bent around a steel mandrel and hammered true. The hammering isn’t just shaping — it work-hardens the metal so the finished piece holds up to years of wear, and it leaves the faceted texture you can see catching the light. That texture is a record of the making, which is exactly why it stays."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Stamping, setting and patina"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Marks are struck one at a time with steel stamps and a hammer, so a stamped cuff is never quite the same twice. Stones are set in bezels built up by hand around each rough stone — since the stones are uncut, no two settings are identical either. Finally the piece is oxidised to bring out the texture, then polished back on the high points, so shadow sits in the marks and light rides the edges. Then it’s yours: made once, by hand, for you."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "silver-and-bronze",
+    "status": "published",
+    "body": {
+      "title": "Silver or bronze: what each metal actually does",
+      "excerpt": "Not a taste test — a practical look at how sterling silver and bronze wear, age and patina, and how to pick the one you’ll actually reach for.",
+      "featuredImage": {
+        "$asset": "forge-post-metals"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every piece here is offered in two metals, and they’re genuinely different — not a colour swap. Both are solid and recycled: .925 sterling silver, or a warm architectural bronze. The choice comes down to tone, how each one ages, and budget, because bronze runs a good bit less than the same piece in silver."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Tone and how they age"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Sterling silver is bright and cool, and it takes an oxidised finish beautifully — the marks and textures go dark and the whole piece reads as considered. Left alone it slowly tarnishes to a soft grey patina, which is either something you love or something you polish back to bright in seconds with a cloth. Bronze is warm and golden, closer to old gold than to brass, and it develops a rich living patina over time as it reacts to your skin — some people seal it, most just let it deepen."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Which to choose"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you want bright-and-cool, or you plan to wear a piece next to existing silver, go sterling. If you want warm-and-golden, or you like the idea of a metal that visibly changes with you, go bronze — and it’s the friendlier price to try a design on. And mixing the two is the whole idea behind the mixed-metal pendant: a warm bronze cuff next to a cool silver ring reads as intentional now, not careless."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "caring-for-handmade-jewelry",
+    "status": "published",
+    "body": {
+      "title": "Caring for handmade silver and bronze",
+      "excerpt": "Handmade metal is tougher than it looks and asks very little — here’s the whole routine, how to handle the patina, and the two things to actually avoid.",
+      "featuredImage": {
+        "$asset": "forge-post-care"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Hand-forged jewelry is made to be worn, not shelved. It’s solid metal — no plating to wear through — so a scratch just becomes part of the story and a knock rarely does real harm. A few small habits keep silver bright and let bronze patina the way you want it to, instead of by accident."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The everyday routine"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Put jewelry on last — after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings and cuffs off for heavy work, the gym and the washing-up; it’s grit and knocks, not water, that wear a piece down fastest. A quick rub with a soft cloth after wear keeps silver bright. About once a month, warm water, a drop of dish soap and a soft brush brings everything back — then dry it properly before it’s put away."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Patina, storage, and what to avoid"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The oxidised finish and the bronze patina are meant to be there — so skip the dip-style silver cleaners, which strip the deliberate darkness right out of the stamped marks. If a piece goes further than you like, that’s an easy fix at the bench. Store pieces apart so they don’t scratch each other, and keep silver in a little zip bag to slow tarnish. The two things to genuinely avoid: chlorine (take everything off before a pool or hot tub) and abrasive pastes on anything set with a stone. When in doubt, send it back — cleaning and re-finishing anything I’ve made is free, for as long as you own it."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

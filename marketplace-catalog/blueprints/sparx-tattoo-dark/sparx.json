@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-tattoo-dark",
+  "name": "sparx — Tattoo (Dark Studio)",
+  "version": "1.0.0",
+  "tagline": "A dark, gallery-first template for tattoo studios — book a consult from day one.",
+  "description": "A dark, gallery-first tattoo-studio site — a warm ink-black palette in both modes, an old-gold primary over an oxblood accent, a condensed gothic display, and real ink photography carrying the page. Installs a working booking flow: a free consultation, priced session tiers (small, fine-line, half-day, full-day), three artists you book by name with their own late hours, and a $50 session-deposit policy. Ships as \"Ironwood Tattoo\", a private three-chair studio.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Tattoo studio",
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "scheduling", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Tattoo (Dark Studio) icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Tattoo (Dark Studio) — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#d1ac4e",
+  "sortWeight": 86
+}

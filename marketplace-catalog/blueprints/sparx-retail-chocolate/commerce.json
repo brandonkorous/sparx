@@ -1,0 +1,591 @@
+{
+  "categories": [
+    {
+      "handle": "bars",
+      "name": "Bars",
+      "description": "Single-origin bean-to-bar chocolate.",
+      "featured": true
+    },
+    {
+      "handle": "truffles",
+      "name": "Truffles & confections",
+      "description": "Hand-rolled truffles and filled chocolates.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Sets, tins and boxes ready to send.",
+      "featured": true
+    },
+    {
+      "handle": "subscription",
+      "name": "Subscription",
+      "description": "Chocolate on your schedule.",
+      "featured": true
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-this-season",
+      "name": "New this season",
+      "description": "The latest batches off the bench.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "madagascar-sambirano",
+        "tanzania-kokoa-kamili",
+        "sea-salt-caramel-truffles",
+        "tasting-library",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best sellers",
+      "description": "The chocolate people come back for.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "sea-salt-caramel-truffles",
+        "madagascar-sambirano",
+        "drinking-chocolate",
+        "gift-set",
+        "subscription"
+      ]
+    },
+    {
+      "handle": "single-origins",
+      "name": "Single-origin bars",
+      "description": "One farm, one flavour — side by side.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "madagascar-sambirano",
+        "peru-piura",
+        "ecuador-los-rios",
+        "tanzania-kokoa-kamili"
+      ]
+    },
+    {
+      "handle": "dark-collection",
+      "name": "For the dark lovers",
+      "description": "The deepest, most intense bars we make.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["madagascar-sambirano", "peru-piura", "ecuador-los-rios"]
+    },
+    {
+      "handle": "gifts-and-sets",
+      "name": "Gifts & sets",
+      "description": "Ready to wrap, ready to send.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["gift-set", "tasting-library", "drinking-chocolate"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "madagascar-sambirano",
+      "title": "Madagascar Sambirano",
+      "description": "Our brightest bar and the one that converts sceptics. Cacao from the Sambirano Valley is famous for its fruit — this tastes of tart red cherry and citrus zest over a clean, tannic finish, with none of the flat bitterness people expect from dark chocolate.",
+      "status": "active",
+      "productType": "Chocolate bar",
+      "vendor": "Cacao & Co.",
+      "tags": ["single-origin", "madagascar", "dark", "fruity"],
+      "categoryHandles": ["bars"],
+      "collectionHandles": ["new-this-season", "best-sellers", "single-origins", "dark-collection"],
+      "seoTitle": "Madagascar Sambirano — single-origin dark chocolate | Cacao & Co.",
+      "seoDescription": "A bright, fruity single-origin dark chocolate from Madagascar’s Sambirano Valley — red cherry and citrus.",
+      "options": [
+        {
+          "name": "Cacao",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "70% Dark"
+            },
+            {
+              "value": "85% Extra dark"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-BAR-MDG-70",
+          "priceCents": 1100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "70% Dark"
+          }
+        },
+        {
+          "sku": "CC-BAR-MDG-85",
+          "priceCents": 1100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "85% Extra dark"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-madagascar",
+          "isPrimary": true,
+          "alt": "Madagascar Sambirano"
+        }
+      ]
+    },
+    {
+      "handle": "peru-piura",
+      "title": "Peru Piura Blanco",
+      "description": "A rare white-bean cacao from the Piura valley, and the gentlest bar on the shelf. Soft and creamy for a dark chocolate — caramel, toasted walnut and a little soft raisin, with a long, mellow finish. The one to hand someone who thinks they don’t like dark.",
+      "status": "active",
+      "productType": "Chocolate bar",
+      "vendor": "Cacao & Co.",
+      "tags": ["single-origin", "peru", "dark", "nutty"],
+      "categoryHandles": ["bars"],
+      "collectionHandles": ["single-origins", "dark-collection"],
+      "seoTitle": "Peru Piura Blanco — single-origin dark chocolate | Cacao & Co.",
+      "seoDescription": "A gentle, creamy single-origin dark chocolate from Peru’s Piura valley — caramel and toasted walnut.",
+      "options": [
+        {
+          "name": "Cacao",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "70% Dark"
+            },
+            {
+              "value": "85% Extra dark"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-BAR-PER-70",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "70% Dark"
+          }
+        },
+        {
+          "sku": "CC-BAR-PER-85",
+          "priceCents": 1200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "85% Extra dark"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-peru",
+          "isPrimary": true,
+          "alt": "Peru Piura Blanco"
+        }
+      ]
+    },
+    {
+      "handle": "ecuador-los-rios",
+      "title": "Ecuador Los Ríos",
+      "description": "Made from Ecuador’s heirloom Nacional cacao, prized for its perfume. Floral on the nose — jasmine and ripe banana — giving way to a deep, fudgy body and a whisper of espresso. Classic, generous chocolate with an aromatic lift most bars never reach.",
+      "status": "active",
+      "productType": "Chocolate bar",
+      "vendor": "Cacao & Co.",
+      "tags": ["single-origin", "ecuador", "dark", "floral"],
+      "categoryHandles": ["bars"],
+      "collectionHandles": ["single-origins", "dark-collection"],
+      "seoTitle": "Ecuador Los Ríos — single-origin dark chocolate | Cacao & Co.",
+      "seoDescription": "A floral, fudgy single-origin dark chocolate from Ecuador’s heirloom Nacional cacao — jasmine and espresso.",
+      "options": [
+        {
+          "name": "Cacao",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "70% Dark"
+            },
+            {
+              "value": "85% Extra dark"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-BAR-ECU-70",
+          "priceCents": 1100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "70% Dark"
+          }
+        },
+        {
+          "sku": "CC-BAR-ECU-85",
+          "priceCents": 1100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "85% Extra dark"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-ecuador",
+          "isPrimary": true,
+          "alt": "Ecuador Los Ríos"
+        }
+      ]
+    },
+    {
+      "handle": "tanzania-kokoa-kamili",
+      "title": "Tanzania Kokoa Kamili",
+      "description": "A dark milk bar — more cacao than any milk chocolate you’ll find in a shop, with just enough milk to round it. Cacao from the Kokoa Kamili station in Kilombero brings blackberry jam and brown sugar; the milk turns it into something like malted fruit-and-nut. Dangerously easy.",
+      "status": "active",
+      "productType": "Chocolate bar",
+      "vendor": "Cacao & Co.",
+      "tags": ["single-origin", "tanzania", "dark-milk", "fruity"],
+      "categoryHandles": ["bars"],
+      "collectionHandles": ["new-this-season", "single-origins"],
+      "seoTitle": "Tanzania Kokoa Kamili — single-origin dark milk chocolate | Cacao & Co.",
+      "seoDescription": "A fruity single-origin dark milk chocolate from Tanzania’s Kokoa Kamili — blackberry jam and brown sugar.",
+      "options": [
+        {
+          "name": "Cacao",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "70% Dark"
+            },
+            {
+              "value": "85% Extra dark"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-BAR-TZA-70",
+          "priceCents": 1100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "70% Dark"
+          }
+        },
+        {
+          "sku": "CC-BAR-TZA-85",
+          "priceCents": 1100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Cacao": "85% Extra dark"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-tanzania",
+          "isPrimary": true,
+          "alt": "Tanzania Kokoa Kamili"
+        }
+      ]
+    },
+    {
+      "handle": "sea-salt-caramel-truffles",
+      "title": "Sea Salt Caramel Truffles",
+      "description": "Slow-cooked caramel, still just soft, wrapped in a thin shell of our 70% Madagascar and finished with a flake of sea salt. The caramel is cooked dark — properly, to the edge of bitter — so it reads as burnt-sugar and butter rather than sweet. Our most-ordered box, by a distance.",
+      "status": "active",
+      "productType": "Confection",
+      "vendor": "Cacao & Co.",
+      "tags": ["truffles", "caramel", "sea-salt", "best-seller"],
+      "categoryHandles": ["truffles"],
+      "collectionHandles": ["new-this-season", "best-sellers"],
+      "seoTitle": "Sea Salt Caramel Truffles — hand-rolled | Cacao & Co.",
+      "seoDescription": "Slow-cooked dark caramel in a 70% Madagascar shell, finished with flaked sea salt. Boxes of 9, 16 or 24.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-TRF-CAR-9",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
+        },
+        {
+          "sku": "CC-TRF-CAR-16",
+          "priceCents": 4100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
+        },
+        {
+          "sku": "CC-TRF-CAR-24",
+          "priceCents": 5800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-truffles-caramel",
+          "isPrimary": true,
+          "alt": "A box of sea-salt caramel truffles"
+        }
+      ]
+    },
+    {
+      "handle": "champagne-truffles",
+      "title": "Champagne Truffle Collection",
+      "description": "The classic celebration truffle, made properly. A light ganache of dark chocolate and marc de Champagne, hand-rolled and dusted in cocoa so it dissolves the moment it lands. Boozy, buttery and barely sweet — the box you bring so the evening feels like an occasion.",
+      "status": "active",
+      "productType": "Confection",
+      "vendor": "Cacao & Co.",
+      "tags": ["truffles", "champagne", "gift"],
+      "categoryHandles": ["truffles"],
+      "collectionHandles": ["best-sellers"],
+      "seoTitle": "Champagne Truffle Collection — hand-rolled | Cacao & Co.",
+      "seoDescription": "A light dark-chocolate and marc de Champagne ganache, dusted in cocoa. Boxes of 9, 16 or 24.",
+      "options": [
+        {
+          "name": "Box size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "9 pieces"
+            },
+            {
+              "value": "16 pieces"
+            },
+            {
+              "value": "24 pieces"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-TRF-CHM-9",
+          "priceCents": 2600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "9 pieces"
+          }
+        },
+        {
+          "sku": "CC-TRF-CHM-16",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "16 pieces"
+          }
+        },
+        {
+          "sku": "CC-TRF-CHM-24",
+          "priceCents": 6200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Box size": "24 pieces"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-truffles-champagne",
+          "isPrimary": true,
+          "alt": "A box of champagne truffles"
+        }
+      ]
+    },
+    {
+      "handle": "drinking-chocolate",
+      "title": "Drinking Chocolate Tin",
+      "description": "Not cocoa powder — actual chocolate, grated fine. Whisk two spoonfuls into hot milk and you get the thick, glossy drinking chocolate of a good café, because it’s the same 65% couverture we mould into bars. The Spiced tin adds cinnamon, a little chilli and orange for something closer to a Oaxacan cup.",
+      "status": "active",
+      "productType": "Drinking chocolate",
+      "vendor": "Cacao & Co.",
+      "tags": ["drinking-chocolate", "gift", "pantry"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["best-sellers", "gifts-and-sets"],
+      "seoTitle": "Drinking Chocolate Tin — real grated couverture | Cacao & Co.",
+      "seoDescription": "Real grated 65% couverture for thick, glossy hot chocolate. Classic or spiced with cinnamon and chilli.",
+      "options": [
+        {
+          "name": "Flavour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Classic dark"
+            },
+            {
+              "value": "Spiced"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-DRK-CL",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Classic dark"
+          }
+        },
+        {
+          "sku": "CC-DRK-SP",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Spiced"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-drinking-tin",
+          "isPrimary": true,
+          "alt": "A tin of drinking chocolate"
+        }
+      ]
+    },
+    {
+      "handle": "tasting-library",
+      "title": "The Tasting Library",
+      "description": "Six mini bars, one from each origin we’re making, laid out light to dark with tasting notes on the sleeve — the whole shelf in one box. The best way to find your bar, and the box people buy twice: once for themselves, once as a present the moment they’ve tried it.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Cacao & Co.",
+      "tags": ["gift", "tasting", "set"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["new-this-season", "gifts-and-sets"],
+      "seoTitle": "The Tasting Library — six single-origin mini bars | Cacao & Co.",
+      "seoDescription": "Six mini single-origin bars laid out light to dark with tasting notes — the whole shelf in one box.",
+      "variants": [
+        {
+          "sku": "CC-SET-LIB",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-library",
+          "isPrimary": true,
+          "alt": "A tasting library of six mini bars"
+        }
+      ]
+    },
+    {
+      "handle": "gift-set",
+      "title": "The Cacao & Co. Gift Box",
+      "description": "Our signature present, packed and ribboned to send straight to someone: two full single-origin bars, a box of sea-salt caramel truffles and a tin of drinking chocolate, in a keepsake box with a hand-written card. Tell us what to write at checkout and we’ll do the wrapping.",
+      "status": "active",
+      "productType": "Gift set",
+      "vendor": "Cacao & Co.",
+      "tags": ["gift", "set", "hamper"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["gifts-and-sets", "best-sellers"],
+      "seoTitle": "The Cacao & Co. Gift Box — bars, truffles & drinking chocolate | Cacao & Co.",
+      "seoDescription": "A ribboned gift box of two single-origin bars, sea-salt caramel truffles and a drinking-chocolate tin.",
+      "variants": [
+        {
+          "sku": "CC-SET-GIFT",
+          "priceCents": 6800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-giftset",
+          "isPrimary": true,
+          "alt": "A curated chocolate gift set"
+        }
+      ]
+    },
+    {
+      "handle": "subscription",
+      "title": "Chocolate Subscription",
+      "description": "Freshly tempered chocolate on your schedule — a new pairing of single-origin bars each month, chosen from what’s tasting best, with notes on where each one grew. Pick one box or two, and skip, swap or cancel any time. The easiest present to keep giving, including to yourself.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Cacao & Co.",
+      "tags": ["subscription", "gift"],
+      "categoryHandles": ["subscription"],
+      "collectionHandles": ["new-this-season", "best-sellers"],
+      "seoTitle": "Chocolate Subscription — single-origin bars, monthly | Cacao & Co.",
+      "seoDescription": "A flexible monthly chocolate subscription — a new pairing of single-origin bars; skip, swap or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "One box"
+            },
+            {
+              "value": "Two boxes"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "CC-SUB-1",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "One box"
+          }
+        },
+        {
+          "sku": "CC-SUB-2",
+          "priceCents": 4400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "Two boxes"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "prod-subscription",
+          "isPrimary": true,
+          "alt": "A monthly chocolate subscription box"
+        }
+      ]
+    }
+  ]
+}

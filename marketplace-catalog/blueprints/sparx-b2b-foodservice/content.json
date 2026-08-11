@@ -1,0 +1,206 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "a-standing-order-that-runs-itself",
+    "status": "published",
+    "body": {
+      "title": "A standing order that runs itself",
+      "excerpt": "The best order is the one you don’t have to think about. Here’s how to set a weekly standing order that clears the minimum and never runs you short.",
+      "featuredImage": {
+        "$asset": "post-ordering"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The kitchens that never scramble for stock have one thing in common: they don’t place an order every week, they place it once and let it repeat. A standing order takes your predictable lines — the flour, the oil, the cups, the gloves — and sends them on a fixed cadence, so the truck arrives on your day whether or not anyone remembered to click a button."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Build it around what you burn"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with the lines you get through no matter what the specials are. Count a normal week honestly — not a quiet Monday, a real week — and set the standing quantities to cover it with a little headroom. Those lines alone will usually clear the delivery minimum, which means the variable extras ride along at no extra delivery cost."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Leave room to flex"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A standing order isn’t a straitjacket. Add one-off lines on top whenever the menu shifts, skip a delivery when you’re closed, and adjust the standing quantities once a season as your covers change. Your account manager can tune it with you in five minutes — the point is that the boring 80% of the order handles itself, so you only spend attention on the 20% that actually changes."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-buy-in-volume",
+    "status": "published",
+    "body": {
+      "title": "How we buy in volume, and why your price is lower for it",
+      "excerpt": "Trade pricing isn’t a discount we hand out — it’s the result of buying deep and moving fast. Here’s what actually sits behind the number on the shelf.",
+      "featuredImage": {
+        "$asset": "post-sourcing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A trade price looks like a discount, but it isn’t one — nobody is giving anything away. It’s what a case costs when it’s bought by the pallet, moved before it ages, and sold without a consumer markup stacked on top. Understanding that is the difference between chasing the cheapest line this week and building a supply that stays cheap every week."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy deep, move fast"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We commit to volume with growers, mills and manufacturers, which earns a price a single restaurant could never get on its own. Then we turn that stock over quickly, so we’re never sitting on ageing inventory we have to price up to justify. Deep buying plus fast turnover is the whole trick, and it’s why the per-case price holds instead of drifting."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Volume breaks and contract lines"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The price drops further the more you take, automatically — order in quantity and the volume break applies at checkout, no haggling. For the lines you buy every week, a contract price locks a number in for the season so you can cost a menu against it. Ask your account manager to set contract pricing on your standing-order lines; it’s the single biggest lever most kitchens leave unpulled."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-dry-store-that-never-runs-short",
+    "status": "published",
+    "body": {
+      "title": "A dry store that never runs short",
+      "excerpt": "Half of stock control is just how the shelves are set up. A few habits that keep a dry store honest, rotated and always one step ahead of the order.",
+      "featuredImage": {
+        "$asset": "post-storage"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You can place a perfect order and still run short if the dry store is chaos. Stock control isn’t a spreadsheet problem so much as a shelving problem: when everything has a place and the place tells you when it’s low, ordering the right amount becomes obvious instead of a guess."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "First in, first out — physically"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Rotate every delivery to the back so the oldest stock sits at the front, and nobody has to check a date to grab the right tin. It takes an extra minute at put-away and saves you from the slow bleed of expired stock at the back of a shelf. Label the shelf edge, not just the product, so the system survives a new starter on their first shift."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Set a par, mark the line"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Give each staple a par level — the minimum you want on the shelf — and mark it physically with a strip of tape or a line on the wall. When stock drops to the line, it goes on the next order, full stop. A par you can see beats a par in a notebook every time, and it turns “did we order flour?” into a glance instead of a debate."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
