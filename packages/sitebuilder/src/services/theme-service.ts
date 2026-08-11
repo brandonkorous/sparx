@@ -7,7 +7,7 @@
 import { SelectThemeInput, UpdateSettingsInput } from '@sparx/sitebuilder-schemas';
 import type { Prisma, SiteConfig, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
-import { FIRST_PARTY_THEMES, firstPartyTheme } from '@sparx/silica-catalog';
+import { FIRST_PARTY_THEMES, firstPartyTheme, type FirstPartyTheme } from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
@@ -25,8 +25,11 @@ import { readDraftThemeSlices, syncSilicaDraftTheme } from './silica-theme-sync'
 export interface ThemeSummary {
   slug: string;
   name: string;
-  /** `sparx` — the business-named shelf. `silica` — the design system's presets. */
-  shelf: 'sparx' | 'silica';
+  /** Which shelf the theme sits on, taken from the catalog rather than spelled
+   *  again here. A second copy of the union is a second thing to remember: this
+   *  one said `'sparx' | 'silica'` and went stale the moment the content,
+   *  template and portfolio shelves were added upstream. */
+  shelf: FirstPartyTheme['shelf'];
   tagline: string;
   description: string;
   industry: string;
@@ -35,8 +38,9 @@ export interface ThemeSummary {
   density: string;
 }
 
-/** Every theme sparx ships — the same forty the marketplace lists, from the same
- *  code (`FIRST_PARTY_THEMES`).
+/** Every theme sparx ships — the same list the marketplace serves, from the same
+ *  code (`FIRST_PARTY_THEMES`). Deliberately not a count: the catalog grows, and
+ *  a number written here is a claim that goes quietly wrong when it does.
  *
  *  This returned `THEME_LIST`: six presets that predated the silica catalog, were
  *  reachable from no picker, and matched no row on any cluster. So the builder's
