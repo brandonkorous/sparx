@@ -1,8 +1,17 @@
-# silicaui-builder — the asks (1–22 answered; 23 OPEN)
+# silicaui-builder — the asks (1–23 answered; none open)
 
-**Version:** 4.4.0
+**Version:** 4.5.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-08
+**Last Updated:** 2026-08-10
+
+> ## ⚑ EVERY ASK IN THIS REGISTER IS NOW ANSWERED — §23 CLOSED IN `0.52.0` (2026-08-10)
+>
+> Twenty-three asks, filed between 2026-07-28 and 2026-08-08, every one shipped. §23 —
+> `<EmailBuilder>`'s un-removable Export HTML — was the last one open; `0.52.0` removed the
+> button, the callback and the built-in download outright, which is a larger answer than the
+> opt-in prop the ask requested. sparx needed no code change to adopt it.
+>
+> This register stays open for the next one; it is not closed, just currently empty.
 
 > ## ⚑ §20, §21 AND §22 — FILED AGAINST `0.50.0` AND CLOSED IN `0.51.0`, SAME DAY (2026-08-07)
 >
@@ -1302,6 +1311,27 @@ it is engine-internal.
 ---
 
 ## 23 — `<EmailBuilder>`'s Export HTML cannot be turned off, and names itself in developer words
+
+> **Status: ANSWERED in `0.52.0` (2026-08-10), installed the same day.** Answered more
+> decisively than the ask proposed: `onExport`, the button and the built-in download are
+> **gone entirely** — `grep -i "export html\|onExport\|download"` over
+> `dist/email/react/index.*` in `0.52.0` returns nothing, where `0.51.0` had ten hits across
+> the `.js` and the `.d.ts`. `onSendTest` is untouched (`index.d.ts:274`), so the header's
+> remaining action is the one sparx opted into.
+>
+> That resolves (1) and moots (2): there is no label left to rename. It also settles the
+> asymmetry the ask was really about — the two callbacks no longer disagree about what
+> omitting one means, because there is only one.
+>
+> sparx needed no host-side change: we never wired `onExport` (the only `onExport` in this
+> repo is form-submissions CSV, unrelated), and the button was rendering purely because the
+> engine performed the download itself. Nothing to migrate — it simply stopped appearing.
+>
+> **What sparx gave up, knowingly.** The ask said the export button's PRESENCE was right and
+> its vocabulary wrong. Removal takes both. Being able to take a design elsewhere is still a
+> good property for a platform to have, so if it returns as an opt-in prop sparx would wire
+> it — under a name a salon owner can read. Not worth re-raising on its own: an unusable
+> button is worse than an absent one, and `.html` in Downloads was unusable.
 
 **The ask:** give `onExport` the same omission semantics `onSendTest` already has — omit the
 callback, lose the button — and let the label be the host's.
