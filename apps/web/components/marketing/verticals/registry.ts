@@ -58,6 +58,7 @@ export type StackModule = Extract<
   | 'invoicing'
   | 'inventory'
   | 'chat'
+  | 'finance'
 >;
 
 /** One thing this kind of business needs done, and the module that does it. The

@@ -5,3 +5,4 @@
 // @sparx/brand and deliberately avoids the @sparx/ui shell graph — these leaf
 // components have no such coupling.)
 export { Spark, SparxMark, AppIcon, Wordmark, type WordmarkProps } from '@sparx/brand/react';
+export { SparkFooterPeek, type SparkFooterPeekProps } from '@sparx/brand/react';

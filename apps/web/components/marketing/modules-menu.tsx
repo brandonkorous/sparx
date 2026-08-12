@@ -24,6 +24,11 @@ const MODULE_GROUP: Record<MarketingModule, ModuleGroup> = {
   invoicing: 'Commerce',
   inventory: 'Commerce',
   dropship: 'Commerce',
+  // Money out sits beside money in. Not a perfect fit — a publisher with no
+  // store still wants it — but every other column is a worse one, and it reads
+  // correctly next to Invoicing, which has the same "standalone, but bundled
+  // with selling" shape.
+  finance: 'Commerce',
   // B2B carries wholesale AND fleet; Scheduling and Live Chat are how you serve
   // an account once you have one. Deliberately NOT named for any one vertical —
   // a "Fleet" column would read as an auto-parts platform to everyone else.

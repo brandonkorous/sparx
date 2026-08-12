@@ -169,6 +169,14 @@ const MODULE_COLORS = {
     ink: 'text-module-social',
     content: 'text-module-social-content',
   },
+  // Spend + profitability (docs/148). Billable standalone, free with Commerce or
+  // B2B — the tile carries that story rather than a bare price.
+  finance: {
+    color: 'var(--color-module-finance)',
+    bg: 'bg-module-finance',
+    ink: 'text-module-finance',
+    content: 'text-module-finance-content',
+  },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;

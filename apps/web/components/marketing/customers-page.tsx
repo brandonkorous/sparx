@@ -112,7 +112,7 @@ const FAQ = [
     id: 'customers-not-a-shop',
     question: 'I don’t sell anything. Is this still for me?',
     answer:
-      'Yes, and it is not an afterthought. Selling is one capability out of twelve, and plenty of businesses here never turn it on — a publisher runs the site, the writing and the newsletter; a consultant runs the site, the calendar and the invoices. You pay for the parts you switch on and nothing else, so a business that does not sell is never subsidising a checkout it does not use.',
+      'Yes, and it is not an afterthought. Selling is one capability out of thirteen, and plenty of businesses here never turn it on — a publisher runs the site, the writing and the newsletter; a consultant runs the site, the calendar and the invoices. You pay for the parts you switch on and nothing else, so a business that does not sell is never subsidising a checkout it does not use.',
   },
   {
     id: 'customers-not-listed',
@@ -151,7 +151,7 @@ export function CustomersPage() {
             </Heading>
             <Text variant="lead" className="text-base-content max-w-3xl text-xl">
               A salon, a garage, a bakery, a bookstore, a magazine, a plumbing round. sparx is not a
-              shop with extras bolted on — it is twelve separate parts, and you switch on the ones
+              shop with extras bolted on — it is thirteen separate parts, and you switch on the ones
               your week actually needs. Here is what that looks like for a business like yours.
             </Text>
             <div className="flex flex-wrap items-center gap-3">

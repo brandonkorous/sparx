@@ -1,5 +1,6 @@
 import { Badge, Footer as SilicaFooter, FooterTitle, Link, Text } from '@wizeworks/silicaui-react';
 import { Wordmark } from '@sparx/ui';
+import { SparkFooterPeek } from '@sparx/brand/react';
 import type { MarketingModule } from './primitives';
 import { MODULES, MODULE_HEX } from './modules-catalog';
 import { VERTICALS } from './verticals/registry';
@@ -79,7 +80,9 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Blueprints & add-ons', href: '/market' },
       { label: 'Managed hosting', href: '/hosting' },
       { label: 'Enterprise', href: '/enterprise' },
-      { label: 'Migration tools', href: '/migrate' },
+      // "Switch to sparx", not "Migration tools": nobody searching for a way off
+      // Shopify is looking for a tool, and the label is the promise.
+      { label: 'Switch to sparx', href: '/migrate' },
       { label: 'Changelog', href: '/changelog' },
     ],
   },
@@ -166,8 +169,16 @@ const LINK_CLASS = 'hover:text-sm';
 
 export function Footer() {
   return (
-    <>
-      <SilicaFooter className="bg-base-100 border-base-300 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-flow-col xl:grid-cols-none">
+    // `relative` is the positioning context sparky peeks out of: he hangs off
+    // the TOP edge of the link bar below and is hidden behind its opaque
+    // background until he rises past the border. The link bar therefore has to
+    // out-stack him (`relative z-10`) — without that he floats over the last
+    // section of the page instead of leaning on the footer. See
+    // <SparkFooterPeek> for the full contract.
+    <div className="relative">
+      <SparkFooterPeek />
+
+      <SilicaFooter className="bg-base-100 border-base-300 relative z-10 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-flow-col xl:grid-cols-none">
         <aside className="flex w-full max-w-[340px] min-w-60 flex-col gap-5">
           <Wordmark size={48} />
           <Text className="text-sm">
@@ -209,7 +220,7 @@ export function Footer() {
         ))}
       </SilicaFooter>
 
-      <SilicaFooter className="bg-base-100 grid-flow-row grid-cols-1 px-6 pb-8 sm:px-8">
+      <SilicaFooter className="bg-base-100 relative z-10 grid-flow-row grid-cols-1 px-6 pb-8 sm:px-8">
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-col gap-5">
             <FooterTitle>The sparx domain network</FooterTitle>
@@ -248,6 +259,6 @@ export function Footer() {
           </div>
         </div>
       </SilicaFooter>
-    </>
+    </div>
   );
 }

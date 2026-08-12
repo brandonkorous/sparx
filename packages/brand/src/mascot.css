@@ -45,12 +45,117 @@
     transition: d 0.3s ease;
   }
 
+  /* ── Footer peek (<SparkFooterPeek>) ────────────────────────────────────
+     sparky leaning over a footer's top edge. His BOTTOM edge sits on that
+     line (bottom: 100% of the wrapper) and translateY pushes him back DOWN
+     behind the bar, where the footer's opaque background hides him — the same
+     occlusion trick as the auth pane's roam, with the footer as the surface.
+     100% = fully tucked; smaller values are how far he has risen.
+
+     He also moves ALONG the bar, but only between two tucked keyframes, so a
+     horizontal jump is never visible — he's always behind the footer while it
+     happens. The caller supplies `position: relative` on the wrapper and an
+     opaque, higher-stacked footer (see spark-footer-peek.tsx).
+
+     The left/right anchors stay inside 14%–82% so half a mascot can never hang
+     past the viewport edge and give the page a horizontal scrollbar — the
+     wrapper is `relative`, not clipping, so nothing else would stop it. */
+  .sparky-footer-peek {
+    position: absolute;
+    z-index: 0;
+    bottom: 100%;
+    left: 14%;
+    transform: translate(-50%, 34%) rotate(-6deg);
+    pointer-events: none;
+    line-height: 0;
+    will-change: left, transform;
+  }
+  /* Scaled from the FOOT so he shrinks into the footer rather than away from
+     it — a phone footer is a few rows tall and a full-size lean swamps it. Safe
+     to own the child's transform because <SparkFooterPeek> pins bob off, so
+     `.spark-mascot--bob` is never on this node. */
+  .sparky-footer-peek > .spark-mascot {
+    transform-origin: bottom center;
+  }
+  @media (max-width: 640px) {
+    .sparky-footer-peek > .spark-mascot {
+      transform: scale(0.72);
+    }
+  }
+  /* Gated the POSITIVE way, so motion off falls back to the static rule above —
+     a resting half-peek on the left. He stays present: reduced motion asks for
+     stillness, not a missing brand. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sparky-footer-peek {
+      animation: sparky-footer-peek 52s ease-in-out infinite;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .spark-mascot--bob,
     .spark-mascot__eyes--blink,
     .spark-mascot__eye--wink {
       animation: none;
     }
+  }
+}
+
+@keyframes sparky-footer-peek {
+  /* tucked, left */
+  0%,
+  6% {
+    left: 14%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  /* rises on the left, leaning in toward the page */
+  13%,
+  21% {
+    left: 14%;
+    transform: translate(-50%, 34%) rotate(-6deg);
+  }
+  /* back down, then slide across while hidden */
+  28%,
+  33% {
+    left: 14%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  35%,
+  39% {
+    left: 82%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  /* rises on the right, leaning the other way */
+  46%,
+  54% {
+    left: 82%;
+    transform: translate(-50%, 28%) rotate(7deg);
+  }
+  61%,
+  65% {
+    left: 82%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  67%,
+  71% {
+    left: 52%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  /* a shy half-peek near the middle — barely over the line */
+  77%,
+  83% {
+    left: 52%;
+    transform: translate(-50%, 66%) rotate(-3deg);
+  }
+  /* down for the long rest, returning to the starting spot out of sight */
+  89%,
+  94% {
+    left: 52%;
+    transform: translate(-50%, 100%) rotate(0deg);
+  }
+  96%,
+  100% {
+    left: 14%;
+    transform: translate(-50%, 100%) rotate(0deg);
   }
 }
 

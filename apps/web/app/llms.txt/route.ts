@@ -35,6 +35,11 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
   },
   { path: '/pricing', label: 'Pricing', note: 'Per-module pricing — pay only for what you use.' },
   {
+    path: '/migrate',
+    label: 'Switching',
+    note: 'Bring a business over from another platform — products, variants, stock by location, customers, order history, pages, posts, media and old URLs — from the export file that platform already makes. Checked in the browser before anything is uploaded, and dry-run before anything is written. A page per platform at /migrate/<slug>.',
+  },
+  {
     // The AI module's second document — /ai (in moduleLines above) is the
     // customer-facing concierge; this is the tenant-facing MCP / agentic story.
     path: '/agentic',

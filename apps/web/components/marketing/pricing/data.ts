@@ -67,15 +67,15 @@ export const INCLUDED: { icon: LucideIcon; title: string; body: string }[] = [
 /** Three headline savings figures. */
 export const STATS: { value: string; suffix?: string; label: string }[] = [
   {
-    value: '$41,000',
+    value: '$41,700',
     suffix: '+/yr',
     label:
-      'Kept by running all twelve capabilities as sparx instead of twelve separate subscriptions.',
+      'Kept by running all thirteen capabilities as sparx instead of thirteen separate subscriptions.',
   },
   {
-    value: '12 → 1',
+    value: '13 → 1',
     label:
-      'Twelve logins, renewal dates, and support queues collapse into a single monthly invoice.',
+      'Thirteen logins, renewal dates, and support queues collapse into a single monthly invoice.',
   },
   {
     value: '0%',
@@ -124,6 +124,13 @@ export const LEDGER: { key: string; name: string; price: string; alt: string; am
     amt: '$99',
   },
   { key: 'chat', name: 'Live Chat', price: '$19', alt: 'Intercom — live chat', amt: '$74' },
+  {
+    key: 'finance',
+    name: 'Finance',
+    price: '$29',
+    alt: 'Expensify — Control, 3 seats',
+    amt: '$54',
+  },
 ];
 
 /** Two worked scenarios: separate-tools total vs. the sparx total, plus savings. */
@@ -144,16 +151,16 @@ export const SCENARIOS: {
   },
   {
     title: 'The full platform',
-    sub: 'All twelve modules — Invoicing & Inventory included free',
-    separate: '$3,832/mo',
+    sub: 'All thirteen modules — Invoicing, Inventory & Finance included free',
+    separate: '$3,886/mo',
     sparx: '$411/mo',
-    save: 'You keep $3,421/mo — about $41,000 a year',
+    save: 'You keep $3,475/mo — about $41,700 a year',
     featured: true,
   },
 ];
 
 export const LEDGER_FOOTNOTE =
-  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing and Inventory come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat — the module price is the price.';
+  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, an expense tracker, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing, Inventory and Finance come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat — the module price is the price. Finance is not accounting software and does not replace QuickBooks or Sage 50 — it tracks spending and profit, and exports to whichever package keeps your books.';
 
 /** Every module, its price, what it replaces, and the full feature list. */
 export const FEATURES: {
@@ -317,6 +324,24 @@ export const FEATURES: {
     ],
   },
   {
+    key: 'finance',
+    name: 'Finance',
+    price: '$29/mo',
+    // Deliberately NOT "replaces QuickBooks". sparx does not do bookkeeping and
+    // says so on this page — claiming otherwise here would be the one line that
+    // makes a business owner distrust everything else on it.
+    repl: 'Replaces an expense tracker — not your accounting package',
+    feats: [
+      'Every cost in one place — parts, wages, rent, fuel',
+      'Repeating costs recorded for you',
+      'Bills to pay, sorted by how late they are',
+      'Profit per period, netted against real sales',
+      'Which jobs actually made money',
+      'Exports clean to QuickBooks, Sage 50 or your accountant',
+      'Free with Commerce or B2B',
+    ],
+  },
+  {
     key: 'chat',
     name: 'Live Chat',
     price: '$19/mo',
@@ -365,7 +390,7 @@ export const PRICING_FAQ: { id: string; question: string; answer: string }[] = [
     id: 'what-is-a-module',
     question: 'What counts as a module?',
     answer:
-      'The twelve capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing and Inventory come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
+      'The thirteen capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, Finance, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing, Inventory and Finance come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
   },
   {
     id: 'start-with-builder',

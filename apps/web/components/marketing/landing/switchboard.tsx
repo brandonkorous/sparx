@@ -28,6 +28,9 @@ const ELSEWHERE_MONTHLY: Record<string, number> = {
   chat: 74,
   scheduling: 61,
   ai: 103,
+  // An expense tracker, NOT an accounting package — sparx does not replace
+  // QuickBooks and must not price itself as though it did.
+  finance: 54,
 };
 
 export function LandingSwitchboard() {

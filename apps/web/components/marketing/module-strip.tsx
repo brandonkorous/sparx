@@ -24,7 +24,7 @@ interface ModuleStripProps {
   /** Let chips wrap to a second row. Off for single-line strips (e.g. OG). */
   wrap?: boolean;
   /** Which modules to draw. Defaults to the full catalog; pass `PAID_MODULES` for
-   *  the 12 billable ones (e.g. an OG card whose label reads "12 modules"). */
+   *  the 13 billable ones (e.g. an OG card whose label reads "13 modules"). */
   modules?: readonly ModuleEntry[];
   style?: CSSProperties;
 }

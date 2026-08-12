@@ -6,6 +6,10 @@
 /* Rules that close a hole in a silicaui component — see the file header. */
 @import '@sparx/brand/silica-gaps.css';
 @import '@sparx/brand/toast.css';
+/* SparkMascot motion (blink + the footer peek) — the mascot's geometry ships in
+   @sparx/brand/react, its motion in this one stylesheet, so market never
+   re-declares a keyframe the marketing site already owns. */
+@import '@sparx/brand/mascot.css';
 
 /* silicaui is the component layer — a Tailwind v4 plugin whose semantic classes
    (`.btn`, `.badge`, `.alert`, …) are emitted via addBase and read the theme

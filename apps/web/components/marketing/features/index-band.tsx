@@ -9,7 +9,7 @@ import { CapabilityCatalog } from './catalog';
  * to the PRICES, which live in `pricing/data.ts` — the single source for every
  * pricing surface on the site. Importing that module from a `'use client'` file
  * would drag its lucide icon imports (`INCLUDED`) into the browser bundle for
- * twelve strings, so the join happens here and crosses the boundary as a plain
+ * thirteen strings, so the join happens here and crosses the boundary as a plain
  * `Record<string, string>`.
  *
  * The `+ ` prefix on `FEATURES[].price` is pricing-page grammar — that table

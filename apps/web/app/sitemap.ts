@@ -4,6 +4,7 @@ import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
 import { VERTICAL_SLUGS } from '@/components/marketing/verticals/registry';
+import { storySlugs } from '@/components/marketing/migrate/stories';
 import { fetchPublishedBootcampSlugs } from '@/lib/bootcamp';
 import { fetchPartnerSlugs } from '@/lib/partners';
 import { fetchListingSlugs } from '@/lib/marketplace';
@@ -84,6 +85,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // /customers, which is the real hub and is listed with the static pages.
     ...VERTICAL_SLUGS.map((slug) => ({
       url: `${BASE}/for/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+    // The switching hub and one page per platform somebody might be leaving. High
+    // priority for the same reason the industry pages are: each is its own
+    // commercial query ("migrate from shopify", "hubspot alternative") that
+    // somebody types while already annoyed, and they are the pages that convert.
+    // /migrate itself was a noindex ComingSoon stub until the importers existed.
+    {
+      url: `${BASE}/migrate`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.9,
+    },
+    ...storySlugs().map((slug) => ({
+      url: `${BASE}/migrate/${slug}`,
       lastModified: now,
       changeFrequency: 'monthly' as const,
       priority: 0.8,

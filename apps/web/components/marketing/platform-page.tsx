@@ -110,7 +110,7 @@ function Tag({ children, className }: { children: ReactNode; className?: string 
 // ── HERO ─────────────────────────────────────────────────────────────────────
 function PlatformHero() {
   const metrics = [
-    { v: '12', s: 'modules, one platform' },
+    { v: '13', s: 'modules, one platform' },
     { v: '1', s: 'place your whole business lives' },
     { v: '$10', suffix: '/mo', s: 'starting price' },
     { v: 'AI', spark: true, s: 'that works from your real data' },
@@ -139,7 +139,7 @@ function PlatformHero() {
 
           <Text variant="lead" className="max-w-2xl text-xl">
             Run your whole business from one place. Builder, Commerce, CMS, CRM, Invoicing, Email,
-            B2B, Dropship, Inventory, Live Chat, Scheduling and AI — plus Social, SEO and
+            B2B, Dropship, Inventory, Live Chat, Scheduling, Finance and AI — plus Social, SEO and
             Automations free with any of them. Everything you switch on shares the same customers
             and the same records, behind one login, on one bill. A publisher, a shop, a wholesale
             distributor and a team that only wants a customer list are all equally at home here.
@@ -616,6 +616,13 @@ function ModulesStrip() {
       title: 'Talk to visitors',
       body: 'Live chat tied to the same customer record.',
     },
+    {
+      module: 'finance',
+      label: 'Finance',
+      price: '$29/mo',
+      title: 'Know what you kept',
+      body: 'Spending, profit and job margins — free with Commerce or B2B.',
+    },
   ];
 
   return (
@@ -623,7 +630,7 @@ function ModulesStrip() {
       <BandHeader
         headline={
           <>
-            Twelve modules. <span>Mix any combination</span>
+            Thirteen modules. <span>Mix any combination</span>
           </>
         }
       />
@@ -853,7 +860,7 @@ function PricingTeaser() {
   const tiers = [
     { name: 'Start', price: '$10', note: 'one module', highlight: false },
     { name: 'Grow', price: '$108', note: 'Builder + Commerce + CMS', highlight: true },
-    { name: 'Everything', price: '$411', note: 'all twelve modules', highlight: false },
+    { name: 'Everything', price: '$411', note: 'all thirteen modules', highlight: false },
   ];
 
   return (

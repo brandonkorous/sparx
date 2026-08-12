@@ -63,7 +63,6 @@ export function Cycle({
       {items.map((item, i) => (
         <div
           // Static list rendered once; index is positional and stable.
-          // eslint-disable-next-line react/no-array-index-key
           key={i}
           aria-hidden={i === index ? undefined : true}
           className="col-start-1 row-start-1 min-w-0"

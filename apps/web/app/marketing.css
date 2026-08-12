@@ -1053,84 +1053,11 @@
   }
 
   /* ── SPARK MASCOT ────────────────────────────────────────────────
-   The brand "spark" character (components/marketing/spark-mascot.tsx). Body is
-   spark.svg's silhouette; the face (eyes + mouth) is a separate animatable
-   layer. Motion is CSS-only: an idle bob + a blink. transform-box: fill-box is
-   REQUIRED so each eye scales around its OWN centre — SVG's default
-   transform-origin is the viewBox centre, which would make the eyes drift
-   up/out as they blink or change expression. Expression set + face geometry
-   live in the component. */
-  .spark-mascot {
-    display: inline-block;
-    line-height: 0;
-  }
-  .spark-mascot--bob {
-    animation: spark-bob 4.4s ease-in-out infinite;
-    transform-origin: 50% 60%;
-  }
-  .spark-mascot__eyes {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-  .spark-mascot__eyes--blink {
-    animation: spark-blink 4.6s infinite;
-  }
-  .spark-mascot__eye {
-    transform-box: fill-box;
-    transform-origin: center;
-    transition: transform 0.14s ease;
-  }
-  /* The wink expression: the left eye winks closed-and-open on a loop (a live
-   gesture, not a permanently-closed eye). Drives the eye's own transform, so the
-   component omits its inline scaleY when winking. */
-  .spark-mascot__eye--wink {
-    animation: spark-wink 2.8s ease-in-out infinite;
-  }
-  .spark-mascot__mouth {
-    transition: d 0.3s ease;
-  }
-}
-
-@keyframes spark-bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-1.5deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(1.5deg);
-  }
-}
-@keyframes spark-blink {
-  0%,
-  92%,
-  100% {
-    transform: scaleY(1);
-  }
-  96% {
-    transform: scaleY(0.12);
-  }
-}
-@keyframes spark-wink {
-  0%,
-  36%,
-  64%,
-  100% {
-    transform: scaleY(1);
-  }
-  46%,
-  54% {
-    transform: scaleY(0.1);
-  }
-}
-
-@layer components {
-  @media (prefers-reduced-motion: reduce) {
-    .spark-mascot--bob,
-    .spark-mascot__eyes--blink,
-    .spark-mascot__eye--wink {
-      animation: none;
-    }
-  }
+   Moved out. The mascot's motion (idle bob, blink, wink, and the footer peek)
+   now ships beside the component in @sparx/brand/mascot.css, imported from
+   app/globals.css. This file carried a verbatim copy of the first three, which
+   meant a mascot fix landed here and nowhere else — market and the workbench
+   render the same character. Do not re-add it: change the shared stylesheet. */
 
   /* ── SCROLL REVEAL ───────────────────────────────────────────────
    Content fades + rises as it scrolls into view. Driven by the <Reveal>

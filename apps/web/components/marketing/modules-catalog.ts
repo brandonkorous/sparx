@@ -22,6 +22,7 @@ import {
   CalendarClock,
   FileText,
   MessagesSquare,
+  PiggyBank,
   ReceiptText,
   Search,
   Send,
@@ -185,6 +186,18 @@ export const MODULES: ModuleEntry[] = [
     href: '/ai',
   },
   {
+    id: 'finance',
+    label: 'Finance',
+    title: 'What you spent, and what you kept.',
+    description:
+      'Track every cost — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money. Exports clean to QuickBooks, Sage 50 or your accountant. Free with Commerce or B2B.',
+    price: 29,
+    includedWith: ['Commerce', 'B2B'],
+    // No `href` yet — /finance is not built, same as invoicing / inventory /
+    // chat. The tile still appears everywhere modules are enumerated; it just
+    // carries no "Learn" link until the page exists.
+  },
+  {
     id: 'social',
     label: 'Social',
     title: 'One post, every network.',
@@ -245,6 +258,7 @@ export const MODULE_COLOR: Record<MarketingModule, string> = {
   seo: 'module-seo',
   automations: 'module-automations',
   social: 'module-social',
+  finance: 'module-finance',
 };
 
 export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
@@ -263,6 +277,7 @@ export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
   seo: 'bg-module-seo',
   automations: 'bg-module-automations',
   social: 'bg-module-social',
+  finance: 'bg-module-finance',
 };
 
 /**
@@ -293,6 +308,7 @@ export const MODULE_CONTENT_COLOR: Record<MarketingModule, string> = {
   seo: 'text-module-seo-content',
   automations: 'text-module-automations-content',
   social: 'text-module-social-content',
+  finance: 'text-module-finance-content',
 };
 
 export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
@@ -311,6 +327,7 @@ export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
   seo: 'border-module-seo',
   automations: 'border-module-automations',
   social: 'border-module-social',
+  finance: 'border-module-finance',
 };
 
 /** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each
@@ -334,4 +351,5 @@ export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
   seo: Search,
   automations: Workflow,
   social: Share2,
+  finance: PiggyBank,
 };
