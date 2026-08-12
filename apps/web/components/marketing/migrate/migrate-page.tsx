@@ -1,5 +1,9 @@
 import Link from 'next/link';
-import { Badge, buttonClasses } from '@wizeworks/silicaui-react';
+import { Badge } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — this is a Server Component, and
+// the client entry's copy is a client reference: calling it during prerender
+// fails at `stringify` with "attempted to call buttonClasses() from the server".
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import { ENTITY_LABEL, connectorOnlyEntities, vendorCapability } from '@sparx/migration';
 import { Band } from '../band';
 import { Display, Text } from '../primitives';
