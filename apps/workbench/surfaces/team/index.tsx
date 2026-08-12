@@ -75,7 +75,6 @@ import {
 } from '../../lib/api/team';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import {
   ASSIGNABLE_ROLES,
   canModifyMember,
@@ -590,7 +589,8 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
               Loading your team…
             </p>
           ) : people.length === 0 ? (
-            <WelcomeEmptyState
+            <EmptyState
+              icon={<Users className="size-6" aria-hidden />}
               title="It is just you for now"
               description={
                 canManage

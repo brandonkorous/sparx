@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
-import { auth } from '@sparx/auth';
+import { auth, authPrisma, publishAuthEmail } from '@sparx/auth';
 
 // Server actions for the team-invitation acceptance flow (docs/114 §A.4). These
 // run through the Better Auth org plugin, which lives in this workbench process
@@ -39,6 +39,37 @@ export async function acceptInvitation(invitationId: string): Promise<InviteActi
   }
 
   if (organizationId) {
+    // Close the loop for the inviter — tell them their invitation was accepted.
+    // Best-effort: joining already succeeded, so a notification failure is ignored.
+    try {
+      const invitation = await authPrisma.invitation.findUnique({
+        where: { id: invitationId },
+        select: {
+          email: true,
+          organizationId: true,
+          organization: { select: { name: true } },
+          inviter: { select: { name: true, email: true } },
+        },
+      });
+      if (invitation?.inviter?.email) {
+        const appUrl = process.env.BETTER_AUTH_URL ?? 'http://localhost:3001';
+        await publishAuthEmail({
+          tenantId: invitation.organizationId,
+          actorId: null,
+          template: 'invitation-accepted',
+          to: invitation.inviter.email,
+          props: {
+            inviterName: invitation.inviter.name ?? undefined,
+            inviteeEmail: invitation.email,
+            orgName: invitation.organization.name,
+            dashboardUrl: appUrl,
+          },
+        });
+      }
+    } catch {
+      /* non-fatal — the invite was still accepted */
+    }
+
     // Best-effort: joining succeeded; if activation hiccups the user can still
     // switch into the new account from the accounts picker.
     try {
