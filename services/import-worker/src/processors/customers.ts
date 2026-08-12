@@ -52,6 +52,22 @@ function normalizeType(val: string | undefined): 'retail' | 'b2b' | 'partner' | 
   return 'retail';
 }
 
+/**
+ * Marketing consent, which is the one field on this row that has legal weight.
+ *
+ * Only an explicit yes becomes permission. Anything else — blank, unrecognised, an
+ * unconfirmed Mailchimp opt-in — lands as do-not-contact, because the failure modes
+ * are not symmetric: a contact wrongly marked no can be asked again, and a contact
+ * wrongly marked yes is an unlawful send the tenant finds out about from a complaint.
+ */
+function doNotContactFrom(value: string | undefined): boolean {
+  const text = (value ?? '').trim().toLowerCase();
+  if (text === '') return false;
+  return !['true', 'yes', 'y', '1', 'subscribed', 'subscriber', 'opted_in', 'opted in'].includes(
+    text
+  );
+}
+
 /** The headers the mapping above already owns — see `propertiesFromRow`. */
 const RESERVED_COLUMNS = [
   'email',
@@ -62,6 +78,19 @@ const RESERVED_COLUMNS = [
   'job_title',
   'type',
   'tags',
+  'accepts_marketing',
+  'accepts_sms',
+  'name',
+  'note',
+  'total_spent',
+  'total_orders',
+  'created_at',
+  'address1',
+  'address2',
+  'city',
+  'province',
+  'country',
+  'zip',
 ] as const;
 
 export async function processCustomerRows(
@@ -120,6 +149,9 @@ export async function processCustomerRows(
           ...(row.phone !== undefined ? { phone: row.phone } : {}),
           ...(row.job_title !== undefined ? { jobTitle: row.job_title } : {}),
           ...(row.type ? { type: normalizeType(row.type) } : {}),
+          ...(row.accepts_marketing !== undefined
+            ? { doNotContact: doNotContactFrom(row.accepts_marketing) }
+            : {}),
           ...(row.tags
             ? {
                 tags: row.tags
@@ -150,7 +182,7 @@ export async function processCustomerRows(
                 .map((t) => t.trim())
                 .filter(Boolean)
             : [],
-          doNotContact: false,
+          doNotContact: doNotContactFrom(row.accepts_marketing),
           ...customProperties,
         });
         results.push({ rowIndex: i, status: 'imported', naturalKey: email });

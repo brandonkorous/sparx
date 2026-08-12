@@ -17,9 +17,11 @@ import {
   Layers,
   MessageSquare,
   MessageSquarePlus,
+  PackagePlus,
   Plug,
   Settings,
   Shield,
+  History,
   Unlink,
   UserRound,
   Users,
@@ -41,6 +43,9 @@ import { NotificationsSurface } from '../../../surfaces/notifications/notificati
 import { ModulesSurface } from '../../../surfaces/modules/modules-list';
 import { IndustrySurface } from '../../../surfaces/industry/industry';
 import { SampleDataSurface } from '../../../surfaces/sample-data/sample-data';
+import { MigrationStartSurface } from '../../../surfaces/migration/migration-start';
+import { MigrationRunSurface } from '../../../surfaces/migration/migration-run';
+import { MigrationHistorySurface } from '../../../surfaces/migration/migration-history';
 import { IntegrationsListSurface } from '../../../surfaces/integrations/integrations-list';
 import { IntegrationDetailSurface } from '../../../surfaces/integrations/integration-detail';
 import { AiConnectionsSurface } from '../../../surfaces/ai-connections/ai-connections';
@@ -48,6 +53,67 @@ import { SecuritySurface } from '../../../surfaces/security/security';
 import { PartnerAccessSurface } from '../../../surfaces/partner/partner-access';
 
 export const PLATFORM_SURFACES: SurfaceDefinition[] = [
+  {
+    // Sectionless like Start here and Pulse: moving in is a whole-account errand
+    // someone does once, not one of the settings groups.
+    key: 'platform.migrate',
+    title: 'Move in',
+    module: 'platform',
+    icon: PackagePlus,
+    component: MigrationStartSurface,
+    singleton: true,
+    keywords: [
+      'migrate',
+      'migration',
+      'import',
+      'switch',
+      'transfer',
+      'shopify',
+      'squarespace',
+      'wix',
+      'webflow',
+      'wordpress',
+      'woocommerce',
+      'hubspot',
+      'bigcommerce',
+      'magento',
+      'etsy',
+      'square',
+      'mailchimp',
+      'klaviyo',
+      'salesforce',
+      'pipedrive',
+      'ghost',
+      'substack',
+    ],
+    order: 3,
+  },
+  {
+    // Never listed: reached from the vendor picker or from a past run, always with
+    // params. A bare "Migration run" row in the launcher would open an empty pane.
+    key: 'platform.migrate.run',
+    title: (params) =>
+      typeof params.runId === 'string'
+        ? 'Move in — what happened'
+        : typeof params.vendor === 'string'
+          ? `Move in from ${String(params.vendor)}`
+          : 'Move in',
+    module: 'platform',
+    icon: PackagePlus,
+    component: MigrationRunSurface,
+    listed: false,
+  },
+  {
+    key: 'platform.migrate.history',
+    title: 'Past moves',
+    module: 'platform',
+    icon: History,
+    component: MigrationHistorySurface,
+    singleton: true,
+    listed: false,
+    keywords: ['migration history', 'past imports', 'previous moves'],
+  },
+
   {
     key: 'workbench.home',
     title: 'Start here',

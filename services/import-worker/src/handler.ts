@@ -1,30 +1,35 @@
 // Import-worker message handler.
 //
 // Flow:
-//   1. Parse the import.job.created Pub/Sub event payload.
+//   1. Parse the `import.job.created` payload.
 //   2. Load the ImportJob (including rawRows) from the DB.
-//   3. Dispatch to the entity-specific processor.
-//   4. Write per-row ImportJobRow records and update job counts.
-//   5. Mark job as completed (or failed if the run itself errored).
+//   3. Look the entity's processor up in the registry.
+//   4. Run it (or preview it, for a dry run) and write per-row results.
+//   5. Mark the job completed, or failed if the run itself threw.
 //
 // Failure model:
-//   - Per-row validation/service errors: row written with status='error';
-//     job continues; job.error_count increments. No nack.
-//   - Job not found / DB unavailable: throw; caller nacks → redelivery.
-//   - Unknown entity type: ack with a 'failed' status on the job.
+//   - Per-row validation/service errors: the row is written with status='error', the
+//     job continues, and `error_count` increments. No nack — one bad row in a 9,000
+//     row file must not cost the other 8,999.
+//   - Job not found / DB unavailable: throw, so the caller nacks and it is redelivered.
+//   - Unknown entity type: ack with the job marked failed. A nack would redeliver
+//     forever, because the next attempt cannot know an entity the code does not have.
+//
+// This used to carry a four-arm if/else, each arm holding an identical copy of the
+// result-writing loop below. Every new entity meant a fifth copy, which is a large
+// part of why there was never a fifth entity. The registry in ./processors replaced it.
 
 import type { Logger } from 'pino';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
 
-import { processProductRows } from './processors/products.js';
-import { processCustomerRows } from './processors/customers.js';
-import { processB2bAccountRows } from './processors/b2b_accounts.js';
-import { processDiscountRows } from './processors/discounts.js';
+import { getProcessor } from './processors';
+import type { ImportRow, ProcessorContext } from './processors';
 
 const ImportJobCreatedPayload = z.object({
   jobId: z.string().uuid(),
-  entityType: z.enum(['products', 'customers', 'b2b_accounts', 'discounts']),
+  /** Free-form so a new processor needs no change here; the registry is the gate. */
+  entityType: z.string().min(1).max(50),
 });
 
 export interface HandleOutcome {
@@ -33,7 +38,21 @@ export interface HandleOutcome {
   imported: number;
   updated: number;
   errors: number;
+  skipped?: number;
 }
+
+/** Options carried on the job. `migrationRunId` groups the jobs of one migration —
+ *  a run is a set of jobs sharing it, which is what lets a whole migration be
+ *  reported on without a table of its own. */
+const JobOptions = z
+  .object({
+    upsert: z.boolean().optional(),
+    dryRun: z.boolean().optional(),
+    vendor: z.string().max(64).optional(),
+    migrationRunId: z.string().max(64).optional(),
+    propertyId: z.string().uuid().nullable().optional(),
+  })
+  .passthrough();
 
 export function parseEvent(raw: unknown): z.infer<typeof ImportJobCreatedPayload> | null {
   const result = ImportJobCreatedPayload.safeParse(raw);
@@ -47,19 +66,42 @@ export async function handle(
   const { jobId, entityType } = payload;
   const log = logger.child({ jobId, entityType });
 
-  // Load the job to get tenantId + rawRows.
   const job = await prisma.importJob.findFirst({ where: { id: jobId } });
   if (!job) {
     log.warn('job not found — may have been deleted; acking');
     return { jobId, status: 'unknown_job', imported: 0, updated: 0, errors: 0 };
   }
 
-  const tenantId = job.tenantId;
-  const ctx = { tenantId };
-  const rawRows = job.rawRows as Record<string, string>[];
-  const upsert = (job.options as { upsert?: boolean })?.upsert !== false;
+  const rawRows = job.rawRows as ImportRow[];
+  const parsedOptions = JobOptions.safeParse(job.options ?? {});
+  const options = parsedOptions.success ? parsedOptions.data : {};
 
-  // Mark as processing.
+  const processor = getProcessor(entityType);
+  if (processor === undefined) {
+    log.warn({ entityType }, 'no processor for this entity — marking job failed');
+    await withTenant({ tenantId: job.tenantId }, (tx) =>
+      tx.importJob.update({
+        where: { id: jobId },
+        data: { status: 'failed', errorCount: rawRows.length, completedAt: new Date() },
+      })
+    );
+    return { jobId, status: 'failed', imported: 0, updated: 0, errors: rawRows.length };
+  }
+
+  // The tenant's slug is needed by the media path to build public URLs, and the
+  // property scopes content, redirects and orders to the site being migrated.
+  const tenant = await prisma.tenant.findFirst({
+    where: { id: job.tenantId },
+    select: { slug: true },
+  });
+
+  const ctx: ProcessorContext = {
+    tenantId: job.tenantId,
+    ...(job.actorId === null ? {} : { userId: job.actorId }),
+    ...(options.propertyId === undefined ? {} : { propertyId: options.propertyId }),
+    ...(tenant?.slug === undefined ? {} : { tenantSlug: tenant.slug }),
+  };
+
   await withTenant(ctx, (tx) =>
     tx.importJob.update({ where: { id: jobId }, data: { status: 'processing' } })
   );
@@ -67,97 +109,59 @@ export async function handle(
   let imported = 0;
   let updated = 0;
   let errors = 0;
+  let skipped = 0;
 
   try {
-    if (entityType === 'products') {
-      const results = await processProductRows(ctx, rawRows, { upsert }, log);
-      for (const r of results) {
-        if (r.status === 'imported') imported++;
-        else if (r.status === 'updated') updated++;
-        else errors++;
-        await withTenant(ctx, (tx) =>
-          tx.importJobRow.create({
-            data: {
-              jobId,
-              tenantId,
-              rowIndex: r.rowIndex,
-              status: r.status,
-              naturalKey: r.naturalKey ?? null,
-              errorMsg: r.errorMsg ?? null,
+    // A dry run resolves everything against real data and writes NOTHING but its own
+    // findings — see the note on `EntityProcessor.preview` for why it is a separate
+    // code path rather than a flag.
+    const results =
+      options.dryRun === true
+        ? (await processor.preview(ctx, rawRows, log)).map((row) => ({
+            rowIndex: row.rowIndex,
+            status:
+              row.action === 'create'
+                ? ('imported' as const)
+                : row.action === 'update'
+                  ? ('updated' as const)
+                  : row.action === 'skip'
+                    ? ('skipped' as const)
+                    : ('error' as const),
+            ...(row.naturalKey === undefined ? {} : { naturalKey: row.naturalKey }),
+            ...(row.errorMsg === undefined ? {} : { errorMsg: row.errorMsg }),
+          }))
+        : await processor.run(
+            ctx,
+            rawRows,
+            {
+              upsert: options.upsert !== false,
+              ...(options.vendor === undefined ? {} : { vendor: options.vendor }),
             },
-          })
-        );
-      }
-    } else if (entityType === 'customers') {
-      const results = await processCustomerRows(ctx, rawRows, { upsert }, log);
-      for (const r of results) {
-        if (r.status === 'imported') imported++;
-        else if (r.status === 'updated') updated++;
-        else errors++;
-        await withTenant(ctx, (tx) =>
-          tx.importJobRow.create({
-            data: {
-              jobId,
-              tenantId,
-              rowIndex: r.rowIndex,
-              status: r.status,
-              naturalKey: r.naturalKey ?? null,
-              errorMsg: r.errorMsg ?? null,
-            },
-          })
-        );
-      }
-    } else if (entityType === 'b2b_accounts') {
-      const results = await processB2bAccountRows(ctx, rawRows, { upsert }, log);
-      for (const r of results) {
-        if (r.status === 'imported') imported++;
-        else if (r.status === 'updated') updated++;
-        else errors++;
-        await withTenant(ctx, (tx) =>
-          tx.importJobRow.create({
-            data: {
-              jobId,
-              tenantId,
-              rowIndex: r.rowIndex,
-              status: r.status,
-              naturalKey: r.naturalKey ?? null,
-              errorMsg: r.errorMsg ?? null,
-            },
-          })
-        );
-      }
-    } else if (entityType === 'discounts') {
-      const results = await processDiscountRows(ctx, rawRows, { upsert }, log);
-      for (const r of results) {
-        if (r.status === 'imported') imported++;
-        else if (r.status === 'updated') updated++;
-        else errors++;
-        await withTenant(ctx, (tx) =>
-          tx.importJobRow.create({
-            data: {
-              jobId,
-              tenantId,
-              rowIndex: r.rowIndex,
-              status: r.status,
-              naturalKey: r.naturalKey ?? null,
-              errorMsg: r.errorMsg ?? null,
-            },
-          })
-        );
-      }
-    } else {
-      log.warn({ entityType }, 'unsupported entity type — marking job failed');
+            log
+          );
+
+    for (const result of results) {
+      if (result.status === 'imported') imported++;
+      else if (result.status === 'updated') updated++;
+      else if (result.status === 'skipped') skipped++;
+      else errors++;
+    }
+
+    // One statement instead of one per row. A 9,000-row file was 9,000 round trips,
+    // which took longer than the import it was recording.
+    if (results.length > 0) {
       await withTenant(ctx, (tx) =>
-        tx.importJob.update({
-          where: { id: jobId },
-          data: {
-            status: 'failed',
-            errorCount: rawRows.length,
-            completedAt: new Date(),
-          },
+        tx.importJobRow.createMany({
+          data: results.map((result) => ({
+            jobId,
+            tenantId: job.tenantId,
+            rowIndex: result.rowIndex,
+            status: result.status,
+            naturalKey: result.naturalKey ?? null,
+            errorMsg: result.errorMsg ?? null,
+          })),
         })
       );
-      return { jobId, status: 'failed', imported: 0, updated: 0, errors: rawRows.length };
     }
 
     await withTenant(ctx, (tx) =>
@@ -173,8 +177,11 @@ export async function handle(
       })
     );
 
-    log.info({ imported, updated, errors }, 'job completed');
-    return { jobId, status: 'completed', imported, updated, errors };
+    log.info(
+      { imported, updated, skipped, errors, dryRun: options.dryRun === true },
+      'job completed'
+    );
+    return { jobId, status: 'completed', imported, updated, errors, skipped };
   } catch (err) {
     log.error({ err }, 'job run failed — marking as failed');
     await withTenant(ctx, (tx) =>

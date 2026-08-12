@@ -29,6 +29,9 @@ COPY packages/brand/package.json packages/brand/
 # route resolves paths through it during the SERVER render, so a missing copy is
 # a boot-time failure, not a lazily-discovered one.
 COPY packages/links/package.json packages/links/
+# The move-in vendor registry. Read by the migration surfaces during the SERVER
+# render, same as the address table above — a missing copy fails at boot.
+COPY packages/migration/package.json packages/migration/
 COPY packages/query/package.json packages/query/
 # …and @sparx/auth's transitive closure. Its index re-exports server.ts →
 # tenant-events.ts, which pulls legal seeding; @sparx/email (a direct auth dep)
@@ -92,6 +95,7 @@ COPY packages/api-client packages/api-client
 COPY packages/auth packages/auth
 COPY packages/brand packages/brand
 COPY packages/links packages/links
+COPY packages/migration packages/migration
 COPY packages/query packages/query
 COPY packages/attribution packages/attribution
 COPY packages/db packages/db

@@ -51,6 +51,16 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/get-set-up/describe-your-business', surface: 'workbench.onboarding.story' },
   { path: '/get-set-up/steps', surface: 'workbench.onboarding' },
 
+  /* ── Moving in from another platform ──────────────────────────────────── */
+  { path: '/move-in', surface: 'platform.migrate' },
+  // Parameterless on purpose. The run pane opens in three states — a past run
+  // (`runId`), a vendor picked but nothing imported yet (`vendor`), and bare
+  // from "I'll pick later" — so a required `:runId` segment would make two of
+  // the three unaddressable, and `buildPath` would hand the copy-link control a
+  // null. Both params ride as query parameters and round-trip unchanged.
+  { path: '/move-in/run', surface: 'platform.migrate.run' },
+  { path: '/move-in/past-moves', surface: 'platform.migrate.history' },
+
   /* ── Settings (account-level; the platform module) ────────────────────── */
   { path: '/settings/business', surface: 'platform.settings.general' },
   { path: '/settings/team', surface: 'platform.settings.team' },
@@ -274,7 +284,17 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/crm/settings', surface: 'crm.settings' },
   { path: '/crm/booking-links', surface: 'crm.meeting-links' },
   { path: '/crm/mailboxes', surface: 'crm.mailboxes.list' },
+  // Connecting one is its own pane rather than a form inside the list, so it
+  // needs its own address — and a shareable one is genuinely useful here: this
+  // is the link an owner sends to whoever actually has the mail password.
+  { path: '/crm/mailboxes/connect', surface: 'crm.mailbox.connect' },
   { path: '/crm/phone-systems', surface: 'crm.phone-systems.list' },
+  { path: '/crm/phone-systems/connect', surface: 'crm.phone-system.connect' },
+  // What a rep writes once and sends a hundred times (docs/144 §5.4). Two
+  // addresses, not one with a strip: a whole message and a paragraph you drop
+  // into one are different things, kept in different places, by different people.
+  { path: '/crm/email-templates', surface: 'crm.templates.list' },
+  { path: '/crm/saved-paragraphs', surface: 'crm.snippets.list' },
   { path: '/crm/reports', surface: 'crm.reports' },
 
   /* ── Wholesale ────────────────────────────────────────────────────────── */
@@ -352,7 +372,78 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/inventory/document-label/:number', surface: 'inventory.documents.label' },
   // Warehouse mode (docs/146 Phase 3.8) — the phone-in-the-aisle surface.
   { path: '/inventory/warehouse', surface: 'inventory.warehouse' },
+  // Picking + packing (docs/146 Phase 4). The URL keeps `pick-lists` — the term
+  // of art every integrator already knows — while the surface calls it a walk,
+  // which is what the person carrying the trolley calls it.
+  { path: '/inventory/pick-lists', surface: 'inventory.picking.list' },
+  { path: '/inventory/pick-lists/:id', surface: 'inventory.picking.detail' },
+  { path: '/inventory/pick-lists/:id/pick', surface: 'inventory.picking.guided' },
+  // The pack bench is a STATION first and an order second, so the bare path is
+  // the canonical one — it is what a packer bookmarks and stands at all day.
+  // Arriving with an order is an alias rather than a second route, because rule 1
+  // above is exactly one route per surface: two entries for one surface leaves
+  // `linkTo` with no way to say which address it means.
+  {
+    path: '/inventory/packing',
+    surface: 'inventory.packing.bench',
+    aliases: ['/inventory/packing/:orderId'],
+  },
+  { path: '/inventory/reports/throughput', surface: 'inventory.picking.throughput' },
+  // True cost (docs/146 Phase 5). The URL says `cost-variance` — the term an
+  // accountant and an integrator both recognise — while the surface is titled
+  // for the question a business owner types.
+  { path: '/inventory/reports/cost-variance', surface: 'inventory.costing.variance' },
+  { path: '/inventory/costing', surface: 'inventory.costing.settings' },
+  // Units, recipes and runs (docs/146 Phase 6). The URLs keep the industry
+  // words — `boms`, `assemblies` — while the surfaces are titled the way the
+  // person doing the work would say it.
+  { path: '/inventory/units', surface: 'inventory.units' },
+  { path: '/inventory/boms', surface: 'inventory.boms.list' },
+  { path: '/inventory/boms/:id', surface: 'inventory.boms.detail' },
+  { path: '/inventory/assemblies', surface: 'inventory.assemblies.list' },
+  { path: '/inventory/assemblies/:id', surface: 'inventory.assemblies.detail' },
+  // Planning (docs/146 Phase 7). `explain` takes both halves of a level's
+  // identity because a reorder point is a fact about a (variant, location) pair
+  // and explaining one without the other would be explaining a different number.
+  // Each planning question is its own surface rather than a tab, so each gets a
+  // real address. One segment for the siblings, two for `explain` — a variant and
+  // a warehouse can never collide with a fixed word like `classes`.
+  { path: '/inventory/planning', surface: 'inventory.planning' },
+  { path: '/inventory/planning/classes', surface: 'inventory.planning.classes' },
+  { path: '/inventory/planning/idle', surface: 'inventory.planning.idle' },
+  { path: '/inventory/planning/holding', surface: 'inventory.planning.holding' },
+  { path: '/inventory/planning/settings', surface: 'inventory.planning.settings' },
+  {
+    path: '/inventory/planning/:variantId/:warehouseId',
+    surface: 'inventory.planning.explain',
+  },
+  { path: '/inventory/count-schedules', surface: 'inventory.count-schedules' },
+  { path: '/inventory/count-schedules/:id', surface: 'inventory.count-schedules.detail' },
   { path: '/inventory/reorder', surface: 'inventory.reorder' },
+  // Supplier performance + procurement discipline (docs/146 Phase 8). The URLs
+  // keep the industry words an integrator would search for — `approvals`,
+  // `advance-ship-notices`, `returns`, `bills` — while the surfaces are titled
+  // the way somebody running a shop would say it.
+  { path: '/inventory/purchase-orders/approvals', surface: 'inventory.purchase-orders.approvals' },
+  { path: '/inventory/purchase-orders/late', surface: 'inventory.purchase-orders.late' },
+  {
+    path: '/inventory/purchase-orders/approval-rules',
+    surface: 'inventory.purchase-orders.approval-rules',
+  },
+  {
+    path: '/inventory/purchase-orders/approval-rules/:id',
+    surface: 'inventory.purchase-orders.approval-rules.detail',
+  },
+  { path: '/inventory/advance-ship-notices', surface: 'inventory.advance-ship-notices' },
+  {
+    path: '/inventory/advance-ship-notices/:id',
+    surface: 'inventory.advance-ship-notices.detail',
+  },
+  { path: '/inventory/supplier-returns', surface: 'inventory.supplier-returns' },
+  { path: '/inventory/supplier-returns/:id', surface: 'inventory.supplier-returns.detail' },
+  { path: '/inventory/supplier-bills', surface: 'inventory.supplier-bills' },
+  { path: '/inventory/supplier-bills/:id', surface: 'inventory.supplier-bills.detail' },
+  { path: '/inventory/reports/suppliers', surface: 'inventory.suppliers.scorecards' },
   { path: '/inventory/reports', surface: 'inventory.reports' },
   { path: '/inventory/sources', surface: 'inventory.sources' },
   { path: '/inventory/sources/:id', surface: 'inventory.sources.detail' },
@@ -371,6 +462,16 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/finance/payouts/:id', surface: 'finance.payout.detail' },
   { path: '/finance/owed-to-you', surface: 'finance.receivables' },
   { path: '/finance/sources', surface: 'finance.channels' },
+  // Money going out — the billable spend half (docs/148).
+  { path: '/finance/spending', surface: 'finance.spending' },
+  { path: '/finance/spending/:id', surface: 'finance.expense.detail' },
+  { path: '/finance/bills', surface: 'finance.bills' },
+  { path: '/finance/repeating', surface: 'finance.recurring' },
+  { path: '/finance/who-you-pay', surface: 'finance.vendors' },
+  { path: '/finance/profit', surface: 'finance.profit' },
+  { path: '/finance/profit/by-job', surface: 'finance.jobs' },
+  { path: '/finance/categories', surface: 'finance.categories' },
+  { path: '/finance/accounting', surface: 'finance.accounting' },
   // What the tenant pays US. `/settings/billing` is canonical rather than a
   // finance path because that is the address every Stripe return has carried and
   // the one people already have; the finance-module path is the alias.

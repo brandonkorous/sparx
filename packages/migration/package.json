@@ -1,0 +1,32 @@
+{
+  "name": "@sparx/migration",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx migration — the vendor-adapter brain that turns another platform's own export file into canonical sparx import rows. Ships a dependency-free RFC-4180 CSV reader, a minimal XML/CDATA reader, a WordPress WXR reader, format detection by filename + header fingerprint, and one adapter per competitor (Shopify, BigCommerce, WooCommerce, Adobe Commerce, Wix, Squarespace, Webflow, Etsy, Square, Big Cartel, GoDaddy, WordPress, Ghost, Substack, Framer, HubSpot, Salesforce, Pipedrive, Mailchimp, Klaviyo). Isomorphic and pure: the workbench parses in the browser, the marketing site reads the same registry, and import-worker never learns a vendor existed.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./registry": {
+      "types": "./src/registry.ts",
+      "default": "./src/registry.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

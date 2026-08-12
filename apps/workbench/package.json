@@ -27,6 +27,7 @@
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/email-sequences": "workspace:*",
     "@sparx/links": "workspace:*",
+    "@sparx/migration": "workspace:*",
     "@sparx/query": "workspace:*",
     "@sparx/silica-catalog": "workspace:*",
     "@sparx/site-themes": "workspace:*",

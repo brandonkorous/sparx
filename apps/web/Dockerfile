@@ -29,6 +29,9 @@ COPY packages/attribution/package.json packages/attribution/
 COPY packages/chat-widget/package.json packages/chat-widget/
 COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/story-schemas/package.json packages/story-schemas/
+# The vendor registry behind /migrate — the hub, each per-vendor page and the OG
+# route all read it at render time, so it is a boot-time dep, not a build aid.
+COPY packages/migration/package.json packages/migration/
 # The market's component previews render real catalog nodes — globals.css also
 # @imports/@sources silica-catalog by relative path, so BOTH must be present.
 COPY packages/builder-schemas/package.json packages/builder-schemas/
@@ -47,6 +50,7 @@ COPY packages/attribution packages/attribution
 COPY packages/chat-widget packages/chat-widget
 COPY packages/site-themes packages/site-themes
 COPY packages/story-schemas packages/story-schemas
+COPY packages/migration packages/migration
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/silica-catalog packages/silica-catalog
 COPY apps/web apps/web
