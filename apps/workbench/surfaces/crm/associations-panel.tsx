@@ -36,8 +36,9 @@ import {
   NativeSelect,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Link2, Plus, Star, Trash2 } from 'lucide-react';
+import { Link2, Pencil, Plus, Star, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
+import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -47,6 +48,7 @@ import {
   useAssociationLabels,
   useAssociations,
   useMakeAssociationPrimary,
+  useUpdateAssociation,
   useRelateRecords,
   useUnrelateRecords,
   type Association,
@@ -78,7 +80,8 @@ export function AssociationsPanel({
 }: AssociationsPanelProps) {
   const toast = useToast();
   const confirm = useConfirm();
-  const [adding, setAdding] = useState(false);
+  /** null = closed · 'new' = adding one · an Association = changing that one. */
+  const [dialog, setDialog] = useState<'new' | Association | null>(null);
 
   const { data, isPending } = useAssociations(objectKey, recordId);
   const { data: labelData } = useAssociationLabels();
@@ -174,6 +177,9 @@ export function AssociationsPanel({
                     onOpen={(shiftKey) => {
                       if (item.other) open(item.other.objectKey, item.other.recordId, shiftKey);
                     }}
+                    onEdit={() => {
+                      setDialog(item);
+                    }}
                     onMakePrimary={() => void onMakePrimary(item)}
                     onUnrelate={() => void onUnrelate(item)}
                   />
@@ -190,20 +196,24 @@ export function AssociationsPanel({
         variant="outline"
         className="self-start"
         onClick={() => {
-          setAdding(true);
+          setDialog('new');
         }}
       >
         <Plus className="size-4" aria-hidden />
         Link someone else
       </Button>
 
-      {adding ? (
+      {dialog ? (
         <RelateDialog
+          // Keyed so switching straight from one row's pencil to another's
+          // remounts the form rather than keeping the first link's note.
+          key={dialog === 'new' ? 'new' : dialog.id}
           objectKey={objectKey}
           recordId={recordId}
           labels={labelData?.items ?? []}
+          editing={dialog === 'new' ? null : dialog}
           onClose={() => {
-            setAdding(false);
+            setDialog(null);
           }}
         />
       ) : null}
@@ -217,12 +227,14 @@ function AssociationRow({
   item,
   busy,
   onOpen,
+  onEdit,
   onMakePrimary,
   onUnrelate,
 }: {
   item: Association;
   busy: boolean;
   onOpen: (shiftKey: boolean) => void;
+  onEdit: () => void;
   onMakePrimary: () => void;
   onUnrelate: () => void;
 }) {
@@ -241,6 +253,10 @@ function AssociationRow({
           {other?.title ?? 'A record that no longer exists'}
         </span>
         {other?.subtitle ? <span className="ml-2 text-sm">{other.subtitle}</span> : null}
+        {/* The note about the connection. The form has always asked for this and
+            the row never showed it, so every one written was stored where nobody
+            could read it — which is worse than not asking. */}
+        {item.note ? <span className="mt-0.5 block text-sm">{item.note}</span> : null}
       </button>
 
       {/* Which kind of thing this is. A real colour rather than grey, because on
@@ -256,6 +272,18 @@ function AssociationRow({
           Main
         </Badge>
       ) : null}
+
+      <Button
+        size="sm"
+        color="module"
+        variant="ghost"
+        disabled={busy}
+        title="Change what this connection is called, or the note about it"
+        aria-label={`Change how ${other?.title ?? 'this record'} is connected`}
+        onClick={onEdit}
+      >
+        <Pencil className="size-4" aria-hidden />
+      </Button>
 
       {item.isPrimary ? null : (
         <Button
@@ -304,19 +332,37 @@ function toneFor(objectKey: string): string {
 
 /* ── Adding one ─────────────────────────────────────────────────────────── */
 
+/**
+ * One dialog for adding a link and for changing one.
+ *
+ * They are the same two fields — what the connection is called, and the note
+ * about it — so a second dialog would be the same form twice. WHICH record is
+ * linked is fixed once made: changing that is not editing a link, it is a
+ * different link, and unlinking says so honestly.
+ *
+ * EDITING EXISTED IN THE API AND NOWHERE ELSE. `PATCH /v1/crm/associations/:id`
+ * has always accepted both fields and no screen ever called it, so a role that
+ * changed — the single most ordinary thing that happens to a business
+ * relationship — could only be recorded by deleting the link and making a new
+ * one, which threw away when it was first made.
+ */
 function RelateDialog({
   objectKey,
   recordId,
   labels,
+  editing,
   onClose,
 }: {
   objectKey: string;
   recordId: string;
   labels: AssociationLabel[];
+  /** The link being changed, or null when making a new one. */
+  editing: Association | null;
   onClose: () => void;
 }) {
   const toast = useToast();
   const relate = useRelateRecords();
+  const update = useUpdateAssociation();
 
   // What this kind of record can be related TO, from the labels the business
   // actually has. Deriving it from the labels rather than hardcoding it means a
@@ -332,16 +378,41 @@ function RelateDialog({
     return [...kinds];
   }, [labels, objectKey]);
 
-  const [toType, setToType] = useState(targetTypes[0] ?? 'contact');
+  // On an edit the kind is already decided by the record on the other end, so
+  // the label list is filtered against THAT rather than a picker nobody sees.
+  const [toType, setToType] = useState(editing?.other?.objectKey ?? targetTypes[0] ?? 'contact');
   const [toId, setToId] = useState('');
-  const [labelKey, setLabelKey] = useState('');
-  const [note, setNote] = useState('');
+  const [labelKey, setLabelKey] = useState(editing?.labelKey ?? '');
+  const [note, setNote] = useState(editing?.note ?? '');
 
   const available = labels.filter(
     (label) => label.fromType === objectKey && label.toType === toType
   );
 
+  const busy = relate.isPending || update.isPending;
+
   const submit = async () => {
+    const cleanNote = note.trim() === '' ? null : note.trim();
+    const cleanLabel = labelKey === '' ? null : labelKey;
+
+    if (editing) {
+      try {
+        await update.mutateAsync({ id: editing.id, labelKey: cleanLabel, note: cleanNote });
+        toast.add({ title: 'Link updated', type: 'success' });
+        onClose();
+      } catch (error) {
+        toast.add({
+          title: 'Could not change that link',
+          description: associationErrorMessage(
+            error,
+            'Something went wrong reaching the server. Nothing has been changed.'
+          ),
+          type: 'error',
+        });
+      }
+      return;
+    }
+
     if (toId === '') return;
     try {
       await relate.mutateAsync({
@@ -349,8 +420,8 @@ function RelateDialog({
         fromId: recordId,
         toType,
         toId,
-        labelKey: labelKey === '' ? null : labelKey,
-        note: note.trim() === '' ? null : note.trim(),
+        labelKey: cleanLabel,
+        note: cleanNote,
       });
       toast.add({ title: 'Linked', type: 'success' });
       onClose();
@@ -367,122 +438,145 @@ function RelateDialog({
   };
 
   return (
-    <Dialog
-      open
-      onOpenChange={(next: boolean) => {
-        if (!next) onClose();
-      }}
-    >
-      <DialogContent>
-        <DialogTitle>Link someone else</DialogTitle>
-        <DialogDescription>
-          Connect this to another record and say how they are related. It shows on both.
-        </DialogDescription>
+    // PORTALLED INTO THIS PANE, and it is not only about which window. A dialog
+    // that escapes the pane also escapes its `ModuleScope`, where
+    // `--color-module` is set — so every `color="module"` control inside it fell
+    // back to `--color-primary`, and this form rendered its three fields in
+    // Ember red. Three boxes outlined in what reads as the error colour, on a
+    // form where nothing was wrong. (The window part matters too: from a
+    // torn-off pane this dialog would otherwise open in the ORIGINAL window.)
+    <PaneScope>
+      <Dialog
+        open
+        onOpenChange={(next: boolean) => {
+          if (!next) onClose();
+        }}
+      >
+        <DialogContent>
+          <DialogTitle>
+            {editing
+              ? `Change how ${editing.other?.title ?? 'this'} is connected`
+              : 'Link someone else'}
+          </DialogTitle>
+          <DialogDescription>
+            {editing
+              ? 'What this connection is called, and anything worth remembering about it. To connect a different record, unlink this one and add another.'
+              : 'Connect this to another record and say how they are related. It shows on both.'}
+          </DialogDescription>
 
-        <div className="flex flex-col gap-3 py-2">
-          {targetTypes.length > 1 ? (
+          <div className="flex flex-col gap-3 py-2">
+            {/* Both hidden on an edit: WHICH record is linked is settled, and
+                offering to change it here would quietly mean "unlink and relink"
+                without saying so. */}
+            {!editing && targetTypes.length > 1 ? (
+              <Field>
+                <FieldLabel>What kind of record</FieldLabel>
+                <FieldControl
+                  render={
+                    <NativeSelect
+                      color="module"
+                      value={toType}
+                      onChange={(event) => {
+                        setToType(event.target.value);
+                        setToId('');
+                        setLabelKey('');
+                      }}
+                    >
+                      {targetTypes.map((kind) => (
+                        <option key={kind} value={kind}>
+                          {objectLabel(kind)}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  }
+                />
+              </Field>
+            ) : null}
+
+            {editing ? null : (
+              <Field>
+                <FieldLabel>Which one</FieldLabel>
+                <RecordPicker
+                  objectKey={toType}
+                  value={toId === '' ? null : toId}
+                  excludeId={objectKey === toType ? recordId : undefined}
+                  onSelect={(id) => {
+                    setToId(id);
+                  }}
+                  onClear={() => {
+                    setToId('');
+                  }}
+                />
+              </Field>
+            )}
+
             <Field>
-              <FieldLabel>What kind of record</FieldLabel>
+              <FieldLabel>How they are related</FieldLabel>
               <FieldControl
                 render={
                   <NativeSelect
-                    value={toType}
+                    color="module"
+                    value={labelKey}
                     onChange={(event) => {
-                      setToType(event.target.value);
-                      setToId('');
-                      setLabelKey('');
+                      setLabelKey(event.target.value);
                     }}
                   >
-                    {targetTypes.map((kind) => (
-                      <option key={kind} value={kind}>
-                        {objectLabel(kind)}
+                    {/* An unlabelled link is a real, valid state — the honest
+                        answer when someone connects two records before deciding
+                        what the connection means. */}
+                    <option value="">Just related — I will say how later</option>
+                    {available.map((label) => (
+                      <option key={label.id} value={label.key}>
+                        {label.label}
                       </option>
                     ))}
                   </NativeSelect>
                 }
               />
+              <FieldDescription>
+                {available.length === 0
+                  ? 'You have not set up any relationships between these two kinds of record yet.'
+                  : 'What this person or business is to this record.'}
+              </FieldDescription>
             </Field>
-          ) : null}
 
-          <Field>
-            <FieldLabel>Which one</FieldLabel>
-            <RecordPicker
-              objectKey={toType}
-              value={toId === '' ? null : toId}
-              excludeId={objectKey === toType ? recordId : undefined}
-              onSelect={(id) => {
-                setToId(id);
-              }}
-              onClear={() => {
-                setToId('');
-              }}
-            />
-          </Field>
+            <Field>
+              <FieldLabel>Anything worth remembering</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    value={note}
+                    placeholder="Only reachable through her assistant."
+                    onChange={(event) => {
+                      setNote(event.target.value);
+                    }}
+                  />
+                }
+              />
+              <FieldDescription>About the connection, not about either record.</FieldDescription>
+            </Field>
+          </div>
 
-          <Field>
-            <FieldLabel>How they are related</FieldLabel>
-            <FieldControl
-              render={
-                <NativeSelect
-                  value={labelKey}
-                  onChange={(event) => {
-                    setLabelKey(event.target.value);
-                  }}
-                >
-                  {/* An unlabelled link is a real, valid state — the honest
-                      answer when someone connects two records before deciding
-                      what the connection means. */}
-                  <option value="">Just related — I will say how later</option>
-                  {available.map((label) => (
-                    <option key={label.id} value={label.key}>
-                      {label.label}
-                    </option>
-                  ))}
-                </NativeSelect>
-              }
-            />
-            <FieldDescription>
-              {available.length === 0
-                ? 'You have not set up any relationships between these two kinds of record yet.'
-                : 'What this person or business is to this record.'}
-            </FieldDescription>
-          </Field>
-
-          <Field>
-            <FieldLabel>Anything worth remembering</FieldLabel>
-            <FieldControl
-              render={
-                <Input
-                  value={note}
-                  placeholder="Only reachable through her assistant."
-                  onChange={(event) => {
-                    setNote(event.target.value);
-                  }}
-                />
-              }
-            />
-            <FieldDescription>About the connection, not about either record.</FieldDescription>
-          </Field>
-        </div>
-
-        <DialogFooter>
-          <DialogClose>
-            <Button size="sm" color="neutral" variant="ghost">
-              Cancel
+          <DialogFooter>
+            <DialogClose>
+              <Button size="sm" color="neutral" variant="ghost">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              size="sm"
+              color="module"
+              loading={busy}
+              disabled={!editing && toId === ''}
+              onClick={() => void submit()}
+            >
+              {editing ? null : <Link2 className="size-4" aria-hidden />}
+              {editing ? 'Save the change' : 'Link them'}
             </Button>
-          </DialogClose>
-          <Button
-            size="sm"
-            color="module"
-            loading={relate.isPending}
-            disabled={toId === ''}
-            onClick={() => void submit()}
-          >
-            <Link2 className="size-4" aria-hidden />
-            Link them
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PaneScope>
   );
 }

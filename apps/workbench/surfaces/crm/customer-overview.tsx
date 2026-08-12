@@ -457,6 +457,7 @@ export function CustomerOverviewTab({
         recordId={customer.id}
         score={customer.score}
         scoredAt={customer.scoredAt}
+        scoreOffset={customer.scoreOffset}
         noun="customer"
       />
 

@@ -6,6 +6,7 @@ import {
   Building2,
   Clock,
   Copy,
+  FileText,
   Filter,
   Gauge,
   LifeBuoy,
@@ -20,6 +21,7 @@ import {
   CalendarClock,
   SlidersHorizontal,
   Table2,
+  TextQuote,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { CustomersListSurface } from '../../../surfaces/crm/customers-list';
@@ -44,7 +46,9 @@ import { ScoringSurface } from '../../../surfaces/crm/scoring';
 import { ObjectTypesListSurface } from '../../../surfaces/crm/object-types-list';
 import { ObjectTypeDetailSurface } from '../../../surfaces/crm/object-type-detail';
 import { MailboxesListSurface } from '../../../surfaces/crm/mailboxes-list';
+import { MailboxConnectSurface } from '../../../surfaces/crm/mailbox-connect';
 import { PhoneSystemsListSurface } from '../../../surfaces/crm/phone-systems-list';
+import { PhoneSystemConnectSurface } from '../../../surfaces/crm/phone-system-connect';
 import { TicketsListSurface } from '../../../surfaces/crm/tickets-list';
 import { TicketDetailSurface } from '../../../surfaces/crm/ticket-detail';
 import { SlaPoliciesSurface } from '../../../surfaces/crm/sla-policies';
@@ -52,16 +56,24 @@ import { CrmSettingsSurface } from '../../../surfaces/crm/crm-settings';
 import { MeetingLinksSurface } from '../../../surfaces/crm/meeting-links';
 import { RecordsListSurface } from '../../../surfaces/crm/records-list';
 import { RecordDetailSurface } from '../../../surfaces/crm/record-detail';
+import { TemplatesListSurface } from '../../../surfaces/crm/templates-list';
+import { SnippetsListSurface } from '../../../surfaces/crm/snippets-list';
 
 export const CRM_SURFACES: SurfaceDefinition[] = [
   /* ── The workspace layer (docs/144 §11 + §12) ──────────────────────────── */
+  //
+  // These two used to sit in a section called 'Setup' while record types,
+  // mailboxes and phone systems sat in one called 'Setting up' — so the nav
+  // rendered TWO groups that mean the same thing, one at the top and one at the
+  // bottom, and somebody hunting for a setting had to notice that both existed.
+  // Section names are matched as strings; there is one now.
   {
     key: 'crm.settings',
     title: 'How the CRM behaves',
     module: 'crm',
     icon: SlidersHorizontal,
-    section: 'Setup',
-    order: 90,
+    section: 'Setting up',
+    order: 80,
     keywords: ['duplicates', 'merge', 'domain', 'company suggestion', 'preferences'],
     component: CrmSettingsSurface,
   },
@@ -70,8 +82,8 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     title: 'Booking links',
     module: 'crm',
     icon: CalendarClock,
-    section: 'Setup',
-    order: 91,
+    section: 'Setting up',
+    order: 70,
     keywords: ['meeting', 'calendar', 'schedule a call', 'meet'],
     component: MeetingLinksSurface,
   },
@@ -335,6 +347,54 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     // it is a pane rather than a launcher entry.
     listed: false,
   },
+  // What a business writes once and sends a hundred times (docs/144 §5.4). TWO
+  // entries, not one screen with a strip across the top: a whole message and a
+  // paragraph you drop into one are different things, usually kept by different
+  // people — and a strip inside a pane is a third layer of tabs in an app that
+  // is already tabbed. Side by side is one drag away if somebody wants both.
+  {
+    key: 'crm.templates.list',
+    title: 'Email templates',
+    module: 'crm',
+    icon: FileText,
+    section: 'Setting up',
+    order: 45,
+    // The words someone uses when they are tired of retyping the same email —
+    // rarely the word we chose for it.
+    keywords: [
+      'template',
+      'templates',
+      'canned',
+      'saved email',
+      'boilerplate',
+      'follow up email',
+      'reply template',
+    ],
+    component: TemplatesListSurface,
+    // A second copy would show the same library and let two people save over
+    // each other's edit of one template.
+    singleton: true,
+  },
+  {
+    key: 'crm.snippets.list',
+    title: 'Saved paragraphs',
+    module: 'crm',
+    icon: TextQuote,
+    section: 'Setting up',
+    order: 46,
+    keywords: [
+      'snippet',
+      'snippets',
+      'shortcut',
+      'saved text',
+      'paragraph',
+      'opening hours',
+      'returns policy',
+      'canned response',
+    ],
+    component: SnippetsListSurface,
+    singleton: true,
+  },
   {
     key: 'crm.mailboxes.list',
     title: 'Mailboxes',
@@ -346,6 +406,20 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     component: MailboxesListSurface,
     // One list of connected accounts — there is nothing per-instance to vary,
     // so a second copy would only ever show the same thing.
+    singleton: true,
+  },
+  // Connecting one is its OWN pane rather than a form inside the list: it is
+  // minutes of work with an app password fetched from another browser tab, so
+  // it fails the modal test outright and must be somewhere the unsaved-work
+  // guard can see it. Unlisted — you get here from the list, not the launcher.
+  {
+    key: 'crm.mailbox.connect',
+    title: 'Connect a mailbox',
+    module: 'crm',
+    icon: MailboxIcon,
+    component: MailboxConnectSurface,
+    listed: false,
+    // Two half-finished connections at once is a way to lose one of them.
     singleton: true,
   },
   {
@@ -368,6 +442,17 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
       'caller id',
     ],
     component: PhoneSystemsListSurface,
+    singleton: true,
+  },
+  // Same reasoning as the mailbox connector: an Account SID and an auth token
+  // are fetched from the phone provider's dashboard in another tab.
+  {
+    key: 'crm.phone-system.connect',
+    title: 'Connect a phone system',
+    module: 'crm',
+    icon: PhoneCall,
+    component: PhoneSystemConnectSurface,
+    listed: false,
     singleton: true,
   },
 

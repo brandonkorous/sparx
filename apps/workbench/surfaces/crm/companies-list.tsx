@@ -94,6 +94,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Company list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search companies"
             placeholder="Search by company…"
@@ -103,6 +104,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-40 shrink-0 @lg:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Show which companies"
             value={status}

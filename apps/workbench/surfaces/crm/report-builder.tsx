@@ -46,12 +46,16 @@ import {
   VISUALIZATION_LABEL,
   allowedFunctions,
   allowedVisualizations,
+  isConditionGroup,
+  operatorsForKind,
   useCreateReport,
   useDuplicateReport,
   useReport,
   useReportFields,
   usePreview,
   useUpdateReport,
+  type ConditionGroup,
+  type ConditionLeaf,
   type DateBucket,
   type DateRange,
   type GroupBy,
@@ -74,6 +78,21 @@ interface Draft {
   visualization: Visualization;
   rangeKind: DateRange['kind'];
   rangeDays: number;
+  /** Whether every condition has to hold, or any one of them. */
+  logic: 'AND' | 'OR';
+  conditions: ConditionLeaf[];
+  /**
+   * A stored filter this row editor cannot draw — a nested group. Kept verbatim
+   * and handed straight back on save.
+   *
+   * This exists because the alternative is silent: for a while the builder had
+   * no filters at all and compiled a hardcoded empty group, so opening a report
+   * that HAD one previewed the wrong numbers and saving quietly deleted the
+   * condition. A report that means something different from what it meant
+   * yesterday, with nothing on screen having said so, is the worst thing this
+   * surface can do — so anything unrepresentable is preserved, not dropped.
+   */
+  opaqueFilters: ConditionGroup | null;
 }
 
 const EMPTY: Draft = {
@@ -86,17 +105,23 @@ const EMPTY: Draft = {
   visualization: 'number',
   rangeKind: 'all',
   rangeDays: 90,
+  logic: 'AND',
+  conditions: [],
+  opaqueFilters: null,
 };
 
 function toDraft(report: {
   name: string;
   description: string | null;
   objectKey: string;
+  filters: ConditionGroup;
   groupBy: GroupBy | null;
   measures: Measure[];
   visualization: Visualization;
   dateRange: DateRange;
 }): Draft {
+  const stored = report.filters.conditions;
+  const drawable = stored.every((node) => !isConditionGroup(node) && isScalar(node.value));
   return {
     name: report.name,
     description: report.description ?? '',
@@ -107,7 +132,67 @@ function toDraft(report: {
     visualization: report.visualization,
     rangeKind: report.dateRange.kind,
     rangeDays: report.dateRange.kind === 'last_n_days' ? report.dateRange.days : 90,
+    logic: report.filters.logic,
+    conditions: drawable ? (stored as ConditionLeaf[]) : [],
+    opaqueFilters: drawable ? null : report.filters,
   };
+}
+
+/**
+ * Whether a stored condition's value is something a single control can hold.
+ *
+ * A report authored through the API or MCP may carry `in`/`not_in` with a list,
+ * which this editor has no control for. Rendering it as text would put
+ * "[object Object]" in a box and then save that string back as the filter, so an
+ * unrepresentable value sends the whole filter down the keep-it-verbatim path
+ * instead. Absent counts as scalar — `is filled in` compares against nothing.
+ */
+function isScalar(value: unknown): value is string | number | boolean | null | undefined {
+  return (
+    value === undefined ||
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+/** `condition.value` is `unknown`; only the four shapes above ever reach a box. */
+function valueText(value: unknown): string {
+  return isScalar(value) && value !== undefined && value !== null ? String(value) : '';
+}
+
+/**
+ * The filter the report actually runs with.
+ *
+ * A half-finished row — a field chosen but nothing to compare it with — is
+ * dropped rather than sent, because the compiler would reject the whole
+ * definition and the preview would go red while somebody is mid-thought. The row
+ * stays on screen, and says of itself that it is not counting yet.
+ */
+function toFilters(draft: Draft): ConditionGroup {
+  if (draft.opaqueFilters) return draft.opaqueFilters;
+  return {
+    logic: draft.logic,
+    conditions: draft.conditions.filter((c) => isComplete(c)),
+  };
+}
+
+function isComplete(condition: ConditionLeaf): boolean {
+  if (condition.field === '') return false;
+  if (condition.operator === 'is_set' || condition.operator === 'is_not_set') return true;
+  return condition.value !== undefined && condition.value !== '';
+}
+
+/** Text in, the type the column actually is out — `value > '5000'` compares
+ *  strings in Postgres, so "900" would come back as more than "5000". */
+function coerce(raw: string, kind: ReportField['kind'] | undefined): unknown {
+  if (kind === 'number' || kind === 'currency') {
+    const parsed = Number(raw);
+    return raw.trim() === '' || Number.isNaN(parsed) ? raw : parsed;
+  }
+  if (kind === 'boolean') return raw === 'true';
+  return raw;
 }
 
 function toDateRange(draft: Draft): DateRange {
@@ -298,7 +383,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
     () => ({
       name: draft.name || 'Untitled',
       objectKey: draft.objectKey,
-      filters: { logic: 'AND' as const, conditions: [] },
+      filters: toFilters(draft),
       groupBy: toGroupBy(draft, fields),
       measures: draft.measures,
       dateRange: toDateRange(draft),
@@ -413,7 +498,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 items={Object.fromEntries(objects.map((o) => [o.objectKey, o.labelPlural]))}
                 onValueChange={(next) => {
                   // Fields belong to an object, so changing it invalidates the
-                  // breakdown and every measure that named one.
+                  // breakdown, every measure that named one, and every
+                  // condition — `deal.value` is not a column on a customer.
                   setTouched(true);
                   setDraft((current) => ({
                     ...current,
@@ -421,6 +507,8 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                     groupByField: '',
                     groupByBucket: '',
                     measures: [{ fn: 'count' }],
+                    conditions: [],
+                    opaqueFilters: null,
                   }));
                 }}
               />
@@ -578,6 +666,205 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 </FieldDescription>
               </Field>
             ) : null}
+          </FormSection>
+
+          {/* The "where …" at the end of the sentence. */}
+          <FormSection title="Only count some of them">
+            {draft.opaqueFilters ? (
+              <Alert color="info" variant="soft">
+                This report narrows what it counts in a way that cannot be shown as a simple list of
+                rules. It is being kept exactly as it is — saving will not change it.
+              </Alert>
+            ) : (
+              <>
+                {draft.conditions.length > 1 ? (
+                  <Field>
+                    <FieldLabel>Which rules have to hold</FieldLabel>
+                    <Select
+                      color="module"
+                      value={draft.logic}
+                      disabled={readOnly}
+                      items={{ AND: 'All of them', OR: 'Any one of them' }}
+                      onValueChange={(next) => set('logic', next as 'AND' | 'OR')}
+                    />
+                  </Field>
+                ) : null}
+
+                {draft.conditions.map((condition, index) => {
+                  const conditionField = fields.find((f) => f.path === condition.field);
+                  const operators = operatorsForKind(conditionField?.kind);
+                  const operator = operators.find((o) => o.value === condition.operator);
+                  const editCondition = (patch: Partial<ConditionLeaf>) => {
+                    setTouched(true);
+                    setDraft((current) => {
+                      const conditions = [...current.conditions];
+                      conditions[index] = { ...conditions[index], ...patch } as ConditionLeaf;
+                      return { ...current, conditions };
+                    });
+                  };
+                  return (
+                    <div key={index} className="flex flex-col gap-2">
+                      <Field>
+                        <FieldLabel>{index === 0 ? 'Only where' : 'And where'}</FieldLabel>
+                        <Select
+                          color="module"
+                          aria-label="Which value to check"
+                          value={condition.field}
+                          disabled={readOnly}
+                          items={Object.fromEntries(fields.map((f) => [f.path, f.label]))}
+                          onValueChange={(next) => {
+                            // The comparisons on offer depend on the kind of
+                            // value, so a new field means the old operator may
+                            // not exist any more — and the old value certainly
+                            // does not belong to it.
+                            const picked = fields.find((f) => f.path === (next as string));
+                            const first = operatorsForKind(picked?.kind)[0];
+                            editCondition({
+                              field: next as string,
+                              operator: first?.value ?? 'eq',
+                              // A Yes/No control has no empty state to show, so
+                              // leaving the value unset would render "No" over a
+                              // rule holding nothing: the screen would read
+                              // "Runs online is No" while the report quietly
+                              // ignored it. Seed what the control is already
+                              // displaying, so what is shown is what is stored.
+                              value: picked?.kind === 'boolean' ? false : undefined,
+                            });
+                          }}
+                        />
+                      </Field>
+
+                      <div className="flex flex-wrap items-end gap-2">
+                        <div className="min-w-[10rem] flex-1">
+                          <Select
+                            color="module"
+                            aria-label="How to compare it"
+                            value={condition.operator}
+                            disabled={readOnly}
+                            items={Object.fromEntries(operators.map((o) => [o.value, o.label]))}
+                            onValueChange={(next) => {
+                              const picked = operators.find((o) => o.value === (next as string));
+                              editCondition({
+                                operator: next as string,
+                                ...(picked?.needsValue
+                                  ? // Switching BACK to a comparison that needs a
+                                    // value leaves a Yes/No control showing "No"
+                                    // over nothing — same trap as picking the
+                                    // field. Seed it here too.
+                                    conditionField?.kind === 'boolean' &&
+                                    condition.value === undefined
+                                    ? { value: false }
+                                    : {}
+                                  : { value: undefined }),
+                              });
+                            }}
+                          />
+                        </div>
+
+                        {operator?.needsValue ? (
+                          <div className="min-w-[10rem] flex-1">
+                            {conditionField?.kind === 'boolean' ? (
+                              <Select
+                                color="module"
+                                aria-label="What to compare it with"
+                                value={condition.value === true ? 'true' : 'false'}
+                                disabled={readOnly}
+                                items={{ true: 'Yes', false: 'No' }}
+                                onValueChange={(next) => {
+                                  editCondition({ value: next === 'true' });
+                                }}
+                              />
+                            ) : (
+                              <Input
+                                color="module"
+                                aria-label="What to compare it with"
+                                type={
+                                  conditionField?.kind === 'date'
+                                    ? 'date'
+                                    : conditionField?.kind === 'number' ||
+                                        conditionField?.kind === 'currency'
+                                      ? 'number'
+                                      : 'text'
+                                }
+                                value={valueText(condition.value)}
+                                disabled={readOnly}
+                                placeholder="Type what to look for"
+                                onChange={(event) => {
+                                  editCondition({
+                                    value: coerce(event.target.value, conditionField?.kind),
+                                  });
+                                }}
+                              />
+                            )}
+                          </div>
+                        ) : null}
+
+                        {!readOnly ? (
+                          <Button
+                            color="neutral"
+                            variant="ghost"
+                            size="sm"
+                            aria-label="Remove this rule"
+                            onClick={() => {
+                              setTouched(true);
+                              setDraft((current) => ({
+                                ...current,
+                                conditions: current.conditions.filter((_, i) => i !== index),
+                              }));
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        ) : null}
+                      </div>
+
+                      {isComplete(condition) ? null : (
+                        <Text className="text-sm">
+                          Not narrowing anything yet — this rule needs something to compare with.
+                        </Text>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Plain prose, not a `FieldDescription` — that one reads Base
+                    UI's Field context and throws outside a `<Field>`. */}
+                {draft.conditions.length === 0 ? (
+                  <Text className="text-sm">
+                    Every one of them counts right now. Add a rule to leave some out — only deals
+                    over a certain size, only requests still open, only people in one place.
+                  </Text>
+                ) : null}
+
+                {!readOnly && draft.conditions.length < 6 ? (
+                  <div>
+                    <Button
+                      color="module"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setTouched(true);
+                        setDraft((current) => {
+                          const first = fields[0];
+                          return {
+                            ...current,
+                            conditions: [
+                              ...current.conditions,
+                              {
+                                field: first?.path ?? '',
+                                operator: operatorsForKind(first?.kind)[0]?.value ?? 'eq',
+                              },
+                            ],
+                          };
+                        });
+                      }}
+                    >
+                      {draft.conditions.length === 0 ? 'Leave some out' : 'And another rule'}
+                    </Button>
+                  </div>
+                ) : null}
+              </>
+            )}
           </FormSection>
 
           <FormSection title="How to show it">

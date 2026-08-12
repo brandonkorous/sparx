@@ -138,6 +138,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Support queue controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search requests"
             placeholder="Search by subject or number…"
@@ -147,6 +148,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-40 shrink-0 @lg:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Which requests to show"
             value={view}
@@ -158,6 +160,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-36 shrink-0 @2xl:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Filter by urgency"
             value={priority}

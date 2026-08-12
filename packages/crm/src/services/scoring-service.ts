@@ -151,28 +151,38 @@ export async function scoreRecord(
   if (!model) return null;
 
   const breakdown = computeScore(model, fields, idleDays(fields));
-  const previous = await currentScore(tx, objectKey, recordId);
-  if (previous === null) return null;
+  const state = await currentScore(tx, objectKey, recordId);
+  if (state === null) return null;
+  const previous = state.score;
 
-  if (previous === breakdown.score) {
+  // THE HAND ADJUSTMENT IS PART OF THE ANSWER, NOT A THING TO OVERWRITE.
+  // Re-scoring used to write the rules total flat, so somebody's considered
+  // "+10, they referred two other shops" lasted exactly until the next sweep.
+  // The offset is added here and clamped WITH the rules total rather than
+  // separately, so a record cannot exceed the model's ceiling by being nudged.
+  const score = clampScore(breakdown.score + state.offset, model.maxScore);
+
+  if (previous === score) {
     return {
       recordId,
-      score: breakdown.score,
+      score,
       previous,
       changed: false,
       reasons: breakdown.reasons,
     };
   }
 
-  await writeScore(tx, objectKey, recordId, breakdown.score, now);
+  // No `offset` argument: the evaluator recomputes the RULES half and leaves
+  // the person's half exactly where they put it.
+  await writeScore(tx, objectKey, recordId, score, now);
   await tx.scoreEvent.create({
     data: {
       tenantId,
       modelId: model.id,
       objectKey,
       recordId,
-      delta: breakdown.score - previous,
-      score: breakdown.score,
+      delta: score - previous,
+      score,
       // The reasons, joined — the row has to be readable on its own, since the
       // rules it was computed from are editable and may not say the same thing
       // tomorrow.
@@ -182,7 +192,14 @@ export async function scoreRecord(
     },
   });
 
-  return { recordId, score: breakdown.score, previous, changed: true, reasons: breakdown.reasons };
+  return { recordId, score, previous, changed: true, reasons: breakdown.reasons };
+}
+
+/** A score is only ever a whole number inside the model's range. Shared, so the
+ *  evaluator and a hand adjustment can never disagree about what "out of 100"
+ *  means. */
+function clampScore(value: number, maxScore: number): number {
+  return Math.max(0, Math.min(maxScore, Math.round(value)));
 }
 
 /** The reasons as one readable line, capped to the column. Truncation appends a
@@ -227,20 +244,27 @@ async function recordProperty(
   return null;
 }
 
-/** The record's stored score, or null when the record is gone. Null is NOT zero:
- *  scoring a deleted record would write an event about nothing. */
+/** What a record's score is made of right now: the stored number and the
+ *  standing hand adjustment underneath it. Null when the record is gone — null
+ *  is NOT zero, because scoring a deleted record writes an event about nothing. */
 async function currentScore(
   tx: TxClient,
   objectKey: string,
   recordId: string
-): Promise<number | null> {
+): Promise<{ score: number; offset: number } | null> {
   if (objectKey === 'contact') {
-    const row = await tx.customer.findUnique({ where: { id: recordId }, select: { score: true } });
-    return row?.score ?? null;
+    const row = await tx.customer.findUnique({
+      where: { id: recordId },
+      select: { score: true, scoreOffset: true },
+    });
+    return row ? { score: row.score, offset: row.scoreOffset } : null;
   }
   if (objectKey === 'deal') {
-    const row = await tx.deal.findUnique({ where: { id: recordId }, select: { score: true } });
-    return row?.score ?? null;
+    const row = await tx.deal.findUnique({
+      where: { id: recordId },
+      select: { score: true, scoreOffset: true },
+    });
+    return row ? { score: row.score, offset: row.scoreOffset } : null;
   }
   return null;
 }
@@ -250,14 +274,17 @@ async function writeScore(
   objectKey: string,
   recordId: string,
   score: number,
-  now: Date
+  now: Date,
+  /** Omitted by the evaluator, which must never touch somebody's adjustment. */
+  offset?: number
 ): Promise<void> {
+  const data = { score, scoredAt: now, ...(offset === undefined ? {} : { scoreOffset: offset }) };
   if (objectKey === 'contact') {
-    await tx.customer.update({ where: { id: recordId }, data: { score, scoredAt: now } });
+    await tx.customer.update({ where: { id: recordId }, data });
     return;
   }
   if (objectKey === 'deal') {
-    await tx.deal.update({ where: { id: recordId }, data: { score, scoredAt: now } });
+    await tx.deal.update({ where: { id: recordId }, data });
   }
 }
 
@@ -462,15 +489,30 @@ async function pageRecordIds(
   return [];
 }
 
-/** Move a score by hand. Recorded with the actor, so an unexplained jump in the
- *  history is always attributable to a person. */
+/**
+ * Move a score by hand, PERMANENTLY. Recorded with the actor, so an unexplained
+ * jump in the history is always attributable to a person.
+ *
+ * The adjustment is banked as a standing offset rather than written straight
+ * onto the score, because a bare number is whatever the evaluator overwrites
+ * next: this used to last until the following "Re-score everyone" and then
+ * vanish without a word. `scoreRecord` now adds the offset every time, so the
+ * judgement keeps counting until somebody takes it back.
+ *
+ * The offset is derived from where the score ACTUALLY IS (`previous + delta`)
+ * rather than from the rules total, so pressing +10 always moves the visible
+ * number by 10. Deriving it from the rules would make the score jump by the
+ * rule drift as well on a record that has not been re-scored since the rules
+ * last changed — the person asked for ten points, not for a reconciliation.
+ */
 export async function adjust(ctx: ServiceContext, rawInput: unknown): Promise<ScoreResult> {
   const input = AdjustScoreInput.parse(rawInput);
   const now = new Date();
 
   return withTenant(ctx, async (tx) => {
-    const previous = await currentScore(tx, input.objectKey, input.recordId);
-    if (previous === null) throw new CrmNotFoundError('Record', input.recordId);
+    const state = await currentScore(tx, input.objectKey, input.recordId);
+    if (state === null) throw new CrmNotFoundError('Record', input.recordId);
+    const previous = state.score;
 
     const model = await activeModel(
       tx,
@@ -478,7 +520,7 @@ export async function adjust(ctx: ServiceContext, rawInput: unknown): Promise<Sc
       await recordProperty(tx, input.objectKey, input.recordId)
     );
     const ceiling = model?.maxScore ?? 100;
-    const score = Math.max(0, Math.min(ceiling, previous + input.delta));
+    const score = clampScore(previous + input.delta, ceiling);
 
     if (score === previous) {
       throw new CrmValidationError('That would not change the score.', [
@@ -489,7 +531,13 @@ export async function adjust(ctx: ServiceContext, rawInput: unknown): Promise<Sc
       ]);
     }
 
-    await writeScore(tx, input.objectKey, input.recordId, score, now);
+    // The offset moves by what the score ACTUALLY moved, not by what was
+    // requested — so a +10 against a ceiling that only had room for 4 banks 4,
+    // and the record does not carry a hidden 6 that reappears later. Adjustments
+    // accumulate: two +10s are +20, because each one is a separate judgement.
+    const offset = state.offset + (score - previous);
+
+    await writeScore(tx, input.objectKey, input.recordId, score, now, offset);
     await tx.scoreEvent.create({
       data: {
         tenantId: ctx.tenantId,

@@ -83,6 +83,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Segment list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search segments"
             placeholder="Search segments…"
@@ -92,6 +93,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-44 shrink-0 @lg:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Which segments to show"
             value={scope}

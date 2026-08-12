@@ -25,6 +25,9 @@ const MODULE_SLUGS: ModuleSlug[] = [
   'chat',
   'ai',
   'scheduling',
+  'social',
+  'finance',
+  'invoicing',
 ];
 
 function readModuleFlags(settings: unknown): Record<string, boolean> {

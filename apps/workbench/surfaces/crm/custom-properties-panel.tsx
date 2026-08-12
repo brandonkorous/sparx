@@ -161,6 +161,20 @@ function PropertyControl({
   );
 }
 
+/**
+ * The control for one declared property.
+ *
+ * EVERY BRANCH CARRIES ITS OWN `aria-label`, and that is not redundant with the
+ * `<FieldLabel>` above it. Base UI wires a label to a control by cloning the
+ * element passed to `FieldControl render=` with the ids it minted — but this is
+ * a component, not an element, so those props land on `ScalarControl` and stop
+ * there. Every custom property on every contact, deal, company, request and
+ * tenant-invented record was therefore announced as an unnamed edit box.
+ *
+ * Naming the control directly also survives the composite branches, where there
+ * is no single element for a label to point at: money is a currency code beside
+ * an input, and a multi-choice is a row of buttons.
+ */
 function ScalarControl({
   field,
   value,
@@ -178,6 +192,8 @@ function ScalarControl({
     case 'long_text':
       return (
         <Textarea
+          color="module"
+          aria-label={field.label}
           rows={field.rows ?? 3}
           disabled={disabled}
           value={typeof value === 'string' ? value : ''}
@@ -194,6 +210,8 @@ function ScalarControl({
       // editor into every CRM detail pane would cost far more than it gives.
       return (
         <Textarea
+          color="module"
+          aria-label={field.label}
           rows={field.rows ?? 4}
           disabled={disabled}
           value={richTextToPlain(value)}
@@ -206,6 +224,8 @@ function ScalarControl({
     case 'boolean':
       return (
         <Switch
+          color="module"
+          aria-label={field.label}
           disabled={disabled}
           checked={value === true}
           onCheckedChange={(next: boolean) => {
@@ -219,7 +239,7 @@ function ScalarControl({
       if (field.multiple) {
         const selected = Array.isArray(value) ? (value as string[]) : [];
         return (
-          <div className="flex flex-wrap gap-2">
+          <div role="group" aria-label={field.label} className="flex flex-wrap gap-2">
             {options.map((option) => {
               const on = selected.includes(option.value);
               return (
@@ -245,6 +265,8 @@ function ScalarControl({
       }
       return (
         <NativeSelect
+          color="module"
+          aria-label={field.label}
           disabled={disabled}
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => {
@@ -264,6 +286,8 @@ function ScalarControl({
     case 'number':
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           type="number"
           disabled={disabled}
           value={typeof value === 'number' ? String(value) : ''}
@@ -283,6 +307,8 @@ function ScalarControl({
         <div className="flex items-center gap-2">
           <span className="font-mono text-sm">{money.currency}</span>
           <Input
+            color="module"
+            aria-label={field.label}
             type="number"
             step="any"
             disabled={disabled}
@@ -299,6 +325,8 @@ function ScalarControl({
     case 'date':
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           type="date"
           disabled={disabled}
           value={typeof value === 'string' ? value.slice(0, 10) : ''}
@@ -311,6 +339,8 @@ function ScalarControl({
     case 'datetime':
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           type="datetime-local"
           disabled={disabled}
           value={toLocalInput(value)}
@@ -323,6 +353,8 @@ function ScalarControl({
     case 'email':
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           type="email"
           disabled={disabled}
           value={typeof value === 'string' ? value : ''}
@@ -335,6 +367,8 @@ function ScalarControl({
     case 'url':
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           type="url"
           disabled={disabled}
           placeholder="https://"
@@ -351,6 +385,8 @@ function ScalarControl({
       // (Phase 2) and the media picker are wired in.
       return (
         <Input
+          color="module"
+          aria-label={field.label}
           disabled={disabled}
           placeholder={field.placeholder}
           value={typeof value === 'string' ? value : ''}

@@ -13,7 +13,9 @@
 //
 //   GET/POST/PATCH/DELETE /v1/crm/sales-templates[/:id]
 //   GET    /v1/crm/sales-templates/performance   → which ones get replies
+//   POST   /v1/crm/sales-templates/:id/restore   → take one back out
 //   GET/POST/PATCH/DELETE /v1/crm/sales-snippets[/:id]
+//   POST   /v1/crm/sales-snippets/:id/used       → count an expansion
 //
 // `/inbound` is the mail sync's own door and is deliberately EDITOR-gated rather
 // than public: the sync runs inside the cluster with a service credential. A
@@ -221,6 +223,17 @@ const engagementRoutes: FastifyPluginAsync = (app) => {
     return ok(await salesTemplateService.archiveTemplate(toCrmContext(request), id));
   });
 
+  // The way back. Archiving is one press and hides a template from every picker
+  // in the business, so without this a mis-click costs the message itself —
+  // and retyping it under a new name orphans the counters that made it worth
+  // keeping.
+  app.post('/v1/crm/sales-templates/:id/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = IdPath.parse(request.params);
+    return ok(await salesTemplateService.restoreTemplate(toCrmContext(request), id));
+  });
+
   /* ── Snippets ─────────────────────────────────────────────────────────── */
 
   app.get('/v1/crm/sales-snippets', async (request) => {
@@ -244,6 +257,17 @@ const engagementRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const { id } = IdPath.parse(request.params);
     return ok(await salesTemplateService.updateSnippet(toCrmContext(request), id, request.body));
+  });
+
+  // A shortcut was just expanded into a message. Counting it is what lets the
+  // list put the paragraphs people actually reach for at the top — the service
+  // has always been able to record it and nothing could ask.
+  app.post('/v1/crm/sales-snippets/:id/used', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = IdPath.parse(request.params);
+    await salesTemplateService.noteSnippetUsed(toCrmContext(request), id);
+    return ok({ counted: true });
   });
 
   app.delete('/v1/crm/sales-snippets/:id', async (request) => {

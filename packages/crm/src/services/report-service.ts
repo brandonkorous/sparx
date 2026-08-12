@@ -26,7 +26,16 @@ import type { CrmReport, Prisma } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
-import { runReport, type ReportDefinition, type ReportResult } from './report-compiler';
+import { asPropertySchema } from './custom-properties';
+import * as objectDefService from './object-def-service';
+import {
+  isBuiltinObject,
+  reportableProperties,
+  runReport,
+  type ReportDefinition,
+  type ReportProperties,
+  type ReportResult,
+} from './report-compiler';
 
 /** Prisma stores these as `Json`; the shapes are guaranteed by zod on write, so
  *  reads assert rather than re-parse — a re-parse here would turn a schema
@@ -39,6 +48,49 @@ function toDefinition(row: CrmReport): ReportDefinition {
     measures: row.measures as unknown as Measure[],
     dateRange: row.dateRange as unknown as DateRange,
     propertyId: row.propertyId,
+  };
+}
+
+/**
+ * Everything the compiler cannot know about this object because the TENANT
+ * decided it: whether the object itself is theirs, and what properties they
+ * declared on it.
+ *
+ * ONE indexed lookup per run, for built-in objects too — a contact's declared
+ * properties are as reportable as a course's, and reading them only for the
+ * tenant's own objects would make "extra fields on a customer" the one kind of
+ * data the report builder could not see.
+ *
+ * The read is also what makes an unknown key an error rather than an empty
+ * table: `objectDefService.get` throws `CrmNotFoundError` for a key that is not
+ * there. An ARCHIVED custom type is refused too — someone who retired "Course"
+ * should not find its reports still quietly running.
+ */
+async function propertiesFor(
+  ctx: ServiceContext,
+  objectKey: string
+): Promise<ReportProperties | undefined> {
+  const builtin = isBuiltinObject(objectKey);
+  const def = builtin
+    ? await withTenant(ctx, (tx) =>
+        tx.crmObjectDef.findUnique({
+          where: { tenantId_key: { tenantId: ctx.tenantId, key: objectKey } },
+        })
+      )
+    : await objectDefService.get(ctx, objectKey);
+
+  // A built-in nobody has extended has no row at all, and that is not an error.
+  if (!def) return undefined;
+  if (!builtin && def.archivedAt) {
+    throw new CrmValidationError(
+      `“${def.labelPlural}” has been put away, so there is nothing to report on. Bring it back first.`,
+      [{ field: 'objectKey', message: `object ${objectKey} is archived` }]
+    );
+  }
+
+  return {
+    ...(builtin ? {} : { object: { label: def.label, labelPlural: def.labelPlural } }),
+    fields: reportableProperties(asPropertySchema(def.propertySchema)),
   };
 }
 
@@ -208,6 +260,7 @@ export async function run(
   const query = RunReportQuery.parse(rawQuery);
   const report = await get(ctx, id);
   const definition = toDefinition(report);
+  definition.properties = await propertiesFor(ctx, definition.objectKey);
   const result = await runReport(
     ctx,
     query.dateRange ? { ...definition, dateRange: query.dateRange } : definition,
@@ -229,6 +282,7 @@ export async function preview(ctx: ServiceContext, rawInput: unknown): Promise<R
       measures: input.measures,
       dateRange: input.dateRange,
       propertyId: input.propertyId ?? null,
+      properties: await propertiesFor(ctx, input.objectKey),
     },
     200
   );

@@ -36,7 +36,7 @@ model Customer {
   // (auth_user_id) linked to a per-site membership each. property_id null = a
   // tenant-level CRM contact not tied to a site.
   propertyId     String? @map("property_id") @db.Uuid
-  companyId   String? @map("company_id") @db.Uuid
+  companyId      String? @map("company_id") @db.Uuid
   assignedRepId  String? @map("assigned_rep_id") @db.Uuid
 
   email                  String?  @db.VarChar(255)
@@ -84,6 +84,19 @@ model Customer {
   score    Int       @default(0)
   scoredAt DateTime? @map("scored_at") @db.Timestamptz
 
+  /// A standing hand adjustment, in points, that SURVIVES re-scoring.
+  ///
+  /// Without it a hand-set score was simply the number the evaluator happened
+  /// to overwrite next: somebody who knew this contact referred two other shops
+  /// nudged them +10, and the next "Re-score everyone" silently deleted that
+  /// judgement. The score is now `clamp(rules + offset)`, so a person's read on
+  /// a customer keeps counting until they take it back.
+  ///
+  /// Signed, and NOT clamped itself — the clamp belongs to the final score, so
+  /// an offset of +30 on a record whose rules already put it at the ceiling
+  /// stays +30 and starts mattering again the day the rules score drops.
+  scoreOffset Int @default(0) @map("score_offset")
+
   totalSpent   Decimal   @default(0) @map("total_spent") @db.Decimal(12, 2)
   orderCount   Int       @default(0) @map("order_count")
   firstOrderAt DateTime? @map("first_order_at") @db.Timestamptz
@@ -100,7 +113,7 @@ model Customer {
   tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   property    Property?     @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   authUser    CustomerUser? @relation(fields: [authUserId], references: [id], onDelete: SetNull)
-  company  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company     Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedRep User?         @relation("CustomerAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
   mergedInto  Customer?     @relation("CustomerMerge", fields: [mergedIntoCustomerId], references: [id], onDelete: SetNull)
   mergedFrom  Customer[]    @relation("CustomerMerge")

@@ -3,157 +3,51 @@
 // Connected mailboxes (docs/144 §5.2) — the email accounts sparx reads from and
 // sends through.
 //
-// THE THING THIS SURFACE HAS TO GET RIGHT is that the person doing it has never
-// heard of IMAP. They know their email address and they know their password,
-// and both of those facts are traps: the server names are not guessable, and
-// their normal password will be rejected by every provider that has two-factor
-// authentication switched on. So the form leads with "who is your email with",
-// fills the technical boxes from that, and says in plain words where to find an
-// app password for that specific provider.
-//
-// It is a PANE, not a modal: connecting a mailbox is minutes of work with
-// values fetched from another browser tab, and a modal is invisible to the
-// unsaved-work guard (apps/workbench/CLAUDE.md).
+// THIS IS THE LIST, AND ONLY THE LIST. Connecting one is `crm.mailbox.connect`,
+// its own pane — see that file for why a pane and not a dialog. It used to be a
+// form parked above this table, which is neither of the two shapes docs/123
+// allows: it sat permanently on top of what people came here to look at, pushed
+// the list down the page on every visit for the sake of an action taken once,
+// and duplicated the empty state directly underneath itself.
 
-import { useState } from 'react';
-import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  Field,
-  FieldControl,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  Input,
-  NativeSelect,
-  Table,
-  useToast,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, Table, useToast } from '@wizeworks/silicaui-react';
 import { Mailbox, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
-import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   describeLastSync,
   isModuleDisabled,
   mailboxErrorMessage,
-  MAIL_PRESETS,
   statusLabel,
   statusTone,
-  useConnectMailbox,
   useDisconnectMailbox,
   useMailboxes,
   useSyncMailbox,
-  type MailPreset,
 } from './mailboxes-data';
 
-interface Draft {
-  presetId: string;
-  emailAddress: string;
-  appPassword: string;
-  displayName: string;
-  imapHost: string;
-  imapPort: number;
-  smtpHost: string;
-  smtpPort: number;
-  scope: 'personal' | 'shared';
+/** Shift opens alongside, Alt pops out — the same modifier contract every other
+ *  list in the workbench honours. */
+function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+  if (event.altKey) return 'window';
+  if (event.shiftKey) return 'beside';
+  return 'tab';
 }
 
-function draftFor(preset: MailPreset): Draft {
-  return {
-    presetId: preset.id,
-    emailAddress: '',
-    appPassword: '',
-    displayName: '',
-    imapHost: preset.imapHost,
-    imapPort: preset.imapPort,
-    smtpHost: preset.smtpHost,
-    smtpPort: preset.smtpPort,
-    scope: 'personal',
-  };
-}
-
-const DEFAULT_PRESET = MAIL_PRESETS[0]!;
-const EMPTY = draftFor(DEFAULT_PRESET);
-
-export function MailboxesListSurface() {
+export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState<Draft>(EMPTY);
 
   const { data, error, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMailboxes();
-  const connect = useConnectMailbox();
   const disconnect = useDisconnectMailbox();
   const sync = useSyncMailbox();
 
   const rows = data?.items ?? [];
   const moduleOff = isModuleDisabled(error);
-  const preset = MAIL_PRESETS.find((p) => p.id === draft.presetId) ?? DEFAULT_PRESET;
 
-  // A half-typed password is real work: closing the pane loses it, so the pane
-  // has to say so before it goes.
-  const touched =
-    adding && (draft.emailAddress !== '' || draft.appPassword !== '' || draft.displayName !== '');
-  useDirtySource(touched, 'You have a half-finished mailbox connection.');
-
-  const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
-    setDraft((previous) => ({ ...previous, [key]: value }));
-  };
-
-  const choosePreset = (id: string) => {
-    const chosen = MAIL_PRESETS.find((p) => p.id === id) ?? DEFAULT_PRESET;
-    // Keep what the person has already typed; replace only what the provider
-    // determines. Re-blanking their address because they changed provider is
-    // the kind of thing that makes someone give up on a form.
-    setDraft((previous) => ({
-      ...previous,
-      presetId: chosen.id,
-      imapHost: chosen.imapHost,
-      imapPort: chosen.imapPort,
-      smtpHost: chosen.smtpHost,
-      smtpPort: chosen.smtpPort,
-    }));
-  };
-
-  const submit = () => {
-    connect.mutate(
-      {
-        emailAddress: draft.emailAddress.trim(),
-        appPassword: draft.appPassword,
-        imapHost: draft.imapHost.trim(),
-        imapPort: draft.imapPort,
-        smtpHost: draft.smtpHost.trim(),
-        smtpPort: draft.smtpPort,
-        scope: draft.scope,
-        displayName: draft.displayName.trim() === '' ? null : draft.displayName.trim(),
-      },
-      {
-        onSuccess: () => {
-          setDraft(EMPTY);
-          setAdding(false);
-          toast.add({
-            title: 'Mailbox connected',
-            description: 'New email will start appearing on your customers’ records.',
-            type: 'success',
-          });
-        },
-        onError: (err: unknown) => {
-          toast.add({
-            title: 'Could not connect that mailbox',
-            description: mailboxErrorMessage(
-              err,
-              'Check the address and the app password, then try again.'
-            ),
-            type: 'error',
-          });
-        },
-      }
-    );
+  const connectMailbox = (event: { shiftKey: boolean; altKey: boolean }) => {
+    ctx.open('crm.mailbox.connect', {}, { target: targetFor(event) });
   };
 
   const runSync = (id: string) => {
@@ -205,25 +99,17 @@ export function MailboxesListSurface() {
     });
   };
 
-  const canSubmit =
-    draft.emailAddress.trim() !== '' &&
-    draft.appPassword !== '' &&
-    draft.imapHost.trim() !== '' &&
-    draft.smtpHost.trim() !== '' &&
-    !connect.isPending;
-
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar label="Mailbox controls">
         <Button
           color="module"
           size="sm"
-          onClick={() => {
-            setAdding((v) => !v);
-          }}
+          title="Connect a mailbox — hold Shift to open alongside, Alt for a new window"
+          onClick={connectMailbox}
         >
           <Plus className="size-4" aria-hidden />
-          {adding ? 'Cancel' : 'Connect a mailbox'}
+          Connect a mailbox
         </Button>
         <RefreshButton
           className="ml-auto"
@@ -236,181 +122,6 @@ export function MailboxesListSurface() {
       </PaneToolbar>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-        {adding ? (
-          <Card className="shrink-0 p-4">
-            <h3 className="text-lg font-semibold">Connect a mailbox</h3>
-            <p className="mt-1 text-sm">
-              sparx will read new email from this account and show it on the matching customer’s
-              record, and send your replies from this address.
-            </p>
-
-            <div className="mt-4 grid gap-4 @2xl:grid-cols-2">
-              <Field>
-                <FieldLabel>Who is your email with?</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={draft.presetId}
-                      onChange={(event) => {
-                        choosePreset(event.currentTarget.value);
-                      }}
-                    >
-                      {MAIL_PRESETS.map((option) => (
-                        <option key={option.id} value={option.id}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-                <FieldDescription>
-                  This fills in the technical settings below so you do not have to look them up.
-                </FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Email address</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      type="email"
-                      autoComplete="off"
-                      placeholder="you@yourbusiness.com"
-                      value={draft.emailAddress}
-                      onChange={(event) => {
-                        set('emailAddress', event.currentTarget.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-
-              <Field className="@2xl:col-span-2">
-                <FieldLabel>App password</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      type="password"
-                      autoComplete="new-password"
-                      value={draft.appPassword}
-                      onChange={(event) => {
-                        set('appPassword', event.currentTarget.value);
-                      }}
-                    />
-                  }
-                />
-                {/* The single most common reason this form fails, said before
-                    they try it rather than after it is rejected. */}
-                <FieldDescription>{preset.appPasswordHint}</FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Name recipients see</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      placeholder="Dana Reed"
-                      value={draft.displayName}
-                      onChange={(event) => {
-                        set('displayName', event.currentTarget.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  Optional. Shown instead of the bare address in the customer’s inbox.
-                </FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Whose mailbox is this?</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={draft.scope}
-                      onChange={(event) => {
-                        set('scope', event.currentTarget.value as 'personal' | 'shared');
-                      }}
-                    >
-                      <option value="personal">Mine — my own work email</option>
-                      <option value="shared">
-                        A shared address the team uses (sales@, support@)
-                      </option>
-                    </NativeSelect>
-                  }
-                />
-              </Field>
-            </div>
-
-            {/* THE PRIVACY PROMISE, made before the credential is handed over
-                rather than buried in a settings page afterwards. It is also the
-                literal behaviour of the sync — see syncGateFor(). */}
-            <Alert
-              color={draft.scope === 'personal' ? 'info' : 'warning'}
-              variant="soft"
-              className="mt-4"
-            >
-              {draft.scope === 'personal'
-                ? 'Because this is your own mailbox, sparx keeps only the messages to and from people already on your customer list. Everything else is discarded as it is read — never saved, never searchable, never visible to your team.'
-                : 'A shared address is meant to receive mail from people you have not met, so sparx keeps everything that arrives here — including messages from strangers. Do not connect a personal mailbox this way.'}
-            </Alert>
-
-            <details className="mt-4">
-              <summary className="cursor-pointer text-sm font-medium">
-                Server settings (already filled in)
-              </summary>
-              <div className="mt-3 grid gap-4 @2xl:grid-cols-2">
-                <Field>
-                  <FieldLabel>Incoming mail server</FieldLabel>
-                  <FieldControl
-                    render={
-                      <Input
-                        value={draft.imapHost}
-                        onChange={(event) => {
-                          set('imapHost', event.currentTarget.value);
-                        }}
-                      />
-                    }
-                  />
-                  {draft.imapHost.includes('://') ? (
-                    <FieldError>Just the server name — no https:// in front.</FieldError>
-                  ) : null}
-                </Field>
-                <Field>
-                  <FieldLabel>Outgoing mail server</FieldLabel>
-                  <FieldControl
-                    render={
-                      <Input
-                        value={draft.smtpHost}
-                        onChange={(event) => {
-                          set('smtpHost', event.currentTarget.value);
-                        }}
-                      />
-                    }
-                  />
-                </Field>
-              </div>
-            </details>
-
-            <div className="mt-4 flex items-center gap-2">
-              <Button color="module" disabled={!canSubmit} onClick={submit}>
-                {connect.isPending ? 'Checking…' : 'Connect mailbox'}
-              </Button>
-              <Button
-                color="neutral"
-                variant="outline"
-                onClick={() => {
-                  setDraft(EMPTY);
-                  setAdding(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <p className="text-sm">sparx signs in once now to make sure it works.</p>
-            </div>
-          </Card>
-        ) : null}
-
         <Card className="min-h-0 flex-1">
           {moduleOff ? (
             <EmptyState
@@ -445,13 +156,7 @@ export function MailboxesListSurface() {
               title="No mailbox connected yet"
               description="Connect the email account you write to customers from. Their replies will appear on their record, so the next person to pick up the conversation can see what was already said."
               actions={
-                <Button
-                  size="sm"
-                  color="module"
-                  onClick={() => {
-                    setAdding(true);
-                  }}
-                >
+                <Button size="sm" color="module" onClick={connectMailbox}>
                   Connect a mailbox
                 </Button>
               }

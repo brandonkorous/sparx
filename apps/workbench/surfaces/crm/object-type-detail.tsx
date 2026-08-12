@@ -351,6 +351,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <FieldControl
                 render={
                   <Input
+                    color="module"
                     value={draft.label}
                     placeholder="Project"
                     onChange={(e) => {
@@ -379,6 +380,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <FieldControl
                 render={
                   <Input
+                    color="module"
                     value={draft.labelPlural}
                     placeholder="Projects"
                     onChange={(e) => {
@@ -400,6 +402,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldControl
                   render={
                     <Input
+                      color="module"
                       value={draft.key}
                       placeholder="project"
                       onChange={(e) => {
@@ -426,6 +429,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <FieldControl
                 render={
                   <Textarea
+                    color="module"
                     rows={2}
                     value={draft.description}
                     placeholder="A piece of work we run for a customer, from the go-ahead to the final invoice."
@@ -497,6 +501,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <FieldControl
                   render={
                     <NativeSelect
+                      color="module"
                       value={draft.primaryFieldKey}
                       onChange={(e) => {
                         setDraft((d) => ({ ...d, primaryFieldKey: e.target.value }));
@@ -607,6 +612,7 @@ function FieldRow({
             <FieldControl
               render={
                 <Input
+                  color="module"
                   value={field.label}
                   onChange={(e) => {
                     const label = e.target.value;
@@ -631,6 +637,7 @@ function FieldRow({
             <FieldControl
               render={
                 <NativeSelect
+                  color="module"
                   value={field.type}
                   onChange={(e) => {
                     onChange({ ...field, type: e.target.value as PropertyFieldType });
@@ -661,6 +668,7 @@ function FieldRow({
             <FieldControl
               render={
                 <Input
+                  color="module"
                   value={field.helpText ?? ''}
                   placeholder="The date the cover runs out."
                   onChange={(e) => {
@@ -679,6 +687,7 @@ function FieldRow({
               <FieldControl
                 render={
                   <Input
+                    color="module"
                     value={field.expression ?? ''}
                     placeholder="price - cost"
                     onChange={(e) => {
@@ -700,6 +709,7 @@ function FieldRow({
               <FieldControl
                 render={
                   <Input
+                    color="module"
                     value={field.currency ?? 'USD'}
                     maxLength={3}
                     onChange={(e) => {
@@ -717,6 +727,7 @@ function FieldRow({
               <FieldControl
                 render={
                   <Switch
+                    color="module"
                     checked={field.required === true}
                     onCheckedChange={(next: boolean) => {
                       onChange({ ...field, required: next || undefined });
@@ -747,6 +758,7 @@ function EnumOptionsEditor({
         {options.map((option, index) => (
           <div key={index} className="flex items-center gap-2">
             <Input
+              color="module"
               value={option.label}
               placeholder="Gold"
               onChange={(e) => {

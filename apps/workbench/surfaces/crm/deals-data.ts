@@ -56,6 +56,9 @@ export interface Deal {
   score: number;
   /** When the score was last worked out. Null means it never has been. */
   scoredAt: string | null;
+  /** A standing hand adjustment that survives re-scoring — see the same field
+   *  on `Customer`. */
+  scoreOffset: number;
   createdAt: string;
   updatedAt: string;
   /** Present on list + detail via the service include. */

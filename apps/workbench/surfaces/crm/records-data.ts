@@ -21,6 +21,7 @@
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import { api } from '../../lib/api/client';
+import type { PropertyField } from './object-types-data';
 
 /** One row of a tenant-invented object. `values` is the whole record. */
 export interface CrmRecord {
@@ -124,15 +125,98 @@ export function recordTitle(
   return 'Untitled';
 }
 
-/** A cell value as text. Deliberately plain — the LIST is a scan, and a list
- *  that renders every field type properly is a detail pane in a table. */
-export function cellText(value: unknown): string {
-  if (value === null || value === undefined) return '—';
+/**
+ * A cell value as text.
+ *
+ * IT NEEDS THE FIELD, not just the value. Half the field types do not store a
+ * scalar — money is `{amount, currency}`, a choice stores the option's value
+ * rather than its label, a date stores an ISO string — so a formatter that sees
+ * only the value cannot tell "not filled in" from "filled in with a shape I do
+ * not recognise". It printed an em dash for both, which meant a course priced at
+ * $95 showed a blank Price column: the list said the business had not entered
+ * something it plainly had.
+ *
+ * Still deliberately plain — one line, no markup. The list is a scan; a cell
+ * that renders every type properly is a detail pane wearing a table.
+ */
+export function cellText(value: unknown, field?: PropertyField): string {
+  if (value === null || value === undefined || value === '') return '—';
+
+  switch (field?.type) {
+    case 'currency': {
+      const money = value as { amount?: unknown; currency?: unknown };
+      if (typeof money.amount !== 'number') return '—';
+      const code = typeof money.currency === 'string' ? money.currency : (field.currency ?? 'USD');
+      return formatMoney(money.amount, code);
+    }
+    case 'calculated':
+      // Worked out on the server, and the answer is a number OR money depending
+      // on how the business set it up.
+      if (typeof value === 'number') return value.toLocaleString();
+      return cellText(value, { ...field, type: 'currency' });
+    case 'enum': {
+      // The bag stores the option's value; a person picked its LABEL.
+      const options = field.options ?? [];
+      const label = (v: unknown) => options.find((o) => o.value === v)?.label ?? String(v);
+      return Array.isArray(value) ? value.map(label).join(', ') : label(value);
+    }
+    case 'date':
+      return formatDay(value);
+    case 'datetime':
+      return formatMoment(value);
+    case 'user':
+    case 'reference':
+    case 'asset':
+      // A uuid in a column is noise, and resolving names here would make the
+      // list wait on a second request per column. Say that it is set; the record
+      // itself shows who or what.
+      return Array.isArray(value) ? `${String(value.length)} linked` : 'Linked';
+    case 'object':
+      return 'Set';
+    default:
+      break;
+  }
+
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  if (typeof value === 'number') return String(value);
+  if (typeof value === 'number') return value.toLocaleString();
   if (typeof value === 'string') return value;
-  if (Array.isArray(value)) return `${value.length} items`;
+  if (Array.isArray(value)) return `${String(value.length)} items`;
   return '—';
+}
+
+/** Money in the currency the VALUE carries, not the one this browser prefers —
+ *  a business selling in two currencies must not see them rendered alike. */
+function formatMoney(amount: number, code: string): string {
+  try {
+    return new Intl.NumberFormat(undefined, { style: 'currency', currency: code }).format(amount);
+  } catch {
+    // An unknown code is a data problem, not a reason to show nothing.
+    return `${code} ${amount.toLocaleString()}`;
+  }
+}
+
+/**
+ * A calendar DAY, formatted without ever becoming an instant.
+ *
+ * `new Date('2026-09-15')` is UTC midnight, so anywhere west of Greenwich it
+ * formats as the 14th — a course starting on the 15th listed as starting the day
+ * before. A date field has no time and no timezone; it is three numbers, and the
+ * only safe thing to do with them is read them.
+ */
+function formatDay(value: unknown): string {
+  if (typeof value !== 'string') return '—';
+  const parts = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!parts) return value;
+  const [, year, month, day] = parts;
+  return new Date(Number(year), Number(month) - 1, Number(day)).toLocaleDateString();
+}
+
+/** A datetime IS an instant, so it converts to the reader's own clock. */
+function formatMoment(value: unknown): string {
+  if (typeof value !== 'string') return '—';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleString();
 }
 
 export function recordErrorMessage(error: unknown, fallback: string): string {

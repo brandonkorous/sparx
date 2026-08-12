@@ -341,6 +341,7 @@ function PolicyEditor({
         {policies.length > 1 ? (
           <div className="w-52">
             <Select
+              color="module"
               size="sm"
               aria-label="Which set of response times"
               value={policy.id}

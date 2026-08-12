@@ -1,8 +1,8 @@
 # 144 — CRM: from 5 to 10
 
-Version: 1.3 (docs/144 complete; the surface-by-surface sweep is in progress — §14.1 carries the running list of what using it as its owner has found)
+Version: 1.6 (the surface-by-surface sweep is COMPLETE, and so are the two decisions it raised — a hand-set score now survives re-scoring, and an uncoloured form control follows the module rather than the brand; §14.1 carries what using it as its owner found, surface by surface)
 Author: Brandon Korous
-Last Updated: 2026-08-10
+Last Updated: 2026-08-11
 
 > **Status: IN PROGRESS.** This is the implementation plan for closing the gap between the sparx CRM
 > as it stands today and a CRM that beats HubSpot on every axis a small business can see. §2 is an
@@ -323,6 +323,15 @@ model EngagementMessage {
 `SalesSnippet` (shortcut, body). Both compose the existing `@sparx/email` atomic components rather
 than carrying raw markup, per the email-template rule in the root `CLAUDE.md`. Merge tags reuse the
 existing `list_merge_tags` vocabulary, extended with custom properties from §3.
+
+**Two surfaces, not one.** `crm.templates.list` (`/crm/email-templates`) and `crm.snippets.list`
+(`/crm/saved-paragraphs`) — a whole message and a paragraph dropped into one are different things,
+usually kept by different people. The template list carries the reply rate as its one coloured
+column, and archiving is reversible (`POST /v1/crm/sales-templates/:id/restore`) because the
+counters are the only record of what a business learned about its own words. A snippet's shortcut
+EXPANDS: typing `;hours` and pressing space drops the paragraph in mid-sentence and counts the use
+through `POST /v1/crm/sales-snippets/:id/used`. The shortcut is fixed after creation — it is what
+people type without thinking. See §14.1.
 
 ### 5.5 One timeline, still
 
@@ -1073,8 +1082,22 @@ container, so Documents and Details sat past the right edge with nothing to say 
 scrollbar the platform may not draw at all. On a pane that can be dragged narrow, two tabs simply did
 not exist from the operator's side.
 
-`components/scroll-strip.tsx` is the general fix: a horizontal strip that shows a chevron at each end
-when, and only when, there is more of it off-screen. Two decisions worth keeping:
+**This is a STOPGAP, and it is already solved upstream.** silicaui's `TabsList` takes `scrollable`
+(default true) and `scrollLabel`, built on its own `ScrollStrip` + `useScrollStrip` — commit
+`cba5df1`. That commit is on `feat/email-token-expressions`, not on main, untagged, and therefore
+absent from the 0.51.0 this repo installs, so it cannot be consumed today. **When it ships, delete
+`components/scroll-strip.tsx`: all six call sites collapse to `<TabsList scrollable>`.**
+
+One correction worth recording, because it cost a broken pane: the local version must NOT wrap the
+list in silica's `ScrollArea`. The `pills` selection is a Base UI moving indicator that measures
+against the list's own box, and putting ScrollArea's Viewport and Content between the two makes the
+selected pill's fill vanish — the current tab stops being marked at all. Upstream avoids this by
+making the LIST itself the scroller rather than wrapping a scroller around it, which is reachable
+only from inside the component. That is the concrete reason this belongs in silicaui rather than at
+the call site, beyond the general rule.
+
+`components/scroll-strip.tsx` meanwhile shows a chevron at each end when, and only when, there is
+more of it off-screen. Two decisions worth keeping — both of which upstream reached independently:
 
 - **The buttons are in flow, not floating over the content.** An overlaid chevron covers whatever is
   at the edge — usually the tab you were reaching for. These take their own space and push the strip
@@ -1090,8 +1113,441 @@ reviews, product translations, the product configurator, and CMS translation det
 tab strips whose count grows with the tenant's own data (one tab per locale, per configurator step),
 so they were overflow bugs waiting for a tenant big enough to trip them.
 
-**Still to sweep:** the tasks queue and requests/SLA proper, reports/dashboards, custom record types
-end to end, mailboxes/phone systems/booking links.
+#### A request could never be deleted, and a task never needed to be
+
+Every other CRM record can be removed when it should not exist — a deal, a customer, a company, a
+segment, a pipeline, a custom record. A **request** could not. `DELETE /v1/crm/tickets/:id` has been
+there the whole time, documented in the route header as "soft-delete a mistake", with `useDeleteTicket`
+written in the data layer and **zero** consumers. So a duplicate filed twice by the web form, or a
+piece of spam, sat in the queue permanently — counting against response times nobody actually owed.
+Added the delete row to `ticket-detail`, matching the deal surface exactly: a quiet row after the
+work, behind `useConfirm`, naming the record and saying what deletion is and is not for.
+
+**Tasks were checked and deliberately left alone.** `Task` has no `deletedAt` column and its status
+vocabulary is `open | completed | cancelled` — cancelling IS the sanctioned way to retire one, the
+status dropdown already offers it, and the field help already explains it. Adding a delete there
+would have invented a second retirement path for a work record that is supposed to keep its history.
+Not every asymmetry is a gap.
+
+#### The report builder could not narrow anything, and quietly deleted the narrowing it was given
+
+The worst defect found in this sweep, because it was silent and it changed what a saved report
+**meant**.
+
+`report-builder.tsx` compiled every definition with `filters: { logic: 'AND', conditions: [] }` —
+a hardcoded empty group. The `Draft` interface had no filters field at all. Everything underneath it
+was finished: `report-compiler.ts` implements twelve operators, `crm-schemas` validates a
+three-level `ConditionGroup`, and `UpdateReportInput` goes to deliberate trouble (re-declaring
+`filters` as a plain optional after `.partial()`) specifically so that a patch which omits filters
+does not wipe them. The one caller that should have sent them never had them to send.
+
+Two consequences, both invisible:
+
+- **No report a tenant builds could leave anything out.** "Deals over $5,000", "requests still open",
+  "customers in one county" — none of them expressible, on the surface whose entire stated purpose is
+  answering the question sparx did not think of.
+- **Opening a report that HAD filters and saving it destroyed them.** Four of the seven built-ins
+  carry one (`deals-won-by-month` filters `closedAt is_set`; `requests-by-urgency` filters
+  `resolvedAt is_not_set`). Duplicating one — the path the library actively teaches — previewed the
+  wrong numbers immediately, and the first save turned "deals won each month" into "all deals by
+  month, open ones included". Nothing on screen said so, and the report kept its name.
+
+The builder now has a **"Only count some of them"** section, placed where the sentence puts it: after
+the breakdown, before the shape, so reading down the column still produces English — _"Count deals,
+broken down by stage, over the last 90 days, only where value is more than 5000."_ Rows are
+field → comparison → value, with AND/OR appearing only once there are two of them to combine.
+
+Three decisions worth keeping:
+
+- **The comparisons offered are a SUBSET of the twelve the compiler accepts.** `in`/`not_in` take a
+  list, and there is no control here that can hold one; offering an operator whose value cannot be
+  typed is worse than not offering it. Everything on the menu round-trips.
+- **A value is coerced to the column's real type.** Postgres compares `value > '5000'` as text, so
+  "900" would come back as more than "5000" — a filter that is confidently, silently wrong.
+- **Anything the row editor cannot draw is kept VERBATIM, not dropped.** A nested group, or a value
+  that is not a scalar (an `in` list written through MCP), sends the whole filter down a
+  keep-it-as-it-is path with a notice saying so. This is the direct lesson of the bug itself: the
+  failure was never "the filter was missing", it was "the filter was replaced and nothing said so."
+
+Half-finished rows are excluded from the definition rather than sent — the compiler would reject the
+whole thing and turn the preview red while somebody is mid-thought — and the row says of itself that
+it is not counting yet.
+
+#### A tenant got exactly one dashboard, forever, named for them
+
+`dashboardService` has shipped `create`, `update` (name, description, default, shared), `archive` and
+`setWidgets` from the start, all six wired through `/v1/crm/dashboards`. The surface used two of them.
+
+`useCreateDashboard` was reachable **only** from the "No dashboard yet" empty state, which by
+construction disappears the moment it is used — so a tenant could have one board and never a second.
+It was created with the name `'How we are doing'` hardcoded in the click handler, and there was no
+rename. `useUpdateDashboard` and `useArchiveDashboard` had zero consumers. The board switcher was
+already written and rendered only `when boards.length > 1`, a condition nothing could ever satisfy.
+
+One board cannot be three things: sales wants the pipeline, support wants response times, the owner
+wants four numbers and nothing else. The toolbar now leads with a board menu — switch, another board,
+rename/describe/share/open-first, delete — and the create dialog **suggests** a name for the first
+board instead of imposing one, and suggests nothing for later ones, which are being made because they
+are for something in particular.
+
+**A board also measured the wrong thing.** The grid was `lg:grid-cols-12` with `lg:col-span-*` —
+VIEWPORT breakpoints, inside a pane whose width its operator drags to whatever they want. So two
+half-width widgets sat side by side in a 400px pane on a wide monitor, and a board stacked into one
+column in a full-screen pane on a laptop; the file's own header comment promises the opposite
+("a two-column board on a 380px screen is two unreadable columns, not a compact one"), and the
+comment was right while the implementation was not. `PANE_SHELL` declares `@container` for exactly
+this and every other workbench surface measures against the pane. Now so does this one: at a 1015px
+pane a half-width widget is 477px; at 600px the same widget is full width.
+
+Widget titles closed the same shape of gap one level down: `title` is on the model, `setWidgets`
+writes it, and `report-widget` renders `widget.title ?? report.name` — but the only call site passed
+`title: null` unconditionally, so the fallback was the whole story. A widget can now be named where
+it is added and renamed in place, which is what lets the same report sit on the sales board as "Deals
+by stage" and on the owner's board as "Where everything is".
+
+#### Seven ready-made reports that most tenants never received
+
+`seedBuiltinReports` was wired to the `module.activated` consumer alone. Nothing else called it —
+`POST /v1/crm/bootstrap` seeds objects, associations, the default pipeline and the built-in segments,
+and its own comment claims both paths stay in step, but reports were added to only one of them. The
+endpoint is also dead: its comment says "the dashboard calls this inline", and `apps/dashboard` was
+removed.
+
+So every tenant who enabled CRM before the built-ins shipped has none, with no re-activation event
+coming to fix it. The library then shows an empty list under copy that reads _"open one of ours and
+copy it"_ — and duplicating a working definition is the entire way this surface teaches a
+non-technical person to build one. The dev tenant was in exactly that state: zero reports, and the
+dashboard's "Add a report" picker opened onto nothing.
+
+`GET /v1/crm/reports` now self-heals before listing. It is create-only and keyed on
+`(tenant, property, builtinSlug)`, so it is one indexed read returning 0 on every call after the
+first, and a tenant who deleted one they did not want does not get it back. It runs on a `viewer`
+route on purpose: the rows are owned by nobody and shared with everyone, and the person opening the
+library is precisely the person who needs them to exist. The bootstrap route was brought back in step
+as well, so the two seeds stop drifting.
+
+#### The Reports screen was a dead end, and told four different things in the same grey
+
+`CrmReportsSurface` took `ctx` and discarded it — the signature was literally `(_props: {ctx})`. Every
+figure on it names something the operator can act on ("Overdue tasks: 7" is the number a person wants
+to click), and none of them went anywhere; reading a figure and then acting on it meant hunting the
+same records down again through the rail. Each tile is now a `ClickableCard` onto the list it counts,
+and each panel that summarises a list carries the way into it. Shift opens alongside, alt in its own
+window, the same gesture as every CRM list.
+
+Colour was doing no work either (RULE #4). The four task-urgency badges — urgent, high, medium, low —
+all rendered `color="neutral"`, saying the same thing four times; they now carry the urgency, and
+only when there is something at it, because "Urgent: 0" in red is a warning about nothing. Overdue
+counts tint `bg-danger bg-soft` above zero. A win rate is a verdict rather than a measurement, so 20%
+and 80% no longer render as the same grey number for the reader to do the arithmetic on.
+
+The hand-rolled `border-base-300 bg-base-100 rounded-lg border` tile and panel chrome was migrated to
+`Card`/`CardBody` while the file was open.
+
+One smaller thing in the library beside it: `describe()` printed the breakdown's **column path**, so
+a non-technical owner read "broken down by lifecycleStage" and "broken down by assignedToUserId" in
+the one place whose job is making the builder legible. It resolves through the field catalog now, and
+also says how many rules a report narrows by — without which two reports that differ only in what
+they leave out read as identical, which is exactly the pair somebody is trying to tell apart.
+
+#### Two data layers for one row, and the one nobody used was already broken
+
+`object-types-data.ts` carried a complete second copy of the custom-record layer — list, detail,
+create, update, delete, plus its own `CrmRecordRow` type — against the same endpoints as the live one
+in `records-data.ts`, with **zero** consumers. Worse than redundant: it hung off its own query-key
+root, and its mutations invalidated `['crm','objects']`, which does not match the live
+`['crm','records', …]`. The first screen ever wired to it would have saved successfully and then
+shown the old list, with nothing wrong in the network tab — the same class of bug as the engagement
+invalidation found earlier in this sweep, lying in wait. Deleted rather than reconciled: one way to
+read a row is the fix; two that happen to agree today is not.
+
+#### Proven in the browser
+
+All of the above was driven end to end on 2026-08-11 rather than trusted, and the one thing that
+proves the method is what typecheck, lint and 170 passing tests did not catch: the new filter section
+crashed the whole pane on first render. `FieldDescription` reads Base UI's Field context and throws
+outside a `<Field>`, and one of them was sitting directly in a `FormSection` as a bare hint. A clean
+static build, a red pane.
+
+What was then verified by using it: seven built-in reports appeared where the tenant had none, and
+the library summaries read "broken down by stage, narrowed by 1 rule" rather than column paths.
+Opening "Deals won each month" showed **Only where: Closed / is filled in** — the stored filter, in
+words, correctly read-only on a built-in. Copying it kept the rule; a second rule (Value / is more
+than / 1000) was added, saved, and survived a full page reload — the destroy-on-save bug is closed
+and stays closed. On the boards: a second board "Support this week" was created, switched to, and
+given a widget titled "What to pick up first" rather than the report's own name. On Reports, the
+overdue tile renders danger-soft while the rest stay neutral, "Urgent: 0" stays grey while "High: 1"
+carries amber, a 0% win rate reads red beside a green "0 won" and a red "1 lost", and clicking
+"Overdue tasks: 4" opens the task list with those four rows in it.
+
+One honest limit: a tile opens the list it counts, not that list pre-filtered — no CRM list reads a
+filter from `ctx.params` yet, and inventing one for this would have been a second, larger change. The
+overdue tile lands on Tasks with the overdue rows marked, not on an overdue-only view.
+
+#### A quarter of the CRM's fields said "you got that wrong" every time you clicked one
+
+Found by typing a sentence into "What it is for" on the record-type editor and watching the box turn
+red. The sentence was fine.
+
+silica's input focus ring is `var(--input-accent, var(--color-primary))` — so a control with no
+`color` prop focuses in the theme's primary. In sparx, primary is Ember `#e04631`: the wordmark's
+red-orange, and near-indistinguishable at a glance from the danger state. Every other CRM control
+passes `color="module"` and focuses CRM cyan, so the ones that forgot do not read as "unstyled", they
+read as **invalid** — on a screen where nothing is wrong.
+
+It was not one file. A scan of `surfaces/crm/*.tsx` found **52 of 207 form controls** with no colour,
+across 15 surfaces — worst in `custom-properties-panel` (11), which is the renderer every custom
+field on every contact, deal and custom record goes through, so one omission there is red boxes on
+screens all over the module. All 52 now pass `color="module"`, which is choosing a registered colour
+through the component's own prop rather than painting anything.
+
+Worth raising separately: the single-point version of this fix is a `--input-accent: var(--color-module)`
+default on the workbench pane, which would make every control in a module pane follow the module hue
+with no call-site prop at all, and let an explicit `color` still win where one is meant to. That is a
+theme-level change with app-wide visual reach, so it is Brandon's call rather than something to ship
+inside a CRM sweep.
+
+#### Custom record types: everything a tenant invents is now reportable
+
+`reportCompiler.reportableObjects()` was a **static map of four** — contact, deal, ticket, task. A
+tenant who invented "Course" got a list, a detail pane, saved views, associations, search and its own
+rail entry, and **could not report on it at all**; the builder's "Records" dropdown never offered it.
+Companies were missing from that list too, for a different and more interesting reason: `companies`
+has no `property_id`, so the site-scoping clause the compiler writes unconditionally would have named
+a column that does not exist and failed at run time. Sources now declare a `siteColumn` and the
+clause is written only where there is one — a company being tenant-level is correct, not an oversight.
+
+The custom half closes without weakening the security model. Every custom record lives in one table
+(`crm_records`) with its business fields in a `values` JSONB bag, so every identifier stays static and
+the only varying part is an `object_key` predicate that travels as a **bind parameter** like any other
+value. What the compiler cannot know — whether such an object exists and what the tenant calls it —
+is resolved by `reportService` from the object registry and passed in, so an unrecognised key is
+still refused **by name** rather than answered with an empty table.
+
+Three things fell out of doing it that were worse than the headline gap:
+
+- **camelCase property keys were unreportable, everywhere.** The compiler's `custom.<key>` rule was
+  lowercase-only while `@sparx/field-schema` has always minted camelCase keys — the shape the property
+  editor itself produces. So `seatsLeft`, `renewalMonth`, and any property with a capital in it,
+  picked out of the builder's own field list, answered "there is no field called that." This was live
+  for custom properties on **contacts and deals** too, not only for invented types. The rule must
+  MATCH the field engine's, not merely be stricter than it.
+- **Declared properties were never offered on the built-ins.** `/reports/fields` returned only the
+  reportable spine, so a business that added "renewal month" to a customer could not group by it. The
+  route now merges declared properties into every object, built-in and invented alike, from one
+  registry read.
+- **Every JSONB path resolved as text**, which made a Yes/No property filterable only with a free-text
+  box and a money property impossible to add up. Properties now read back **as the type they were
+  declared**, and every cast is guarded by a `jsonb_typeof` (or a date-shaped pattern test) rather
+  than written bare: Postgres has no `try_cast`, so an unguarded `::numeric` throws for the whole
+  query the first time one row predating a field's type change holds something else. A report should
+  quietly ignore the rows it cannot read, not refuse to run.
+
+Proven in the browser end to end on 2026-08-11: a "Course" type invented from scratch (name, level,
+price per seat, starts on, seats left, runs online), three courses added, then counted and broken
+down by Level (2 Beginner / 1 Intermediate) and by `seatsLeft` — the camelCase key that used to be
+refused — then narrowed to "Level is Beginner" (2) and saved as a report that runs from the library.
+
+#### Two more found by using the record type, not by reading it
+
+**A money value rendered as an em dash in a list.** `cellText` took only the value, and a currency
+field stores `{amount, currency}` — so it fell through to the "not filled in" branch, and a course
+priced at $95 showed a blank Price column. The list told the business it had not entered something it
+plainly had. It takes the field now, and formats money, dates, choices and calculated values by their
+declared type. (The first fix of it introduced a second bug worth recording: `new Date('2026-09-15')`
+is UTC midnight, so west of Greenwich the course starting on the 15th listed as starting on the 14th.
+A date field has no time and no timezone; it is three numbers, and the only safe thing to do is read
+them.)
+
+**Every custom-property control was unlabelled to a screen reader.** The shared renderer passes
+`ScalarControl` to `FieldControl render=`, and Base UI wires a label by cloning the _element_ it is
+given with the ids it minted — but this is a component, so those props landed on it and stopped
+there. Every declared property on every contact, deal, company, request and invented record announced
+as a bare edit box. Each branch now carries its own `aria-label`, which also survives the composite
+controls (money is a currency code beside an input; a multi-choice is a row of buttons) where there
+is no single element for a label to point at.
+
+#### Mailboxes, phone systems, booking links
+
+Two duplicated empty states and one capability that existed only in the API.
+
+**The empty state sat under the open form** on both Mailboxes and Phone systems, so a business
+connecting its first one saw a second "Connect a mailbox" button below the one it was already using —
+an invitation to start, repeated under a half-filled form, reading as a competing action. It is
+hidden while the form is open and there is nothing yet; once there ARE rows the list stays, because
+then it is the context for what is being added.
+
+**A booking link could not be changed after it was made.** `PATCH /v1/crm/meeting-links/:id` and
+`meetingLinkService.update` have always existed, and the surface only ever sent one for the pause
+toggle — so a link's name, the words a CUSTOMER reads in an email signature, was fixed forever at
+whatever was typed first. Fixing a typo meant retiring the link and minting a new address, which
+breaks every email already carrying the old one. The create dialog now serves both (create and edit
+are literally the same fields), and changing the **address** — the one field somebody else already
+holds a copy of — raises a warning naming the old one, shown only when it has actually changed.
+`description` was in the same state from the other direction: the row rendered it and no form ever
+set it, so it was permanently null. It is a field now.
+
+#### The shape of a form is not a detail — three surfaces were the wrong shape
+
+Reviewed and corrected on 2026-08-11. The workbench allows exactly **two** shapes (docs/123 §"Pane
+or modal?"), and all three of these were a third one.
+
+**Connecting a mailbox and connecting a phone system were INLINE forms** parked above their lists —
+while each file's own header argued "it is a PANE, not a modal". They now are: `crm.mailbox.connect`
+and `crm.phone-system.connect`. Both fail the modal test outright (an app password or an auth token
+is fetched from another browser tab, so it is minutes and the workbench must stay put), and inline
+gave them the downside of both shapes: the form held the space permanently for an action taken once,
+duplicated the empty state directly underneath itself, and — like a modal — was invisible to
+`hasUnsavedWork()`. Proven: typing an address and closing the tab now raises the unsaved-work guard
+with a dirty dot on the tab, which is exactly what neither previous shape could do.
+
+**The engagement composer was a tab strip over an always-open form.** Two things wrong. The
+workbench IS a tabbed app and a record's pane already carries its own strip, so the composer's was a
+**third** layer of tabs — which does not read as a choice and did not render as a strip at all that
+deep. And an inline form on the timeline pushed the history people came to read down the page on
+every visit. It is now one button per kind — Note, Email, Log a call — each opening its own dialog,
+which is the shape these actually pass: seconds of typing, nothing to return to, nothing else needed
+on screen. The one cost of a dialog is that it cannot ask about unsaved work on its own behalf, so
+the guard is registered from the pane while a draft has content.
+
+#### Associations (phase 2), driven for the first time
+
+**Every control in the panel's dialog rendered Ember red.** `--color-module` is set by `ModuleScope`
+on the pane subtree, and the dialog was not wrapped in `<PaneScope>` — so it portalled to the app
+root, outside that scope, and every `color="module"` control fell back to `--color-primary`. Three
+fields outlined in what reads as the error colour on a form where nothing was wrong. The booking-links
+dialog beside it was correctly cyan; the only difference was the wrapper. Not merely cosmetic: without
+`PaneScope` a dialog opened from a torn-off pane renders in the ORIGINAL window, which is the thing
+`PaneWindowBoundary` exists to prevent. Same bug fixed in `deals-list.tsx`. **The rest of the
+workbench has not been scanned for it.**
+
+**The note on a link was written and never shown.** The form has always asked "anything worth
+remembering", and the row rendered the name, the kind and the badges — never the note. Every one
+written went somewhere nobody could read it, which is worse than not asking.
+
+**A link's role could never be changed.** `PATCH /v1/crm/associations/:id` has always accepted both
+the label and the note, and the surface only ever called `POST /primary` — so a relationship that
+changed, which is the most ordinary thing that happens to one, could only be recorded by deleting the
+link and making a new one, losing when it was first made. The same dialog now serves both; WHICH
+record is linked stays fixed, because changing that is not editing a link, it is a different link.
+
+#### Templates and snippets (phase 3) — a whole capability with no screen
+
+The largest single gap the sweep found, and the last one. `/v1/crm/sales-templates`,
+`/v1/crm/sales-snippets` and `/v1/crm/sales-templates/performance` have carried full CRUD since phase
+3, the composer has always offered a "start from something you have written before" picker, and
+**nothing anywhere could write one** — so the picker was permanently empty and the send/open/reply
+counters behind the performance report could never move, because nothing could ever be sent from a
+template. Two surfaces now exist: `crm.templates.list` (`/crm/email-templates`) and
+`crm.snippets.list` (`/crm/saved-paragraphs`).
+
+**Two surfaces, not one with a strip.** The workbench is a tabbed app and a pane already sits in a
+strip, so a strip inside one is a third layer. It is also the wrong grouping: a template is a whole
+message somebody in sales owns, while a paragraph is usually a FACT about the business — the hours,
+the returns policy, the lead time — and whoever knows that fact should be able to fix it without
+opening a screen full of other people's sales emails. Side by side is one drag away.
+
+**The reply rate is the only column that earns a colour**, because it is the only number that changes
+what somebody does: a template nobody answers should be rewritten or retired. Sends and opens are
+context for it and stay chassis-neutral. Rates are the SERVER's, floor and all — nothing on the
+screen recomputes them from the counts beside them, or the two would eventually disagree about which
+template is the good one. Below the floor the row says "Not used yet" or "Too soon to tell" rather
+than a dash: the truth is specific and useful, and a dash reads as "we have no idea".
+
+**Archiving was one-way, so it now comes back.** `archiveTemplate` hides a template from every picker
+in the business and the counters are the only record of what a business learned about its own
+messaging — retyping it under a new name orphans that history, and `[tenantId, name]` is unique, so
+the name was not even free to take. `restoreTemplate` + `POST /v1/crm/sales-templates/:id/restore`
+close it, and the create-time clash message now names the case where the culprit is put away, since
+otherwise it points at a template nobody can see.
+
+**The shortcut on a snippet expanded nothing, anywhere.** Every snippet carries one, the composer
+listed them under the message box as though typing one did something, and no code path expanded
+anything — a business that carefully wrote `;hours` got a box advertising a feature the product did
+not have. `expandShortcutBefore` (pure, in the data layer) now fires on space or Tab when a shortcut
+sits immediately before the caret, restores the caret after the inserted paragraph (a textarea whose
+value changes under it jumps to the end, which would leave someone typing the rest of their sentence
+after the wrong words), and counts the use through a new
+`POST /v1/crm/sales-snippets/:id/used` — `noteSnippetUsed` had existed since phase 3 with **zero**
+consumers and no route to reach it. The hint under the box now says what to type, not just which
+words exist.
+
+**The shortcut cannot be changed after creation**, and on an existing paragraph it is not drawn as a
+field at all — it is the same badge the row wears, with the reason beside it. A disabled input still
+looks like somewhere to type and greys out the one word somebody opened the dialog to check.
+
+Four more found only by driving it:
+
+- **Container queries inside a `PaneScope`'d dialog match nothing.** The dialog portals to the pane
+  HOST, which sits outside the `@container` on `PANE_SHELL`, so every `@md:`/`@lg:` inside one
+  silently collapses to its single-column fallback. Live in the composer, whose call form has always
+  had `@md:grid-cols-3` and has always stacked. Fixed by naming the `DialogContent` itself as a
+  container, which is also the honest scope — what a form in there has to fit is the dialog's width.
+  **Only CRM has been checked**; 29 workbench surfaces have a PaneScope'd dialog.
+- **Opening a template to re-read it marked the pane dirty.** The guard compared the draft against
+  blank rather than against the saved row, so "1 unsaved change" appeared in the status bar for
+  somebody who had changed nothing — and a guard that cries wolf is one people learn to click
+  through.
+- **Two nav groups meant the same thing.** `crm.settings` and `crm.meeting-links` sat in a section
+  called `Setup` while record types, mailboxes and phone systems sat in `Setting up`; sections are
+  matched as strings, so the panel rendered both, one at the top and one at the bottom. One now.
+- **Two surfaces had no address at all.** `crm.mailbox.connect` and `crm.phone-system.connect` were
+  registered without routes, which `check-surface-routes` fails the build on — the pre-push guard
+  would have caught it, but only after the work was finished.
+
+Proven end to end in a browser rather than trusted: template written → picked in the composer → sent
+→ `sendCount` 0→1, with `/performance` correctly withholding the rates at one send; `;hours` typed
+mid-sentence → the paragraph dropped in and `useCount` 0→1.
+
+#### The two decisions, taken
+
+Brandon approved both on 2026-08-11. Neither belonged inside a CRM sweep on its own — one is a
+theme-level change with app-wide reach and the other needs a migration — which is why they were
+held rather than shipped quietly.
+
+**A hand-set score now SURVIVES re-scoring** (`20270228000000_crm_score_offset`). Scoring already
+let somebody move a record's number and recorded who did it and why; what it did not do was
+remember it, because `scoreRecord` wrote the rules total flat. A rep who knew a contact had
+referred two other shops raised them ten points on Monday and found them back at fifty on Tuesday.
+The panel was at least honest — it said in as many words that a re-score would undo the change —
+but "we will throw your judgement away, and we are telling you in advance" is not a feature; a CRM
+whose one manual lever is temporary teaches people not to touch it.
+
+`customers.score_offset` and `deals.score_offset` (both `DEFAULT 0`, so every existing record scores
+exactly as it does today) hold the standing adjustment. The score is `clamp(rules + offset)`, and
+the offset is deliberately NOT clamped itself — the clamp belongs to the final number, so +30 on a
+record whose rules already reach the ceiling is kept in full and starts mattering the day the rules
+score falls. `adjust` derives the new offset from where the score ACTUALLY IS (`previous + delta`)
+rather than from the rules total, so pressing +10 always moves the visible number by 10 instead of
+also settling any rule drift the record has not been re-scored for. Adjustments accumulate; two +10s
+are +20, because each is a separate judgement. Three pieces of copy that promised the opposite were
+corrected, including the re-score confirm — that is the exact moment somebody wonders whether they
+are about to lose last week's nudge.
+
+**An uncoloured form control now follows the module, not the brand.** Every silica field resolves
+its focus ring as `var(--<family>-accent, var(--color-primary))`, and `--color-primary` is Ember
+`#e04631`, so a control with no `color` prop focuses in what reads as the danger colour — a field
+saying _you got that wrong_ about content that is fine. 52 of 207 CRM controls were fixed one at a
+time earlier in this sweep, which is a treatment, not a cure: the 53rd was already sitting in the
+nav panel's own filter box. One block in `apps/workbench/app/globals.css` now repoints the default
+for all fifteen data-entry families under `[data-module]`.
+
+The `-border` companions in that block are load-bearing rather than noise. A resting border reads
+`var(--X-border, var(--X-accent, var(--color-base-300)))` — it falls THROUGH to the accent — so
+repointing the accent alone would have outlined every text box in the app in the module hue at rest.
+Pinning the border back to `base-300` reproduces today's resting appearance exactly and confines the
+module hue to focus, the one moment it carries information. Chrome is deliberately untouched:
+`--btn-accent`, `--tabs-accent`, `--sidebar-accent`, `--dock-accent`, `--pagination-accent`,
+`--avatar-accent`, `--dt-accent` and above all `--wordmark-accent` keep the brand primary, because
+the wordmark's "x" IS Ember.
+
+The container-query sweep from the templates work also ran across the whole app and found four more
+dialogs whose responsive layout had never applied — `cms/media-picker`, `commerce/media-field`,
+`invoicing/line-editor-modal` and `scheduling/waitlist-list`. Every workbench dialog was checked for
+a missing `PaneScope` at the same time; the only three without one are chrome (the launcher, the
+rail, the feedback composer), which are correctly outside a pane.
+
+**Still to sweep:** nothing in CRM, and nothing outstanding on either decision.
 
 #### Proven in a browser, and the gap that proving it exposed
 

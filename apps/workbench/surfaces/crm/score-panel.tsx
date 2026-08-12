@@ -80,6 +80,11 @@ function eventWhen(iso: string): string {
  * one entry in the history that the rules cannot explain, so without a sentence
  * saying why, next month's reader finds an unexplained jump and stops trusting
  * every other number on the panel. The engine records who did it too.
+ *
+ * The change is PERMANENT — it is banked as a standing offset the evaluator
+ * adds to every future rules total. It used to survive only until the next
+ * re-score, which made the platform's one manual lever a thing you had to keep
+ * re-applying and quietly taught people not to use it.
  */
 function AdjustScore({ objectKey, recordId }: { objectKey: string; recordId: string }) {
   const toast = useToast();
@@ -165,9 +170,9 @@ function AdjustScore({ objectKey, recordId }: { objectKey: string; recordId: str
       </div>
 
       <Text className="text-sm">
-        Use a minus sign to take points away. This shows in the history below with your name on it.
-        It lasts until you next re-score everyone, which puts the number back to whatever your rules
-        say — so anything you want counted for good belongs in a rule.
+        Use a minus sign to take points away. This shows in the history below with your name on it,
+        and it sticks: re-scoring everyone keeps your adjustment and only recalculates the rules
+        part. It applies to this one record — anything true of everybody belongs in a rule.
       </Text>
 
       <div className="flex gap-2">
@@ -248,6 +253,10 @@ export function ScorePanel({
   recordId,
   score,
   scoredAt,
+  /** The standing hand adjustment on this record, in points. Zero for almost
+   *  everybody — it is what makes the difference between the two numbers
+   *  explainable rather than mysterious. */
+  scoreOffset,
   /** The bare word for this kind of record — "customer", "deal". Bare rather
    *  than "this customer" because the copy needs it both ways: "what makes A
    *  customer worth chasing" and "what your rules make of THIS customer". */
@@ -258,6 +267,7 @@ export function ScorePanel({
   recordId: string;
   score: number;
   scoredAt: string | null;
+  scoreOffset: number;
   noun: string;
 }) {
   const model = useActiveScoringModel(objectKey);
@@ -320,15 +330,19 @@ export function ScorePanel({
   // But saying the WRONG thing about it is worse, and this panel did: it reported
   // every difference as "the rules have changed since this was last worked out",
   // which is a plain falsehood the moment anybody uses the button directly above
-  // it. A hand adjustment moves the stored score and leaves the rules untouched,
-  // so the two numbers differ BY DESIGN and permanently — "your rules would put
+  // it. A hand adjustment sits on top of the rules and leaves them untouched, so
+  // the two numbers differ BY DESIGN and permanently — "your rules would put
   // this at 50" is true, and "the rules have changed" is not.
   //
-  // The newest history row tells them apart, because `adjust` writes a `manual`
-  // event and the evaluator writes a `rule` one.
+  // The two are now told apart by the OFFSET rather than by the newest history
+  // row. `scoreOffset` is the standing adjustment itself, so it is still right
+  // after a hundred rule re-scores have pushed the manual event off the end of
+  // the list; `history[0].source` was only ever a proxy for it, and a proxy that
+  // expires. Both can be true at once, and the adjustment is the one to explain:
+  // a stale rules total is fixed by re-scoring, which the offset survives.
   const live = breakdown?.score;
   const differs = live !== undefined && live !== score;
-  const movedByHand = history[0]?.source === 'manual';
+  const movedByHand = scoreOffset !== 0;
 
   return (
     <FormSection
@@ -364,20 +378,25 @@ export function ScorePanel({
 
       {differs ? (
         movedByHand ? (
-          // Nothing is broken here, so it is not a warning — somebody decided this
-          // record was worth more than the rules could see, which is what the
-          // button is for. But it DOES say that a re-score will undo it, because
-          // that is true (`scoreRecord` writes whatever the rules compute, and a
-          // hand-set number is simply what it overwrites) and because the owner
-          // who is not told will press "Re-score everyone" next week and watch
-          // their judgement vanish without a word.
+          // Nothing is broken here, so it is not a warning — somebody decided
+          // this record was worth more than the rules could see, which is what
+          // the button is for. It used to warn that a re-score would undo it,
+          // which was true and awful: the platform's one manual lever was
+          // temporary, and an owner who pressed "Re-score everyone" watched
+          // their judgement disappear. The adjustment is now kept and added to
+          // every future rules total, so this says what it does instead.
           <Alert color="info" variant="soft">
             <AlertContent>
-              <AlertTitle>Someone moved this by hand</AlertTitle>
+              <AlertTitle>
+                Someone moved this by hand, {scoreOffset > 0 ? 'up' : 'down'}{' '}
+                {Math.abs(scoreOffset)}
+              </AlertTitle>
               <AlertDescription>
-                Your rules on their own would put this {noun} at {live}, and the change below says
-                who moved it and why. Re-scoring everyone puts it back to {live} — if this is
-                something you want to count permanently, it belongs in the rules.
+                Your rules on their own would put this {noun} at {live}. The change below says who
+                moved it and why, and it sticks — re-scoring everyone keeps the{' '}
+                {scoreOffset > 0 ? '+' : '−'}
+                {Math.abs(scoreOffset)} and only recalculates the rest. If it is something you want
+                counted for everybody rather than just this {noun}, it belongs in the rules.
               </AlertDescription>
             </AlertContent>
           </Alert>

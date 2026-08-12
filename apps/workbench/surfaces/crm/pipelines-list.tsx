@@ -56,6 +56,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Pipeline list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search pipelines"
             placeholder="Search pipelines…"
@@ -65,6 +66,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-44 shrink-0 @lg:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Which pipelines to show"
             value={scope}

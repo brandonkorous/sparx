@@ -1,21 +1,27 @@
 'use client';
 
-// The engagement composer (docs/144 §5.5) — one control at the top of a record's
-// timeline that switches between email, call, note.
+// The engagement composer (docs/144 §5.5) — three buttons at the top of a
+// record's timeline: note, email, log a call. Each opens its own dialog.
 //
-// WHY ONE CONTROL AND NOT THREE BUTTONS: logging what just happened has to be
-// cheaper than not logging it. A rep who has just put the phone down will type
-// two sentences into a box that is already in front of them; they will not
-// navigate to an "Add activity" screen, choose a type from a dropdown and fill
-// in a form. Everything a CRM knows about its customers is downstream of that
-// one interaction being frictionless, which is why it sits at the TOP of the
-// timeline rather than behind a button.
+// LOGGING WHAT JUST HAPPENED HAS TO BE CHEAPER THAN NOT LOGGING IT. Everything a
+// CRM knows about its customers is downstream of that one interaction being
+// frictionless, which is why these sit at the TOP of the timeline. One press is
+// the whole cost of getting to the box.
 //
-// The tabs are `<Tabs variant="pills">` — a filled shape says which mode you are
-// in faster than an underline can be read (DESIGN.md RULE #4), and the mode
-// decides what the Send button does, so it must never be ambiguous.
+// THIS WAS A TAB STRIP OVER AN ALWAYS-OPEN FORM, and that was wrong twice.
+// First, the workbench is a tabbed app and a record's pane already carries its
+// own strip, so this was a third layer of tabs — which does not read as a
+// choice and did not even render as a strip that deep. Second, an inline form
+// held the space permanently for an action taken now and then, pushing the
+// timeline people came to read down the page every single visit.
+//
+// A DIALOG IS THE RIGHT SHAPE HERE (docs/123 §"Pane or modal?"): each of these
+// is seconds of typing, there is nothing to come back to, and nothing else on
+// screen is needed while writing. The one cost is that a dialog is invisible to
+// the unsaved-work guard, so the guard is registered from the PANE while a
+// draft has content — the pane asks on the dialog's behalf.
 
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   Field,
@@ -24,15 +30,18 @@ import {
   FieldLabel,
   Input,
   NativeSelect,
-  Tabs,
-  TabsList,
-  TabsPanel,
-  TabsTab,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogTitle,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Mail, Phone, PhoneCall, Send, StickyNote } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
+import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
   callErrorMessage,
@@ -43,9 +52,11 @@ import {
 } from './calls-data';
 import {
   engagementErrorMessage,
+  expandShortcutBefore,
   OUTCOME_LABELS,
   useLogCall,
   useLogNote,
+  useNoteSnippetUsed,
   useSalesSnippets,
   useSalesTemplates,
   useSendableMailboxes,
@@ -60,6 +71,29 @@ const MODES = [
 ] as const;
 
 type Mode = (typeof MODES)[number]['value'];
+
+/** What each dialog is called and what its one button does. Kept together so
+ *  the three read as three different jobs rather than one form in three moods. */
+const COPY: Record<Mode, { title: string; description: string; action: string }> = {
+  note: {
+    title: 'Add a note',
+    description:
+      'Something worth remembering about this customer. Only your team ever sees it, and it goes on their timeline with everything else.',
+    action: 'Save the note',
+  },
+  email: {
+    title: 'Send an email',
+    description:
+      'It goes to the address on their record, so it cannot reach the wrong person — and the whole thread is kept against them.',
+    action: 'Send it',
+  },
+  call: {
+    title: 'Log a call',
+    description:
+      'Ring them from here, or write up a call you have already had. Either way it lands on their timeline with how long it took and how it went.',
+    action: 'Log the call',
+  },
+};
 
 export interface EngagementComposerProps {
   customerId: string;
@@ -89,6 +123,7 @@ export function EngagementComposer({
 }: EngagementComposerProps) {
   const toast = useToast();
   const [mode, setMode] = useState<Mode>('note');
+  const [open, setOpen] = useState(false);
 
   const [note, setNote] = useState('');
   const [subject, setSubject] = useState('');
@@ -149,6 +184,13 @@ export function EngagementComposer({
     setMinutes('');
   };
 
+  /** Closing throws the draft away, which is why the pane-level guard above
+   *  fires first — a dialog cannot ask on its own behalf. */
+  const close = () => {
+    setOpen(false);
+    reset();
+  };
+
   /**
    * Ring the rep, then bridge to the customer.
    *
@@ -192,6 +234,44 @@ export function EngagementComposer({
     );
   };
 
+  /**
+   * Typing `;hours` and pressing space drops the saved paragraph in.
+   *
+   * THIS IS WHY SNIPPETS EXIST, and until now nothing anywhere expanded one —
+   * the box listed the shortcuts as though it did. Space and Tab both trigger
+   * it, and both only when a shortcut genuinely matches, so nothing changes for
+   * anyone who never saved one.
+   *
+   * The caret is restored deliberately: the paragraph goes in mid-sentence, and
+   * a textarea whose value changes under it puts the cursor at the end, which
+   * would leave somebody typing the rest of their sentence after the wrong
+   * words.
+   */
+  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
+  const [pendingCaret, setPendingCaret] = useState<number | null>(null);
+  const noteSnippetUsed = useNoteSnippetUsed();
+
+  useLayoutEffect(() => {
+    if (pendingCaret === null) return;
+    bodyRef.current?.setSelectionRange(pendingCaret, pendingCaret);
+    setPendingCaret(null);
+  }, [pendingCaret]);
+
+  const expandShortcut = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== ' ' && event.key !== 'Tab') return;
+    const field = event.currentTarget;
+    // A selection means they are replacing text, not finishing a word.
+    if (field.selectionStart !== field.selectionEnd) return;
+
+    const hit = expandShortcutBefore(field.value, field.selectionStart, snippetData?.items ?? []);
+    if (!hit) return;
+
+    event.preventDefault();
+    setBody(hit.text);
+    setPendingCaret(hit.caret);
+    noteSnippetUsed.mutate(hit.snippet.id);
+  };
+
   const applyTemplate = (id: string) => {
     setTemplateId(id);
     const template = templateData?.items.find((entry) => entry.id === id);
@@ -228,7 +308,7 @@ export function EngagementComposer({
         });
         toast.add({ title: 'Email sent', type: 'success' });
       }
-      reset();
+      close();
     } catch (error) {
       toast.add({
         title: mode === 'email' ? 'Could not send that' : 'Could not save that',
@@ -245,277 +325,318 @@ export function EngagementComposer({
     mode === 'email' ? subject.trim() === '' || body.trim() === '' : note.trim() === '';
 
   return (
-    <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
-      <Tabs
-        variant="pills"
-        color="module"
-        value={mode}
-        onValueChange={(next: unknown) => {
-          setMode(next as Mode);
-        }}
-      >
-        <TabsList>
-          {modes.map((entry) => (
-            <TabsTab key={entry.value} value={entry.value}>
-              <entry.icon className="size-4" aria-hidden />
-              {entry.label}
-            </TabsTab>
-          ))}
-        </TabsList>
+    <div className="flex flex-wrap items-center gap-2">
+      {/* ONE BUTTON PER KIND, EACH OPENING ITS OWN DIALOG. This used to be a tab
+          strip over an always-open form, which was wrong twice: the workbench is
+          already a tabbed app and this sat two strips deep, and an inline form
+          parked on the timeline took up the space permanently for an action
+          taken now and then. A button says what it does and costs nothing until
+          it is pressed. */}
+      {modes.map((entry) => (
+        <Button
+          key={entry.value}
+          size="sm"
+          color="module"
+          variant={entry.value === 'note' ? 'solid' : 'outline'}
+          onClick={() => {
+            setMode(entry.value);
+            setOpen(true);
+          }}
+        >
+          <entry.icon className="size-4" aria-hidden />
+          {entry.label}
+        </Button>
+      ))}
 
-        <TabsPanel value="note">
-          <Field>
-            <FieldLabel>What is worth remembering</FieldLabel>
-            <FieldControl
-              render={
-                <Textarea
-                  color="module"
-                  rows={3}
-                  value={note}
-                  placeholder="Prefers to be called after 4pm. Mentioned they are reviewing two other quotes."
-                  onChange={(event) => {
-                    setNote(event.target.value);
-                  }}
-                />
-              }
-            />
-            <FieldDescription>
-              Only your team sees this. It goes on their timeline with everything else.
-            </FieldDescription>
-          </Field>
-        </TabsPanel>
+      <PaneScope>
+        <Dialog
+          open={open}
+          onOpenChange={(next: boolean) => {
+            if (!next) close();
+          }}
+        >
+          {/* `@container` is load-bearing: this dialog portals to the pane host,
+              which is OUTSIDE the `@container` on PANE_SHELL, so the call
+              form's `@md:grid-cols-3` below matched nothing and the three
+              fields stacked in one column at every width. */}
+          <DialogContent className="@container flex max-h-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden">
+            <DialogTitle>{COPY[mode].title}</DialogTitle>
+            <DialogDescription>{COPY[mode].description}</DialogDescription>
 
-        <TabsPanel value="email">
-          <div className="flex flex-col gap-3">
-            {(templateData?.items.length ?? 0) > 0 ? (
-              <Field>
-                <FieldLabel>Start from something you have written before</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={templateId}
-                      onChange={(event) => {
-                        applyTemplate(event.target.value);
-                      }}
-                    >
-                      <option value="">Write it from scratch</option>
-                      {templateData?.items.map((template) => (
-                        <option key={template.id} value={template.id}>
-                          {template.name}
-                          {template.sendCount > 0 ? ` · sent ${String(template.sendCount)}×` : ''}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-              </Field>
-            ) : null}
-
-            {(mailboxData?.items.length ?? 0) > 0 ? (
-              <Field>
-                <FieldLabel>Send it from</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={mailboxId}
-                      onChange={(event) => {
-                        setMailboxId(event.target.value);
-                      }}
-                    >
-                      <option value="">Your business address</option>
-                      {mailboxData?.items.map((mailbox) => (
-                        <option key={mailbox.id} value={mailbox.id}>
-                          {mailbox.emailAddress}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-                <FieldDescription>
-                  Sending from a connected mailbox puts a copy in its Sent folder, so replies come
-                  back where you expect them.
-                </FieldDescription>
-              </Field>
-            ) : null}
-
-            <Field>
-              <FieldLabel>Subject</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={subject}
-                    placeholder="Following up on your quote"
-                    onChange={(event) => {
-                      setSubject(event.target.value);
-                    }}
-                  />
-                }
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>Message</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={6}
-                    value={body}
-                    placeholder="Hi — just checking whether you had a chance to look at the numbers."
-                    onChange={(event) => {
-                      setBody(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                {(snippetData?.items.length ?? 0) > 0
-                  ? `Shortcuts you have saved: ${snippetData?.items
-                      .slice(0, 4)
-                      .map((snippet) => snippet.shortcut)
-                      .join(', ')}`
-                  : 'It goes to the address on their record, so it cannot reach the wrong person.'}
-              </FieldDescription>
-            </Field>
-          </div>
-        </TabsPanel>
-
-        <TabsPanel value="call">
-          <div className="flex flex-col gap-3">
-            {/* CLICK TO CALL, above the log form rather than beside it: the
-                common order is call THEN write, and putting the dial control
-                under the notes box would have someone scroll past the thing
-                they came here to do. Offered only when a phone system is
-                actually connected — a button that always fails is worse than
-                no button. */}
-            {canDial ? (
-              <div className="border-base-300 flex flex-wrap items-end gap-3 rounded-lg border p-3">
-                <Field className="min-w-56 flex-1">
-                  <FieldLabel>Ring me on</FieldLabel>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
+              {mode === 'note' ? (
+                <Field>
+                  <FieldLabel>What is worth remembering</FieldLabel>
                   <FieldControl
                     render={
-                      <Input
+                      <Textarea
                         color="module"
-                        type="tel"
-                        value={deviceNumber}
-                        placeholder="(555) 010-9999"
+                        rows={3}
+                        value={note}
+                        placeholder="Prefers to be called after 4pm. Mentioned they are reviewing two other quotes."
                         onChange={(event) => {
-                          setDeviceNumber(event.target.value);
+                          setNote(event.target.value);
                         }}
                       />
                     }
                   />
                   <FieldDescription>
-                    sparx rings this phone first, then dials them and joins the two.
+                    Only your team sees this. It goes on their timeline with everything else.
                   </FieldDescription>
                 </Field>
-                <Button
-                  size="sm"
-                  color="success"
-                  loading={placeCall.isPending}
-                  disabled={deviceNumber.trim() === ''}
-                  onClick={() => {
-                    dial();
-                  }}
-                >
-                  <PhoneCall className="size-4" aria-hidden />
-                  Call them now
-                </Button>
-              </div>
-            ) : null}
+              ) : null}
 
-            <div className="grid gap-3 @md:grid-cols-3">
-              <Field>
-                <FieldLabel>Which way</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={direction}
-                      onChange={(event) => {
-                        setDirection(event.target.value as 'in' | 'out');
-                      }}
-                    >
-                      <option value="out">I called them</option>
-                      <option value="in">They called me</option>
-                    </NativeSelect>
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>How it went</FieldLabel>
-                <FieldControl
-                  render={
-                    <NativeSelect
-                      value={outcome}
-                      onChange={(event) => {
-                        setOutcome(event.target.value as CallOutcome);
-                      }}
-                    >
-                      {Object.entries(OUTCOME_LABELS).map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
-                    </NativeSelect>
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>How long, in minutes</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="number"
-                      min={0}
-                      value={minutes}
-                      placeholder="Optional"
-                      onChange={(event) => {
-                        setMinutes(event.target.value);
-                      }}
+              {mode === 'email' ? (
+                <div className="flex flex-col gap-3">
+                  {(templateData?.items.length ?? 0) > 0 ? (
+                    <Field>
+                      <FieldLabel>Start from something you have written before</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            color="module"
+                            value={templateId}
+                            onChange={(event) => {
+                              applyTemplate(event.target.value);
+                            }}
+                          >
+                            <option value="">Write it from scratch</option>
+                            {templateData?.items.map((template) => (
+                              <option key={template.id} value={template.id}>
+                                {template.name}
+                                {template.sendCount > 0
+                                  ? ` · sent ${String(template.sendCount)}×`
+                                  : ''}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                  ) : null}
+
+                  {(mailboxData?.items.length ?? 0) > 0 ? (
+                    <Field>
+                      <FieldLabel>Send it from</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            color="module"
+                            value={mailboxId}
+                            onChange={(event) => {
+                              setMailboxId(event.target.value);
+                            }}
+                          >
+                            <option value="">Your business address</option>
+                            {mailboxData?.items.map((mailbox) => (
+                              <option key={mailbox.id} value={mailbox.id}>
+                                {mailbox.emailAddress}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                      <FieldDescription>
+                        Sending from a connected mailbox puts a copy in its Sent folder, so replies
+                        come back where you expect them.
+                      </FieldDescription>
+                    </Field>
+                  ) : null}
+
+                  <Field>
+                    <FieldLabel>Subject</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Input
+                          color="module"
+                          value={subject}
+                          placeholder="Following up on your quote"
+                          onChange={(event) => {
+                            setSubject(event.target.value);
+                          }}
+                        />
+                      }
                     />
-                  }
-                />
-              </Field>
+                  </Field>
+
+                  <Field>
+                    <FieldLabel>Message</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Textarea
+                          ref={bodyRef}
+                          color="module"
+                          rows={6}
+                          value={body}
+                          placeholder="Hi — just checking whether you had a chance to look at the numbers."
+                          onKeyDown={expandShortcut}
+                          onChange={(event) => {
+                            setBody(event.target.value);
+                          }}
+                        />
+                      }
+                    />
+                    {/* The shortcuts AND what to do with them. This used to list
+                        the names alone, which read as a feature announcement for
+                        something that did not happen — a shortcut nobody tells
+                        you how to fire is a fact about the database. */}
+                    <FieldDescription>
+                      {(snippetData?.items.length ?? 0) > 0
+                        ? `Type ${snippetData?.items
+                            .slice(0, 3)
+                            .map((snippet) => `;${snippet.shortcut}`)
+                            .join(', ')} and press space to drop in a saved paragraph.`
+                        : ''}
+                    </FieldDescription>
+                  </Field>
+                </div>
+              ) : null}
+
+              {mode === 'call' ? (
+                <div className="flex flex-col gap-3">
+                  {/* CLICK TO CALL, above the log form rather than beside it: the
+                common order is call THEN write, and putting the dial control
+                under the notes box would have someone scroll past the thing
+                they came here to do. Offered only when a phone system is
+                actually connected — a button that always fails is worse than
+                no button. */}
+                  {canDial ? (
+                    <div className="border-base-300 flex flex-wrap items-end gap-3 rounded-lg border p-3">
+                      <Field className="min-w-56 flex-1">
+                        <FieldLabel>Ring me on</FieldLabel>
+                        <FieldControl
+                          render={
+                            <Input
+                              color="module"
+                              type="tel"
+                              value={deviceNumber}
+                              placeholder="(555) 010-9999"
+                              onChange={(event) => {
+                                setDeviceNumber(event.target.value);
+                              }}
+                            />
+                          }
+                        />
+                        <FieldDescription>
+                          sparx rings this phone first, then dials them and joins the two.
+                        </FieldDescription>
+                      </Field>
+                      <Button
+                        size="sm"
+                        color="success"
+                        loading={placeCall.isPending}
+                        disabled={deviceNumber.trim() === ''}
+                        onClick={() => {
+                          dial();
+                        }}
+                      >
+                        <PhoneCall className="size-4" aria-hidden />
+                        Call them now
+                      </Button>
+                    </div>
+                  ) : null}
+
+                  <div className="grid gap-3 @md:grid-cols-3">
+                    <Field>
+                      <FieldLabel>Which way</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            color="module"
+                            value={direction}
+                            onChange={(event) => {
+                              setDirection(event.target.value as 'in' | 'out');
+                            }}
+                          >
+                            <option value="out">I called them</option>
+                            <option value="in">They called me</option>
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>How it went</FieldLabel>
+                      <FieldControl
+                        render={
+                          <NativeSelect
+                            color="module"
+                            value={outcome}
+                            onChange={(event) => {
+                              setOutcome(event.target.value as CallOutcome);
+                            }}
+                          >
+                            {Object.entries(OUTCOME_LABELS).map(([value, label]) => (
+                              <option key={value} value={value}>
+                                {label}
+                              </option>
+                            ))}
+                          </NativeSelect>
+                        }
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel>How long, in minutes</FieldLabel>
+                      <FieldControl
+                        render={
+                          <Input
+                            color="module"
+                            type="number"
+                            min={0}
+                            value={minutes}
+                            placeholder="Optional"
+                            onChange={(event) => {
+                              setMinutes(event.target.value);
+                            }}
+                          />
+                        }
+                      />
+                    </Field>
+                  </div>
+
+                  <Field>
+                    <FieldLabel>What was said</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Textarea
+                          color="module"
+                          rows={3}
+                          value={note}
+                          placeholder="Walked through pricing. Wants it in writing before Friday."
+                          onChange={(event) => {
+                            setNote(event.target.value);
+                          }}
+                        />
+                      }
+                    />
+                    <FieldDescription>
+                      The whole reason for logging it. Even one line is worth more than nothing in
+                      six months.
+                    </FieldDescription>
+                  </Field>
+                </div>
+              ) : null}
             </div>
 
-            <Field>
-              <FieldLabel>What was said</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={3}
-                    value={note}
-                    placeholder="Walked through pricing. Wants it in writing before Friday."
-                    onChange={(event) => {
-                      setNote(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                The whole reason for logging it. Even one line is worth more than nothing in six
-                months.
-              </FieldDescription>
-            </Field>
-          </div>
-        </TabsPanel>
-      </Tabs>
-
-      <div className="flex items-center justify-end gap-2">
-        <Button
-          size="sm"
-          color="module"
-          loading={busy}
-          disabled={blocked}
-          onClick={() => void submit()}
-        >
-          <Send className="size-4" aria-hidden />
-          {mode === 'email' ? 'Send it' : mode === 'call' ? 'Log the call' : 'Save the note'}
-        </Button>
-      </div>
+            <DialogFooter>
+              <DialogClose>
+                <Button size="sm" color="neutral" variant="ghost">
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                size="sm"
+                color="module"
+                loading={busy}
+                disabled={blocked}
+                onClick={() => void submit()}
+              >
+                <Send className="size-4" aria-hidden />
+                {COPY[mode].action}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </PaneScope>
     </div>
   );
 }

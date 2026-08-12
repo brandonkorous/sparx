@@ -90,24 +90,23 @@ export interface CrmObjectType {
   updatedAt: string;
 }
 
-export interface CrmRecordRow {
-  id: string;
-  objectKey: string;
-  propertyId: string | null;
-  ownerId: string | null;
-  title: string | null;
-  values: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
+// ROWS ARE NOT HERE. This file owns object DEFINITIONS — what a "Vessel" is.
+// The rows themselves live in `records-data.ts` under ['crm','records', …], and
+// that is the only place they should be read or written from.
+//
+// There was a complete second copy of the row layer in this file — list, detail,
+// create, update, delete, all against the same endpoints — with no consumers and
+// its own query-key root. It was worse than redundant: its mutations invalidated
+// ['crm','objects'], which does not match ['crm','records', …], so the first
+// screen ever wired to it would have saved successfully and then shown the old
+// list, with nothing to see in the network tab. The same class of bug as the
+// engagement invalidation found earlier in this sweep. Deleted rather than
+// reconciled — one way to read a row is the fix; two that agree today is not.
 export const objectTypeKeys = {
   all: ['crm', 'objects'] as const,
   list: (params: { kind?: string; includeArchived?: boolean }) =>
     [...objectTypeKeys.all, 'list', params] as const,
   detail: (key: string) => [...objectTypeKeys.all, key] as const,
-  records: (objectKey: string, params: Record<string, unknown>) =>
-    [...objectTypeKeys.all, objectKey, 'records', params] as const,
 };
 
 /* ── Presentation ───────────────────────────────────────────────────────── */
@@ -235,36 +234,9 @@ export function usePropertySchema(objectKey: string): PropertyField[] {
   return data?.propertySchema?.fields ?? [];
 }
 
-export function useCrmRecords(
-  objectKey: string,
-  params: { q?: string; take?: number; skip?: number } = {}
-) {
-  return useQuery({
-    queryKey: objectTypeKeys.records(objectKey, params),
-    queryFn: () =>
-      api.list<CrmRecordRow>(`/v1/crm/objects/${objectKey}/records`, {
-        ...(params.q?.trim() ? { q: params.q.trim() } : {}),
-        take: params.take ?? 50,
-        ...(params.skip ? { skip: params.skip } : {}),
-      }),
-    enabled: objectKey !== '',
-    placeholderData: (previous) => previous,
-  });
-}
-
-export function useCrmRecord(recordId: string) {
-  return useQuery({
-    queryKey: [...objectTypeKeys.all, 'record', recordId] as const,
-    queryFn: () => api.get<CrmRecordRow>(`/v1/crm/records/${recordId}`),
-    enabled: recordId !== '' && recordId !== 'new',
-    retry: (failureCount, error) =>
-      error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
-  });
-}
-
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
-export function useInvalidateObjectTypes() {
+function useInvalidateObjectTypes() {
   const queryClient = useQueryClient();
   return (key?: string) => {
     void queryClient.invalidateQueries({ queryKey: objectTypeKeys.all });
@@ -316,38 +288,6 @@ export function useArchiveObjectType(key: string) {
     mutationFn: () => api.delete(`/v1/crm/objects/${key}`),
     onSuccess: () => {
       invalidate();
-    },
-  });
-}
-
-export function useCreateCrmRecord(objectKey: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (input: { values: Record<string, unknown>; ownerId?: string | null }) =>
-      api.post<CrmRecordRow>(`/v1/crm/objects/${objectKey}/records`, input),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: objectTypeKeys.all });
-    },
-  });
-}
-
-export function useUpdateCrmRecord(recordId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (patch: { values?: Record<string, unknown>; ownerId?: string | null }) =>
-      api.patch<CrmRecordRow>(`/v1/crm/records/${recordId}`, patch),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: objectTypeKeys.all });
-    },
-  });
-}
-
-export function useDeleteCrmRecord(recordId: string) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.delete(`/v1/crm/records/${recordId}`),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: objectTypeKeys.all });
     },
   });
 }

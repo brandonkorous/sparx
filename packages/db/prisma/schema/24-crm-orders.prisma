@@ -124,6 +124,12 @@ model Order {
   dealLinks      DealOrder[]
   dropshipOrders DropshipOrder[]
 
+  // Warehouse-side work (docs/146 Phase 4) — the walks that fetched this order
+  // and the boxes it went out in.
+  pickListLinks    PickListOrder[]
+  pickListLines    PickListLine[]
+  shipmentPackages ShipmentPackage[]
+
   @@unique([tenantId, orderNumber], map: "orders_tenant_number_unique")
   @@index([tenantId, customerId, placedAt(sort: Desc)])
   @@index([tenantId, propertyId, placedAt(sort: Desc)])

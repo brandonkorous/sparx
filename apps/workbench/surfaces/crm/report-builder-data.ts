@@ -57,6 +57,10 @@ export interface ConditionGroup {
   conditions: (ConditionLeaf | ConditionGroup)[];
 }
 
+export function isConditionGroup(node: ConditionLeaf | ConditionGroup): node is ConditionGroup {
+  return 'conditions' in node;
+}
+
 export interface SavedReport {
   id: string;
   name: string;
@@ -180,6 +184,71 @@ export function allowedFunctions(kind: ReportField['kind'] | undefined): Measure
   if (kind === 'number' || kind === 'currency') return ['count', 'sum', 'avg', 'min', 'max'];
   if (kind === 'date') return ['count', 'min', 'max'];
   return ['count'];
+}
+
+/** One way of comparing, in the words a person would use out loud. */
+export interface FilterOperator {
+  /** The compiler's own name — `report-compiler.ts` `compileCondition`. */
+  value: string;
+  label: string;
+  /** False for `is_set`/`is_not_set`, which compare against nothing. */
+  needsValue: boolean;
+}
+
+const IS_FILLED: FilterOperator[] = [
+  { value: 'is_set', label: 'is filled in', needsValue: false },
+  { value: 'is_not_set', label: 'is empty', needsValue: false },
+];
+
+/**
+ * Which comparisons make sense for a field, named for what they DO.
+ *
+ * Deliberately a subset of the twelve the compiler accepts: `in`/`not_in` take a
+ * list, which needs a control this surface does not have, and offering an
+ * operator whose value cannot be typed is worse than not offering it. Everything
+ * here round-trips — what the builder writes, the compiler runs.
+ */
+export function operatorsForKind(kind: ReportField['kind'] | undefined): FilterOperator[] {
+  if (kind === 'number' || kind === 'currency') {
+    return [
+      { value: 'eq', label: 'is', needsValue: true },
+      { value: 'neq', label: 'is not', needsValue: true },
+      { value: 'gt', label: 'is more than', needsValue: true },
+      { value: 'gte', label: 'is at least', needsValue: true },
+      { value: 'lt', label: 'is less than', needsValue: true },
+      { value: 'lte', label: 'is at most', needsValue: true },
+      ...IS_FILLED,
+    ];
+  }
+  if (kind === 'date') {
+    return [
+      { value: 'gt', label: 'is after', needsValue: true },
+      { value: 'gte', label: 'is on or after', needsValue: true },
+      { value: 'lt', label: 'is before', needsValue: true },
+      { value: 'lte', label: 'is on or before', needsValue: true },
+      ...IS_FILLED,
+    ];
+  }
+  if (kind === 'boolean') {
+    return [
+      { value: 'eq', label: 'is', needsValue: true },
+      { value: 'neq', label: 'is not', needsValue: true },
+    ];
+  }
+  if (kind === 'uuid') {
+    return [
+      { value: 'eq', label: 'is', needsValue: true },
+      { value: 'neq', label: 'is not', needsValue: true },
+      ...IS_FILLED,
+    ];
+  }
+  return [
+    { value: 'eq', label: 'is exactly', needsValue: true },
+    { value: 'neq', label: 'is not', needsValue: true },
+    { value: 'contains', label: 'contains', needsValue: true },
+    { value: 'not_contains', label: 'does not contain', needsValue: true },
+    ...IS_FILLED,
+  ];
 }
 
 export function describeDateRange(range: DateRange): string {

@@ -205,6 +205,27 @@ describe('scoringService', () => {
     expect(history[0]?.reason).toBe('Met them at a trade show');
   });
 
+  it('a hand adjustment SURVIVES the next re-score', async () => {
+    // The whole point of the offset column. Before it, `scoreRecord` wrote the
+    // rules total flat, so the +10 above lasted exactly until somebody pressed
+    // "Re-score everyone" and then vanished with no error and no warning —
+    // which taught people that the platform's one manual lever was a toy.
+    //
+    // The rules put this contact at 70 and the adjustment is +10, so a re-score
+    // has to leave it at 80 and report nothing as changed.
+    const again = await scoringService.recompute(context.ctx, { objectKey: 'contact' });
+    expect(again.changed).toBe(0);
+
+    const after = await withTenant(context.ctx, (tx) =>
+      tx.customer.findUnique({
+        where: { id: customerId },
+        select: { score: true, scoreOffset: true },
+      })
+    );
+    expect(after?.score).toBe(80);
+    expect(after?.scoreOffset).toBe(10);
+  });
+
   it('refuses an adjustment that would change nothing', async () => {
     // Silently accepting it would write a "+0" row into the one table whose
     // whole value is that every row explains something.

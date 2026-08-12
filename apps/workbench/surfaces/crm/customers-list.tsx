@@ -160,6 +160,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Customer list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search customers"
             placeholder="Search name, company or email…"
@@ -171,6 +172,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             occasionally; lifecycle stage (the primary signal) outlives the rest. */}
         <div className="hidden w-40 shrink-0 @md:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Filter by lifecycle stage"
             value={stage}
@@ -182,6 +184,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-36 shrink-0 @lg:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Filter by relationship type"
             value={type}
@@ -193,6 +196,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-40 shrink-0 @xl:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Sort customers by"
             value={sortBy}

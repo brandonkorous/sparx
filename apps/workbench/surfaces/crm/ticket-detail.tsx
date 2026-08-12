@@ -38,7 +38,8 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { LifeBuoy } from 'lucide-react';
+import { LifeBuoy, Trash2 } from 'lucide-react';
+import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -58,6 +59,7 @@ import {
   ticketErrorMessage,
   useAssignTicket,
   useCreateTicket,
+  useDeleteTicket,
   useMoveTicketStage,
   useSlaPolicies,
   useTicket,
@@ -179,10 +181,13 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
   const isNew = id === 'new';
   const toast = useToast();
 
+  const confirm = useConfirm();
+
   const create = useCreateTicket();
   const update = useUpdateTicket(id);
   const moveStage = useMoveTicketStage(id);
   const assign = useAssignTicket(id);
+  const remove = useDeleteTicket(id);
 
   const { members: roster } = useTeamRoster();
   const { data: customers } = useCustomers({});
@@ -335,6 +340,34 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
     );
   };
 
+  const onDelete = async () => {
+    if (!view) return;
+    const ok = await confirm({
+      title: `Delete request ${view.ticket.number}?`,
+      description:
+        'This is for a request that should not exist — the usual way to finish one is to move it to a closing step, which keeps it in your response-time figures. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
+      confirmLabel: 'Delete this request',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    remove.mutate(undefined, {
+      onSuccess: () => {
+        ctx.close();
+        afterPaneChange(() => {
+          toast.add({ title: `Request ${view.ticket.number} deleted`, type: 'success' });
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not delete it',
+          description: ticketErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
   const policy = policies?.items.find((p) => p.id === view?.ticket.slaPolicyId);
   const target = policy?.targets.find((t) => t.priority === (view?.ticket.priority ?? 'medium'));
 
@@ -388,6 +421,7 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
               </div>
               <div className="hidden w-44 @xl:block">
                 <Select
+                  color="module"
                   size="sm"
                   aria-label="Who owns this request"
                   value={view.ticket.assignedToUserId ?? ''}
@@ -605,6 +639,32 @@ function TicketEditor({ ctx, id, view }: { ctx: SurfaceContext; id: string; view
                 A reply deadline is attached automatically, based on the hours you work and how
                 urgent this is.
               </Text>
+            </div>
+          ) : null}
+
+          {/* Every other CRM record can be removed when it should not exist —
+              a deal, a customer, a company, a segment. A request could not, so
+              a duplicate or a piece of spam sat in the queue permanently,
+              counting against response times nobody owed. The endpoint and the
+              mutation both existed; no screen had ever called them. */}
+          {!isNew && view ? (
+            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+              <Text className="text-sm">
+                Close a request you have dealt with by moving it to a closing step. Delete is for
+                one that should never have been here — a duplicate, or spam.
+              </Text>
+              <Button
+                size="sm"
+                variant="outline"
+                color="danger"
+                loading={remove.isPending}
+                onClick={() => {
+                  void onDelete();
+                }}
+              >
+                <Trash2 className="size-4" aria-hidden />
+                Delete this request
+              </Button>
             </div>
           ) : null}
         </div>

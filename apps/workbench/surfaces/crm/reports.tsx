@@ -7,12 +7,29 @@
 // work, where customers come from, and how the audiences are sized. Every panel
 // owns its own loading and empty state, so one slow query is one quiet tile, not
 // a blank page. Charts use the app's chart wrapper; everything else is silica.
+//
+// EVERY FIGURE GOES SOMEWHERE. "Overdue tasks: 7" is the number a person wants
+// to click, and for a while this surface answered every one of them with a dead
+// end — it took `ctx` and threw it away, so reading a figure and then acting on
+// it meant hunting the same records down again through the rail. Each tile is a
+// `ClickableCard` onto the list it counts, and each panel that summarises a list
+// carries the way into it.
 
 import { useMemo, useState } from 'react';
-import { Badge, Button, EmptyState, Heading, Select, Text } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  ClickableCard,
+  EmptyState,
+  Heading,
+  Select,
+  Text,
+} from '@wizeworks/silicaui-react';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
-import { BarChart3 } from 'lucide-react';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { ArrowUpRight, BarChart3 } from 'lucide-react';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useTeamRoster } from '../../lib/api/team';
@@ -85,12 +102,51 @@ function ProportionRow({
 
 /* ── KPI tile + panel shell ─────────────────────────────────────────────── */
 
-function KpiTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-3">
+function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+  if (event.altKey) return 'window';
+  if (event.shiftKey) return 'beside';
+  return 'tab';
+}
+
+/**
+ * One figure, and the way to what it counts.
+ *
+ * `alarm` is the tile's only colour, and it is a state rather than a label: five
+ * overdue tasks is a different fact from five open ones, and none overdue is not
+ * a red fact at all — so the tone appears only when the number is actually
+ * saying something.
+ */
+function KpiTile({
+  label,
+  value,
+  alarm = false,
+  onOpen,
+}: {
+  label: string;
+  value: string;
+  alarm?: boolean;
+  onOpen?: (event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  // silica's universal soft treatment — a theme-aware color-mix into the
+  // surface, the same one `<Card variant="module">` tinting uses.
+  const tone = alarm ? 'bg-danger bg-soft' : '';
+  const body = (
+    <CardBody className="gap-1 p-3">
       <span className="text-sm">{label}</span>
       <span className="text-2xl font-semibold tabular-nums">{value}</span>
-    </div>
+    </CardBody>
+  );
+  if (!onOpen) return <Card className={tone}>{body}</Card>;
+  return (
+    <ClickableCard
+      className={`text-left ${tone}`}
+      aria-label={`${label}: ${value} — open the list`}
+      onClick={(event) => {
+        onOpen(event);
+      }}
+    >
+      {body}
+    </ClickableCard>
   );
 }
 
@@ -104,15 +160,41 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-base-300 bg-base-100 flex flex-col gap-3 rounded-lg border p-4">
-      <div className="flex items-center justify-between gap-2">
-        <Heading level={2} className="text-base font-semibold">
-          {title}
-        </Heading>
-        {action}
-      </div>
-      {children}
-    </section>
+    <Card>
+      <CardBody className="gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <Heading level={2} className="text-base font-semibold">
+            {title}
+          </Heading>
+          {action}
+        </div>
+        {children}
+      </CardBody>
+    </Card>
+  );
+}
+
+/** The way out of a panel and into the records it summarises. */
+function PanelLink({
+  label,
+  onOpen,
+}: {
+  label: string;
+  onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  return (
+    <Button
+      color="module"
+      variant="ghost"
+      size="sm"
+      className="gap-1"
+      onClick={(event) => {
+        onOpen(event);
+      }}
+    >
+      {label}
+      <ArrowUpRight className="size-3.5" aria-hidden />
+    </Button>
   );
 }
 
@@ -126,6 +208,25 @@ function Loading() {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return <Text className="text-sm">{children}</Text>;
+}
+
+/* ── Bands ──────────────────────────────────────────────────────────────── */
+
+/** Task urgency, in the order a person reads a queue: worst first. */
+const PRIORITY_BANDS = [
+  { key: 'urgent', label: 'Urgent', tone: 'danger' },
+  { key: 'high', label: 'High', tone: 'warning' },
+  { key: 'medium', label: 'Medium', tone: 'info' },
+  { key: 'low', label: 'Low', tone: 'neutral' },
+] as const;
+
+/** A win rate is a verdict, not a measurement — half the work won is a good
+ *  quarter, a fifth is a problem, and rendering both as the same grey number
+ *  makes the reader do the arithmetic the colour could have done. */
+function winRateTone(rate: number): 'success' | 'warning' | 'danger' {
+  if (rate >= 0.5) return 'success';
+  if (rate >= 0.25) return 'warning';
+  return 'danger';
 }
 
 /* ── Acquisition chart ──────────────────────────────────────────────────── */
@@ -164,7 +265,7 @@ function AcquisitionChart({ points }: { points: AcquisitionPoint[] }) {
 
 /* ── Surface ────────────────────────────────────────────────────────────── */
 
-export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
+export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
   const snapshot = useSnapshot();
   const acquisition = useAcquisition(12);
   const winLoss = useWinLoss();
@@ -178,6 +279,14 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
   const [pipelineId, setPipelineId] = useState<string>('');
   const activePipeline = pipelineId || pipelines?.items[0]?.id;
   const funnel = usePipelineFunnel(activePipeline);
+
+  /** Every figure's way through to the records behind it. Shift opens it
+   *  alongside, alt in its own window — the same gesture as every CRM list. */
+  const go = (key: string, params: Record<string, string> = {}) => {
+    return (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open(key, params, { target: targetFor(event) });
+    };
+  };
 
   const repName = useMemo(() => {
     const map = new Map<string, string>();
@@ -230,22 +339,51 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
             />
           ) : (
             <div className="grid grid-cols-2 gap-3 @md:grid-cols-3 @2xl:grid-cols-4">
-              <KpiTile label="Customers" value={s ? s.customers.toLocaleString() : '—'} />
-              <KpiTile label="Wholesale accounts" value={s ? s.companies.toLocaleString() : '—'} />
-              <KpiTile label="Open deals" value={s ? s.openDeals.toLocaleString() : '—'} />
-              <KpiTile label="Pipeline value" value={s ? formatMoney(s.pipelineValue) : '—'} />
-              <KpiTile label="Open tasks" value={s ? s.openTasks.toLocaleString() : '—'} />
-              <KpiTile label="Overdue tasks" value={s ? s.overdueTasks.toLocaleString() : '—'} />
+              <KpiTile
+                label="Customers"
+                value={s ? s.customers.toLocaleString() : '—'}
+                onOpen={go('crm.customers.list')}
+              />
+              <KpiTile
+                label="Wholesale accounts"
+                value={s ? s.companies.toLocaleString() : '—'}
+                onOpen={go('crm.accounts.list')}
+              />
+              <KpiTile
+                label="Open deals"
+                value={s ? s.openDeals.toLocaleString() : '—'}
+                onOpen={go('crm.deals.list')}
+              />
+              <KpiTile
+                label="Pipeline value"
+                value={s ? formatMoney(s.pipelineValue) : '—'}
+                onOpen={go('crm.deals.list')}
+              />
+              <KpiTile
+                label="Open tasks"
+                value={s ? s.openTasks.toLocaleString() : '—'}
+                onOpen={go('crm.tasks.list')}
+              />
+              <KpiTile
+                label="Overdue tasks"
+                value={s ? s.overdueTasks.toLocaleString() : '—'}
+                alarm={(s?.overdueTasks ?? 0) > 0}
+                onOpen={go('crm.tasks.list')}
+              />
               <KpiTile
                 label="Active segments"
                 value={s ? s.activeSegments.toLocaleString() : '—'}
+                onOpen={go('crm.segments.list')}
               />
             </div>
           )}
 
           <div className="grid gap-4 @3xl:grid-cols-2">
             {/* New customers per month */}
-            <Panel title="New customers a month">
+            <Panel
+              title="New customers a month"
+              action={<PanelLink label="Everyone" onOpen={go('crm.customers.list')} />}
+            >
               {acquisition.isPending ? (
                 <Loading />
               ) : !acqHasData ? (
@@ -256,33 +394,45 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
             </Panel>
 
             {/* Task health */}
-            <Panel title="Tasks">
+            <Panel
+              title="Tasks"
+              action={<PanelLink label="All tasks" onOpen={go('crm.tasks.list')} />}
+            >
               {tasks.isPending ? (
                 <Loading />
               ) : tasks.data ? (
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <KpiTile label="To do" value={tasks.data.open.toLocaleString()} />
-                    <KpiTile label="Overdue" value={tasks.data.overdue.toLocaleString()} />
+                    <KpiTile
+                      label="Overdue"
+                      value={tasks.data.overdue.toLocaleString()}
+                      alarm={tasks.data.overdue > 0}
+                    />
                     <KpiTile label="Due today" value={tasks.data.dueToday.toLocaleString()} />
                     <KpiTile
                       label="Done (30 days)"
                       value={tasks.data.completedLast30d.toLocaleString()}
                     />
                   </div>
+                  {/* Four urgencies that all render the same grey would say the
+                      same thing four times. The colour IS the urgency — and
+                      only when there is something at it, because "Urgent: 0"
+                      in red is a warning about nothing. */}
                   <div className="flex flex-wrap gap-2">
-                    {(
-                      [
-                        ['urgent', 'Urgent'],
-                        ['high', 'High'],
-                        ['medium', 'Medium'],
-                        ['low', 'Low'],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <Badge key={key} color="neutral" variant="soft" size="sm">
-                        {label}: {tasks.data.byPriority[key]}
-                      </Badge>
-                    ))}
+                    {PRIORITY_BANDS.map(({ key, label, tone }) => {
+                      const count = tasks.data.byPriority[key];
+                      return (
+                        <Badge
+                          key={key}
+                          color={count > 0 ? tone : 'neutral'}
+                          variant="soft"
+                          size="sm"
+                        >
+                          {label}: {count}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </>
               ) : (
@@ -295,19 +445,27 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
               title="Pipeline"
               action={
                 (pipelines?.items.length ?? 0) > 0 ? (
-                  <div className="w-44">
-                    <Select
-                      size="sm"
-                      color="module"
-                      aria-label="Which pipeline"
-                      value={activePipeline ?? ''}
-                      items={Object.fromEntries(
-                        (pipelines?.items ?? []).map((p) => [p.id, p.name])
-                      )}
-                      onValueChange={(next) => {
-                        setPipelineId(next as string);
-                      }}
-                    />
+                  <div className="flex min-w-0 items-center gap-1">
+                    <div className="w-44">
+                      <Select
+                        size="sm"
+                        color="module"
+                        aria-label="Which pipeline"
+                        value={activePipeline ?? ''}
+                        items={Object.fromEntries(
+                          (pipelines?.items ?? []).map((p) => [p.id, p.name])
+                        )}
+                        onValueChange={(next) => {
+                          setPipelineId(next as string);
+                        }}
+                      />
+                    </div>
+                    {activePipeline ? (
+                      <PanelLink
+                        label="Open it"
+                        onOpen={go('crm.pipeline.detail', { id: activePipeline })}
+                      />
+                    ) : null}
                   </div>
                 ) : null
               }
@@ -334,7 +492,10 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
             </Panel>
 
             {/* Win / loss */}
-            <Panel title="Won and lost, by person">
+            <Panel
+              title="Won and lost, by person"
+              action={<PanelLink label="All deals" onOpen={go('crm.deals.list')} />}
+            >
               {winLoss.isPending ? (
                 <Loading />
               ) : (winLoss.data?.length ?? 0) === 0 ? (
@@ -355,9 +516,9 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
                       <Badge color="danger" variant="soft" size="sm">
                         {row.lost} lost
                       </Badge>
-                      <span className="text-sm tabular-nums">
+                      <Badge color={winRateTone(row.winRate)} variant="soft" size="sm">
                         {Math.round(row.winRate * 100)}% win rate
-                      </span>
+                      </Badge>
                       <span className="w-24 shrink-0 text-right text-sm font-semibold tabular-nums">
                         {formatMoney(row.totalWonValue)}
                       </span>
@@ -390,7 +551,10 @@ export function CrmReportsSurface(_props: { ctx: SurfaceContext }) {
             </Panel>
 
             {/* Segments */}
-            <Panel title="Audiences by size">
+            <Panel
+              title="Audiences by size"
+              action={<PanelLink label="All audiences" onOpen={go('crm.segments.list')} />}
+            >
               {segments.isPending ? (
                 <Loading />
               ) : (segments.data?.segments.length ?? 0) === 0 ? (

@@ -10,7 +10,7 @@
 import { useMemo } from 'react';
 import { Alert, Badge, Button, Card, Select, Text } from '@wizeworks/silicaui-react';
 import { Chart, type EChartsOption } from '@wizeworks/silicaui-charts';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, Pencil, X } from 'lucide-react';
 
 import { useModuleColor } from '../analytics/charts';
 import { useRunReport, type DashboardWidget } from './report-builder-data';
@@ -36,11 +36,13 @@ const WIDTHS = { '4': 'A third', '6': 'Half', '8': 'Two thirds', '12': 'Full wid
 export function ReportWidget({
   widget,
   onOpen,
+  onRename,
   onRemove,
   onResize,
 }: {
   widget: DashboardWidget;
   onOpen: () => void;
+  onRename: () => void;
   onRemove: () => void;
   onResize: (w: number) => void;
 }) {
@@ -107,6 +109,15 @@ export function ReportWidget({
             items={WIDTHS}
             onValueChange={(next) => onResize(Number(next))}
           />
+          <Button
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            aria-label="What this card is called"
+            onClick={onRename}
+          >
+            <Pencil className="size-4" aria-hidden />
+          </Button>
           <Button
             color="neutral"
             variant="ghost"

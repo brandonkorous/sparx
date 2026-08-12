@@ -21,12 +21,20 @@
 //
 // ROLES. Reading a report is `viewer` — the numbers are the point, and a
 // business where only admins can see how it is doing is not measuring itself.
-// SAVING is `editor`. `/fields` is `viewer` too: it exposes only the reportable
-// spine's labels, which anyone who can read a record already sees.
+// SAVING is `editor`. `/fields` is `viewer` too: it exposes field NAMES — the
+// reportable spine's, plus the tenant's own declared properties — and never a
+// value, so it says nothing anyone who can read a record cannot already see.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { dashboardService, reportCompiler, reportService } from '@sparx/crm';
+import {
+  asPropertySchema,
+  dashboardService,
+  objectDefService,
+  reportCompiler,
+  reportService,
+  seedBuiltinReports,
+} from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 
@@ -49,6 +57,22 @@ const reportBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/reports', async (request) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
+    // Self-heal the worked examples before listing them.
+    //
+    // The library's whole premise is "open one of ours, see how it is built,
+    // copy it and change one thing" — an empty list teaches nobody, and it is
+    // what a tenant sees whenever the seed never ran. Which is most of them:
+    // `seedBuiltinReports` was only ever wired to the `module.activated`
+    // consumer, so every tenant that enabled CRM before the built-ins shipped
+    // has none, and there is no re-activation event coming to fix that.
+    //
+    // Create-only and keyed on (tenant, property, builtinSlug), so this is a
+    // single indexed read that returns 0 on every call after the first — and a
+    // tenant who deleted one they did not want does not get it back. It runs on
+    // a `viewer` route deliberately: these rows are owned by nobody and shared
+    // with everyone, and the person who opens the library is exactly the person
+    // who needs them to be there.
+    await seedBuiltinReports(toCrmContext(request));
     const q = ObjectQuery.parse(request.query);
     const items = await reportService.list(toCrmContext(request), {
       propertyIds: reachableSiteIds(requireAuth(request)),
@@ -60,20 +84,53 @@ const reportBuilderRoutes: FastifyPluginAsync = (app) => {
   /**
    * What a report can be built FROM.
    *
-   * Static — it is the compiler's own allowlist, which is the point: the builder
-   * offers exactly what the compiler will accept, so a person cannot assemble a
-   * definition that fails on run. Declared before `/:id` so "fields" is never
-   * parsed as a uuid.
+   * The built-in half is the compiler's own allowlist, which is the point: the
+   * builder offers exactly what the compiler will accept, so a person cannot
+   * assemble a definition that fails on run. Declared before `/:id` so "fields"
+   * is never parsed as a uuid.
+   *
+   * The other half is the objects the TENANT invented, merged in here because
+   * this is the layer that can read the registry. Without them a business that
+   * added "Courses" got a list, a detail pane, saved views, associations and
+   * search for them — and then could not count them, which is the one thing an
+   * owner asks a new record type for first.
    */
   app.get('/v1/crm/reports/fields', async (request) => {
     requireRole(request, 'viewer');
     await requireCrmModule(request);
-    return ok({
-      objects: reportCompiler.reportableObjects().map((object) => ({
-        ...object,
-        fields: reportCompiler.reportableFields(object.objectKey),
-      })),
-    });
+    const ctx = toCrmContext(request);
+
+    // One registry read serves both halves: the built-ins need their DECLARED
+    // properties (a customer's "renewal month" is reportable and was never
+    // offered), and the tenant's own objects are entirely declared properties.
+    const defs = await objectDefService.list(ctx);
+    const byKey = new Map(defs.map((def) => [def.key, def]));
+
+    /** A declared property is a `custom.<key>` path — the same on a contact as
+     *  on a course, which is why one helper types both. */
+    const declared = (def: (typeof defs)[number] | undefined) =>
+      Object.entries(
+        reportCompiler.reportableProperties(asPropertySchema(def?.propertySchema))
+      ).map(([key, field]) => ({ path: `custom.${key}`, label: field.label, kind: field.kind }));
+
+    const builtin = reportCompiler.reportableObjects().map((object) => ({
+      ...object,
+      fields: [
+        ...reportCompiler.reportableFields(object.objectKey),
+        ...declared(byKey.get(object.objectKey)),
+      ],
+    }));
+
+    const custom = defs
+      .filter((def) => def.kind === 'custom' && !def.archivedAt)
+      .map((def) => ({
+        objectKey: def.key,
+        label: def.label,
+        labelPlural: def.labelPlural,
+        fields: [...reportCompiler.customSpineFields(), ...declared(def)],
+      }));
+
+    return ok({ objects: [...builtin, ...custom] });
   });
 
   app.post('/v1/crm/reports/preview', async (request) => {

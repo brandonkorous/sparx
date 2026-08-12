@@ -8,6 +8,14 @@
 // parameters. Beneath all of that the table has FORCE RLS, so even a compiler
 // bug can only ever return the tenant's own rows.
 //
+// OBJECTS A TENANT INVENTED do not weaken that. They all live in ONE table,
+// `crm_records`, keyed by `object_key` — so the identifiers stay static (the
+// table, the record spine, the `values` bag) and the only thing that varies is a
+// WHERE predicate whose value is BOUND like any other filter. What the compiler
+// cannot know is whether such an object exists and what it is called; the caller
+// resolves that from the object registry and passes a `CustomObjectSpec`, so an
+// unrecognised key is still refused by name rather than answered with zero rows.
+//
 // WHAT IT DELIBERATELY DOES NOT DO. There is no join planner. A report is over
 // ONE object; "deals by customer country" is not expressible and should not be —
 // the moment this grows joins it needs a cost model, and a business owner
@@ -46,8 +54,26 @@ interface ObjectSource {
   timeColumn: string;
   /** Soft-delete guard, when the table has one. */
   deletedColumn?: string;
+  /**
+   * The site-scoping column, when the table HAS one. Absent means the record is
+   * tenant-level and a site filter does not apply to it — writing one anyway
+   * produces SQL naming a column that does not exist, which fails at run time
+   * with a Postgres error rather than anything a person could act on.
+   */
+  siteColumn?: string;
   /** Where the tenant's own extra properties live. */
   customBag?: string;
+  /**
+   * A predicate that narrows the table to one object — the ONE part of a source
+   * that is not static, because every tenant-invented object shares `crm_records`.
+   * The column is ours; the value travels as a bind parameter like any filter.
+   */
+  scope?: { column: string; value: string };
+  /** The tenant's DECLARED properties, by key. The compiler cannot know either
+   *  half: without the label a header reads `seatsLeft`, and without the kind
+   *  every property is text — so a Yes/No field is filtered with a text box and
+   *  a price cannot be added up. */
+  customFields?: Record<string, { label: string; kind: ColumnKind }>;
   label: string;
   labelPlural: string;
   columns: Record<string, ColumnDef>;
@@ -66,6 +92,7 @@ const SOURCES: Record<string, ObjectSource> = {
     table: 'customers',
     timeColumn: 'created_at',
     deletedColumn: 'deleted_at',
+    siteColumn: 'property_id',
     customBag: 'custom_properties',
     label: 'Customer',
     labelPlural: 'Customers',
@@ -88,10 +115,37 @@ const SOURCES: Record<string, ObjectSource> = {
       lastOrderAt: { column: 'last_order_at', kind: 'date', label: 'Last order' },
     },
   },
+  company: {
+    table: 'companies',
+    timeColumn: 'created_at',
+    deletedColumn: 'deleted_at',
+    // No site column, deliberately: a company is a TENANT-level record. The same
+    // firm trades with every site a business runs, so there is no per-site view
+    // of it to scope to — and `companies` has no `property_id` to write.
+    customBag: 'custom_properties',
+    label: 'Company',
+    labelPlural: 'Companies',
+    columns: {
+      id: { column: 'id', kind: 'uuid', label: 'Company' },
+      companyName: { column: 'company_name', kind: 'text', label: 'Name' },
+      status: { column: 'status', kind: 'text', label: 'Standing' },
+      website: { column: 'website', kind: 'text', label: 'Website' },
+      assignedRepId: { column: 'assigned_rep_id', kind: 'uuid', label: 'Owner' },
+      pricingTierId: { column: 'pricing_tier_id', kind: 'uuid', label: 'Price level' },
+      paymentTerms: { column: 'payment_terms', kind: 'text', label: 'Payment terms' },
+      creditLimit: { column: 'credit_limit', kind: 'currency', label: 'Credit limit' },
+      creditUsed: { column: 'credit_used', kind: 'currency', label: 'Credit used' },
+      discountPercent: { column: 'discount_percent', kind: 'number', label: 'Discount %' },
+      fleetSize: { column: 'fleet_size', kind: 'number', label: 'Fleet size' },
+      createdAt: { column: 'created_at', kind: 'date', label: 'Added' },
+      updatedAt: { column: 'updated_at', kind: 'date', label: 'Last changed' },
+    },
+  },
   deal: {
     table: 'deals',
     timeColumn: 'created_at',
     deletedColumn: 'deleted_at',
+    siteColumn: 'property_id',
     customBag: 'custom_properties',
     label: 'Deal',
     labelPlural: 'Deals',
@@ -119,6 +173,7 @@ const SOURCES: Record<string, ObjectSource> = {
     table: 'crm_tickets',
     timeColumn: 'created_at',
     deletedColumn: 'deleted_at',
+    siteColumn: 'property_id',
     customBag: 'custom_properties',
     label: 'Request',
     labelPlural: 'Requests',
@@ -137,6 +192,7 @@ const SOURCES: Record<string, ObjectSource> = {
   task: {
     table: 'tasks',
     timeColumn: 'created_at',
+    siteColumn: 'property_id',
     label: 'Task',
     labelPlural: 'Tasks',
     columns: {
@@ -151,7 +207,92 @@ const SOURCES: Record<string, ObjectSource> = {
   },
 };
 
-/** Objects the builder offers, with the words a person uses for them. */
+/**
+ * What a tenant-invented object needs before it can be reported on: the words
+ * for it, and what it calls its own fields. None of that is knowable here — it
+ * lives in the object registry — so the caller resolves it and passes it in.
+ *
+ * The alternative was to synthesize a source for ANY key the compiler did not
+ * recognise. That would have quietly turned "there is nothing to report on
+ * called `contct`" into a report of zero rows: a typo answered with an empty
+ * table instead of a sentence.
+ */
+export interface CustomObjectSpec {
+  label: string;
+  labelPlural: string;
+}
+
+/**
+ * The tenant's own additions to whatever object is being reported on.
+ *
+ * Separate from `CustomObjectSpec` because the two answer different questions
+ * and apply to different objects: `object` says "this key names something the
+ * tenant invented", while `fields` describes declared properties — which a
+ * BUILT-IN object has too. A contact's "renewal month" is exactly as declared,
+ * and exactly as unknowable here, as a course's.
+ */
+export interface ReportProperties {
+  /** Present only for a tenant-invented object. */
+  object?: CustomObjectSpec;
+  /** Declared property key → its label and its type. */
+  fields?: Record<string, { label: string; kind: ColumnKind }>;
+}
+
+/**
+ * A source over `crm_records` for one tenant-invented object.
+ *
+ * Every custom object shares one table, so the object is a WHERE predicate
+ * rather than a table name — and the predicate's value is bound, not
+ * interpolated, which is what keeps the static-identifier rule above intact.
+ * The columns are the record spine; everything the tenant declared is in the
+ * `values` bag and arrives as a `custom.<key>` path.
+ */
+function customSource(objectKey: string, spec: CustomObjectSpec): ObjectSource {
+  return {
+    table: 'crm_records',
+    timeColumn: 'created_at',
+    deletedColumn: 'deleted_at',
+    siteColumn: 'property_id',
+    customBag: 'values',
+    scope: { column: 'object_key', value: objectKey },
+    label: spec.label,
+    labelPlural: spec.labelPlural,
+    columns: CUSTOM_SPINE,
+  };
+}
+
+/** The source for a definition, with the tenant's declared properties folded in
+ *  — for a built-in object and a tenant-invented one alike. */
+function sourceFor(definition: ReportDefinition): ObjectSource | undefined {
+  const custom = definition.properties?.object;
+  const base =
+    SOURCES[definition.objectKey] ??
+    (custom && OBJECT_KEY.test(definition.objectKey)
+      ? customSource(definition.objectKey, custom)
+      : undefined);
+  if (!base) return undefined;
+  const fields = definition.properties?.fields;
+  return fields ? { ...base, customFields: fields } : base;
+}
+
+/** The five things every custom record has regardless of what it is. */
+const CUSTOM_SPINE: Record<string, ColumnDef> = {
+  id: { column: 'id', kind: 'uuid', label: 'Record' },
+  title: { column: 'title', kind: 'text', label: 'Name' },
+  ownerId: { column: 'owner_id', kind: 'uuid', label: 'Owner' },
+  createdAt: { column: 'created_at', kind: 'date', label: 'Added' },
+  updatedAt: { column: 'updated_at', kind: 'date', label: 'Last changed' },
+};
+
+/** True when the key names an object sparx ships, rather than one a tenant
+ *  invented. The caller uses this to decide whether it must look up a spec. */
+export function isBuiltinObject(objectKey: string): boolean {
+  return objectKey in SOURCES;
+}
+
+/** Objects the builder offers, with the words a person uses for them. Built-ins
+ *  only — the tenant's own are merged in by the caller, which is the layer that
+ *  can read the registry. */
 export function reportableObjects(): {
   objectKey: string;
   label: string;
@@ -161,6 +302,65 @@ export function reportableObjects(): {
     objectKey,
     label: source.label,
     labelPlural: source.labelPlural,
+  }));
+}
+
+/**
+ * A declared property schema, reduced to what a report can do with it.
+ *
+ * The mapping is deliberately lossy in one direction only: several field types
+ * that LOOK different to a person (a choice, a link, an email, a linked record)
+ * are all text to a report, because the only questions a report asks of them are
+ * "how many" and "grouped by which". The types that map to something else —
+ * number, money, yes/no, date — do so because those four change what the builder
+ * offers and what the compiler will allow.
+ *
+ * `object` and `repeater` are omitted rather than mapped: they hold a structure,
+ * not a value, and there is no honest single cell for one.
+ */
+export function reportableProperties(schema: {
+  fields: { key: string; label: string; type: string; resultType?: 'number' | 'currency' }[];
+}): Record<string, { label: string; kind: ColumnKind }> {
+  const out: Record<string, { label: string; kind: ColumnKind }> = {};
+  for (const field of schema.fields) {
+    if (!CUSTOM_KEY.test(field.key)) continue;
+    let kind: ColumnKind | null;
+    switch (field.type) {
+      case 'number':
+        kind = 'number';
+        break;
+      case 'currency':
+        kind = 'currency';
+        break;
+      case 'calculated':
+        kind = field.resultType ?? 'number';
+        break;
+      case 'boolean':
+        kind = 'boolean';
+        break;
+      case 'date':
+      case 'datetime':
+        kind = 'date';
+        break;
+      case 'object':
+      case 'repeater':
+        kind = null;
+        break;
+      default:
+        kind = 'text';
+    }
+    if (kind) out[field.key] = { label: field.label, kind };
+  }
+  return out;
+}
+
+/** The spine fields of a tenant-invented object, in the builder's shape. Its
+ *  declared properties are appended by the caller as `custom.<key>`. */
+export function customSpineFields(): { path: string; label: string; kind: ColumnKind }[] {
+  return Object.entries(CUSTOM_SPINE).map(([path, def]) => ({
+    path,
+    label: def.label,
+    kind: def.kind,
   }));
 }
 
@@ -182,15 +382,61 @@ export function reportableFields(
 /* ── Identifier resolution — the only place a name becomes SQL ──────────── */
 
 const CUSTOM_PREFIX = 'custom.';
-/** A custom-property key. Matches the registry's own key rule, and is what stops
- *  a JSONB path from carrying a quote out of the bag and into the statement. */
-const CUSTOM_KEY = /^[a-z][a-z0-9_]{0,62}$/;
+/**
+ * A custom-property key — the same rule `@sparx/field-schema` enforces on the
+ * way in, which is what stops a JSONB path from carrying a quote out of the bag
+ * and into the statement.
+ *
+ * It must MATCH that rule, not merely be stricter than it. This was lowercase-
+ * only while field keys have always been camelCase, so every property whose name
+ * had a capital in it — `seatsLeft`, `renewalMonth`, the shape the property
+ * editor itself produces — answered "there is no field called that" on a report
+ * a person had just built out of the field picker.
+ */
+const CUSTOM_KEY = /^[a-z][a-zA-Z0-9_]{0,62}$/;
+/** An object key. snake_case, per `CustomObjectKey` in @sparx/crm-schemas. */
+const OBJECT_KEY = /^[a-z][a-z0-9_]{1,62}$/;
 
 interface ResolvedField {
   /** SQL fragment naming the value, already quoted/extracted. */
   sql: string;
   kind: ColumnKind;
   label: string;
+}
+
+/**
+ * A declared property, read out of its JSONB bag AS THE TYPE IT WAS DECLARED.
+ *
+ * EVERY CAST IS GUARDED, and that is the whole design. A plain `(bag->>'k')::numeric`
+ * throws for the entire query the first time one row holds something that is not
+ * a number — and rows predating a field's type change are exactly that. Postgres
+ * has no try_cast, so the guard is a `jsonb_typeof` (or a shape test) that turns
+ * a value of the wrong type into NULL. A report then quietly ignores the rows it
+ * cannot read instead of refusing to run at all, which is what a business owner
+ * needs from a number they are looking at right now.
+ *
+ * Nothing here is interpolated but `key`, which has already passed CUSTOM_KEY,
+ * and the bag column, which comes from a static source.
+ */
+function customSql(bag: string, key: string, kind: ColumnKind): string {
+  const text = `"${bag}" ->> '${key}'`;
+  const node = `"${bag}" -> '${key}'`;
+  switch (kind) {
+    case 'number':
+      return `(CASE WHEN jsonb_typeof(${node}) = 'number' THEN (${text})::numeric END)`;
+    case 'currency':
+      // Money is stored `{amount, currency}` — a bare number would be an amount
+      // with no unit, which is the thing that shape exists to prevent.
+      return `(CASE WHEN jsonb_typeof(${node} -> 'amount') = 'number' THEN (${node} ->> 'amount')::numeric END)`;
+    case 'boolean':
+      return `(CASE WHEN jsonb_typeof(${node}) = 'boolean' THEN (${text})::boolean END)`;
+    case 'date':
+      // A date field stores an ISO string. The pattern is the guard: anything
+      // that is not shaped like a date reads as unset rather than erroring.
+      return `(CASE WHEN ${text} ~ '^\\d{4}-\\d{2}-\\d{2}' THEN (${text})::timestamptz END)`;
+    default:
+      return text;
+  }
 }
 
 function resolveField(source: ObjectSource, path: string): ResolvedField {
@@ -201,13 +447,11 @@ function resolveField(source: ObjectSource, path: string): ResolvedField {
         { field: 'field', message: `unknown property ${path}` },
       ]);
     }
-    // Text extraction. A custom property has no column type, so everything
-    // arrives as text and a `sum` over one is refused below rather than being
-    // cast and quietly returning garbage on the first non-numeric value.
+    const declared = source.customFields?.[key];
     return {
-      sql: `"${source.customBag}" ->> '${key}'`,
-      kind: 'text',
-      label: key.replace(/_/g, ' '),
+      sql: customSql(source.customBag, key, declared?.kind ?? 'text'),
+      kind: declared?.kind ?? 'text',
+      label: declared?.label ?? key.replace(/_/g, ' '),
     };
   }
 
@@ -357,12 +601,21 @@ function compileMeasure(source: ObjectSource, measure: Measure, index: number): 
 }
 
 /** The words a column header uses when the author did not name it. */
-export function measureLabel(objectKey: string, measure: Measure): string {
+export function measureLabel(
+  objectKey: string,
+  measure: Measure,
+  properties?: ReportProperties
+): string {
   if (measure.label) return measure.label;
-  const source = SOURCES[objectKey];
+  const object = properties?.object;
+  const source = SOURCES[objectKey] ?? (object ? customSource(objectKey, object) : undefined);
   if (measure.fn === 'count') return `How many ${source?.labelPlural.toLowerCase() ?? 'records'}`;
-  const field = source && measure.field ? source.columns[measure.field] : undefined;
-  const name = field?.label ?? measure.field ?? '';
+  const name = measure.field
+    ? (source?.columns[measure.field]?.label ??
+      // A declared property is named by the tenant, not by the spine above.
+      properties?.fields?.[measure.field.replace(CUSTOM_PREFIX, '')]?.label ??
+      measure.field)
+    : '';
   switch (measure.fn) {
     case 'sum':
       return `Total ${name.toLowerCase()}`;
@@ -384,6 +637,10 @@ export interface ReportDefinition {
   measures: Measure[];
   dateRange: DateRange;
   propertyId?: string | null;
+  /** What the tenant added — the object itself if they invented it, and its
+   *  declared properties either way. Read from the object registry by the
+   *  caller; see `ReportProperties`. */
+  properties?: ReportProperties;
 }
 
 export interface CompiledReport {
@@ -395,7 +652,11 @@ export interface CompiledReport {
 }
 
 export function compileReport(definition: ReportDefinition, limit: number): CompiledReport {
-  const source = SOURCES[definition.objectKey];
+  // A custom object is only reportable once the caller has proved it exists and
+  // said what it is called. The key still passes the same rule a JSONB path
+  // does, so it can never carry a quote even though it is bound rather than
+  // written into the statement.
+  const source = sourceFor(definition);
   if (!source) {
     throw new CrmValidationError(
       `There is nothing to report on called “${definition.objectKey}”.`,
@@ -408,11 +669,17 @@ export function compileReport(definition: ReportDefinition, limit: number): Comp
 
   // RLS is the real fence; these are correctness, not security.
   if (source.deletedColumn) where.push(`"${source.deletedColumn}" IS NULL`);
-  if (definition.propertyId) {
+  if (source.scope) {
+    params.push(source.scope.value);
+    where.push(`"${source.scope.column}" = $${String(params.length)}`);
+  }
+  if (definition.propertyId && source.siteColumn) {
     params.push(definition.propertyId);
     // A tenant-wide row (property_id IS NULL) belongs to every site's view of
     // itself — excluding it would make a two-site business's numbers not add up.
-    where.push(`("property_id" = $${String(params.length)} OR "property_id" IS NULL)`);
+    where.push(
+      `("${source.siteColumn}" = $${String(params.length)} OR "${source.siteColumn}" IS NULL)`
+    );
   }
   const dateClause = compileDateRange(source, definition.dateRange, params);
   if (dateClause) where.push(dateClause);
@@ -421,7 +688,7 @@ export function compileReport(definition: ReportDefinition, limit: number): Comp
   const selects = definition.measures.map((m, i) => compileMeasure(source, m, i));
   const columns = definition.measures.map((m, i) => ({
     key: `m${String(i)}`,
-    label: measureLabel(definition.objectKey, m),
+    label: measureLabel(definition.objectKey, m, definition.properties),
   }));
 
   let groupSql = '';

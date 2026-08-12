@@ -7,7 +7,13 @@
 // no one of them owns the namespace. See lib/order-context.ts.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { associationService, objectDefService, pipelineService, segmentService } from '@sparx/crm';
+import {
+  associationService,
+  objectDefService,
+  pipelineService,
+  seedBuiltinReports,
+  segmentService,
+} from '@sparx/crm';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 
@@ -61,12 +67,18 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
   // about a record.
   await app.register(workspaceRoutes);
 
-  // Idempotent seed for tenants that just enabled CRM. Same functions also
-  // run on the `module.activated` Pub/Sub consumer; both paths are no-ops on
-  // re-run. The dashboard calls this inline so freshly-activated tenants see
-  // the default pipeline + built-in segments without waiting on the bus.
+  // Idempotent seed for tenants that just enabled CRM. Every function here also
+  // runs on the `module.activated` Pub/Sub consumer; both paths are no-ops on
+  // re-run, so this exists to let a freshly-activated tenant see the default
+  // pipeline, segments and reports without waiting on the bus.
   // No CRM-module gate — by definition this fires the moment activation
   // lands and before any other CRM route is allowed.
+  //
+  // Keep this list in step with the consumer. The seeds drifted apart once
+  // already — the built-in reports were added to the consumer alone, so any
+  // tenant whose activation event predated them had an empty report library
+  // with no way to get one. (The listing route now self-heals that too, which
+  // is what actually rescues the tenants already in that state.)
   app.post('/v1/crm/bootstrap', async (request) => {
     requireRole(request, 'admin');
     const ctx = toCrmContext(request);
@@ -77,6 +89,7 @@ const crmRoutes: FastifyPluginAsync = async (app) => {
     await associationService.ensureBuiltinLabels(ctx);
     await pipelineService.bootstrapDefaultPipeline(ctx);
     await segmentService.bootstrapBuiltInSegments(ctx);
+    await seedBuiltinReports(ctx);
     return ok({ bootstrapped: true });
   });
 };

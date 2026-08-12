@@ -379,8 +379,11 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
   async function onRecompute() {
     const ok = await confirm({
       title: 'Re-score everyone?',
+      // Says what it leaves alone, not just what it changes. This is the exact
+      // moment somebody who nudged a customer last week wonders whether they
+      // are about to lose it, and the answer is no.
       description:
-        'This works through every record and updates any score your rules would now put differently. It can take a minute on a big list, and every change is recorded so you can see what moved.',
+        'This works through every record and updates any score your rules would now put differently. Anything you changed by hand is kept and added on top. It can take a minute on a big list, and every change is recorded so you can see what moved.',
       confirmLabel: 'Re-score them',
       cancelLabel: 'Not now',
       color: 'module',

@@ -93,7 +93,7 @@ model Deal {
   pipelineId    String  @map("pipeline_id") @db.Uuid
   stageId       String  @map("stage_id") @db.Uuid
   customerId    String? @map("customer_id") @db.Uuid
-  companyId  String? @map("company_id") @db.Uuid
+  companyId     String? @map("company_id") @db.Uuid
   assignedRepId String? @map("assigned_rep_id") @db.Uuid
 
   title             String    @db.VarChar(255)
@@ -115,6 +115,11 @@ model Deal {
   score    Int       @default(0)
   scoredAt DateTime? @map("scored_at") @db.Timestamptz
 
+  /// A standing hand adjustment that survives re-scoring — see the same column
+  /// on customers for why. A rep who knows the buyer has already signed off
+  /// internally can raise a deal's health, and the nightly evaluator keeps it.
+  scoreOffset Int @default(0) @map("score_offset")
+
   // Tenant-declared extra fields on a deal (docs/144 §3) — "contract length",
   // "competitor", "renewal date". Validated against the `deal` row in
   // crm_object_defs. See the note on customers.custom_properties for why this
@@ -132,7 +137,7 @@ model Deal {
   pipeline    Pipeline      @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
   stage       PipelineStage @relation(fields: [stageId], references: [id])
   customer    Customer?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  company  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company     Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
   assignedRep User?         @relation("DealAssignedRep", fields: [assignedRepId], references: [id], onDelete: SetNull)
 
   activities    CrmActivity[]

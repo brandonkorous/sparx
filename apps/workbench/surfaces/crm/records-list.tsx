@@ -226,7 +226,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </td>
                   {columns.rest.map((field) => (
                     <td key={field.key} className="hidden @md:table-cell">
-                      {cellText(record.values[field.key])}
+                      {cellText(record.values[field.key], field)}
                     </td>
                   ))}
                 </tr>

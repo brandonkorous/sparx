@@ -15,11 +15,22 @@ model OrderItem {
   productId String? @map("product_id") @db.Uuid
   variantId String? @map("variant_id") @db.Uuid
 
-  sku            String  @db.VarChar(127)
-  name           String  @db.VarChar(255)
-  description    String? @db.Text
-  quantity       Int     @default(1)
-  unitPrice      Decimal @default(0) @map("unit_price") @db.Decimal(12, 2)
+  sku         String  @db.VarChar(127)
+  name        String  @db.VarChar(255)
+  description String? @db.Text
+  // ALWAYS in the variant's base stocking unit (docs/146 Phase 6.2). A customer
+  // buying two pairs has `quantity` 4 and the pair below recording "PR × 2", so
+  // fulfilment, picking, packing and the stock ledger all keep counting one
+  // thing while the document still reads the way the customer bought.
+  quantity    Int     @default(1)
+  // Per BASE unit, to match. The line total is what was charged.
+  unitPrice   Decimal @default(0) @map("unit_price") @db.Decimal(12, 2)
+
+  // What the customer bought it in, snapshot — text and factor, no foreign key,
+  // for the same reason as every other document line: a unit deleted next year
+  // must not erase what this order said.
+  uomCode        String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom    Int     @default(1) @map("units_per_uom")
   lineSubtotal   Decimal @default(0) @map("line_subtotal") @db.Decimal(12, 2)
   taxAmount      Decimal @default(0) @map("tax_amount") @db.Decimal(12, 2)
   discountAmount Decimal @default(0) @map("discount_amount") @db.Decimal(12, 2)
@@ -42,6 +53,8 @@ model OrderItem {
 
   fulfillmentItems OrderFulfillmentItem[]
   refundItems      OrderRefundItem[]
+  pickListLines    PickListLine[]
+  packageLines     ShipmentPackageLine[]
 
   @@index([tenantId, orderId])
   @@index([tenantId, sku])

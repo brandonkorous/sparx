@@ -71,7 +71,15 @@ export async function createTemplate(
   return withTenant(ctx, async (tx) => {
     const clash = await tx.salesTemplate.findFirst({ where: { name: input.name } });
     if (clash) {
-      throw new CrmConflictError(`You already have a template called "${input.name}".`, 'name');
+      // Named separately when the clash is with one that has been put away —
+      // otherwise the message points at a template they cannot see anywhere,
+      // and the only move that looks available is inventing a worse name.
+      throw new CrmConflictError(
+        clash.archivedAt
+          ? `You have a template called "${input.name}" put away. Bring that one back, or use a different name.`
+          : `You already have a template called "${input.name}".`,
+        'name'
+      );
     }
 
     const row = await tx.salesTemplate.create({
@@ -151,6 +159,30 @@ export async function archiveTemplate(
       where: { id: templateId },
       data: { archivedAt: new Date() },
     });
+  });
+}
+
+/**
+ * Take one back out again.
+ *
+ * Archiving is one press and it hides a template from every picker in the
+ * business, so it needs a way back — otherwise a mis-click costs the message
+ * itself, and the only recovery is retyping it from memory under a new name,
+ * which also orphans the counters that made the original worth keeping.
+ *
+ * No name check is needed on the way back: `[tenantId, name]` is unique whether
+ * a template is put away or not, and `createTemplate` refuses a clash by name
+ * rather than by row, so an archived template's name was never free to take.
+ */
+export async function restoreTemplate(
+  ctx: ServiceContext,
+  templateId: string
+): Promise<SalesTemplate> {
+  return withTenant(ctx, async (tx) => {
+    const before = await tx.salesTemplate.findUnique({ where: { id: templateId } });
+    if (!before) throw new CrmNotFoundError('SalesTemplate', templateId);
+    if (before.archivedAt === null) return before;
+    return tx.salesTemplate.update({ where: { id: templateId }, data: { archivedAt: null } });
   });
 }
 

@@ -572,7 +572,7 @@ export function CustomerNotesTab({
         isEmpty={rows.length === 0}
         icon={<StickyNote className="size-6" aria-hidden />}
         emptyTitle="No notes yet"
-        emptyDescription="Jot the first note — or log a call or meeting — with the box above. It is only ever seen by your team."
+        emptyDescription="Jot the first one down with the Note button above. It is only ever seen by your team."
       >
         <ul className="flex flex-col p-4">
           {rows.map((activity, index) => (
@@ -664,7 +664,7 @@ function CustomerCalls({ customerId }: { customerId: string }) {
       isEmpty={calls.length === 0}
       icon={<Phone className="size-6" aria-hidden />}
       emptyTitle="No calls yet"
-      emptyDescription="Ring them, or log a call you have already had, with the box above. Each one keeps how long you talked and how it went."
+      emptyDescription="Ring them, or write up a call you have already had, with the Log a call button above. Each one keeps how long you talked and how it went."
     >
       <Table size="sm">
         <thead>

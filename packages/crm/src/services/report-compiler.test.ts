@@ -64,6 +64,15 @@ describe('identifiers are an allowlist, not interpolation', () => {
     expect(compiled.sql).toContain(`"custom_properties" ->> 'warranty_tier'`);
   });
 
+  it('accepts a camelCase custom property, which is the shape the editor makes', () => {
+    // The key rule here must MATCH @sparx/field-schema's, not merely be stricter
+    // than it. It was lowercase-only while field keys have always been
+    // camelCase, so a property called `renewalMonth` — picked out of the
+    // builder's own field list — answered "there is no field called that".
+    const compiled = compileReport({ ...base, groupBy: { field: 'custom.renewalMonth' } }, 10);
+    expect(compiled.sql).toContain(`"custom_properties" ->> 'renewalMonth'`);
+  });
+
   it('refuses an unknown object', () => {
     expect(() => compileReport({ ...base, objectKey: 'pg_user' }, 10)).toThrow(CrmValidationError);
   });
@@ -171,6 +180,118 @@ describe('the clauses that are always there', () => {
 
   it('turns an empty filter into a no-op rather than a missing WHERE', () => {
     expect(compileReport(base, 10).sql).toContain('WHERE');
+  });
+});
+
+describe('objects a tenant invented', () => {
+  // Every custom object shares `crm_records`, so the object is a WHERE predicate
+  // rather than a table name. That predicate is the ONE varying part of a
+  // source, and these tests exist to keep it a bound value.
+  const course = {
+    ...base,
+    objectKey: 'course',
+    properties: { object: { label: 'Course', labelPlural: 'Courses' } },
+  };
+
+  it('still refuses an unknown key rather than answering with zero rows', () => {
+    // Without a spec the compiler has no evidence the object exists — and a typo
+    // answered by an empty table is worse than a typo answered by a sentence.
+    expect(() => compileReport({ ...base, objectKey: 'course' }, 10)).toThrow(CrmValidationError);
+  });
+
+  it('narrows the shared table with a BOUND object key', () => {
+    const compiled = compileReport(course, 10);
+    expect(compiled.sql).toContain('FROM "crm_records"');
+    expect(compiled.sql).toContain('"object_key" = $1');
+    expect(compiled.sql).not.toContain('course');
+    expect(compiled.params).toContain('course');
+  });
+
+  it('refuses an object key that is not snake_case', () => {
+    expect(() =>
+      compileReport({ ...course, objectKey: 'crm_records"; DROP TABLE x --' }, 10)
+    ).toThrow(CrmValidationError);
+  });
+
+  it('reads a declared property out of the values bag', () => {
+    const compiled = compileReport({ ...course, groupBy: { field: 'custom.level' } }, 10);
+    expect(compiled.sql).toContain(`"values" ->> 'level'`);
+  });
+
+  it('names a count after what the tenant calls the object', () => {
+    expect(measureLabel('course', { fn: 'count' }, course.properties)).toBe('How many courses');
+  });
+
+  it('uses the tenant’s own words for a property, not the raw key', () => {
+    const compiled = compileReport(
+      {
+        ...course,
+        properties: {
+          ...course.properties,
+          fields: { seatsLeft: { label: 'Seats left', kind: 'number' as const } },
+        },
+        groupBy: { field: 'custom.seatsLeft' },
+      },
+      10
+    );
+    expect(compiled.columns[0]?.label).toBe('Seats left');
+  });
+});
+
+describe('declared properties are read as the type they were declared', () => {
+  // The alternative — everything out of the bag as text — is what made a Yes/No
+  // field filterable only with a text box, and a price impossible to add up.
+  const withField = (kind: 'number' | 'currency' | 'boolean' | 'date') => ({
+    ...base,
+    properties: { fields: { thing: { label: 'Thing', kind } } },
+  });
+
+  it('adds up money, taking the amount out of its {amount, currency} shape', () => {
+    const compiled = compileReport(
+      { ...withField('currency'), measures: [{ fn: 'sum', field: 'custom.thing' }] },
+      10
+    );
+    expect(compiled.sql).toContain(`-> 'thing' ->> 'amount'`);
+    expect(compiled.sql).toContain('SUM(');
+  });
+
+  it('buckets a declared date by month like any other date', () => {
+    const compiled = compileReport(
+      { ...withField('date'), groupBy: { field: 'custom.thing', bucket: 'month' } },
+      10
+    );
+    expect(compiled.sql).toContain(`DATE_TRUNC('month'`);
+  });
+
+  it('still refuses to add up a text property', () => {
+    expect(() =>
+      compileReport({ ...base, measures: [{ fn: 'sum', field: 'custom.notes' }] }, 10)
+    ).toThrow(CrmValidationError);
+  });
+
+  it('GUARDS every cast, so one wrong-typed row cannot fail the whole report', () => {
+    // Postgres has no try_cast, and a bare ::numeric throws for the entire query
+    // the first time a row holds something else — which rows predating a field's
+    // type change do. The guard makes those rows read as unset instead.
+    for (const kind of ['number', 'currency', 'boolean'] as const) {
+      expect(
+        compileReport({ ...withField(kind), groupBy: { field: 'custom.thing' } }, 10).sql
+      ).toContain('jsonb_typeof');
+    }
+    expect(
+      compileReport({ ...withField('date'), groupBy: { field: 'custom.thing' } }, 10).sql
+    ).toContain('CASE WHEN');
+  });
+});
+
+describe('site scoping applies only where a site column exists', () => {
+  it('omits it on a company, which is a tenant-level record', () => {
+    // `companies` has no property_id — the same firm trades with every site a
+    // business runs. Writing the clause anyway would name a column that does not
+    // exist and fail at run time with a Postgres error.
+    const compiled = compileReport({ ...base, objectKey: 'company', propertyId: 'site-1' }, 10);
+    expect(compiled.sql).not.toContain('property_id');
+    expect(compiled.params).not.toContain('site-1');
   });
 });
 

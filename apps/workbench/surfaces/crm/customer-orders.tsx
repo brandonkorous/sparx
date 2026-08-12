@@ -77,6 +77,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
         <PaneToolbar label="Customer order list controls">
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
+              color="module"
               size="sm"
               aria-label="Search orders"
               placeholder="Search by order number…"
@@ -86,6 +87,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
           <div className="hidden w-40 shrink-0 @lg:block">
             <Select
+              color="module"
               size="sm"
               aria-label="Which orders to show"
               value={status}

@@ -667,6 +667,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
               recordId={deal.id}
               score={deal.score}
               scoredAt={deal.scoredAt}
+              scoreOffset={deal.scoreOffset}
               noun="deal"
             />
           ) : null}

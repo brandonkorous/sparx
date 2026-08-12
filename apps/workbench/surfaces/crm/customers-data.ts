@@ -76,6 +76,10 @@ export interface Customer {
   score: number;
   /** When the score was last worked out. Null means it never has been. */
   scoredAt: string | null;
+  /** A standing hand adjustment, in points, that survives re-scoring — so the
+   *  panel can say "your rules say 50, your +10 makes it 60" rather than
+   *  promising the adjustment will be thrown away. Zero for almost everybody. */
+  scoreOffset: number;
   createdAt: string;
   updatedAt: string;
 }

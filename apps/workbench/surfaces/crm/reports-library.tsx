@@ -20,24 +20,50 @@ import {
   describeDateRange,
   useArchiveReport,
   useDuplicateReport,
+  useReportFields,
   useReports,
+  type ReportableObject,
   type SavedReport,
 } from './report-builder-data';
 
-/** The one-line summary of what a report asks, assembled from its own parts —
- *  so the list says what each one ANSWERS rather than just what it is called. */
-function describe(report: SavedReport): string {
+/**
+ * The one-line summary of what a report asks, assembled from its own parts —
+ * so the list says what each one ANSWERS rather than just what it is called.
+ *
+ * `fieldLabel` is passed in rather than looked up here because the breakdown is
+ * stored as a COLUMN PATH. Printing it raw put "broken down by lifecycleStage"
+ * and "broken down by assignedToUserId" in front of people who have never seen a
+ * column name, in the one place whose job is to make the builder legible.
+ */
+function describe(report: SavedReport, fieldLabel: (objectKey: string, path: string) => string) {
   const count = report.measures.length;
   const what =
     count === 1 && report.measures[0]?.fn === 'count'
       ? 'How many'
       : `${String(count)} thing${count === 1 ? '' : 's'} worked out`;
-  const by = report.groupBy ? `, broken down by ${report.groupBy.field}` : '';
-  return `${what}${by} · ${describeDateRange(report.dateRange)}`;
+  const by = report.groupBy
+    ? `, broken down by ${fieldLabel(report.objectKey, report.groupBy.field).toLowerCase()}`
+    : '';
+  // Two reports that differ only in what they leave out read as the same report
+  // without this — which is exactly the pair somebody is trying to tell apart.
+  const rules = report.filters.conditions.length;
+  const narrowed = rules > 0 ? `, narrowed by ${String(rules)} rule${rules === 1 ? '' : 's'}` : '';
+  return `${what}${by}${narrowed} · ${describeDateRange(report.dateRange)}`;
+}
+
+/** Column path → the words the builder shows for it, falling back to the path
+ *  itself only when the catalog has not loaded yet. */
+function makeFieldLabel(objects: ReportableObject[]) {
+  return (objectKey: string, path: string): string => {
+    const object = objects.find((o) => o.objectKey === objectKey);
+    return object?.fields.find((f) => f.path === path)?.label ?? path;
+  };
 }
 
 export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isFetching, refetch } = useReports();
+  const { data: catalog } = useReportFields();
+  const fieldLabel = makeFieldLabel(catalog?.objects ?? []);
   const duplicate = useDuplicateReport();
   const archive = useArchiveReport();
   const confirm = useConfirm();
@@ -89,7 +115,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
             </Badge>
           </div>
           {report.description ? <Text>{report.description}</Text> : null}
-          <Text>{describe(report)}</Text>
+          <Text>{describe(report, fieldLabel)}</Text>
         </div>
         <div className="flex shrink-0 gap-1">
           <Button

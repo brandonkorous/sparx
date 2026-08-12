@@ -45,6 +45,7 @@ import {
 import { Columns3, List, Plus, Target } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { PaneScope } from '../../lib/dock/window-boundary';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { RecordBoard, type BoardColumn, type BoardTone } from '../../components/record-board';
@@ -292,6 +293,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneToolbar label="Deal list controls">
         <div className="max-w-xs min-w-0 flex-1">
           <SearchInput
+            color="module"
             size="sm"
             aria-label="Search deals"
             placeholder="Search deals…"
@@ -301,6 +303,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
         <div className="hidden w-40 shrink-0 @xl:block">
           <Select
+            color="module"
             size="sm"
             aria-label="Which pipeline"
             value={isBoard ? (boardPipeline?.id ?? '') : pipelineId}
@@ -313,6 +316,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isBoard ? null : (
           <div className="hidden w-32 shrink-0 @lg:block">
             <Select
+              color="module"
               size="sm"
               aria-label="Open or closed"
               value={state}
@@ -581,52 +585,61 @@ function LostReasonDialog({
   const [reason, setReason] = useState('');
 
   return (
-    <Dialog
-      open
-      onOpenChange={(next) => {
-        if (!next) onCancel();
-      }}
-    >
-      <DialogContent>
-        <DialogTitle>Why was this lost?</DialogTitle>
-        <DialogDescription>
-          You are moving <strong>{deal.title}</strong> to {stage.name}. A sentence now is worth more
-          than a guess in six months — it is the only part of a lost deal nobody can work out later.
-        </DialogDescription>
+    // PORTALLED INTO THIS PANE. Without it the dialog escapes the pane’s
+    // `ModuleScope`, where `--color-module` lives, so every `color="module"`
+    // control inside falls back to `--color-primary` — Ember red on a form
+    // where nothing is wrong. It would also open in the ORIGINAL window when
+    // this pane has been torn off.
+    <PaneScope>
+      <Dialog
+        open
+        onOpenChange={(next) => {
+          if (!next) onCancel();
+        }}
+      >
+        <DialogContent>
+          <DialogTitle>Why was this lost?</DialogTitle>
+          <DialogDescription>
+            You are moving <strong>{deal.title}</strong> to {stage.name}. A sentence now is worth
+            more than a guess in six months — it is the only part of a lost deal nobody can work out
+            later.
+          </DialogDescription>
 
-        <Field className="mt-4">
-          <FieldLabel>What happened</FieldLabel>
-          <FieldControl
-            render={
-              <Textarea
-                rows={3}
-                placeholder="Went with a cheaper quote."
-                value={reason}
-                onChange={(event) => {
-                  setReason(event.target.value);
-                }}
-              />
-            }
-          />
-          <FieldDescription>You can leave this blank and add it later.</FieldDescription>
-        </Field>
+          <Field className="mt-4">
+            <FieldLabel>What happened</FieldLabel>
+            <FieldControl
+              render={
+                <Textarea
+                  color="module"
+                  rows={3}
+                  placeholder="Went with a cheaper quote."
+                  value={reason}
+                  onChange={(event) => {
+                    setReason(event.target.value);
+                  }}
+                />
+              }
+            />
+            <FieldDescription>You can leave this blank and add it later.</FieldDescription>
+          </Field>
 
-        <DialogFooter>
-          <DialogClose>
-            <Button color="neutral" variant="ghost">
-              Cancel
+          <DialogFooter>
+            <DialogClose>
+              <Button color="neutral" variant="ghost">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              color="danger"
+              onClick={() => {
+                onConfirm(reason);
+              }}
+            >
+              Mark it lost
             </Button>
-          </DialogClose>
-          <Button
-            color="danger"
-            onClick={() => {
-              onConfirm(reason);
-            }}
-          >
-            Mark it lost
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PaneScope>
   );
 }
