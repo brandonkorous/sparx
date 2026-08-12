@@ -8,12 +8,14 @@
 // workspace resolution, so it imports ONLY sibling JSON, never `@sparx/*`.
 import site from './site.json' with { type: 'json' };
 import content from './content.json' with { type: 'json' };
+import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-luxe-minimal',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Luxe Minimal',
   summary:
     'A quiet-luxury storefront where imagery carries the weight and type stays out of the way — a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.',
@@ -61,12 +63,15 @@ const blueprint = {
 
   assets,
   contentTypes: [],
+  authors,
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

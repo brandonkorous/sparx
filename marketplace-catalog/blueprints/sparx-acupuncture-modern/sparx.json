@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-acupuncture-modern",
   "name": "sparx — Acupuncture (Modern)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A clean, modern template for acupuncture & wellness studios — book online from day one.",
   "description": "A clean, calming site for a modern integrative acupuncture studio — a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as \"Meridian Wellness\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Acupuncture",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

@@ -11,10 +11,11 @@ import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-ideas-talks',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Ideas & Talks',
   summary:
     'A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
@@ -66,9 +67,11 @@ const blueprint = {
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

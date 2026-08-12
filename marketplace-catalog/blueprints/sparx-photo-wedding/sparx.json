@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-photo-wedding",
   "name": "sparx — Wedding Photography",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A warm, film-inspired template for wedding photographers — book consultations online from day one.",
   "description": "An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as \"Golden Hour Studio\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Photography",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

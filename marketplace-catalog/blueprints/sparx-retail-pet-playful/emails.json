@@ -7,7 +7,7 @@
       "subject": "Welcome to {{site.name}}",
       "preheader": "So glad you found us — here’s where to start.",
       "root": {
-        "id": "shop-welcome-body-8",
+        "id": "def-s-body-1253",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "shop-welcome-section-9",
+            "id": "def-s-section-1242",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "shop-welcome-text-1",
+                "id": "def-s-text-1239",
                 "kind": "text",
                 "html": "Welcome, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "shop-welcome-spacer-2",
+                "id": "def-s-spacer-1241",
                 "kind": "spacer",
-                "height": 10
+                "height": 16
               },
               {
-                "id": "shop-welcome-text-3",
+                "id": "def-s-text-1240",
                 "kind": "text",
                 "html": "Thanks for joining {{site.name}}. We put a lot of care into what we make and sell, and we’re glad you’re here to see it.",
                 "align": "left",
@@ -51,30 +51,97 @@
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ]
+          },
+          {
+            "id": "def-s-section-1250",
+            "kind": "section",
+            "bg": "#f4f4f5",
+            "bgAuto": true,
+            "paddingX": 20,
+            "paddingY": 22,
+            "children": [
               {
-                "id": "shop-welcome-spacer-4",
-                "kind": "spacer",
-                "height": 14
-              },
-              {
-                "id": "shop-welcome-text-5",
+                "id": "def-s-text-1243",
                 "kind": "text",
-                "html": "Have a look around whenever you’re ready — new arrivals, best sellers, and everything in between are waiting in the shop.",
+                "html": "Everything in one place",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
-                "fontSize": 16,
-                "fontWeight": "normal",
-                "lineHeight": 26
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
               },
               {
-                "id": "shop-welcome-spacer-6",
+                "id": "def-s-spacer-1244",
                 "kind": "spacer",
-                "height": 22
+                "height": 4
               },
               {
-                "id": "shop-welcome-button-7",
+                "id": "def-s-text-1245",
+                "kind": "text",
+                "html": "Your cart, orders, and favourites live in your account — sign in any time to pick up where you left off.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              },
+              {
+                "id": "def-s-spacer-1246",
+                "kind": "spacer",
+                "height": 18
+              },
+              {
+                "id": "def-s-text-1247",
+                "kind": "text",
+                "html": "Here to help",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
+              },
+              {
+                "id": "def-s-spacer-1248",
+                "kind": "spacer",
+                "height": 4
+              },
+              {
+                "id": "def-s-text-1249",
+                "kind": "text",
+                "html": "Reply to any email from us and you’ll reach a real person — not a bot.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              }
+            ],
+            "bgRole": "base200",
+            "borderColor": "#e4e4e7",
+            "borderColorAuto": true,
+            "borderColorRole": "base300",
+            "borderWidth": 1,
+            "radius": 16,
+            "marginX": 24,
+            "marginY": 8,
+            "align": "left"
+          },
+          {
+            "id": "def-s-section-1252",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "def-s-button-1251",
                 "kind": "button",
                 "label": "Shop now",
                 "href": "{{site.url}}/shop",
@@ -101,7 +168,7 @@
       "subject": "Still thinking it over, {{customer.firstName}}?",
       "preheader": "Your favourites are waiting at {{site.name}}.",
       "root": {
-        "id": "shop-winback-body-8",
+        "id": "def-s-body-1264",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -112,7 +179,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "shop-winback-section-9",
+            "id": "def-s-section-1257",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -120,7 +187,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "shop-winback-text-1",
+                "id": "def-s-text-1254",
                 "kind": "text",
                 "html": "We’d love to see you again",
                 "align": "left",
@@ -131,12 +198,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "shop-winback-spacer-2",
+                "id": "def-s-spacer-1256",
                 "kind": "spacer",
-                "height": 10
+                "height": 16
               },
               {
-                "id": "shop-winback-text-3",
+                "id": "def-s-text-1255",
                 "kind": "text",
                 "html": "It’s been a little while, {{customer.firstName}}. Whenever you’re ready, {{site.name}} is right where you left it.",
                 "align": "left",
@@ -145,30 +212,65 @@
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ]
+          },
+          {
+            "id": "def-s-section-1261",
+            "kind": "section",
+            "bg": "#f4f4f5",
+            "bgAuto": true,
+            "paddingX": 20,
+            "paddingY": 18,
+            "children": [
               {
-                "id": "shop-winback-spacer-4",
-                "kind": "spacer",
-                "height": 14
-              },
-              {
-                "id": "shop-winback-text-5",
+                "id": "def-s-text-1258",
                 "kind": "text",
-                "html": "We’ve had a few new things land since your last visit — come take a look and see what’s caught our eye lately.",
+                "html": "New since your last visit",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 18,
+                "fontWeight": "bold",
+                "lineHeight": 29
+              },
+              {
+                "id": "def-s-spacer-1260",
+                "kind": "spacer",
+                "height": 16
+              },
+              {
+                "id": "def-s-text-1259",
+                "kind": "text",
+                "html": "A few fresh arrivals and returning favourites have landed — come take a look and see what’s caught our eye lately.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ],
+            "bgRole": "base200",
+            "borderColor": "#e4e4e7",
+            "borderColorAuto": true,
+            "borderColorRole": "base300",
+            "borderWidth": 1,
+            "radius": 16,
+            "marginX": 24,
+            "marginY": 8,
+            "align": "left"
+          },
+          {
+            "id": "def-s-section-1263",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
               {
-                "id": "shop-winback-spacer-6",
-                "kind": "spacer",
-                "height": 22
-              },
-              {
-                "id": "shop-winback-button-7",
+                "id": "def-s-button-1262",
                 "kind": "button",
                 "label": "See what’s new",
                 "href": "{{site.url}}/shop",

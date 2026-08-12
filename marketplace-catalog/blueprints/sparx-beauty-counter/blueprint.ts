@@ -8,12 +8,14 @@
 // workspace resolution, so it imports ONLY sibling JSON, never `@sparx/*`.
 import site from './site.json' with { type: 'json' };
 import content from './content.json' with { type: 'json' };
+import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-beauty-counter',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Beauty Counter',
   summary:
     'A shade-forward storefront for an own-brand colour-cosmetics house — a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',
@@ -61,12 +63,15 @@ const blueprint = {
 
   assets,
   contentTypes: [],
+  authors,
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

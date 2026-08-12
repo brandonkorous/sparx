@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-cleaning-home',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — House Cleaning (Home)',
   summary:
     'A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle — the same trusted cleaner every visit.',

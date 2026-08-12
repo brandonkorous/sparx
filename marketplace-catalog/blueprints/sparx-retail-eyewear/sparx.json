@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-eyewear",
   "name": "sparx — Eyewear (Modern)",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "tagline": "A modern, working storefront for a direct-to-consumer eyewear brand.",
   "description": "A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colourways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.",
   "payload": "blueprint.ts",
@@ -16,7 +16,13 @@
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "commerce", "cms", "crm", "email"]
+    "modules": [
+      "builder",
+      "commerce",
+      "cms",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

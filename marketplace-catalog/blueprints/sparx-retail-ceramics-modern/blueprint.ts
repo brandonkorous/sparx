@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-ceramics-modern',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Ceramics Studio (Modern)',
   summary:
     'A complete, working shop for a contemporary ceramics studio: a real catalogue of modern tableware — a cylinder mug, nesting bowls, a coupe plate set, a carafe & cup, a tumbler set, two sculptural vases, a cylinder planter and a full table set, each in three house colours — with categories, collections, a crisp-on-white PDP and a fully merchandised home page. Bright cool-white theme, near-black ink and a single bold clay-coral accent, in a geometric grotesk with sharp corners. Shipped as Form.',

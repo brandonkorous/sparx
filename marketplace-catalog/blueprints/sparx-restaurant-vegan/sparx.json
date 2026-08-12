@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-restaurant-vegan",
   "name": "sparx — Plant Kitchen",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A fresh, working template for a plant-based restaurant that takes reservations.",
   "description": "A complete, working site for a modern plant-based restaurant: a real vegetable-forward menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a relaxed no-deposit policy, walk-ins welcome) on the Reserve page. Bright plant-kitchen theme — green-tinted cream, vibrant leaf-green, a warm terracotta accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Sprout & Vine.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Restaurant & plant kitchen",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

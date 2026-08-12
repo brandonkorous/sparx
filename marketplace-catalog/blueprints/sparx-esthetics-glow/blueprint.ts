@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-esthetics-glow',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Esthetics (Glow Bar)',
   summary:
     'A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',

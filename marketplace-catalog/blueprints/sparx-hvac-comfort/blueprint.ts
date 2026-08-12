@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-hvac-comfort',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — HVAC (Comfort)',
   summary:
     'A friendly residential HVAC site built on year-round comfort — a warm amber-heating and cool sky-blue palette on a clean warm-white ground. Installs a working booking flow: tune-ups, free install estimates, diagnostics and air-quality visits, three techs dispatched by skill with their own hours, and a maintenance-plan priority policy. Ships as "Evenair Heating & Cooling".',

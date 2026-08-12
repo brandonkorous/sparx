@@ -11,10 +11,11 @@ import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-immersive-photo',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Immersive Photo',
   summary:
     'An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the colour — a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.',
@@ -66,9 +67,11 @@ const blueprint = {
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

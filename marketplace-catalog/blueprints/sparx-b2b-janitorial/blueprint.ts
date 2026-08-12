@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-janitorial',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Janitorial & Facility Supply (B2B)',
   summary:
     'A complete, working wholesale shop for a janitorial and facility-supply distributor: a real catalogue of cleaning chemicals, paper, liners and tools sold by the case with pack sizes and MOQs, per-case trade pricing, categories, collections, a trade PDP and a merchandised home page framed for facilities buyers. Clean teal-tinted theme. Shipped as Saniworx.',

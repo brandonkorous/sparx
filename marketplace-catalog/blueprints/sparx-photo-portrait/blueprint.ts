@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-photo-portrait',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Photography (Portrait)',
   summary:
     'A bright, modern family & portrait photography site — a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as "Frame & Field", a light-filled portrait studio.',

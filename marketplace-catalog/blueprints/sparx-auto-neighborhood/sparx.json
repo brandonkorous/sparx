@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-auto-neighborhood",
   "name": "sparx — Auto Repair (Neighborhood)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A trusted-neighborhood template for auto shops — book a visit from day one.",
   "description": "A warm, honest template for a family-run neighborhood auto shop — a racing-blue palette with a warm-red accent and real shop photography. Installs online booking from day one: a menu of visits (free estimate, oil, brakes, diagnostics, inspections) with three mechanics AND two service bays as bookable resources, plus a drop-off policy. Ships as \"Sparrow & Sons Auto\", the shop that tells you what it actually needs.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Auto repair",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

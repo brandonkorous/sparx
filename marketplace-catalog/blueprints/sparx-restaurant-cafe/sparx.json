@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-restaurant-cafe",
   "name": "sparx — Café",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A sunny, working template for an all-day café that takes bookings.",
   "description": "A complete, working site for an all-day café: a real all-day brunch menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, daytime hours, a relaxed no-deposit policy — walk-ins welcome) on the /reserve page. Sunny café theme — warm cream, fresh café-green, a cheerful coral accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Kettle & Crumb.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Café & brunch",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

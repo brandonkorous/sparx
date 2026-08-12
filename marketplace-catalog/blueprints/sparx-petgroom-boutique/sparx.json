@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-petgroom-boutique",
   "name": "sparx — Pet Grooming (Boutique)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A refined, boutique template for pet groomers — book online from day one.",
   "description": "An upscale, boutique pet-spa site — a warm ivory ground, a deep-plum primary and a blush accent, with an elegant serif display and calm photography. Installs a working booking flow: a real spa menu (signature groom, breed hand styling, spa add-ons, cat grooming), three master groomers you book by name, two private suites as bookable rooms, and a deposit policy. Ships as \"The Groom Room\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Pet grooming",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

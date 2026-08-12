@@ -48,6 +48,7 @@ import { blogPostGrid } from '../../../packages/silica-catalog/src/cms';
 import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
 import { PORTFOLIO_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/portfolio-themes';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+import { blueprintEmailDoc } from '../shared/blueprint-email';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const blueprintsDir = join(here, '..', '..', 'blueprints');
@@ -56,7 +57,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  changes — a marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without
  *  a bump the catalog keeps serving the OLD payload and a fresh install never sees the new
  *  pages. 1.0.0 is the first, full five-page portfolio pass. */
-const BUNDLE_VERSION = '1.0.0';
+const BUNDLE_VERSION = '1.1.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -448,84 +449,6 @@ function manifestJson(opts: {
 
 /** Build ONE silica `EmailDocument` (body → section → heading / paragraphs / button), with the
  *  `*Auto` colour flags so it re-themes light/dark per tenant. Node ids namespaced per email. */
-function emailDoc(
-  ns: string,
-  o: {
-    subject: string;
-    preheader: string;
-    heading: string;
-    paragraphs: string[];
-    button: { label: string; href: string };
-  }
-): Record<string, unknown> {
-  let seq = 0;
-  const eid = (k: string): string => `${ns}-${k}-${(seq += 1)}`;
-  const text = (html: string, heading = false): Record<string, unknown> => ({
-    id: eid('text'),
-    kind: 'text',
-    html,
-    align: 'left',
-    color: '#18181b',
-    colorAuto: true,
-    fontSize: heading ? 28 : 16,
-    fontWeight: heading ? 'bold' : 'normal',
-    lineHeight: heading ? 36 : 26,
-  });
-  const spacer = (height: number): Record<string, unknown> => ({
-    id: eid('spacer'),
-    kind: 'spacer',
-    height,
-  });
-
-  const blocks: Record<string, unknown>[] = [text(o.heading, true), spacer(10)];
-  o.paragraphs.forEach((p, i) => {
-    blocks.push(text(p));
-    blocks.push(spacer(i === o.paragraphs.length - 1 ? 22 : 14));
-  });
-  blocks.push({
-    id: eid('button'),
-    kind: 'button',
-    label: o.button.label,
-    href: o.button.href,
-    bg: '#111827',
-    bgAuto: true,
-    color: '#ffffff',
-    colorAuto: true,
-    radius: 6,
-    align: 'left',
-    paddingX: 24,
-    paddingY: 12,
-  });
-
-  return {
-    version: '1',
-    subject: o.subject,
-    preheader: o.preheader,
-    root: {
-      id: eid('body'),
-      kind: 'body',
-      width: 600,
-      bg: '#f4f4f5',
-      bgAuto: true,
-      contentBg: '#ffffff',
-      contentBgAuto: true,
-      fontFamily: 'Arial, Helvetica, sans-serif',
-      colorScheme: 'light dark',
-      children: [
-        {
-          id: eid('section'),
-          kind: 'section',
-          bg: '#ffffff',
-          bgAuto: true,
-          paddingX: 24,
-          paddingY: 24,
-          children: blocks,
-        },
-      ],
-    },
-  };
-}
-
 /** The default MARKETING starter for a portfolio — a warm welcome for a new subscriber, a
  *  draft on install. Person-voiced but persona-neutral (it reads right for a designer, a
  *  photographer or a writer alike); the CTA points at the site's live `/work`. */
@@ -534,14 +457,17 @@ function portfolioEmails(_spec: PortfolioSiteSpec): Record<string, unknown>[] {
     {
       name: 'Welcome',
       publish: false,
-      doc: emailDoc('folio-welcome', {
+      doc: blueprintEmailDoc({
         subject: 'Thanks for subscribing to {{site.name}}',
         preheader: 'A quick hello, and where to see the work.',
         heading: 'Hello, {{customer.firstName}}',
         paragraphs: [
           'Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.',
-          'In the meantime, have a look through the selected work. If something sparks an idea for a project, I’d love to hear about it.',
         ],
+        highlight: {
+          title: 'Start with the selected work',
+          body: 'Have a look through recent projects. If something sparks an idea, I’d love to hear about it.',
+        },
         button: { label: 'See the work', href: '{{site.url}}/work' },
       }),
     },

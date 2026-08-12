@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-electrician-residential",
   "name": "sparx — Electrician (Residential)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A warm, safety-first template for home electricians — book visits online from day one.",
   "description": "A trustworthy residential-electrician site — a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as \"Brightwire Electric\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Electrician",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

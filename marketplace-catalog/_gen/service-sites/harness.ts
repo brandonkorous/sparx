@@ -43,6 +43,7 @@ import type {
 import { HOST_KEYS, hostCore } from '../../../packages/silica-catalog/src/host-nodes';
 import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+import { blueprintEmailDoc } from '../shared/blueprint-email';
 
 // Re-export the theme-authoring kit so a blueprint imports EVERYTHING (its theme helpers
 // AND the section kit + emit) from one place.
@@ -66,7 +67,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
  *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.0.0';
+const BUNDLE_VERSION = '1.1.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -436,80 +437,6 @@ export async function emitServiceBundle(
  *  sends (body → section → heading / paragraphs / button). Colours carry the `*Auto` flags
  *  so the mail re-themes light/dark per tenant, exactly like the core blueprints' emails.
  *  Node ids are namespaced per email so a doc's nodes stay unique. */
-function emailDoc(
-  ns: string,
-  o: {
-    subject: string;
-    preheader: string;
-    heading: string;
-    paragraphs: string[];
-    button: { label: string; href: string };
-  }
-): Record<string, unknown> {
-  let seq = 0;
-  const id = (k: string): string => `${ns}-${k}-${(seq += 1)}`;
-  const text = (html: string, heading = false): Record<string, unknown> => ({
-    id: id('text'),
-    kind: 'text',
-    html,
-    align: 'left',
-    color: '#18181b',
-    colorAuto: true,
-    fontSize: heading ? 28 : 16,
-    fontWeight: heading ? 'bold' : 'normal',
-    lineHeight: heading ? 36 : 26,
-  });
-  const spacer = (height: number): Record<string, unknown> => ({ id: id('spacer'), kind: 'spacer', height });
-
-  const blocks: Record<string, unknown>[] = [text(o.heading, true), spacer(10)];
-  o.paragraphs.forEach((p, i) => {
-    blocks.push(text(p));
-    blocks.push(spacer(i === o.paragraphs.length - 1 ? 22 : 14));
-  });
-  blocks.push({
-    id: id('button'),
-    kind: 'button',
-    label: o.button.label,
-    href: o.button.href,
-    bg: '#111827',
-    bgAuto: true,
-    color: '#ffffff',
-    colorAuto: true,
-    radius: 6,
-    align: 'left',
-    paddingX: 24,
-    paddingY: 12,
-  });
-
-  return {
-    version: '1',
-    subject: o.subject,
-    preheader: o.preheader,
-    root: {
-      id: id('body'),
-      kind: 'body',
-      width: 600,
-      bg: '#f4f4f5',
-      bgAuto: true,
-      contentBg: '#ffffff',
-      contentBgAuto: true,
-      fontFamily: 'Arial, Helvetica, sans-serif',
-      colorScheme: 'light dark',
-      children: [
-        {
-          id: id('section'),
-          kind: 'section',
-          bg: '#ffffff',
-          bgAuto: true,
-          paddingX: 24,
-          paddingY: 24,
-          children: blocks,
-        },
-      ],
-    },
-  };
-}
-
 /** The default MARKETING starters for a booking business — a welcome and a come-back /
  *  rebook, both installed as drafts (`publish: false`, like every blueprint email). The
  *  copy is booking-voiced but vertical-neutral (it reads right for a salon, a plumber, or
@@ -519,13 +446,22 @@ function serviceEmails(_spec: ServiceSiteSpec): Record<string, unknown>[] {
     {
       name: 'Welcome',
       publish: false,
-      doc: emailDoc('svc-welcome', {
+      doc: blueprintEmailDoc({
         subject: 'Welcome to {{site.name}}',
         preheader: 'So glad you found us — here’s where to start.',
         heading: 'Welcome, {{customer.firstName}}',
         paragraphs: [
           'Thanks for choosing {{site.name}}. Whether this is your first visit or your fifth, we’re glad you’re here.',
-          'Whenever you’re ready, booking online takes about a minute — you’ll see live availability and pick the time that works for you.',
+        ],
+        features: [
+          {
+            title: 'Booking takes a minute',
+            body: 'See live availability, pick the time that works for you, and you’re done — no phone tag.',
+          },
+          {
+            title: 'It’s all in your account',
+            body: 'Reschedule, cancel, or book again any time — your visits live in one place.',
+          },
         ],
         button: { label: 'Book an appointment', href: '{{site.url}}/book' },
       }),
@@ -533,14 +469,17 @@ function serviceEmails(_spec: ServiceSiteSpec): Record<string, unknown>[] {
     {
       name: 'Time for your next visit',
       publish: false,
-      doc: emailDoc('svc-rebook', {
+      doc: blueprintEmailDoc({
         subject: 'Time for your next visit, {{customer.firstName}}?',
         preheader: 'Book your next appointment with {{site.name}}.',
         heading: 'We’d love to see you again',
         paragraphs: [
           'It’s been a little while, {{customer.firstName}}. Whenever you’re ready for your next visit, {{site.name}} is here for you.',
-          'Pick a time that suits you — it only takes a minute, and you’ll always see the latest availability.',
         ],
+        highlight: {
+          title: 'Pick a time that suits you',
+          body: 'Booking your next visit takes about a minute, and you’ll always see the latest availability.',
+        },
         button: { label: 'Book your next visit', href: '{{site.url}}/book' },
       }),
     },

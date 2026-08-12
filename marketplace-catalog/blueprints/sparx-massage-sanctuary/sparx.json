@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-massage-sanctuary",
   "name": "sparx — Massage (Sanctuary)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A warm, serene template for massage & wellness — book online from day one.",
   "description": "A serene relaxation-massage retreat site — warm sand and oat grounds, a soft sage-green primary, a clay accent and a serif display, with dim, candlelit photography carrying the page. Installs a working booking flow: a calm treatment menu (Swedish, warm stone, aromatherapy, the signature Stillwater ritual, couples), three therapists and three rooms (incl. a couples suite) you book by name, and a deposit policy on longer rituals. Ships as \"Stillwater\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Massage therapy",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-interior-edesign",
   "name": "sparx — Interior (E-Design)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A bright, friendly template for online interior e-design — book consults from day one.",
   "description": "A bright, friendly interior-design site for online e-design studios — a warm coral palette, a teal accent and a modern sans, built around a HOW-IT-WORKS story and flat-fee packages. Installs a working booking flow: a real menu of consults and packages (free consult, single-room e-design, colour, layout, room refresh), three designers you book by name with their own hours, and shoppable, affordable e-design. Ships as \"Room & Co.\" for everyday homeowners.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Interior design",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

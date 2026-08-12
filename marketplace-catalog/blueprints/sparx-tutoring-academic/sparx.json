@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-tutoring-academic",
   "name": "sparx — Tutoring (Academic)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A warm, confidence-building template for academic tutoring — book online from day one.",
   "description": "A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as \"Summit Learning\", built to book.",
   "payload": "blueprint.ts",

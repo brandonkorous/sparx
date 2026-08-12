@@ -11,10 +11,11 @@ import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-artist-media',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Artist Media',
   summary:
     'A media-forward, stage-dark site for a recording artist or band — a poster-scale artist hero, a latest-release feature with streaming links, a tour-dates run, a live journal, and a bespoke article page, in a near-black theme with a vivid magenta accent. Modelled on the recording-artist archetype; shipped as Vela. Ships a light music + merch store (vinyl, a tee, a hoodie, a digital album) to demonstrate content + commerce together.',
@@ -66,9 +67,11 @@ const blueprint = {
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

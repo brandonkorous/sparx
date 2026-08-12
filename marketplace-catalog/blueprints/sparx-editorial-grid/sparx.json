@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-editorial-grid",
   "name": "sparx — Editorial Grid",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tagline": "An editorial, gallery-quiet template for makers of considered furniture and objects.",
   "description": "A magazine-quiet storefront for design furniture and objects — a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.",
   "payload": "blueprint.ts",

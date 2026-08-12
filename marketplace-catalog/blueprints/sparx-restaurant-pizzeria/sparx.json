@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-restaurant-pizzeria",
   "name": "sparx — Pizzeria",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "Flour, fire, and a long table — a working template for a pizzeria that books tables.",
   "description": "A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Restaurant & pizzeria",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-lifecoach-wellness",
   "name": "sparx — Life Coach (Wellness)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A warm, uplifting template for life & wellness coaches — book online from day one.",
   "description": "A warm, encouraging site for a life & wellness coaching practice — a cream palette, a terracotta primary and a soft humanist serif, with hopeful photography carrying the page. Installs online booking from day one: a free discovery call plus real coaching sessions (life, mindset, confidence, balance, purpose), and three coaches you book by name as bookable resources with their own hours. Ships as \"Brightpath Life Coaching\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Life coaching",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

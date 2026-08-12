@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-junk-eco",
   "name": "sparx — Junk Removal (Eco)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A natural, donation-first template for eco junk removal — book pickups online from day one.",
   "description": "A natural palette and online booking for an eco, donation-first junk removal and hauling service — free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as \"Green Haul\", a conscientious, community-minded hauler.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Junk removal",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

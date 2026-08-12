@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "7373b05e-7750-4a5e-9b79-8560d4c75754",
+                  "id": "1e9ed335-6837-42e3-8e2c-ab2a7a9ccc5e",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "dcc994ba-5c63-4387-8d82-f9ee50755f51",
+                      "id": "8dad8ce8-3251-4dd3-9cd3-bc5aca00ec23",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "d971c9f4-640e-43fa-9c9c-bf1e6b2db2b5",
+                      "id": "d122ec60-6bb4-41ee-ae13-bbf4e2f48175",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "bc4ad40e-13bc-4a99-a20e-5c1590ed552b",
+                      "id": "dd4269b2-0c97-4ce3-89ad-45c08cd606c9",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "1cb8b11b-ae07-480c-95b7-4869ccbe23f3",
+                      "id": "462d92e5-4d96-4293-9b8e-dd277ab3a990",
                       "ord": "a3"
                     }
                   ],
-                  "id": "8141ad74-29c7-4a3b-8adb-8e40420678f9",
+                  "id": "493e0007-0e45-4d5c-a355-e7a87a724e8e",
                   "ord": "a1"
                 },
                 {
@@ -116,14 +116,14 @@
                         "type": "link",
                         "label": "Secondary link"
                       },
-                      "id": "3923ef7a-9681-4b2c-804f-b4b9dff8d4e0",
+                      "id": "488009cd-43d8-469a-a2bf-d8459aad9d47",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "996a65bc-f49a-4261-b44d-819d21d1042b",
+                      "id": "58505be7-66ca-45a8-9690-54496e4d621e",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +139,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "db41f919-f479-4651-8889-7a4d40816fc2",
+                      "id": "b0ee273f-0789-4dc6-965c-72d0f9157bb9",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +157,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "6fc5b0ad-4e69-44dc-b009-553ca35789a0",
+                          "id": "bf79de58-aa0d-4c26-b22c-663f6dc6a278",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "ac69c02c-c53d-47a6-a448-033dce071a10",
+                      "id": "5e653798-ff58-4c99-b0e1-6aa8cbef2446",
                       "ord": "a3"
                     }
                   ],
-                  "id": "4122466d-fa72-4d92-a8df-94fbe07bb8a4",
+                  "id": "3de13cb9-4691-4fef-b2cb-045d7c2a0182",
                   "ord": "a2"
                 }
               ],
-              "id": "45a33f09-133a-4353-9634-76ed7a504525",
+              "id": "57d3cc81-0126-4f1f-9f10-3d3b3676b558",
               "ord": "a0"
             },
             {
@@ -194,7 +194,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "fcb55b10-691a-4c78-a0c0-8e60b92745e5",
+                  "id": "0eb54e83-4962-43cf-89d3-f8912b0c11a2",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +210,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "8305aab0-e111-491b-870a-ccd6eddae342",
+                  "id": "98834e65-0334-481e-aaf1-ace13a209c29",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +226,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "8d09ac93-a291-4f75-9b26-e0c97afd55f6",
+                  "id": "a0a94f62-78ec-4980-bc56-8e0999682475",
                   "ord": "a2"
                 },
                 {
@@ -242,7 +242,7 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "b680e8cb-6db6-4a3f-b19b-6284d31e51f4",
+                  "id": "f9b05d31-e821-4d64-b50a-76e3fb9d2ca5",
                   "ord": "a3"
                 },
                 {
@@ -258,7 +258,7 @@
                     "type": "link",
                     "label": "Secondary link"
                   },
-                  "id": "470a09ee-698f-49fa-bba2-07a3655db621",
+                  "id": "86c9f10b-7073-45ec-9577-8f4c61977596",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +274,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "0135462f-04d7-4a84-9278-ee77121d8120",
+                  "id": "5b20b026-5f6a-4690-b4e3-a592bc7517c3",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "f369b921-0f8a-4521-942f-37167c09354f",
+              "id": "967f94d5-834c-442a-8a99-059cec545f60",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "ba269160-6f3b-4010-9463-ee6e39ddb832",
+          "id": "aa1ad3f9-c32a-4308-b037-35b213b33789",
           "ord": "a0"
         },
         {
@@ -302,7 +302,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "6240798a-2bfe-45d0-a5b6-f9fa5328c07c",
+          "id": "f58373ce-04b1-410c-85e0-14e77fafcae5",
           "ord": "a1"
         },
         {
@@ -332,7 +332,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "36d81580-2c3c-4cb4-9164-aee33d27b2bd",
+                          "id": "24b461e8-f105-495e-a259-0d5dcbb43483",
                           "ord": "a0"
                         },
                         {
@@ -348,7 +348,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "78e2f004-2019-4108-9d39-9b79bcde58b2",
+                          "id": "2a53e752-3551-4310-9b26-012d29c55d39",
                           "ord": "a1"
                         },
                         {
@@ -356,11 +356,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "ae7c689e-ecbf-49c2-b5cd-fc17f2ab7db5",
+                          "id": "f416d9c9-7d11-4943-88df-df487721b100",
                           "ord": "a2"
                         }
                       ],
-                      "id": "c0f1b55d-3310-4e5f-b33f-9b15d66071c8",
+                      "id": "e44d69f8-8bcc-4779-9ce3-4583a5666c2c",
                       "ord": "a0"
                     },
                     {
@@ -381,7 +381,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "1f5643b8-4422-4556-bc8a-24589abc5427",
+                          "id": "f73d2a4e-2854-4257-9b16-a580b91eda83",
                           "ord": "a0"
                         },
                         {
@@ -406,11 +406,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "115c1ea0-9b9d-406b-9aaa-4d276ed887a1",
+                                  "id": "7580624f-6d7c-414b-9ea9-13ebd82d94bb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "72a27fee-b540-46f5-ad00-13312a5fdce1",
+                              "id": "c63a3cfc-1ceb-4781-aafe-325221adabc5",
                               "ord": "a0"
                             },
                             {
@@ -430,11 +430,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "cc59b627-e07b-46ca-a9a5-cdc465ea1058",
+                                  "id": "f50ca1c8-96fa-45a4-96e4-ca63a4ab7f43",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d81b25ac-a349-4fff-89ed-f0c6b36890a6",
+                              "id": "fcb652fd-ec32-46af-9a4b-163dd6b77ef1",
                               "ord": "a1"
                             },
                             {
@@ -454,11 +454,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "58ad7264-504d-45e0-af80-c358c1787d1e",
+                                  "id": "c1b331e5-284d-4bc6-80fc-d9fa64c3ee6d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "edbc6e08-c84e-48e5-a6a2-943ba5da474f",
+                              "id": "d99c23ef-da31-486b-9ded-c70de7344dd1",
                               "ord": "a2"
                             },
                             {
@@ -478,11 +478,11 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "d34565ae-2c88-4c61-99e7-a0b322d2a7c1",
+                                  "id": "84be136e-4dbb-4d18-a681-5e0499e94f71",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2c18db67-71f0-4c9a-96c1-584d03cd20ac",
+                              "id": "5a5a5b24-27c8-43e7-9571-83856b4e9444",
                               "ord": "a3"
                             },
                             {
@@ -497,19 +497,19 @@
                                     "href": "/search"
                                   },
                                   "children": ["Search"],
-                                  "id": "03df5038-58b2-4932-8690-571177ee2975",
+                                  "id": "12c5f375-d9a3-4ecb-9e90-d2d4f64e9a89",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "71973e1e-98e8-4bb2-ab41-9f896859dba0",
+                              "id": "b05acdc2-2514-42c9-af85-27fa6d16e015",
                               "ord": "a4"
                             }
                           ],
-                          "id": "601da682-01a7-44a9-8d3b-801d71028be0",
+                          "id": "d2926f4a-3ef2-4af6-8238-cdcf16078ad5",
                           "ord": "a1"
                         }
                       ],
-                      "id": "43763d51-6b1e-40bb-b928-70c07e0663b2",
+                      "id": "e712d10b-8969-45ef-9050-6700391ffb04",
                       "ord": "a1"
                     },
                     {
@@ -530,7 +530,7 @@
                           "attrs": {
                             "href": "/account"
                           },
-                          "id": "69c35fc0-77b6-42f8-8fa6-1bf9c1fb6be4",
+                          "id": "64e3cb97-479e-494a-ad65-77fb53dd6df5",
                           "ord": "a0"
                         },
                         {
@@ -555,11 +555,11 @@
                                     "type": "link",
                                     "label": "About"
                                   },
-                                  "id": "1859e721-1f22-468f-8dd9-b8f6dc958da1",
+                                  "id": "eb3d39d8-5eed-4777-8714-8f607e2d0ba6",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1a3b54ff-6f0f-4330-a90d-55055f105a4b",
+                              "id": "9c3df97b-b55f-4686-8c3b-20f42fbcd928",
                               "ord": "a0"
                             },
                             {
@@ -579,11 +579,11 @@
                                     "type": "link",
                                     "label": "Careers"
                                   },
-                                  "id": "d4ec42bb-c611-4948-9792-08d5c2bf6ba3",
+                                  "id": "8be7bd52-384f-4f1d-be0c-427811b783ca",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f4bc4b84-55b8-4316-9791-82ab4a677066",
+                              "id": "47fa335c-ae50-4c70-8d2f-c4baf867c78d",
                               "ord": "a1"
                             },
                             {
@@ -603,19 +603,19 @@
                                     "type": "link",
                                     "label": "Blog"
                                   },
-                                  "id": "9070f0c5-501f-4f78-8340-85986ce8a0b0",
+                                  "id": "8e1dc033-3503-4d7a-bdc1-ad700422057d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "22ebd238-5ad7-41d4-9146-ea869b2a9ad1",
+                              "id": "86c7c0cb-bc08-4f96-86a6-638fb059ac81",
                               "ord": "a2"
                             }
                           ],
-                          "id": "64a597e8-4fcb-479e-8f37-4ab45bcbacdc",
+                          "id": "e274557f-3521-4203-bf9d-d5a730bb9027",
                           "ord": "a1"
                         }
                       ],
-                      "id": "44c57ae6-4afa-4d5b-87ff-90af61689793",
+                      "id": "cc655f48-86d7-41d0-8b0e-a35a184c92e0",
                       "ord": "a2"
                     },
                     {
@@ -639,23 +639,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "d4245dee-f929-4e28-9f0e-e47a064bf40f",
+                                  "id": "e7cb1d69-50f9-4ee3-91d5-ebeb09aaa1e4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "137ad626-3c0a-4a2c-912b-06da13d27366",
+                              "id": "4c3425c3-87db-4027-811d-6121a0a08582",
                               "ord": "a0"
                             }
                           ],
-                          "id": "6a61c9fb-73b6-44d1-8bc4-d0e8a6c13dee",
+                          "id": "de39c6b8-2797-4a17-8272-966c2d4e1f6e",
                           "ord": "a0"
                         }
                       ],
-                      "id": "764ae0d8-27c7-4d70-bc23-36e8cc5d430e",
+                      "id": "477945bc-a21e-4164-9659-94174a407512",
                       "ord": "a3"
                     }
                   ],
-                  "id": "61561dd5-845d-4bfe-923a-ed9a13eaa9e9",
+                  "id": "94a29319-6d1b-4e9d-b62d-c5e3d494bae7",
                   "ord": "a0"
                 },
                 {
@@ -678,11 +678,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "a1fa98af-222c-4b12-a80b-c4100bba6e4a",
+                          "id": "2cc6ef9f-ffe5-411e-a422-4b2be3b24d12",
                           "ord": "a0"
                         }
                       ],
-                      "id": "48c172a7-18cb-46be-947f-8f4707fefa10",
+                      "id": "f5cab07a-05e8-4148-9b93-e9cd64a05b7a",
                       "ord": "a0"
                     },
                     {
@@ -690,23 +690,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "429c5b53-bf2d-404d-b0cc-ec1a100bdada",
+                      "id": "5de8d2e7-d4e6-43a8-b1e5-4fb93880ed1e",
                       "ord": "a1"
                     }
                   ],
-                  "id": "0cc26223-7258-4c33-b518-331a877a838c",
+                  "id": "04c13ef3-6b04-4fef-a04f-c530243dc03f",
                   "ord": "a1"
                 }
               ],
-              "id": "0fa4b47d-2e6d-4047-807a-fbb8d16996b1",
+              "id": "118a57c2-eaaa-415e-b748-5a0665f2d222",
               "ord": "a0"
             }
           ],
-          "id": "269d49bc-94b3-45fa-92b1-275b16f0c33f",
+          "id": "d57e9971-00ec-40f0-a399-6359adce1263",
           "ord": "a2"
         }
       ],
-      "id": "c0e465fe-7f12-40cd-a292-33727281d54b"
+      "id": "7b23a234-74d1-46c5-9d47-d2fc7f11a2d9"
     }
   },
   "pages": [
@@ -720,7 +720,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8cec12d0-376c-4df8-9efb-1547c1b7ece9",
+        "id": "47d5492a-e7d6-4de7-9ba9-8f8e9955b26c",
         "children": [
           {
             "kind": "element",
@@ -741,7 +741,7 @@
                   "preload": "metadata",
                   "aria-label": "A rider on an empty mountain road at first light"
                 },
-                "id": "fdc381a8-ddc1-4fbe-8037-513d0afb4002",
+                "id": "40a0d20d-8739-4b63-a414-91697f5c827f",
                 "ord": "a0"
               },
               {
@@ -759,7 +759,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Kit built for the long road"],
-                        "id": "3a8f1ed3-4b5b-4a7d-a1cc-b162a37edce9",
+                        "id": "33739f47-1fd6-4240-acbd-61cbe9bc19aa",
                         "ord": "a0"
                       },
                       {
@@ -769,7 +769,7 @@
                         "children": [
                           "Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home — bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride."
                         ],
-                        "id": "ff86fb6f-1679-4e92-84d1-f86d669f9557",
+                        "id": "f06a1357-8372-4755-8eb2-fd5bb123750c",
                         "ord": "a1"
                       },
                       {
@@ -785,7 +785,7 @@
                               "href": "/shop"
                             },
                             "children": ["Shop the new season"],
-                            "id": "accf1d2e-68b0-4f36-9056-7dc6c816ed8a",
+                            "id": "ddc863bd-fd49-444b-9055-9f8dd3713b09",
                             "ord": "a0"
                           },
                           {
@@ -796,23 +796,23 @@
                               "href": "/journal"
                             },
                             "children": ["Read the Journal"],
-                            "id": "ae44a771-dd02-4d67-9ba1-9d29673f6887",
+                            "id": "0c274672-821e-4803-9145-57acbac146a5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3dfb9b5b-b763-4d68-9cc3-495a756e52ed",
+                        "id": "c052d159-7043-4738-9975-491865dbf581",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a8d7b01b-8119-4570-8718-4a61e120ad87",
+                    "id": "363f8988-8406-4c39-8d61-91b824fae249",
                     "ord": "a0"
                   }
                 ],
-                "id": "c56454a5-9197-45bc-8244-4b10da6df251",
+                "id": "93d8416d-daee-4584-ab0c-d5f47c0468c7",
                 "ord": "a1"
               }
             ],
-            "id": "eb00307e-5220-43f8-90b7-acbaba3c2b5b",
+            "id": "0814ed77-09c6-4bf0-bcf8-e8a0a54e2258",
             "ord": "a0"
           },
           {
@@ -830,7 +830,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["New this season"],
-                    "id": "19ab104f-6c2d-4562-9d5c-0cf5b4b88090",
+                    "id": "d8a689ca-0d3d-42a8-9699-ac5245343537",
                     "ord": "a0"
                   },
                   {
@@ -854,12 +854,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "36297b76-3dcc-4abf-9d9f-b7c23c144570",
+                            "id": "dd572dd6-34f5-4392-95ab-dd8a8e0ff826",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "519f0ef2-d794-4e23-b0b7-bbb2aa8c842b",
+                        "id": "37cd40d0-026c-4beb-8284-acf2635d54ff",
                         "ord": "a0"
                       },
                       {
@@ -878,20 +878,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "3ce8fe3d-d8be-4d63-a7ee-f4f57c7fc525",
+                            "id": "3dc01cf4-c929-4c6e-a4c8-7f908a4f46b5",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "17abd5f8-118c-4d20-9fc8-801ef8a4d472",
+                        "id": "93ce425a-9028-4c7d-ad3e-b24c12fb127e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a681b74d-4ce0-4fb7-aea0-041b1747ceca",
+                    "id": "8f94cabc-245c-4dc2-85c0-4043a7bbcfdd",
                     "ord": "a1"
                   }
                 ],
-                "id": "0e042631-618c-4564-a2d1-f42f92e197aa",
+                "id": "f0112a7e-21dd-4728-bf2c-3fdb22c6af66",
                 "ord": "a0"
               },
               {
@@ -916,7 +916,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "e03392ef-fd73-4088-8dff-9226cdd484d9",
+                        "id": "323b06e3-b59f-4e65-bd64-fc91763b0425",
                         "ord": "a0"
                       },
                       {
@@ -933,7 +933,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "379458a2-fb05-41fc-8f25-c1d6530374eb",
+                            "id": "d426f0ff-78ac-45a1-9f43-dfc84c8d7150",
                             "ord": "a0"
                           },
                           {
@@ -945,11 +945,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "4a1525ac-657f-4507-a4ce-55074b1fe9ef",
+                            "id": "28875af7-77b4-4c0f-9916-212c80100913",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8108102a-c57f-49b1-8e2f-b1872e257391",
+                        "id": "c7d7d4f9-efdd-4d89-a0e9-0616ff70994a",
                         "ord": "a1"
                       }
                     ],
@@ -959,7 +959,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "e9de8810-f672-49d3-8fb8-4a9c658a66f7",
+                    "id": "9f4e33f3-4a9a-4384-9eb9-9fa51500e8dc",
                     "ord": "a0"
                   }
                 ],
@@ -968,14 +968,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "065e52f9-d532-4c35-81d2-9a60c8992f13",
+                "id": "16eb88c4-6181-4624-9274-dcd3b99f53d5",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "c383dc03-2244-4343-b059-b4d34f43d07f",
+            "id": "b3ad52ce-07a1-4e03-af8a-f4daed1a15cd",
             "ord": "a1"
           },
           {
@@ -992,7 +992,7 @@
                   "alt": "A close crop of a rider seated in the drops",
                   "loading": "lazy"
                 },
-                "id": "702a3f5e-860a-47ba-b9cc-ad6e6a676738",
+                "id": "add52ab3-d937-4213-bc2c-79df28a27691",
                 "ord": "a0"
               },
               {
@@ -1010,7 +1010,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["It starts with the bib"],
-                        "id": "e096d197-098e-4913-a2f2-f8b89778be0a",
+                        "id": "53fdd048-9574-43b6-b37b-cc46364fa26e",
                         "ord": "a0"
                       },
                       {
@@ -1020,7 +1020,7 @@
                         "children": [
                           "A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one — the single piece of kit worth getting right first."
                         ],
-                        "id": "36a48731-cb40-4c68-8db5-b8eeef4cec1d",
+                        "id": "c088bf3e-9894-444e-a8f0-1d3d8c9c058b",
                         "ord": "a1"
                       },
                       {
@@ -1031,19 +1031,19 @@
                           "href": "/shop"
                         },
                         "children": ["Shop bib shorts"],
-                        "id": "671c4c05-4e7b-45f0-b475-785267f1b06f",
+                        "id": "8d46f2a0-57fe-4814-ae14-8a31d26f86f0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "dbcbb757-56c9-45e6-a82b-886c3a394893",
+                    "id": "377d2cb7-9eed-4ca2-8145-1fb4b1a5c600",
                     "ord": "a0"
                   }
                 ],
-                "id": "196fd80c-d01e-4924-8248-e912d1296854",
+                "id": "2d089600-6c58-428a-a56e-c373886d197d",
                 "ord": "a1"
               }
             ],
-            "id": "6ce07456-e271-4a4b-89ad-56f910d1f400",
+            "id": "d77d53c5-1438-4865-8e24-087b9cf89936",
             "ord": "a2"
           },
           {
@@ -1061,7 +1061,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Bib shorts"],
-                    "id": "8cde09fe-f936-4802-9731-8078c61ac510",
+                    "id": "913ca340-527a-42b1-b5b2-83d6c4fa06d9",
                     "ord": "a0"
                   },
                   {
@@ -1085,12 +1085,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "ceed2d22-a63b-49f1-9ce7-03483a7010ec",
+                            "id": "b071954d-ab4e-433f-84cf-0dd14785b307",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "5db1d30a-eb6c-4080-9904-6a329103e275",
+                        "id": "06e05fa6-b6a7-4eb5-920c-37650c926434",
                         "ord": "a0"
                       },
                       {
@@ -1109,20 +1109,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "37175094-d191-42e7-a6d8-9581627ac492",
+                            "id": "1d7183f0-50a8-45b0-a1e8-9f367c8c00b8",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "687271af-208d-4ff8-9d34-8c9ea16d65b2",
+                        "id": "f3793675-88d4-4309-97d5-333276c2958c",
                         "ord": "a1"
                       }
                     ],
-                    "id": "70fbd342-b8b2-498a-8113-adcd906d10e3",
+                    "id": "8305344b-fedd-41f3-ae7b-714fb3d69010",
                     "ord": "a1"
                   }
                 ],
-                "id": "b891fe52-e7dd-4086-87c4-f38b611c695e",
+                "id": "c4e690b0-451a-4411-a268-db8e6afbd892",
                 "ord": "a0"
               },
               {
@@ -1147,7 +1147,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "dca6fbd5-e3ef-42db-a2af-27f7a1c5ca0d",
+                        "id": "109182f5-f66e-4d94-94f0-5eb5cc2e2716",
                         "ord": "a0"
                       },
                       {
@@ -1164,7 +1164,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "d1a9d6b4-4da8-47c7-b464-3324806af0c6",
+                            "id": "63f591a3-5d9d-4d92-b652-5da04cf39a1e",
                             "ord": "a0"
                           },
                           {
@@ -1176,11 +1176,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "d177a8db-135c-489d-8941-c471a25d63f8",
+                            "id": "a1d20928-cfb7-4733-8e97-8dcc2310053c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c4d5f37d-a48a-4601-b617-04fbf62e7c67",
+                        "id": "82467b19-c9fe-4cb8-8fac-f94ed7f50731",
                         "ord": "a1"
                       }
                     ],
@@ -1190,7 +1190,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "be30937c-36a0-4e63-9ea6-0c6e136cf171",
+                    "id": "c89df294-5d22-477f-9dc4-374898d2a24f",
                     "ord": "a0"
                   }
                 ],
@@ -1199,14 +1199,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.bib-shorts"
                 },
-                "id": "edfb097e-63fa-45a4-9c48-cf2d3dcba5d8",
+                "id": "9cef16d1-f2f1-4fe4-9728-2b3579b77154",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "41f7147f-6d19-4a31-9bcd-07676e80d6bf",
+            "id": "a9e03139-f7f0-45db-afc3-1b893340b7b9",
             "ord": "a3"
           },
           {
@@ -1229,7 +1229,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
                         "children": ["Shop by discipline"],
-                        "id": "6a6f2c1a-243f-4fb4-a60e-c5bdb0f24fc5",
+                        "id": "bd330f94-bad6-4371-abb1-3840da999394",
                         "ord": "a0"
                       },
                       {
@@ -1239,11 +1239,11 @@
                         "children": [
                           "Whatever the ride asks of you — a long climb, a fast bunch, a cold dawn — start with the kit built for it."
                         ],
-                        "id": "1f01171f-0eb0-4bca-b8e0-98ac2967697c",
+                        "id": "25ea9e5f-37d0-46b0-9367-e26854ef224d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fb5cc955-b714-4740-b7a1-d24cd82c9ab4",
+                    "id": "b7cd1edb-219c-4345-ae12-3859415909e8",
                     "ord": "a0"
                   },
                   {
@@ -1268,7 +1268,7 @@
                               "alt": "A rider climbing on the road in bib shorts",
                               "loading": "lazy"
                             },
-                            "id": "491b4e85-bdd9-4624-8381-94a5dbf2dae5",
+                            "id": "e8383a75-0e9a-4192-a9e1-711b5904b76e",
                             "ord": "a0"
                           },
                           {
@@ -1281,15 +1281,15 @@
                                 "tag": "span",
                                 "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
                                 "children": ["Bib shorts"],
-                                "id": "ba4b6855-7b12-4cb6-bef3-316a8d998e5f",
+                                "id": "bf82e716-edc7-4dbf-85c1-d2bd0b9d84a8",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "7cbcb0fe-fdfb-4ee0-b961-cf224aea68f3",
+                            "id": "38cb4c20-a21d-412b-bd45-ac18a7ea2325",
                             "ord": "a1"
                           }
                         ],
-                        "id": "160a5416-6479-4a9a-adf8-01ba93f647cc",
+                        "id": "6fb0773a-7d86-4391-8d2e-364cff47e273",
                         "ord": "a0"
                       },
                       {
@@ -1309,7 +1309,7 @@
                               "alt": "A cyclist on a mountain pass in a lightweight jersey",
                               "loading": "lazy"
                             },
-                            "id": "746fd965-6d9e-424a-a54c-97076b935f4a",
+                            "id": "696a1693-a402-4503-85be-2539a137fffa",
                             "ord": "a0"
                           },
                           {
@@ -1322,15 +1322,15 @@
                                 "tag": "span",
                                 "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
                                 "children": ["Jerseys"],
-                                "id": "dce20abf-dda9-46b7-bc56-335799aca810",
+                                "id": "e3a8fa46-68c0-4ce8-9a2c-97ee402629e2",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "2b3ec7b5-2cb9-437f-b42b-4659d95e7419",
+                            "id": "32c5e788-da7d-4863-b297-a06bcea31315",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5a898bd6-eece-468e-9ac2-7b5bf7305b81",
+                        "id": "7ac7c7f5-9a7b-4d88-b188-4654d762c49d",
                         "ord": "a1"
                       },
                       {
@@ -1350,7 +1350,7 @@
                               "alt": "A rider layered up against the cold",
                               "loading": "lazy"
                             },
-                            "id": "7fbd42d4-123d-4092-9473-2b8426011127",
+                            "id": "0273f458-a10f-46a6-b8a0-5df227c7aac0",
                             "ord": "a0"
                           },
                           {
@@ -1363,15 +1363,15 @@
                                 "tag": "span",
                                 "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
                                 "children": ["Base layers"],
-                                "id": "d88291c1-f7e6-4934-8e27-e78de52a0162",
+                                "id": "d52628ab-567c-449f-ac00-b639f229e450",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "d1c48bfc-8d74-4f48-9d00-ff61e724fceb",
+                            "id": "cdbc6d88-2c8f-4374-8246-0f819b5ebd10",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e6529984-c397-40e3-9c5e-9591f8848b05",
+                        "id": "4f33b25e-162b-4794-b0be-ca481d7172e9",
                         "ord": "a2"
                       },
                       {
@@ -1391,7 +1391,7 @@
                               "alt": "A cyclist riding through cold, grey weather",
                               "loading": "lazy"
                             },
-                            "id": "61f30e75-f765-498e-ac63-086561f03e19",
+                            "id": "6fd12915-4284-4f66-9584-06cfac78a712",
                             "ord": "a0"
                           },
                           {
@@ -1404,27 +1404,27 @@
                                 "tag": "span",
                                 "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
                                 "children": ["Cold weather"],
-                                "id": "fbb3062a-7dfa-4868-9835-14fc056c55f2",
+                                "id": "407782de-219c-4002-adb7-a63fc9b320a9",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "d41faf71-670d-4488-8913-205505987811",
+                            "id": "bf068da8-78cd-4069-b508-a824233170b1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d509464f-69cf-473e-a939-0f4fa559729c",
+                        "id": "05a9cff2-5127-475a-adc8-f170c5b61669",
                         "ord": "a3"
                       }
                     ],
-                    "id": "546b827a-4e6a-4f72-a7a3-9199c591b4b4",
+                    "id": "c1dadfc1-5155-49d7-8e37-11fda046cf1c",
                     "ord": "a1"
                   }
                 ],
-                "id": "0293c6f9-1a50-4cb4-91bc-66f3ea2c6888",
+                "id": "fd34e7d3-444d-42ee-97bb-494a098668e0",
                 "ord": "a0"
               }
             ],
-            "id": "93932760-ed0d-4f98-bcf1-1acc0c853871",
+            "id": "0e84c6b4-e213-49ac-8224-f5334f9ceb4f",
             "ord": "a4"
           },
           {
@@ -1441,7 +1441,7 @@
                   "alt": "A cyclist riding through cold, grey weather",
                   "loading": "lazy"
                 },
-                "id": "bbeb52e1-fad9-4c02-b71d-f8fdb0e6b689",
+                "id": "d7ba34ae-e2d5-4309-bd86-cabfb2a3d75b",
                 "ord": "a0"
               },
               {
@@ -1459,7 +1459,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["When the weather turns"],
-                        "id": "87b93222-ff85-4add-b2b4-dae5bbd26836",
+                        "id": "91d9182a-9227-4f71-99e1-ace4e02d5bdc",
                         "ord": "a0"
                       },
                       {
@@ -1469,7 +1469,7 @@
                         "children": [
                           "The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell — the layers that keep you riding through the months most riders sit out."
                         ],
-                        "id": "2ceca47a-83de-43d5-b407-c91d7cd4f0b3",
+                        "id": "ebc0da7b-b865-4a29-ba2b-4c587251f795",
                         "ord": "a1"
                       },
                       {
@@ -1480,19 +1480,19 @@
                           "href": "/shop"
                         },
                         "children": ["Shop cold weather"],
-                        "id": "25c859fd-e6a0-418c-8b05-566b5e03048c",
+                        "id": "add98e8a-eaaf-4158-8420-b132223df4fc",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7e261201-7556-430b-92c1-5209765c1a1b",
+                    "id": "66bcee8d-5623-49b2-984c-582811255dd5",
                     "ord": "a0"
                   }
                 ],
-                "id": "bece156d-0cb3-46b3-96db-8c6b6ab10832",
+                "id": "8be2a37f-816a-41d0-aa41-fed7713d13b2",
                 "ord": "a1"
               }
             ],
-            "id": "6d451796-2d0f-46e6-a476-0b3d6ed61c07",
+            "id": "6b58e929-cd40-477d-892c-fde9ba695e89",
             "ord": "a5"
           },
           {
@@ -1510,7 +1510,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Cold weather"],
-                    "id": "99a614d7-80bd-418e-bdba-8f6202f2617e",
+                    "id": "c168f452-6157-40f3-b8e8-02124735375e",
                     "ord": "a0"
                   },
                   {
@@ -1534,12 +1534,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "466ba49b-a195-48ad-9b51-87d2809bbcb2",
+                            "id": "753ba121-efa6-43b6-8690-a7fd52a087b8",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "1b82fcd9-bebe-4ebc-a800-9e10df39c010",
+                        "id": "df8371c7-8abf-493f-a0fd-39d73cceb6e6",
                         "ord": "a0"
                       },
                       {
@@ -1558,20 +1558,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "d4d8f9ac-d629-4d0d-bb30-b731814cd67f",
+                            "id": "248dabda-57a6-4fca-bb98-d89fa415184a",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "779b5d1f-e00d-4cad-b726-82b58c60a1b4",
+                        "id": "917a8ffd-a4d7-48fd-9baf-ffacbeef7939",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5711d94f-ff77-4b04-816a-a97e09454c88",
+                    "id": "30c1c04e-b09e-491e-a746-900a689679d3",
                     "ord": "a1"
                   }
                 ],
-                "id": "f501703f-1ddd-4880-b2d9-11fb51ae268f",
+                "id": "9d666fb7-0f16-4394-91c7-28328c0e0f86",
                 "ord": "a0"
               },
               {
@@ -1596,7 +1596,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "a6ddcc51-cda8-4538-a027-22541a5e9f52",
+                        "id": "462da715-d874-4228-88ae-436623a300f1",
                         "ord": "a0"
                       },
                       {
@@ -1613,7 +1613,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "97f5e65b-6bc7-456b-ab46-e35eef5ed757",
+                            "id": "d5ccc04c-ef24-4f11-b754-e9bf1bd368ff",
                             "ord": "a0"
                           },
                           {
@@ -1625,11 +1625,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "b8dd0541-b7a6-4ce8-8aaf-f251edee78f3",
+                            "id": "bdf72ac2-23ef-4deb-b171-2a7268693ed3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7fcf7273-35ae-4f32-b130-d9c14cc25d88",
+                        "id": "a3d4db46-0b47-4eb1-bb12-116433b73a0e",
                         "ord": "a1"
                       }
                     ],
@@ -1639,7 +1639,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "28e4afe5-35d4-4e99-bc90-4d2bb3cd974a",
+                    "id": "235c3b58-11ad-42c3-9f8a-cdb8a8d2c0ae",
                     "ord": "a0"
                   }
                 ],
@@ -1648,14 +1648,14 @@
                   "kind": "collection",
                   "ref": "commerce.category.cold-weather"
                 },
-                "id": "c85dcb20-876c-4696-a823-a76c6a9120e7",
+                "id": "02931247-ba43-49bd-b6b6-4215ed069e80",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "b3b08ec8-f35d-456a-8e2d-1177d2ef65bb",
+            "id": "1fdfe241-539c-4f24-aa1f-6aebb648a51f",
             "ord": "a6"
           },
           {
@@ -1678,7 +1678,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
                         "children": ["From the road"],
-                        "id": "7a2d8982-55b9-4c94-bebd-8e3db0eb0f9f",
+                        "id": "427f8370-84f6-4e42-808a-583aca3f376b",
                         "ord": "a0"
                       },
                       {
@@ -1688,11 +1688,11 @@
                         "children": [
                           "Kit gets tested where it gets ridden. A few frames from the rides that shaped this season."
                         ],
-                        "id": "a16203f2-e4f2-46d1-8941-0c295d929333",
+                        "id": "9c302a46-cb4e-484f-bf9f-99b35eb01068",
                         "ord": "a1"
                       }
                     ],
-                    "id": "938e9707-2335-47b1-8c35-9e954e183506",
+                    "id": "fa74c9b5-7002-429b-823d-435d44386253",
                     "ord": "a0"
                   },
                   {
@@ -1714,7 +1714,7 @@
                               "alt": "A group ride strung out along the road",
                               "loading": "lazy"
                             },
-                            "id": "e71bcfaf-4f10-4ba8-8cab-31639be2e2a3",
+                            "id": "99304745-6c7c-4cef-8b2f-e577ae136a55",
                             "ord": "a0"
                           },
                           {
@@ -1722,11 +1722,11 @@
                             "tag": "figcaption",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["The Saturday bunch"],
-                            "id": "ee7998d1-53a1-44c4-ad99-d7fea083b242",
+                            "id": "a971187c-d565-4f11-b6d5-cfc2a9b97a32",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6b016343-f117-44d6-8b35-1c40d3004308",
+                        "id": "7df42338-5796-4c87-a6db-0aa5d6533c20",
                         "ord": "a0"
                       },
                       {
@@ -1743,7 +1743,7 @@
                               "alt": "A rider on gravel at the edge of the light",
                               "loading": "lazy"
                             },
-                            "id": "9a93fce3-968a-4c19-adce-8fea7573d2be",
+                            "id": "3bde074d-eb36-49fe-8b27-8a2af1ac8f6e",
                             "ord": "a0"
                           },
                           {
@@ -1751,11 +1751,11 @@
                             "tag": "figcaption",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Off the tarmac"],
-                            "id": "6fb00f0d-29f3-4b09-b1a8-4ca4779dfb7e",
+                            "id": "46f5ae60-da67-4f98-9d93-c498bf46903f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "43d087dd-a6dc-4e1d-a6ad-dcc5195e4bb5",
+                        "id": "6c285813-e03b-4b2b-bf3d-d2c071f5cfaf",
                         "ord": "a1"
                       },
                       {
@@ -1772,7 +1772,7 @@
                               "alt": "A cyclist cresting a climb",
                               "loading": "lazy"
                             },
-                            "id": "5e3fc63f-bce5-4301-8caa-265db61b34da",
+                            "id": "71ccd2c1-c0ff-4d1a-b4b6-e22a7cafff4a",
                             "ord": "a0"
                           },
                           {
@@ -1780,11 +1780,11 @@
                             "tag": "figcaption",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["Over the top"],
-                            "id": "c2064992-6c39-4f19-9c8d-e7bf988005eb",
+                            "id": "e246ebd0-2f5b-4650-9354-1ac59448a35b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c8be0693-a9a8-490b-9e5c-d44c11908b50",
+                        "id": "5cbb98d7-0ece-4ffe-add4-3fafe45f50c9",
                         "ord": "a2"
                       },
                       {
@@ -1801,7 +1801,7 @@
                               "alt": "A long descent opening out below",
                               "loading": "lazy"
                             },
-                            "id": "4784e640-d5d7-41b9-a7c6-4332abcd342b",
+                            "id": "ca41410e-ff7e-4377-8327-4578a7af9273",
                             "ord": "a0"
                           },
                           {
@@ -1809,23 +1809,23 @@
                             "tag": "figcaption",
                             "class": "text-base font-semibold text-base-content",
                             "children": ["The long way down"],
-                            "id": "bfa3ac01-bbcd-4888-9bbc-3808bac63ffb",
+                            "id": "4fc51d1c-117e-432c-b1ea-47f234acefcf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "33c874cb-a6c1-4333-98bb-e8b4d8b5f976",
+                        "id": "0e31209b-698a-4c44-93e4-eedb30c7dfc2",
                         "ord": "a3"
                       }
                     ],
-                    "id": "683f930f-17f3-44e8-93a2-04fbbe260226",
+                    "id": "38137ebb-833c-4cea-a304-0b7be5a5d92e",
                     "ord": "a1"
                   }
                 ],
-                "id": "6a6932d5-2f5d-4323-93bc-88fd6b867502",
+                "id": "44b73dbe-4980-478e-a72b-45336e3ac6b4",
                 "ord": "a0"
               }
             ],
-            "id": "d0a582ba-f0e8-4cfd-950f-cdc6b6a85a80",
+            "id": "7495c5ec-c8b4-4737-87b4-b45df3ab50b7",
             "ord": "a7"
           },
           {
@@ -1848,7 +1848,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-semibold text-base-content",
                         "children": ["One email a month"],
-                        "id": "c369691f-d299-465d-8eac-11c7af65bb14",
+                        "id": "6dd9e458-3954-47cc-bb51-d2bd57e99d9a",
                         "ord": "a0"
                       },
                       {
@@ -1858,7 +1858,7 @@
                         "children": [
                           "What we made, what we learned, and anything we got wrong. Unsubscribe in one click."
                         ],
-                        "id": "fcde010d-8fb2-459a-b630-55454e9dcd17",
+                        "id": "325853f9-0c5f-4c6e-9419-4ce440833365",
                         "ord": "a1"
                       },
                       {
@@ -1876,7 +1876,7 @@
                                 "tag": "span",
                                 "class": "text-base font-medium text-base-content",
                                 "children": ["Email address"],
-                                "id": "2589aef3-4143-41d2-849f-c1070700de55",
+                                "id": "6112e1e7-1119-40c7-a0ef-2bc3c3d57ea1",
                                 "ord": "a0"
                               },
                               {
@@ -1889,11 +1889,11 @@
                                   "placeholder": "",
                                   "required": true
                                 },
-                                "id": "17828a22-2a3e-4f8f-8040-0bfd5c359c48",
+                                "id": "288f1b15-4d0f-42ab-84b2-37930eb2cdc4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5024d48b-7d9a-4423-9933-f1b25d1e0f9e",
+                            "id": "d8dab657-8664-4cd0-aa66-5f568442af73",
                             "ord": "a0"
                           },
                           {
@@ -1904,7 +1904,7 @@
                               "type": "submit"
                             },
                             "children": ["Sign me up"],
-                            "id": "133904e5-3ea3-4b93-a9c9-0965864e94e0",
+                            "id": "ad7d4886-f537-4b99-a925-c65f17187350",
                             "ord": "a1"
                           }
                         ],
@@ -1915,7 +1915,7 @@
                           "kind": "action",
                           "ref": "submit"
                         },
-                        "id": "b996d052-7af8-4a28-a873-d807d939ab4c",
+                        "id": "b1ffdbb9-3470-45ca-838b-a3f17c4fc5a5",
                         "ord": "a2"
                       },
                       {
@@ -1925,19 +1925,19 @@
                         "children": [
                           "We never pass your address to anyone, and we do not email more than monthly."
                         ],
-                        "id": "4ef5813f-4cec-4817-88f1-d51d3d0cdca7",
+                        "id": "69150ccc-941a-4fb3-b4b9-ee4ee1e64eba",
                         "ord": "a3"
                       }
                     ],
-                    "id": "f3c283c5-5618-426f-b4d1-6e2d4224aa4d",
+                    "id": "583ea53d-5e3b-4dbd-b35e-5a127d9966ce",
                     "ord": "a0"
                   }
                 ],
-                "id": "8c9dcb23-e65d-4c88-a1e1-9d8db7731b16",
+                "id": "ff2bd662-4efa-4467-9c6e-a069110f0858",
                 "ord": "a0"
               }
             ],
-            "id": "4f0053aa-c502-4bf8-aed7-b2a7e6e609ea",
+            "id": "73eea57e-a502-4ff9-99c2-b5cc64f5a31c",
             "ord": "a8"
           }
         ]
@@ -1954,7 +1954,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ffc20cbf-6f9b-4044-a526-6f137dca21a7",
+        "id": "1bc62d51-6ab6-477f-8028-54aa7360898d",
         "children": [
           {
             "kind": "element",
@@ -1971,7 +1971,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
                     "children": ["Shop the range"],
-                    "id": "841b4fd6-e788-4689-b434-88e146dca3db",
+                    "id": "59c92fa1-49fb-4569-a3c5-e0ed2efcd0d8",
                     "ord": "a0"
                   },
                   {
@@ -1981,15 +1981,15 @@
                     "children": [
                       "Every piece Threshold makes — bibs, jerseys, base layers, shells and the small kit that finishes the ride — filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride."
                     ],
-                    "id": "e2c7f332-cecc-4d12-aefb-79142de37d21",
+                    "id": "5acae897-32c5-4873-9a9a-688ca588e2a4",
                     "ord": "a1"
                   }
                 ],
-                "id": "a0c9f43c-d843-44d7-8ed9-0067d80dedc4",
+                "id": "d6b98877-9cf0-4c8e-87f0-a92227ad882e",
                 "ord": "a0"
               }
             ],
-            "id": "2d6820e9-7f23-499a-863a-0469c46c1c78",
+            "id": "8bdc233b-4f11-483e-b4a9-d14c8c89b106",
             "ord": "a0"
           },
           {
@@ -1997,7 +1997,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "33c9e65a-871d-4923-9924-333c44eb47e4",
+            "id": "5d47abd5-c472-419e-a1f9-54a1cf8f18dc",
             "ord": "a1"
           }
         ]
@@ -2014,7 +2014,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "7803a20e-3079-4727-84d9-e083eea793b5",
+        "id": "c0cde1fb-9eaa-4e64-9fed-0f973d0bf4b5",
         "children": [
           {
             "kind": "element",
@@ -2031,7 +2031,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
                     "children": ["Kit by discipline"],
-                    "id": "8ac8cdf6-57f0-4187-80d6-772d497e79ec",
+                    "id": "c8672d05-a5cd-4ea6-9c9b-a2350a172415",
                     "ord": "a0"
                   },
                   {
@@ -2041,15 +2041,15 @@
                     "children": [
                       "Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride — grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue."
                     ],
-                    "id": "0cd5c68f-69a1-4edd-9a43-44e904eabb9a",
+                    "id": "b194ad83-aada-4337-a1b4-2faab14eeb61",
                     "ord": "a1"
                   }
                 ],
-                "id": "1378b5c8-77da-40c2-8589-5843414748d9",
+                "id": "3f5b7d6e-01fd-4a89-bb30-4d0feec237d3",
                 "ord": "a0"
               }
             ],
-            "id": "64f73b2a-0d55-4b11-8ee3-ee40cdda5ad1",
+            "id": "14477bdf-720f-4a6a-8ab5-e6d28e77f57d",
             "ord": "a0"
           },
           {
@@ -2057,7 +2057,7 @@
             "component": "commerce.collections",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "4c4ac2c3-e3b0-4ba6-91d3-6eab73698d14",
+            "id": "e55ea9b8-bc04-4cd4-9d63-4fbe5a505a37",
             "ord": "a1"
           }
         ]
@@ -2074,7 +2074,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "80a8e08c-8ea4-4396-bd96-af624a012f89",
+        "id": "d64597f7-c3d6-423c-91d0-774156c48b8b",
         "children": [
           {
             "kind": "element",
@@ -2091,7 +2091,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
                     "children": ["Your cart"],
-                    "id": "656c9851-a9ca-4957-91f2-dd1952f551f6",
+                    "id": "b43593e1-d7bd-41ac-8ed2-0664416f7244",
                     "ord": "a0"
                   },
                   {
@@ -2101,15 +2101,15 @@
                     "children": [
                       "Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name."
                     ],
-                    "id": "66486eb0-e186-4eb8-ba29-b37c25b5c256",
+                    "id": "be202a04-1223-4262-bf25-f9db98d5b0dc",
                     "ord": "a1"
                   }
                 ],
-                "id": "917c7eab-33b6-44da-b799-2b2294e6a1f8",
+                "id": "73457236-f38a-47f5-b67f-66e3cc5d62ba",
                 "ord": "a0"
               }
             ],
-            "id": "8a916a89-5969-48f0-ae1e-bc8fd21e7d0f",
+            "id": "c8b25a4c-1ecb-497e-9697-fa539a919e06",
             "ord": "a0"
           },
           {
@@ -2117,7 +2117,7 @@
             "component": "commerce.cart",
             "class": "mx-auto w-full max-w-4xl px-6 py-10",
             "locked": "host",
-            "id": "29e61996-0efb-4dd9-a922-3dc23f0433d5",
+            "id": "ffa69ccf-01b1-4385-a166-12d931c8863d",
             "ord": "a1"
           }
         ]
@@ -2134,7 +2134,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "cf4188f1-9bff-4915-a2d5-042b26a637ea",
+        "id": "ff84a1ff-549e-4d16-ad64-b0123bc47fde",
         "children": [
           {
             "kind": "element",
@@ -2151,7 +2151,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
                     "children": ["Find your kit"],
-                    "id": "963f7e6e-985e-4006-b246-7c837c8c1118",
+                    "id": "f2aa9f28-adbc-4aee-9471-0289f61d20d8",
                     "ord": "a0"
                   },
                   {
@@ -2161,15 +2161,15 @@
                     "children": [
                       "Chasing something specific — a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it."
                     ],
-                    "id": "a828b2d2-fed8-4e5b-a78e-8d53ad38ea42",
+                    "id": "9f9c6032-3c90-4225-9e76-a7b7ced94fb6",
                     "ord": "a1"
                   }
                 ],
-                "id": "25b4700f-aa23-43ec-a6eb-b85c99a8432f",
+                "id": "99ad6df9-1653-48ca-99db-afd19fbf404e",
                 "ord": "a0"
               }
             ],
-            "id": "24972785-06ef-4b87-b352-099a3b3e034a",
+            "id": "f40b1080-67c5-45ad-9c26-5ec465417637",
             "ord": "a0"
           },
           {
@@ -2177,7 +2177,7 @@
             "component": "commerce.search",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "a61817c1-0996-423a-871f-0e62a74692d7",
+            "id": "f04789f5-63de-4a08-b3bd-f13614c6c233",
             "ord": "a1"
           }
         ]
@@ -2194,7 +2194,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "43aa20ba-0baf-4bbd-a564-050ef8b8640a",
+        "id": "a5070988-c11d-4954-8f66-8c459e7cfbf0",
         "children": [
           {
             "kind": "element",
@@ -2211,7 +2211,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
                     "children": ["The Threshold Journal"],
-                    "id": "409ef535-7ed5-45d9-aa05-b29195d9800d",
+                    "id": "1a5a4fc1-35c9-4b55-a194-d5c644baddba",
                     "ord": "a0"
                   },
                   {
@@ -2221,15 +2221,15 @@
                     "children": [
                       "Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season — written by riders, for riders."
                     ],
-                    "id": "63f7d864-2f9b-458f-bf62-1efa855a1d81",
+                    "id": "fb2afa7e-5f33-4438-a607-4fb8a10054d1",
                     "ord": "a1"
                   }
                 ],
-                "id": "ea505f5e-7cbb-4937-b82f-eb00ea61e85c",
+                "id": "da94d8d2-a953-4419-a672-00406f778850",
                 "ord": "a0"
               }
             ],
-            "id": "fcdbee47-0021-4f02-ae9b-bd9dc1e9bae5",
+            "id": "1898834a-29c7-4af2-8163-a7a6c87c694b",
             "ord": "a0"
           },
           {
@@ -2267,7 +2267,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "5b3b666c-025b-4222-b54a-fbaffc404846",
+                            "id": "6f0ec617-f718-4aa8-8a33-535a00d72f6f",
                             "ord": "a0"
                           },
                           {
@@ -2279,7 +2279,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "c6915f87-7a07-451c-bc8e-06151132a567",
+                            "id": "417eaf88-8fe3-4376-9fee-cf1aff8c65b8",
                             "ord": "a1"
                           },
                           {
@@ -2291,7 +2291,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "aebbf04a-6f9b-4c9f-80f3-9128d2482586",
+                            "id": "91c7b3f8-a18d-4e8b-9c2c-77be76803011",
                             "ord": "a2"
                           },
                           {
@@ -2303,7 +2303,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "eddf2ebb-96af-4ad1-8d9f-907bb2cf48e1",
+                            "id": "ea226370-1dae-470e-9d66-54016608b19a",
                             "ord": "a3"
                           }
                         ],
@@ -2312,7 +2312,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "9b1bf6cd-54ae-4df2-93da-1f9346d36760",
+                        "id": "50c7afa7-64fa-4e5c-a6bf-2ddd906283a1",
                         "ord": "a0"
                       }
                     ],
@@ -2320,15 +2320,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "fd34453c-c6db-478b-aaa3-7c469f0c1e84",
+                    "id": "554076c2-5834-4074-8d7a-bbf4cfc0e7e1",
                     "ord": "a0"
                   }
                 ],
-                "id": "77c90fe1-dbf8-4e05-b5f6-3b3defb1ff64",
+                "id": "0c92ca76-fdb8-4f23-8cb0-ef262783389b",
                 "ord": "a0"
               }
             ],
-            "id": "e22cdd00-af79-4f1e-9442-7e40d60be42d",
+            "id": "5cc2a343-5441-4e62-bbd6-6a52dab2f17a",
             "ord": "a1"
           }
         ]
@@ -2345,7 +2345,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "660bd29c-c64c-4bc6-9b5b-156b4fe5076d",
+        "id": "d130afda-71e3-4dd3-987d-d36c96506b14",
         "children": [
           {
             "kind": "element",
@@ -2362,7 +2362,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["About Threshold"],
-                    "id": "be948404-4eff-44f9-82c4-79eea41083be",
+                    "id": "dd388712-17f2-415a-83eb-57e52c69d615",
                     "ord": "a0"
                   },
                   {
@@ -2372,7 +2372,7 @@
                     "children": [
                       "Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard — the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do."
                     ],
-                    "id": "826d7ca0-9d2c-46c6-8c18-5a45c1214d0a",
+                    "id": "ae9d40b5-cfbb-484c-9b1c-702956a4a8b7",
                     "ord": "a1"
                   },
                   {
@@ -2382,7 +2382,7 @@
                     "children": [
                       "So we build the other way round. Every piece is ridden long and hard before it ships — over passes, through winters, deep into the kind of distance where cheap kit shows its true colours. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable."
                     ],
-                    "id": "6d034c88-08d2-4afd-9dc9-46e608d10ecc",
+                    "id": "9470244b-c9ff-48b3-ba46-936f5e4183e0",
                     "ord": "a2"
                   },
                   {
@@ -2392,15 +2392,15 @@
                     "children": [
                       "We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake — just gear built to earn its place in your kit bag and stay there for years."
                     ],
-                    "id": "09a33043-90d3-4d90-bd41-7f723acaab54",
+                    "id": "12de0732-b0df-4b89-9218-4bee6b631228",
                     "ord": "a3"
                   }
                 ],
-                "id": "fb513e8d-8e4c-4031-9bfe-f19a1cec99c6",
+                "id": "5137be37-012c-4758-b6c1-affe8b6bfe3e",
                 "ord": "a0"
               }
             ],
-            "id": "91913d21-fa44-4072-9e4f-c6c9dc39f964",
+            "id": "f010cd15-3a44-4a86-b4f2-fc98194894e4",
             "ord": "a0"
           }
         ]
@@ -2417,7 +2417,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3b31c732-797a-42dc-81dc-399f18e3ccb0",
+        "id": "2e0e31f9-0edc-4a90-bd59-42fbeb5c33ce",
         "children": [
           {
             "kind": "element",
@@ -2434,7 +2434,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold uppercase tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Talk to us"],
-                    "id": "29b67aaa-c062-4318-b520-e3abebe6a561",
+                    "id": "0f6601a9-7796-484e-8576-f84f6040f25f",
                     "ord": "a0"
                   },
                   {
@@ -2444,7 +2444,7 @@
                     "children": [
                       "Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight — no script, no runaround."
                     ],
-                    "id": "c982c408-55eb-4ebf-846e-02676e6e86e3",
+                    "id": "6d1473a0-af56-42c8-b6be-6ecc1c07d29b",
                     "ord": "a1"
                   },
                   {
@@ -2455,15 +2455,15 @@
                       "href": "mailto:hello@threshold.example"
                     },
                     "children": ["Email the team"],
-                    "id": "d51e8717-47e2-4877-8b57-c2ec0859783c",
+                    "id": "bb590fd9-6156-4b10-93d1-5ea4141c544e",
                     "ord": "a2"
                   }
                 ],
-                "id": "4c38e5ca-d383-44e3-b609-c545560afc1b",
+                "id": "c6010efa-3026-44f3-8bcb-816276f9990f",
                 "ord": "a0"
               }
             ],
-            "id": "5ce8b048-a12e-4588-911c-72cf34d7ef1a",
+            "id": "52efad62-bd5f-4081-8467-19d20f1ae7e7",
             "ord": "a0"
           }
         ]
@@ -2503,7 +2503,7 @@
                       "kind": "value",
                       "ref": "image"
                     },
-                    "id": "9dfc6cc8-63cd-4a86-832f-6236de4e3ea7",
+                    "id": "9a694a03-2f5e-4520-afd4-6717999eb923",
                     "ord": "a0"
                   },
                   {
@@ -2521,7 +2521,7 @@
                             "tag": "p",
                             "class": "text-sm font-bold uppercase tracking-widest text-base-content",
                             "children": ["Threshold — race-tested kit"],
-                            "id": "bbd523f6-a2d8-4517-8d8e-d65143287894",
+                            "id": "393bba2b-f4de-4c92-b917-c7fd3f3afd14",
                             "ord": "a0"
                           },
                           {
@@ -2533,7 +2533,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "13d3cb38-2a11-4e23-bd8c-d489a482f144",
+                            "id": "7784ae3f-41d4-4bce-a90d-fd37cee104b4",
                             "ord": "a1"
                           },
                           {
@@ -2550,7 +2550,7 @@
                                   "kind": "value",
                                   "ref": "price"
                                 },
-                                "id": "c306021b-b822-4422-9fd0-9baf74d5f2eb",
+                                "id": "61602514-d7a6-4c18-a18b-26e7fce6e840",
                                 "ord": "a0"
                               },
                               {
@@ -2566,7 +2566,7 @@
                                       "kind": "value",
                                       "ref": "compareAtPrice"
                                     },
-                                    "id": "4b93440d-4de2-4c20-b9a7-02488f6ad0a2",
+                                    "id": "acb4da37-6d94-41fe-86ae-896090629726",
                                     "ord": "a0"
                                   }
                                 ],
@@ -2574,11 +2574,11 @@
                                   "kind": "visible",
                                   "ref": "compareAtPrice"
                                 },
-                                "id": "c940ed15-e99e-4bca-85cb-a82094f19311",
+                                "id": "b4b30f4f-21cb-448b-930c-e2365e48ad19",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e2a049a0-7b45-478f-9aaf-d8aacdb2d890",
+                            "id": "fb148cec-202c-4047-ba9e-9e83f8d2c9f5",
                             "ord": "a2"
                           },
                           {
@@ -2590,11 +2590,11 @@
                               "kind": "visible",
                               "ref": "lowStock"
                             },
-                            "id": "454db804-0fde-4ca0-91d3-dcfe9736beba",
+                            "id": "eceff516-256f-4d99-89eb-1bbbecba0568",
                             "ord": "a3"
                           }
                         ],
-                        "id": "1a3af85d-d4e9-4dc6-8396-3231082ebe8d",
+                        "id": "63dfd18d-5569-46d3-b5f0-fbaf9203631d",
                         "ord": "a0"
                       },
                       {
@@ -2606,7 +2606,7 @@
                           "kind": "value",
                           "ref": "description"
                         },
-                        "id": "8a9535a5-a7a4-4693-abc3-1d089f1d05a7",
+                        "id": "771cf8a2-54b5-4f52-bff2-2c82c8c5cb62",
                         "ord": "a1"
                       },
                       {
@@ -2625,7 +2625,7 @@
                               "kind": "value",
                               "ref": "variantId"
                             },
-                            "id": "8a3e79ef-dcbb-4737-8b82-b27b9a3f0a80",
+                            "id": "1853b8b7-1109-4131-a3ad-29f3d772c122",
                             "ord": "a0"
                           },
                           {
@@ -2638,7 +2638,7 @@
                                 "tag": "span",
                                 "class": "font-medium",
                                 "children": ["Quantity"],
-                                "id": "00e45ad9-47e3-42b0-bb86-14b2eda28224",
+                                "id": "102250f5-646a-451d-b593-f3e25cd5786e",
                                 "ord": "a0"
                               },
                               {
@@ -2652,11 +2652,11 @@
                                   "min": "1",
                                   "step": "1"
                                 },
-                                "id": "4b4e9f97-83cd-4c57-932a-5a134262d3c4",
+                                "id": "8bc9f78c-777a-4a2e-8066-53c4a7dd92bc",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "979bade5-a652-4668-a417-af842aecc06b",
+                            "id": "3e708398-6ac6-482f-b19f-4e7175353a02",
                             "ord": "a1"
                           },
                           {
@@ -2667,7 +2667,7 @@
                               "type": "submit"
                             },
                             "children": ["Add to cart"],
-                            "id": "d345427a-683a-49e7-ab61-1e735b63acf0",
+                            "id": "465c3fb9-8c6a-4250-8261-c77189daec4b",
                             "ord": "a2"
                           }
                         ],
@@ -2678,7 +2678,7 @@
                           "kind": "action",
                           "ref": "add-to-cart"
                         },
-                        "id": "489fd39d-7439-417e-bb90-8d97b300de0c",
+                        "id": "b89ffb9f-30e1-4076-8ba8-30dcfbc5cf23",
                         "ord": "a2"
                       },
                       {
@@ -2700,7 +2700,7 @@
                                   "kind": "value",
                                   "ref": "label"
                                 },
-                                "id": "b333dab6-932c-4e3f-82fc-bf238487ab7c",
+                                "id": "348455d3-d2ac-47de-9c55-54479397bc9c",
                                 "ord": "a0"
                               },
                               {
@@ -2712,7 +2712,7 @@
                                   "kind": "visible",
                                   "ref": "value"
                                 },
-                                "id": "8bd5dab8-18ed-4a97-9e68-dd1b2d15c674",
+                                "id": "030575df-b04d-434b-a804-8974d8b6d814",
                                 "ord": "a1"
                               },
                               {
@@ -2729,7 +2729,7 @@
                                       "kind": "value",
                                       "ref": "label"
                                     },
-                                    "id": "5c86d8db-2272-43c2-9054-c93f294dacf0",
+                                    "id": "cb6fe63d-e075-471d-bdb2-9ca0ce245148",
                                     "ord": "a0"
                                   },
                                   {
@@ -2741,7 +2741,7 @@
                                       "kind": "value",
                                       "ref": "value"
                                     },
-                                    "id": "aa3ca93e-7f81-4ce3-b37a-88bd497a4cc5",
+                                    "id": "0e673dfb-460a-4fd3-a710-e3b16c8d95ab",
                                     "ord": "a1"
                                   }
                                 ],
@@ -2749,7 +2749,7 @@
                                   "kind": "collection",
                                   "ref": "items"
                                 },
-                                "id": "a54c2eb7-184a-4fa0-808c-d34ed7c0a670",
+                                "id": "e741bfa1-eb93-44b5-8ccf-473ab8837a71",
                                 "ord": "a2"
                               }
                             ],
@@ -2757,7 +2757,7 @@
                               "kind": "collection",
                               "ref": "attributeSections"
                             },
-                            "id": "9e9baf0a-f7b1-4adc-aa41-ccc6c7a85b7c",
+                            "id": "8d183df5-229e-4cf5-8ea6-f55fae40bff3",
                             "ord": "a0"
                           }
                         ],
@@ -2765,7 +2765,7 @@
                           "kind": "visible",
                           "ref": "attributeSections"
                         },
-                        "id": "10cd9597-c9fa-4b6f-9b5c-b8b1cb57d580",
+                        "id": "82940f59-3476-4b4e-b1f4-fb1745c5dee0",
                         "ord": "a3"
                       },
                       {
@@ -2781,7 +2781,7 @@
                               "href": "/shipping-policy"
                             },
                             "children": ["Shipping & delivery"],
-                            "id": "e82a9738-5165-4fd5-9a9b-7eacaf44177f",
+                            "id": "77f15479-d980-4242-809d-4c5084e38e4e",
                             "ord": "a0"
                           },
                           {
@@ -2792,19 +2792,19 @@
                               "href": "/returns-policy"
                             },
                             "children": ["Returns & refunds"],
-                            "id": "00b5e0f2-bbdc-4577-ba79-e88ce2a5fc66",
+                            "id": "30ff5b6b-1cab-4bfc-b485-31f679e466b5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "344ad660-0840-4ba8-a195-bcb2594e046d",
+                        "id": "1bd3ba6c-4353-4a27-a800-43c62db43abd",
                         "ord": "a4"
                       }
                     ],
-                    "id": "2ae2d992-94fe-4859-80bb-e39e0860b3d7",
+                    "id": "92b27655-dc2c-460d-83b1-9d07dca9e876",
                     "ord": "a1"
                   }
                 ],
-                "id": "5e307e8e-972c-4c22-94d6-af256617da70",
+                "id": "95239093-77bb-4f13-8cea-aa87776c6523",
                 "ord": "a0"
               }
             ],
@@ -2812,7 +2812,7 @@
               "kind": "collection",
               "ref": "product"
             },
-            "id": "526cf098-7dd2-4376-9587-503b6374a28e",
+            "id": "26d29317-f1d1-4795-b1e7-e25b655b27ea",
             "ord": "a0"
           },
           {
@@ -2830,7 +2830,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["You might like too"],
-                    "id": "de14e5d8-b3cb-4606-b736-2f471a03dc66",
+                    "id": "78945281-ba18-486c-8d8a-af39db748317",
                     "ord": "a0"
                   },
                   {
@@ -2854,12 +2854,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "a8def682-e6a2-4ab1-a611-e2557a73ac08",
+                            "id": "8cdcfe92-c7ab-40a1-a258-d8f4928dd102",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "b2532adc-9553-4662-9358-a7b53333af4c",
+                        "id": "42189236-10a3-4804-804c-53efa1087fce",
                         "ord": "a0"
                       },
                       {
@@ -2878,20 +2878,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "4c8663ff-ca3d-4007-b110-e8f6978f1f5f",
+                            "id": "dd40b295-bd29-42d6-88df-114bbb8557d3",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "07d72729-be35-47d8-b044-8363af879bef",
+                        "id": "1d824873-93e0-4449-9ada-8b5d18dfe9f7",
                         "ord": "a1"
                       }
                     ],
-                    "id": "6346d8b8-76be-467f-9739-a6c19544aaaa",
+                    "id": "42214425-ca22-4ec7-865e-0f90434a3193",
                     "ord": "a1"
                   }
                 ],
-                "id": "16441edc-7cab-4887-b584-db1ee82b4564",
+                "id": "79cb0c92-3600-4884-8df3-0fe4df0e2248",
                 "ord": "a0"
               },
               {
@@ -2916,7 +2916,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "76f6392c-cb65-4e7a-83cb-9dc17e5d7e8f",
+                        "id": "6c22b6a9-04fa-4852-9067-795ac3cbf79a",
                         "ord": "a0"
                       },
                       {
@@ -2933,7 +2933,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "f1e17073-fa21-4eb6-9b19-d2ec7b12bdae",
+                            "id": "5fc96dc7-909a-4a1b-93a0-ed12acf6a310",
                             "ord": "a0"
                           },
                           {
@@ -2945,11 +2945,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "f18ddfb4-1995-4744-b173-200cd989364b",
+                            "id": "edb66d7b-c8db-4a29-b040-bbcb7d1136a0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3df8acfb-5118-4726-8f03-4ba254850505",
+                        "id": "c38b8f83-780c-45e2-b313-39c8aab832a4",
                         "ord": "a1"
                       }
                     ],
@@ -2959,7 +2959,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "4c04d38c-bb12-4b8f-99a7-a277eefc9ccb",
+                    "id": "208be384-b363-4bfc-be42-016a018d1977",
                     "ord": "a0"
                   }
                 ],
@@ -2968,18 +2968,18 @@
                   "kind": "collection",
                   "ref": "commerce.related"
                 },
-                "id": "e51bf839-df32-43c3-a546-7725d0a2e4ba",
+                "id": "7575c46f-0058-4626-ac28-1524521289d3",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "524e93e9-c53c-4800-b453-020143caa9b9",
+            "id": "4f6d5566-65ab-4ee9-90d7-d1b2546946c0",
             "ord": "a1"
           }
         ],
-        "id": "2a6c5197-825a-4da5-b5aa-514f07e08a71"
+        "id": "e1b15e46-0d3f-40f6-872d-c8a159e0b81f"
       }
     }
   ],

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-dayspa-botanical',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Day Spa (Botanical)',
   summary:
     'A warm, botanical day-spa site — an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as "Verdure", a calm garden sanctuary.',

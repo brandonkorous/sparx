@@ -7,7 +7,7 @@
       "subject": "Welcome to {{site.name}}",
       "preheader": "So glad you found us — here’s where to start.",
       "root": {
-        "id": "svc-welcome-body-8",
+        "id": "def-s-body-1253",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "svc-welcome-section-9",
+            "id": "def-s-section-1242",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "svc-welcome-text-1",
+                "id": "def-s-text-1239",
                 "kind": "text",
                 "html": "Welcome, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "svc-welcome-spacer-2",
+                "id": "def-s-spacer-1241",
                 "kind": "spacer",
-                "height": 10
+                "height": 16
               },
               {
-                "id": "svc-welcome-text-3",
+                "id": "def-s-text-1240",
                 "kind": "text",
                 "html": "Thanks for choosing {{site.name}}. Whether this is your first visit or your fifth, we’re glad you’re here.",
                 "align": "left",
@@ -51,30 +51,97 @@
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ]
+          },
+          {
+            "id": "def-s-section-1250",
+            "kind": "section",
+            "bg": "#f4f4f5",
+            "bgAuto": true,
+            "paddingX": 20,
+            "paddingY": 22,
+            "children": [
               {
-                "id": "svc-welcome-spacer-4",
-                "kind": "spacer",
-                "height": 14
-              },
-              {
-                "id": "svc-welcome-text-5",
+                "id": "def-s-text-1243",
                 "kind": "text",
-                "html": "Whenever you’re ready, booking online takes about a minute — you’ll see live availability and pick the time that works for you.",
+                "html": "Booking takes a minute",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
-                "fontSize": 16,
-                "fontWeight": "normal",
-                "lineHeight": 26
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
               },
               {
-                "id": "svc-welcome-spacer-6",
+                "id": "def-s-spacer-1244",
                 "kind": "spacer",
-                "height": 22
+                "height": 4
               },
               {
-                "id": "svc-welcome-button-7",
+                "id": "def-s-text-1245",
+                "kind": "text",
+                "html": "See live availability, pick the time that works for you, and you’re done — no phone tag.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              },
+              {
+                "id": "def-s-spacer-1246",
+                "kind": "spacer",
+                "height": 18
+              },
+              {
+                "id": "def-s-text-1247",
+                "kind": "text",
+                "html": "It’s all in your account",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 17,
+                "fontWeight": "bold",
+                "lineHeight": 27
+              },
+              {
+                "id": "def-s-spacer-1248",
+                "kind": "spacer",
+                "height": 4
+              },
+              {
+                "id": "def-s-text-1249",
+                "kind": "text",
+                "html": "Reschedule, cancel, or book again any time — your visits live in one place.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 15,
+                "fontWeight": "normal",
+                "lineHeight": 24
+              }
+            ],
+            "bgRole": "base200",
+            "borderColor": "#e4e4e7",
+            "borderColorAuto": true,
+            "borderColorRole": "base300",
+            "borderWidth": 1,
+            "radius": 16,
+            "marginX": 24,
+            "marginY": 8,
+            "align": "left"
+          },
+          {
+            "id": "def-s-section-1252",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "def-s-button-1251",
                 "kind": "button",
                 "label": "Book an appointment",
                 "href": "{{site.url}}/book",
@@ -101,7 +168,7 @@
       "subject": "Time for your next visit, {{customer.firstName}}?",
       "preheader": "Book your next appointment with {{site.name}}.",
       "root": {
-        "id": "svc-rebook-body-8",
+        "id": "def-s-body-1264",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -112,7 +179,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "svc-rebook-section-9",
+            "id": "def-s-section-1257",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -120,7 +187,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "svc-rebook-text-1",
+                "id": "def-s-text-1254",
                 "kind": "text",
                 "html": "We’d love to see you again",
                 "align": "left",
@@ -131,12 +198,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "svc-rebook-spacer-2",
+                "id": "def-s-spacer-1256",
                 "kind": "spacer",
-                "height": 10
+                "height": 16
               },
               {
-                "id": "svc-rebook-text-3",
+                "id": "def-s-text-1255",
                 "kind": "text",
                 "html": "It’s been a little while, {{customer.firstName}}. Whenever you’re ready for your next visit, {{site.name}} is here for you.",
                 "align": "left",
@@ -145,30 +212,65 @@
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ]
+          },
+          {
+            "id": "def-s-section-1261",
+            "kind": "section",
+            "bg": "#f4f4f5",
+            "bgAuto": true,
+            "paddingX": 20,
+            "paddingY": 18,
+            "children": [
               {
-                "id": "svc-rebook-spacer-4",
-                "kind": "spacer",
-                "height": 14
-              },
-              {
-                "id": "svc-rebook-text-5",
+                "id": "def-s-text-1258",
                 "kind": "text",
-                "html": "Pick a time that suits you — it only takes a minute, and you’ll always see the latest availability.",
+                "html": "Pick a time that suits you",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 18,
+                "fontWeight": "bold",
+                "lineHeight": 29
+              },
+              {
+                "id": "def-s-spacer-1260",
+                "kind": "spacer",
+                "height": 16
+              },
+              {
+                "id": "def-s-text-1259",
+                "kind": "text",
+                "html": "Booking your next visit takes about a minute, and you’ll always see the latest availability.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
                 "fontSize": 16,
                 "fontWeight": "normal",
                 "lineHeight": 26
-              },
+              }
+            ],
+            "bgRole": "base200",
+            "borderColor": "#e4e4e7",
+            "borderColorAuto": true,
+            "borderColorRole": "base300",
+            "borderWidth": 1,
+            "radius": 16,
+            "marginX": 24,
+            "marginY": 8,
+            "align": "left"
+          },
+          {
+            "id": "def-s-section-1263",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
               {
-                "id": "svc-rebook-spacer-6",
-                "kind": "spacer",
-                "height": 22
-              },
-              {
-                "id": "svc-rebook-button-7",
+                "id": "def-s-button-1262",
                 "kind": "button",
                 "label": "Book your next visit",
                 "href": "{{site.url}}/book",

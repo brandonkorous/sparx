@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-massage-sanctuary',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Massage (Sanctuary)',
   summary:
     'A serene relaxation-massage retreat site — warm sand and oat grounds, a soft sage-green primary, a clay accent and a serif display, with dim, candlelit photography carrying the page. Installs a working booking flow: a calm treatment menu (Swedish, warm stone, aromatherapy, the signature Stillwater ritual, couples), three therapists and three rooms (incl. a couples suite) you book by name, and a deposit policy on longer rituals. Ships as "Stillwater".',

@@ -1,0 +1,96 @@
+[
+  {
+    "name": "Welcome",
+    "publish": false,
+    "doc": {
+      "version": "1",
+      "subject": "Welcome to {{site.name}}",
+      "preheader": "Thanks for subscribing — here’s where to begin.",
+      "root": {
+        "id": "journal-welcome-body-8",
+        "kind": "body",
+        "width": 600,
+        "bg": "#f4f4f5",
+        "bgAuto": true,
+        "contentBg": "#ffffff",
+        "contentBgAuto": true,
+        "fontFamily": "Arial, Helvetica, sans-serif",
+        "colorScheme": "light dark",
+        "children": [
+          {
+            "id": "journal-welcome-section-9",
+            "kind": "section",
+            "bg": "#ffffff",
+            "bgAuto": true,
+            "paddingX": 24,
+            "paddingY": 24,
+            "children": [
+              {
+                "id": "journal-welcome-text-1",
+                "kind": "text",
+                "html": "Welcome, {{customer.firstName}}",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 28,
+                "fontWeight": "bold",
+                "lineHeight": 36
+              },
+              {
+                "id": "journal-welcome-spacer-2",
+                "kind": "spacer",
+                "height": 10
+              },
+              {
+                "id": "journal-welcome-text-3",
+                "kind": "text",
+                "html": "Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "journal-welcome-spacer-4",
+                "kind": "spacer",
+                "height": 14
+              },
+              {
+                "id": "journal-welcome-text-5",
+                "kind": "text",
+                "html": "While you’re here, catch up on what we’ve been working on lately. Our latest pieces are waiting for you in the journal.",
+                "align": "left",
+                "color": "#18181b",
+                "colorAuto": true,
+                "fontSize": 16,
+                "fontWeight": "normal",
+                "lineHeight": 26
+              },
+              {
+                "id": "journal-welcome-spacer-6",
+                "kind": "spacer",
+                "height": 22
+              },
+              {
+                "id": "journal-welcome-button-7",
+                "kind": "button",
+                "label": "Read the latest",
+                "href": "{{site.url}}/journal",
+                "bg": "#111827",
+                "bgAuto": true,
+                "color": "#ffffff",
+                "colorAuto": true,
+                "radius": 6,
+                "align": "left",
+                "paddingX": 24,
+                "paddingY": 12
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

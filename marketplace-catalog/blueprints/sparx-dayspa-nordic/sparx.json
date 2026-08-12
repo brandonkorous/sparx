@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-dayspa-nordic",
   "name": "sparx — Day Spa (Nordic)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A calm, mineral template for day spas and bathhouses — book online from day one.",
   "description": "A cool, mineral day spa and bathhouse site — a glacial off-white palette, a blue-teal primary and a clean minimal sans, with quiet, elemental photography. Installs a working booking flow: thermal soak sessions, a sauna and cold-plunge circuit, 60/90-minute massage, a mineral facial and body treatment, plus a private bathhouse hour with a deposit. Three therapists and three pools and rooms carry real hours. Ships as “Kald”.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Day spa",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

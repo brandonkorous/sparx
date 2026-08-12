@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-portfolio-writer",
   "name": "sparx — Writer Portfolio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "An editorial, type-led portfolio for an essayist & reporter.",
   "description": "A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work — warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.",
   "payload": "blueprint.ts",
@@ -16,7 +16,11 @@
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "cms", "email"]
+    "modules": [
+      "builder",
+      "cms",
+      "email"
+    ]
   },
   "media": [
     {

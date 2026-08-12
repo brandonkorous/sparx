@@ -3,21 +3,31 @@
   "category": "blueprint",
   "slug": "sparx-lifecoach-career",
   "name": "sparx — Life Coaching (Career)",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A sharp template for career & executive coaches — book discovery calls from day one.",
   "description": "A sharp, empowering career-coaching site — a deep-navy palette, a confident amber accent and a modern sans, built for ambitious professionals. Installs a working booking flow: a free discovery call plus career-strategy, executive, leadership, interview-prep and promotion sessions, three coaches you book by name with evening hours, and a no-show policy. Ships as \"Ascend Coaching\", a results-focused practice you can book in about a minute.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
     "industry": "Life coaching",
-    "requiredModules": ["builder", "scheduling", "crm", "email"]
+    "requiredModules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "scheduling", "crm", "email"]
+    "modules": [
+      "builder",
+      "scheduling",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

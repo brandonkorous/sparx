@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-wine-modern',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Modern Wine Shop',
   summary:
     'A complete, working shop for a bright, modern wine club and bottle shop: a real catalogue of approachable bottles — a house red, a bold dinner red, a crisp white, a rosé, a pét-nat, a non-alc fizz, a flexible wine club, a mixed six and a gift set — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Bright pale-blush theme — a punchy berry primary, a coral accent and a modern display face. Shipped as Coupe.',

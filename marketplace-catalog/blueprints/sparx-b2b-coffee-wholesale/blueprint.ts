@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-coffee-wholesale',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Coffee Roaster (Wholesale)',
   summary:
     'A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order — with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme — cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.',

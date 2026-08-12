@@ -41,6 +41,7 @@ import { resolveSparxTheme } from '../../../packages/silica-catalog/src/resolve-
 import { TEMPLATE_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/template-themes';
 import { CONTENT_THEME_BY_SLUG } from '../../../packages/silica-catalog/src/content-themes';
 import { colorToHex } from '../../../packages/site-themes/src/v2/color';
+import { blueprintEmailDoc } from '../shared/blueprint-email';
 
 /** The bespoke theme for a template slug, from EITHER shelf — the ten commerce looks
  *  (`TEMPLATE_THEME_BY_SLUG`, keyed by the `docs/templates/*` slug) OR the ten content
@@ -61,7 +62,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
  *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.2.0';
+const BUNDLE_VERSION = '1.3.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -564,11 +565,12 @@ export async function emitBundle(spec: TemplateSiteSpec): Promise<{ dir: string;
   const dir = join(blueprintsDir, spec.key);
   await fs.mkdir(join(dir, 'media'), { recursive: true });
 
-  // A shop's default marketing starters (welcome + win-back) unless the spec authors its own —
-  // for any COMMERCE vertical (retail OR b2b/wholesale); a content template ships none. Both
-  // installed as drafts.
+  // The default marketing starters unless the spec authors its own — a COMMERCE vertical
+  // (retail OR b2b/wholesale) gets the shop welcome + win-back; a CONTENT template gets the
+  // publisher welcome. Both installed as drafts.
   const emails =
-    spec.emails ?? (spec.vertical === 'content' ? ([] as unknown[]) : commerceEmails(spec));
+    spec.emails ??
+    (spec.vertical === 'content' ? contentEmails(spec) : commerceEmails(spec));
 
   await fs.writeFile(join(dir, 'site.json'), json(site));
   await fs.writeFile(join(dir, 'commerce.json'), json(spec.commerce));
@@ -667,84 +669,6 @@ function contactBand(): Node {
  *  sends (body → section → heading / paragraphs / button). Colours carry the `*Auto` flags so
  *  the mail re-themes light/dark per tenant, exactly like the core blueprints' emails. Node
  *  ids are namespaced per email so a doc's nodes stay unique. */
-function emailDoc(
-  ns: string,
-  o: {
-    subject: string;
-    preheader: string;
-    heading: string;
-    paragraphs: string[];
-    button: { label: string; href: string };
-  }
-): Record<string, unknown> {
-  let seq = 0;
-  const eid = (k: string): string => `${ns}-${k}-${(seq += 1)}`;
-  const text = (html: string, heading = false): Record<string, unknown> => ({
-    id: eid('text'),
-    kind: 'text',
-    html,
-    align: 'left',
-    color: '#18181b',
-    colorAuto: true,
-    fontSize: heading ? 28 : 16,
-    fontWeight: heading ? 'bold' : 'normal',
-    lineHeight: heading ? 36 : 26,
-  });
-  const spacer = (height: number): Record<string, unknown> => ({
-    id: eid('spacer'),
-    kind: 'spacer',
-    height,
-  });
-
-  const blocks: Record<string, unknown>[] = [text(o.heading, true), spacer(10)];
-  o.paragraphs.forEach((p, i) => {
-    blocks.push(text(p));
-    blocks.push(spacer(i === o.paragraphs.length - 1 ? 22 : 14));
-  });
-  blocks.push({
-    id: eid('button'),
-    kind: 'button',
-    label: o.button.label,
-    href: o.button.href,
-    bg: '#111827',
-    bgAuto: true,
-    color: '#ffffff',
-    colorAuto: true,
-    radius: 6,
-    align: 'left',
-    paddingX: 24,
-    paddingY: 12,
-  });
-
-  return {
-    version: '1',
-    subject: o.subject,
-    preheader: o.preheader,
-    root: {
-      id: eid('body'),
-      kind: 'body',
-      width: 600,
-      bg: '#f4f4f5',
-      bgAuto: true,
-      contentBg: '#ffffff',
-      contentBgAuto: true,
-      fontFamily: 'Arial, Helvetica, sans-serif',
-      colorScheme: 'light dark',
-      children: [
-        {
-          id: eid('section'),
-          kind: 'section',
-          bg: '#ffffff',
-          bgAuto: true,
-          paddingX: 24,
-          paddingY: 24,
-          children: blocks,
-        },
-      ],
-    },
-  };
-}
-
 /** The default MARKETING starters for a shop — a welcome and a win-back, both installed as
  *  drafts (`publish: false`, like every blueprint email). The copy is shop-voiced but
  *  vertical-neutral (it reads right for a coffee roaster, a boutique, or a plant shop alike)
@@ -754,13 +678,22 @@ function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
     {
       name: 'Welcome',
       publish: false,
-      doc: emailDoc('shop-welcome', {
+      doc: blueprintEmailDoc({
         subject: 'Welcome to {{site.name}}',
         preheader: 'So glad you found us — here’s where to start.',
         heading: 'Welcome, {{customer.firstName}}',
         paragraphs: [
           'Thanks for joining {{site.name}}. We put a lot of care into what we make and sell, and we’re glad you’re here to see it.',
-          'Have a look around whenever you’re ready — new arrivals, best sellers, and everything in between are waiting in the shop.',
+        ],
+        features: [
+          {
+            title: 'Everything in one place',
+            body: 'Your cart, orders, and favourites live in your account — sign in any time to pick up where you left off.',
+          },
+          {
+            title: 'Here to help',
+            body: 'Reply to any email from us and you’ll reach a real person — not a bot.',
+          },
         ],
         button: { label: 'Shop now', href: '{{site.url}}/shop' },
       }),
@@ -768,15 +701,52 @@ function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
     {
       name: 'We saved your spot',
       publish: false,
-      doc: emailDoc('shop-winback', {
+      doc: blueprintEmailDoc({
         subject: 'Still thinking it over, {{customer.firstName}}?',
         preheader: 'Your favourites are waiting at {{site.name}}.',
         heading: 'We’d love to see you again',
         paragraphs: [
           'It’s been a little while, {{customer.firstName}}. Whenever you’re ready, {{site.name}} is right where you left it.',
-          'We’ve had a few new things land since your last visit — come take a look and see what’s caught our eye lately.',
         ],
+        highlight: {
+          title: 'New since your last visit',
+          body: 'A few fresh arrivals and returning favourites have landed — come take a look and see what’s caught our eye lately.',
+        },
         button: { label: 'See what’s new', href: '{{site.url}}/shop' },
+      }),
+    },
+  ];
+}
+
+/** The default MARKETING starter for a CONTENT template — a publisher's welcome to a new
+ *  subscriber, installed as a draft (`publish: false`). Voiced for a publication (a
+ *  newsroom, a magazine, a journal) rather than a shop, and its CTA points at the site's
+ *  live `/journal` index instead of `/shop`. Tokenized with the same canonical merge tags
+ *  so a fork re-themes to the tenant. A content template ships this one starter; a shop
+ *  ships `commerceEmails` (welcome + win-back) instead. */
+function contentEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
+  return [
+    {
+      name: 'Welcome',
+      publish: false,
+      doc: blueprintEmailDoc({
+        subject: 'Welcome to {{site.name}}',
+        preheader: 'Thanks for subscribing — here’s where to begin.',
+        heading: 'Welcome, {{customer.firstName}}',
+        paragraphs: [
+          'Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.',
+        ],
+        features: [
+          {
+            title: 'Straight to your inbox',
+            body: 'New pieces land here first — no noise, just the work we think is worth your time.',
+          },
+          {
+            title: 'Start with the latest',
+            body: 'Catch up on what we’ve been working on — our newest stories are waiting in the journal.',
+          },
+        ],
+        button: { label: 'Read the latest', href: '{{site.url}}/journal' },
       }),
     },
   ];

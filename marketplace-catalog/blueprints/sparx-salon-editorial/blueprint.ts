@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-salon-editorial',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Salon (Editorial)',
   summary:
     'An upscale, editorial hair-salon site — a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as "Maison Élan", a calm three-chair studio.',

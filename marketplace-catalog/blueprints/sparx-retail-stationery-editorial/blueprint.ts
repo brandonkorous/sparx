@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-stationery-editorial',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Stationery & Paper Goods (Editorial)',
   summary:
     'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme — warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',

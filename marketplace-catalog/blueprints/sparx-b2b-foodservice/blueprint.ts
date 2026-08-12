@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-foodservice',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Foodservice Wholesale',
   summary:
     'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton — bulk pantry, oils and staples, packaging and disposables — with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme — cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',

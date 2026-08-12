@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-chocolate",
   "name": "sparx — Chocolatier (Artisan)",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "tagline": "A warm, working storefront for an artisan chocolatier.",
   "description": "A complete, working shop for a bean-to-bar chocolatier: a real catalogue of single-origin bars, truffle and confection boxes, drinking chocolate, gift sets and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Rich, low-lit chocolate-room theme — deep cocoa grounds, a burgundy primary, a warm gold accent. Shipped as Cacao & Co.",
   "payload": "blueprint.ts",
@@ -16,7 +16,13 @@
     "priceCents": 0
   },
   "requires": {
-    "modules": ["builder", "commerce", "cms", "crm", "email"]
+    "modules": [
+      "builder",
+      "commerce",
+      "cms",
+      "crm",
+      "email"
+    ]
   },
   "media": [
     {

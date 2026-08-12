@@ -14,7 +14,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-studio',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Studio / Architect Portfolio',
   summary:
     'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',

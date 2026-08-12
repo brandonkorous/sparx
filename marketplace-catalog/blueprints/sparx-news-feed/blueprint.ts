@@ -11,10 +11,11 @@ import content from './content.json' with { type: 'json' };
 import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-news-feed',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — News Feed',
   summary:
     'A dense front-page feed for a technology & business publication — a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.',
@@ -66,9 +67,11 @@ const blueprint = {
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

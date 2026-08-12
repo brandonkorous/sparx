@@ -8,12 +8,14 @@
 // workspace resolution, so it imports ONLY sibling JSON, never `@sparx/*`.
 import site from './site.json' with { type: 'json' };
 import content from './content.json' with { type: 'json' };
+import authors from './authors.json' with { type: 'json' };
 import commerce from './commerce.json' with { type: 'json' };
 import assets from './assets.json' with { type: 'json' };
+import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-catalog-dense',
-  version: '1.1.0',
+  version: '1.2.0',
   name: 'sparx — Catalog Dense',
   summary:
     'A high-volume, discount-forward storefront for a fast-fashion apparel shop — a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.',
@@ -61,12 +63,15 @@ const blueprint = {
 
   assets,
   contentTypes: [],
+  authors,
   content,
   commerce,
 
-  // Reference site templates ship no marketing emails of their own — the platform's
-  // keyed transactional defaults cover the sends a fresh install needs.
-  emails: [],
+  // A shop's brand-voiced MARKETING starters (a welcome + a win-back), tokenized so a fork
+  // re-themes to the tenant and installed as DRAFTS — the platform's keyed transactional
+  // defaults (order/shipping/dunning) are separate and never duplicated here. Content
+  // templates ship an empty set.
+  emails,
   sequences: [],
 
   // The composed distinct site (frame + a template-specific home + standard commerce/

@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-restaurant-equipment',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx — Restaurant Equipment (B2B / Wholesale)',
   summary:
     'A complete, working wholesale shop for a commercial kitchen & restaurant-equipment distributor: a real trade catalogue sold by the unit and the case — prep tables, cooking gear, food storage, front-of-house service and smallwares — with categories, collections, a bespoke trade PDP (per-unit/per-case pricing, volume breaks, net-30), and a full merchandised home page. Kitchen-grade theme — warm steel ground, deep graphite, an ember copper accent. Shipped as Pass Supply Co.',

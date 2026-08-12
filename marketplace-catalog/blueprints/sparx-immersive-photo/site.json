@@ -33,7 +33,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "01f55685-9b56-447c-b422-30dfb8fbc8b5",
+                      "id": "76e8caea-e280-4d7b-8cfd-937a19fd96f8",
                       "ord": "a0"
                     },
                     {
@@ -49,11 +49,11 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "5b4b63c8-b40a-4c6e-a14c-e4b8ecbc4d21",
+                      "id": "3381d2d5-fa35-4c10-bc05-72c4fbe8192e",
                       "ord": "a1"
                     }
                   ],
-                  "id": "8f55d6eb-a351-4279-8d04-8fd9a0e4dc74",
+                  "id": "e9082dca-c2ca-4cad-85d9-9ff3fa8e7abc",
                   "ord": "a0"
                 },
                 {
@@ -63,7 +63,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "7deaeb4d-0015-41ec-87ff-816edc125784",
+                  "id": "8f15b99c-cf17-4a37-8bbb-c220c5bc3db2",
                   "ord": "a1"
                 },
                 {
@@ -89,7 +89,7 @@
                             "type": "link",
                             "label": "Docs"
                           },
-                          "id": "6c3d3902-0f0c-43d5-905e-cdbc3099f1c2",
+                          "id": "7ca4763a-5cd7-496d-ab4c-da6a25fe9797",
                           "ord": "a0"
                         },
                         {
@@ -105,18 +105,18 @@
                             "type": "link",
                             "label": "Company"
                           },
-                          "id": "98526a5b-6504-4cd5-8567-55c23e64bbdc",
+                          "id": "7875e322-acf9-4700-86a6-440db95cf516",
                           "ord": "a1"
                         }
                       ],
-                      "id": "ba4373fe-c817-4d05-aaa7-8f43c6ce6d3a",
+                      "id": "fdcdb37f-597f-4106-b4f9-7ce2245a0e6d",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "d4e31e47-ff32-46de-815d-24c70d0a2dc1",
+                      "id": "739a2d6d-312c-4dd9-b8da-af70a32f48b6",
                       "ord": "a1"
                     },
                     {
@@ -134,20 +134,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "cfd00a32-f949-4cd5-8b3a-1109ae05d7e7",
+                          "id": "8b9ee1d6-91b3-4fa1-a31b-574648f721e5",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "5ad890fd-20c6-42c9-b2a2-e0743657a94a",
+                      "id": "8375fa74-0788-4efc-9429-f1658bcd010a",
                       "ord": "a2"
                     }
                   ],
-                  "id": "67289c80-b0a1-4872-a402-f36f07962698",
+                  "id": "728038bd-f175-4958-996b-ed5c2bc9037f",
                   "ord": "a2"
                 }
               ],
-              "id": "9c6ea268-657e-40e5-b619-b85e7f1e48f0",
+              "id": "46e8b025-fc56-4d4e-a5d5-27f78c869010",
               "ord": "a0"
             },
             {
@@ -171,7 +171,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "34b9ed8b-cc39-48a8-8e45-018d7cb9c149",
+                  "id": "7fa5906b-decc-451f-8dc5-1d8c1a417f30",
                   "ord": "a0"
                 },
                 {
@@ -187,7 +187,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "30134e3c-cad3-4879-8f40-bc832f6677d9",
+                  "id": "e4349c8d-6c91-4e30-b81b-e7445422caea",
                   "ord": "a1"
                 },
                 {
@@ -203,7 +203,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "33110ba5-9146-4c4b-b05a-298d7e18f2a1",
+                  "id": "41e1d46c-dab1-4b14-8b57-2ffc02491e46",
                   "ord": "a2"
                 },
                 {
@@ -219,19 +219,19 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "ed010d68-a6ab-4000-a8e4-94f41b0ceff4",
+                  "id": "6923c51f-30a6-449a-8d2d-f83b4b42c518",
                   "ord": "a3"
                 }
               ],
               "part": "panel",
-              "id": "ca2b073f-4f21-4e76-8617-2b70110f6205",
+              "id": "d33d72c6-38d9-4cfd-b46a-9cb489cb1d16",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "07f9e592-ba5c-4b38-bdc1-c29c36e7f943",
+          "id": "3eb607e2-75a0-46fb-9be1-63a1a63d972e",
           "ord": "a0"
         },
         {
@@ -247,7 +247,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "e2baa153-fc2e-413a-8e76-10ca8e5453d2",
+          "id": "83460961-44e3-4888-b5d6-737edff00c15",
           "ord": "a1"
         },
         {
@@ -277,7 +277,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "77df488f-5ced-474a-84d1-239c7f4887ec",
+                          "id": "9feeac7d-e59b-455c-a1ee-069bf58a71f1",
                           "ord": "a0"
                         },
                         {
@@ -295,7 +295,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "cb7a56c4-fa95-4dbf-a91e-52da58e6e2a4",
+                          "id": "c77559a1-d6d5-42d5-b1a0-15554e512fe6",
                           "ord": "a1"
                         },
                         {
@@ -316,7 +316,7 @@
                                 "placeholder": "you@example.com",
                                 "required": true
                               },
-                              "id": "7bc5d03e-b4ed-4c67-9932-91b465f75349",
+                              "id": "a4185015-9922-469e-b54c-8cb2889d49e9",
                               "ord": "a0"
                             },
                             {
@@ -332,11 +332,11 @@
                                 "type": "text",
                                 "label": "Button label"
                               },
-                              "id": "63ed6b5e-52e8-4159-8807-23767be72857",
+                              "id": "b7485c5e-0872-42c9-bf5b-e3ebe7d9678e",
                               "ord": "a1"
                             }
                           ],
-                          "id": "26443e56-00aa-4195-ae79-e38df9e6728c",
+                          "id": "4945d0bb-e6b7-42a1-8f8d-ae76c04b3bc7",
                           "ord": "a2"
                         },
                         {
@@ -349,11 +349,11 @@
                             "type": "text",
                             "label": "Reassurance line"
                           },
-                          "id": "fd15fca6-8386-4d99-9ba3-2faec9928b00",
+                          "id": "9f466134-b89f-4ae9-b33d-e4a03db80cc7",
                           "ord": "a3"
                         }
                       ],
-                      "id": "6200ab71-977c-40ea-aee0-52cbdf26a705",
+                      "id": "b9a8e2fd-d1da-4727-86bc-007516104342",
                       "ord": "a0"
                     },
                     {
@@ -379,7 +379,7 @@
                               "attrs": {
                                 "href": "/"
                               },
-                              "id": "45df854b-c2e1-4e92-b123-698bbac2e7b7",
+                              "id": "ec63057a-f718-4032-94ad-ac61354e08d6",
                               "ord": "a0"
                             },
                             {
@@ -404,11 +404,11 @@
                                         "type": "link",
                                         "label": "Features"
                                       },
-                                      "id": "a73dad3c-12df-4044-8f6b-cd72c6b9aa4e",
+                                      "id": "f1076855-5957-4125-ac58-7489a371be9d",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "780aa7c6-e5a0-4099-a5c7-c6996fadcf92",
+                                  "id": "95ac6743-d64b-450f-9eb3-36b4eb0f9a9b",
                                   "ord": "a0"
                                 },
                                 {
@@ -428,11 +428,11 @@
                                         "type": "link",
                                         "label": "Pricing"
                                       },
-                                      "id": "75edc765-686b-4fa6-a4be-976af69432a4",
+                                      "id": "f52c391b-0ba8-4773-a0ce-9e651ba32a2c",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "eb13829c-1868-4db9-94ed-cc9b6d835e99",
+                                  "id": "de5465ba-e829-4fa7-a965-358b25e50bf1",
                                   "ord": "a1"
                                 },
                                 {
@@ -452,11 +452,11 @@
                                         "type": "link",
                                         "label": "Changelog"
                                       },
-                                      "id": "adb1dae5-c722-4512-af75-30794e04ac6c",
+                                      "id": "7c3b18d5-f2f8-4b28-9fee-01a28d46d620",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "a2d55c92-54ab-4621-9175-b02e67caa29a",
+                                  "id": "5837cd05-cdf4-4979-b4e1-b3ea50172e25",
                                   "ord": "a2"
                                 },
                                 {
@@ -476,11 +476,11 @@
                                         "type": "link",
                                         "label": "Roadmap"
                                       },
-                                      "id": "5452b65b-daf8-48b5-8976-9343ae26903e",
+                                      "id": "78616cf8-bb16-4fb5-81d9-afc6f80e6929",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "76a0dabd-e973-4fee-9d03-b8755af88cf3",
+                                  "id": "43f16760-abc2-4c4e-8bf7-f6d9081b071b",
                                   "ord": "a3"
                                 },
                                 {
@@ -495,19 +495,19 @@
                                         "href": "/search"
                                       },
                                       "children": ["Search"],
-                                      "id": "1c0a68d9-3f86-4d3e-8500-d6c0766d854b",
+                                      "id": "5aab52ea-42de-4a7a-ba21-a94bec08d5b4",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "c304f761-032c-4551-8798-53a7662bfcd9",
+                                  "id": "935236f9-e835-49ee-a619-36a17ba93ffd",
                                   "ord": "a4"
                                 }
                               ],
-                              "id": "e08a5a19-d50e-4da1-9a50-bebf892628cd",
+                              "id": "28518f5e-93d1-49dd-ae2d-6c500784a0e4",
                               "ord": "a1"
                             }
                           ],
-                          "id": "ca772570-431e-4041-8589-1f8edd5de0bb",
+                          "id": "e7955662-391b-418d-b00f-e05229be4846",
                           "ord": "a0"
                         },
                         {
@@ -528,7 +528,7 @@
                               "attrs": {
                                 "href": "/account"
                               },
-                              "id": "9f70f7f0-1813-4c20-9a70-7f9227af49c3",
+                              "id": "70da90e9-3d30-4bd1-958c-640200d4d77f",
                               "ord": "a0"
                             },
                             {
@@ -553,11 +553,11 @@
                                         "type": "link",
                                         "label": "About"
                                       },
-                                      "id": "a447c33d-1ee7-4b6a-98d7-91c922851a2f",
+                                      "id": "a47895d5-6502-472f-ad47-6c5f81e2e345",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "a7947251-9677-4d2f-b1e2-4af6e997cb84",
+                                  "id": "abffa10a-9b0f-4038-92d1-2d294117e1bc",
                                   "ord": "a0"
                                 },
                                 {
@@ -577,11 +577,11 @@
                                         "type": "link",
                                         "label": "Careers"
                                       },
-                                      "id": "d72bd19f-c83c-4668-aeaf-ae198d61b09b",
+                                      "id": "4d9a6959-1931-4075-ade3-6e08e378989b",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "3ae4ded7-193c-4ef9-8849-3f01ab1db349",
+                                  "id": "cce9c00a-58da-4a9b-b6e6-1ac3ea2101c7",
                                   "ord": "a1"
                                 },
                                 {
@@ -601,27 +601,27 @@
                                         "type": "link",
                                         "label": "Press"
                                       },
-                                      "id": "d478b02f-3a97-4be4-ae7a-c2b12ff069dc",
+                                      "id": "dd48c212-afa9-47ba-8172-375eee119d01",
                                       "ord": "a0"
                                     }
                                   ],
-                                  "id": "0c23e324-2a99-4aaa-9bf3-141e0dfb1e11",
+                                  "id": "27a4a599-a9b1-4a7b-8f59-4ca9e6994f62",
                                   "ord": "a2"
                                 }
                               ],
-                              "id": "e9ed78f5-751a-4534-aa56-d4996e17ed0c",
+                              "id": "b3c76030-515f-4b50-91d2-fdcf496175e3",
                               "ord": "a1"
                             }
                           ],
-                          "id": "9d8952ba-946b-4f55-8114-07cdf122194a",
+                          "id": "6b3a803a-ef69-49da-865a-0348b9c62906",
                           "ord": "a1"
                         }
                       ],
-                      "id": "8d599326-71eb-4840-a41e-064b003c66da",
+                      "id": "59b02135-6936-4638-a691-c3a4d4c6d1b6",
                       "ord": "a1"
                     }
                   ],
-                  "id": "41fb6cc1-7d79-4ecf-b3ae-79054f9fd557",
+                  "id": "21794f6b-3d34-4bb5-99f6-54c229919add",
                   "ord": "a0"
                 },
                 {
@@ -644,11 +644,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "95acac69-d88a-4bc9-90dc-47f34baf0b5f",
+                          "id": "764520b1-87db-4a17-94f9-808d992bbf1f",
                           "ord": "a0"
                         }
                       ],
-                      "id": "0eafe92e-5a5f-4e1a-a276-5102efae10cb",
+                      "id": "ebced8c5-54fe-4361-93f2-047708e86c40",
                       "ord": "a0"
                     },
                     {
@@ -656,23 +656,23 @@
                       "tag": "ul",
                       "class": "flex items-center gap-5",
                       "children": [],
-                      "id": "724f589b-adc2-44f6-97d3-03d8a4cb5f41",
+                      "id": "776cf83e-0ea5-48e7-9277-18278788f792",
                       "ord": "a1"
                     }
                   ],
-                  "id": "2de55f80-c9d2-4c3b-8e3d-be2f6ff6cf07",
+                  "id": "7d18a757-cb02-48ca-b562-1cab55fd5833",
                   "ord": "a1"
                 }
               ],
-              "id": "7828bf34-3116-4d88-869b-6385af490cdd",
+              "id": "59f2e04d-d836-4039-b1f5-9b3bc7fd00b1",
               "ord": "a0"
             }
           ],
-          "id": "754ea7b7-e055-42e1-bc05-38e188dbe4a7",
+          "id": "26677576-57ec-411d-80f2-9e16a07dfc8f",
           "ord": "a2"
         }
       ],
-      "id": "2e5f7a63-988e-45dc-8635-4536baf8a313"
+      "id": "4f2896dc-0ba0-4095-bd60-f314b6a8ee6a"
     }
   },
   "pages": [
@@ -686,7 +686,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b8e7a3d6-446b-4fa7-a06d-6c38f6bcf3cc",
+        "id": "804998cb-51fd-4211-beac-e06e27db295f",
         "children": [
           {
             "kind": "element",
@@ -702,7 +702,7 @@
                   "alt": "A desert mountain range glowing at first light",
                   "loading": "eager"
                 },
-                "id": "ca00e201-6177-4096-96e4-5b79053a491e",
+                "id": "6cbd8f59-2e4a-4ed1-af68-ebbbad2bbec3",
                 "ord": "a0"
               },
               {
@@ -725,7 +725,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                             "children": ["Travel · Photo story"],
-                            "id": "217f8a13-d6ae-4d12-afa8-a1cee7f7b772",
+                            "id": "09ce6474-60df-4a02-b780-707e86b2b629",
                             "ord": "a0"
                           },
                           {
@@ -733,7 +733,7 @@
                             "tag": "h1",
                             "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                             "children": ["Twelve hours in the Atacama, chasing the last light"],
-                            "id": "bc9ecbfb-2dee-452f-b27c-ef1ebe6f63c3",
+                            "id": "1185e359-7f7a-4219-90bb-91454929c19d",
                             "ord": "a1"
                           },
                           {
@@ -743,7 +743,7 @@
                             "children": [
                               "The driest desert on Earth turns to colour for a few minutes at dusk. We drove four hours for those minutes, and stayed for the sky that came after."
                             ],
-                            "id": "5de97795-ab95-48d6-a1f3-979417491531",
+                            "id": "77d42b33-4776-472c-9178-966ffba78268",
                             "ord": "a2"
                           },
                           {
@@ -751,23 +751,23 @@
                             "tag": "p",
                             "class": "text-sm text-base-content",
                             "children": ["Photographs by Lena Ross · 12 August"],
-                            "id": "6bee94aa-9889-4e50-8a89-c0c8341d68f4",
+                            "id": "6b5e2d54-2eba-4d71-b3f1-2a35d6b020f3",
                             "ord": "a3"
                           }
                         ],
-                        "id": "5a2b0881-b26d-4abb-8a37-d5e402ef6e21",
+                        "id": "5b71c5e5-81d0-4321-8613-a1ae51b45988",
                         "ord": "a0"
                       }
                     ],
-                    "id": "ae19ee22-fe4c-4fd3-b245-d1f9dd2f90d3",
+                    "id": "df472e0e-e2b3-46b6-b169-83c9c0f030b5",
                     "ord": "a0"
                   }
                 ],
-                "id": "cd654448-821d-4e80-bfec-520c14bc4ed5",
+                "id": "ad4cb943-5840-4350-866c-4ededd920b11",
                 "ord": "a1"
               }
             ],
-            "id": "10a81434-49a7-4bf9-92e2-de04ce166c2f",
+            "id": "5d40911e-8b45-4518-88d9-d4e199c0c7e1",
             "ord": "a0"
           },
           {
@@ -785,7 +785,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Latest dispatches"],
-                    "id": "cd633abb-8edf-438f-ac3c-49ec4eef2a89",
+                    "id": "8a159f1e-aced-454b-ae0f-71a0e3d8ceda",
                     "ord": "a0"
                   },
                   {
@@ -793,15 +793,15 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["New writing and photography from the field, newest first."],
-                    "id": "6d4b7752-55d6-4e81-b25c-d162627fa3d9",
+                    "id": "0c80435f-7aa2-415f-b7ad-07fd9d49f8ca",
                     "ord": "a1"
                   }
                 ],
-                "id": "a0de566f-a9fb-4784-a02a-e27c033f01eb",
+                "id": "9507853a-3e7b-49db-a6fb-088beaf994ea",
                 "ord": "a0"
               }
             ],
-            "id": "6d58a237-19a1-49ff-8002-edf98c0f0fa1",
+            "id": "9db8eea9-b175-417c-a0b6-0c6b0dee48c5",
             "ord": "a1"
           },
           {
@@ -839,7 +839,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "91294c45-d1c9-48bb-baca-cae5535589e4",
+                            "id": "f60dc895-000c-46b7-b175-6b441ce1cd8e",
                             "ord": "a0"
                           },
                           {
@@ -851,7 +851,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "044fda42-cb21-435d-af5c-c0e62fa985fa",
+                            "id": "79613548-6da0-499e-9f0c-ed56aeb85388",
                             "ord": "a1"
                           },
                           {
@@ -863,7 +863,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "08483ced-26d8-47f2-bd18-d943a7ba4c74",
+                            "id": "a2a56326-28d1-4182-a53b-613d73a435aa",
                             "ord": "a2"
                           },
                           {
@@ -875,7 +875,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "3cd0d90d-bf97-4609-a90d-3b06e53f3164",
+                            "id": "42f0226d-3b20-4f4b-87de-5932bac03069",
                             "ord": "a3"
                           }
                         ],
@@ -884,7 +884,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "35e57e68-949e-4e50-b9fc-5017e5b1c1b5",
+                        "id": "19a0c3b4-af2f-4e01-ba0a-bc7358fdce97",
                         "ord": "a0"
                       }
                     ],
@@ -892,15 +892,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "7b4c613c-f5fb-45b4-a952-03bc10902849",
+                    "id": "27e852ae-070c-41d2-9789-15890e2c056b",
                     "ord": "a0"
                   }
                 ],
-                "id": "6c2d3c5b-cd87-4ced-96d6-21c3f6ecd54a",
+                "id": "00527010-b82a-4b63-96e9-9f600fe4e4a2",
                 "ord": "a0"
               }
             ],
-            "id": "c82f659b-fa61-408f-b4bd-4f7eb51e38fd",
+            "id": "bedfb3a1-9d77-403a-a66b-a67b1ff81dcc",
             "ord": "a2"
           },
           {
@@ -923,7 +923,7 @@
                         "tag": "span",
                         "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                         "children": ["Photo essay"],
-                        "id": "5bd772d7-7614-416a-b1f2-576a496144a9",
+                        "id": "505afe17-a58e-4d57-a5db-74cc04a8df1d",
                         "ord": "a0"
                       },
                       {
@@ -931,7 +931,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The high passes, chapter by chapter"],
-                        "id": "1e609339-c659-4912-9fe1-b109867c21a2",
+                        "id": "c414d5c7-1531-4071-ad39-41e2ae6c0386",
                         "ord": "a1"
                       },
                       {
@@ -941,11 +941,11 @@
                         "children": [
                           "A long scroll through one week above the tree line — the road up, the water on the way down, and the forest that swallowed the last of the light."
                         ],
-                        "id": "c5f3bacc-50cc-4d8d-b490-a95ffeb510dc",
+                        "id": "16714ad2-e366-40a9-afd7-1d35c76b3dc0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "acc5990d-4594-414e-adc1-8cace603406d",
+                    "id": "90924d2d-596f-4f58-a130-d9e51e29ef19",
                     "ord": "a0"
                   },
                   {
@@ -967,7 +967,7 @@
                               "alt": "A switchback road climbing a green mountainside",
                               "loading": "lazy"
                             },
-                            "id": "c9f74805-460d-4895-bee4-ebeccd0a289d",
+                            "id": "dd355bd6-bf7b-4d55-8a05-025aa892174b",
                             "ord": "a0"
                           },
                           {
@@ -990,7 +990,7 @@
                                         "tag": "h3",
                                         "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
                                         "children": ["The road up"],
-                                        "id": "c6cc9570-e4f8-440c-8e2a-b11e74129d1d",
+                                        "id": "c7f18dc3-8bda-4850-8aa1-fb92cce81deb",
                                         "ord": "a0"
                                       },
                                       {
@@ -1000,23 +1000,23 @@
                                         "children": [
                                           "Nine hairpins in twenty minutes, each one opening onto the same valley from a little higher, until the farms below turned to a green quilt and the air went thin and clean."
                                         ],
-                                        "id": "160bc32e-ac33-4beb-a9e1-1b6fcfd97b0a",
+                                        "id": "1a3c9953-e7aa-47ad-95b4-1e0df531b995",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "9a30f453-0fde-4457-b608-42c456c4b9a9",
+                                    "id": "3063d32a-4279-45a8-ad37-fae7f61dd5ba",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "94140bf2-a7fc-4a38-aaa6-b18bcecb5500",
+                                "id": "55e97ec9-9db5-485d-ba28-28e68165bbac",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "a36a1e7a-020e-4432-aaf2-2b7d4de14368",
+                            "id": "16def431-305a-4f51-a5fa-32c866774cb7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b25def82-5f8a-4dac-ba84-a88c495b8dd2",
+                        "id": "bb000658-4def-4115-9fd6-cc8614fda110",
                         "ord": "a0"
                       },
                       {
@@ -1033,7 +1033,7 @@
                               "alt": "A waterfall in long exposure over dark rock",
                               "loading": "lazy"
                             },
-                            "id": "d403173e-8ad5-4475-8ad7-251a1c725dc5",
+                            "id": "9b3c314c-4efe-4f60-bc05-4cd526876f0e",
                             "ord": "a0"
                           },
                           {
@@ -1056,7 +1056,7 @@
                                         "tag": "h3",
                                         "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
                                         "children": ["Where the snow goes"],
-                                        "id": "65b744c1-a24d-4d89-ac57-979554bf1045",
+                                        "id": "52425154-c0f2-4e7d-a6d8-6447e8d5ade7",
                                         "ord": "a0"
                                       },
                                       {
@@ -1066,23 +1066,23 @@
                                         "children": [
                                           "Everything that fell as snow up here leaves as this — a single white thread over black rock, moving so fast a half-second exposure turns it to smoke."
                                         ],
-                                        "id": "f97a7c05-17a0-4339-a0a0-904b597a9b04",
+                                        "id": "3dfc728f-825d-484a-84c6-cb390e76c7a5",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "76e54dca-6fac-4dc6-89f4-144a25f8968f",
+                                    "id": "a5bb2536-3486-4534-a4ea-6e7bee31aaca",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "a693bdf1-0fc7-418c-aaab-330685914896",
+                                "id": "58ed26f2-17f2-4b43-8dae-e039d8e7d896",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "df351264-aa3c-4f35-a974-4d9885f72609",
+                            "id": "cf87381a-c1b6-44fa-96a4-13c595085841",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ddff9def-b6d4-4ce4-8854-fe3a776fec8d",
+                        "id": "eaca27c5-6c7f-4052-bba0-3c4b8df09382",
                         "ord": "a1"
                       },
                       {
@@ -1099,7 +1099,7 @@
                               "alt": "Fog drifting through a valley of pines",
                               "loading": "lazy"
                             },
-                            "id": "68e56b9f-b59c-45e5-81bc-342e273d14b6",
+                            "id": "275291b0-0af5-42ea-8ada-6aee2a62def5",
                             "ord": "a0"
                           },
                           {
@@ -1122,7 +1122,7 @@
                                         "tag": "h3",
                                         "class": "text-2xl font-bold leading-snug tracking-tight text-base-content",
                                         "children": ["The last of the light"],
-                                        "id": "d452d440-e6c1-4706-b3eb-3996a0eea047",
+                                        "id": "f957fe36-4ade-4c5b-88e4-59799e51fea0",
                                         "ord": "a0"
                                       },
                                       {
@@ -1132,35 +1132,35 @@
                                         "children": [
                                           "By six the sun was gone behind the ridge and the fog came up the valley to meet us, and for a few minutes the whole forest was one soft, grey, breathing thing."
                                         ],
-                                        "id": "e4ba2844-0f72-4332-a617-7326ad8de726",
+                                        "id": "648222a1-4a7a-41da-9d6c-d256832f8ebc",
                                         "ord": "a1"
                                       }
                                     ],
-                                    "id": "b74fd380-2a51-44dd-97bf-5bc95580ab83",
+                                    "id": "5e65ff8a-7d20-4a3c-960e-a0f6be477ff4",
                                     "ord": "a0"
                                   }
                                 ],
-                                "id": "9b48d37a-bcbf-4be5-9632-4af09c1ab4be",
+                                "id": "a7886a67-5f7f-47cb-8438-1523ec44ee0a",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "0ae54ad6-d3f6-4236-977f-005b887d7cb7",
+                            "id": "2d0430d9-77f0-48cd-ad6d-d8581954d8dc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7435785e-9b08-4c57-8424-61a6405bff54",
+                        "id": "28887110-13c1-4eec-9032-284f7a6865e7",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a629cddd-dc4f-44f6-8eea-9b4c45b5e8eb",
+                    "id": "796adeb3-ebe4-4b9b-b43d-82476370c67a",
                     "ord": "a1"
                   }
                 ],
-                "id": "18cf9718-4902-43c0-a45d-347bc8110d0b",
+                "id": "fb2338bb-3f29-47be-b83e-f914d64e0bec",
                 "ord": "a0"
               }
             ],
-            "id": "fdde7dfb-d23d-47c5-a08b-850fd95bee46",
+            "id": "d52d69a7-63b7-4ca1-94c0-769c521294e6",
             "ord": "a3"
           },
           {
@@ -1178,7 +1178,7 @@
                     "tag": "h2",
                     "class": "text-2xl font-semibold text-base-content",
                     "children": ["Prints & Field Gear"],
-                    "id": "f2a1ad34-92ee-401f-9f41-282bc38c1f7a",
+                    "id": "7c8c4afa-24d3-463b-ac6b-98e498ede8a3",
                     "ord": "a0"
                   },
                   {
@@ -1202,12 +1202,12 @@
                             "props": {
                               "name": "arrow-left"
                             },
-                            "id": "a98ac317-8951-4fdc-af87-8331d8a9400c",
+                            "id": "f00d92e4-9325-461d-a192-4f2885481016",
                             "ord": "a0"
                           }
                         ],
                         "part": "prev",
-                        "id": "cf28af7f-7d9e-43d8-9677-989da1ca4265",
+                        "id": "18aec55f-de12-4da9-ae09-5cb82fe57676",
                         "ord": "a0"
                       },
                       {
@@ -1226,20 +1226,20 @@
                             "props": {
                               "name": "arrow-right"
                             },
-                            "id": "5fa5743e-9f1c-47e6-86d3-4b2bedca481b",
+                            "id": "3d3ebb6b-1117-4bef-9d59-e14f9153eaa5",
                             "ord": "a0"
                           }
                         ],
                         "part": "next",
-                        "id": "eab90b7a-0529-4951-9881-59d51a5e7f64",
+                        "id": "528bfeb3-e626-4565-a7e5-0a31c1d6b6ae",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e99e72d3-dd9d-4d38-9604-af8dd4947185",
+                    "id": "13c7544e-ad01-458b-bd4c-f9b4d711cea4",
                     "ord": "a1"
                   }
                 ],
-                "id": "488c135d-9458-4719-b73b-2d740aaa1e43",
+                "id": "00ceecbf-3398-4276-b4fc-5da7207f8424",
                 "ord": "a0"
               },
               {
@@ -1264,7 +1264,7 @@
                           "kind": "value",
                           "ref": "image"
                         },
-                        "id": "f369703d-32bb-4835-a555-f0a7752f181d",
+                        "id": "df53de2a-d4b8-4c52-9560-a9f3334779df",
                         "ord": "a0"
                       },
                       {
@@ -1281,7 +1281,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "a8ddfb8b-9297-4178-84d8-3a7b37c8c707",
+                            "id": "52b5d7b7-92a1-4886-a1ba-0545d1d18647",
                             "ord": "a0"
                           },
                           {
@@ -1293,11 +1293,11 @@
                               "kind": "value",
                               "ref": "price"
                             },
-                            "id": "63aa38cd-bbf9-419f-bba9-dbfe962781e2",
+                            "id": "a896b2de-d2e9-4fbe-bc6b-74f874e9a84c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "95e7187c-f334-495c-921e-87021fb90d1e",
+                        "id": "8e864410-cecf-498f-bd1e-354a4fe99b38",
                         "ord": "a1"
                       }
                     ],
@@ -1307,7 +1307,7 @@
                       "attr": "href"
                     },
                     "part": "slide",
-                    "id": "a6108121-37ae-4f6d-9fda-175ff5c89533",
+                    "id": "0abd361f-c954-4e03-b722-17699915a0ae",
                     "ord": "a0"
                   }
                 ],
@@ -1316,14 +1316,14 @@
                   "kind": "collection",
                   "ref": "commerce.featured"
                 },
-                "id": "f7f134df-0812-44dc-abbe-97b61cc99e8d",
+                "id": "e2719faa-9c37-498c-b438-41cf6dd31f49",
                 "ord": "a1"
               }
             ],
             "behavior": {
               "type": "carousel"
             },
-            "id": "9ff145f8-e3bb-440a-9d8f-c88c64e9db8a",
+            "id": "4fa31085-53ef-4562-8c03-265122f4b4fe",
             "ord": "a4"
           }
         ]
@@ -1340,7 +1340,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "56a49152-c1dc-4534-af94-fbf560745828",
+        "id": "fecf8cbe-c182-431e-925b-7c9bfec86c2c",
         "children": [
           {
             "kind": "element",
@@ -1357,7 +1357,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Shop"],
-                    "id": "83930a3f-e456-41ca-9e44-64f634b8123f",
+                    "id": "1aeb14d9-b710-4a1d-af9a-c480ed3342c7",
                     "ord": "a0"
                   },
                   {
@@ -1365,15 +1365,15 @@
                     "tag": "p",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": ["Everything we currently have available."],
-                    "id": "e430473d-cc36-4816-9f32-9644f7d41812",
+                    "id": "61dfef77-fb11-40a6-a8cb-9871ca75daec",
                     "ord": "a1"
                   }
                 ],
-                "id": "c7dc6405-7898-4b4c-bffe-455f5a356835",
+                "id": "1b3b7c20-ce9b-4f81-867a-e80be941965c",
                 "ord": "a0"
               }
             ],
-            "id": "b7997e3a-4d3c-454d-85a3-4571f4b84055",
+            "id": "9ebb92fb-6dbe-49c3-a27e-3e0a73c26f35",
             "ord": "a0"
           },
           {
@@ -1381,7 +1381,7 @@
             "component": "commerce.plp",
             "class": "mx-auto w-full max-w-6xl px-6 py-6",
             "locked": "host",
-            "id": "28780481-dedf-4fc4-b4aa-400e169ea7a7",
+            "id": "15e88d64-6778-4c8d-b5c4-9ea5fbdef86b",
             "ord": "a1"
           }
         ]
@@ -1398,7 +1398,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8c04effc-7e5c-44ca-8f78-a39e35dcabbe",
+        "id": "4affcd33-e2d0-44be-8b1d-0d8a9be17f34",
         "children": [
           {
             "kind": "element",
@@ -1410,11 +1410,11 @@
                 "component": "commerce.collections",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "02345370-418c-4961-b6bf-bc2d6b0aa9f4",
+                "id": "071432af-5863-44ee-a158-20cde1503889",
                 "ord": "a0"
               }
             ],
-            "id": "9f7b00e4-aba7-441f-bc34-34cf9bee9a21",
+            "id": "3d427ad5-ec3b-4b96-92cc-d07175f5c4f7",
             "ord": "a0"
           }
         ]
@@ -1431,7 +1431,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "af15f621-9979-40a7-b6ce-f7975073f5bb",
+        "id": "8d323dbf-3ddf-4408-96b2-43969ebb47d9",
         "children": [
           {
             "kind": "element",
@@ -1443,7 +1443,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Your cart"],
-                "id": "d7c429c9-2282-43e7-ae3f-f27059c18ba3",
+                "id": "fef1e9c8-f82f-4f8c-b8df-38d5edb16ab8",
                 "ord": "a0"
               },
               {
@@ -1451,11 +1451,11 @@
                 "component": "commerce.cart",
                 "class": "mx-auto w-full max-w-4xl px-6 py-10",
                 "locked": "host",
-                "id": "f1cae82e-0e64-4335-b7dc-407715e42c66",
+                "id": "0e246d83-e965-4f25-bdf7-d31a68dcbd37",
                 "ord": "a1"
               }
             ],
-            "id": "82e1dfef-0e4d-45ab-a81b-b1c9163e2e26",
+            "id": "f77ba4a8-0cf7-41b4-98c7-a26756c4b063",
             "ord": "a0"
           }
         ]
@@ -1472,7 +1472,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d676ed45-ce97-43c2-8cba-e3b54f39a74c",
+        "id": "6ccb1253-f85f-49d8-8642-7c81b5e31e58",
         "children": [
           {
             "kind": "element",
@@ -1484,7 +1484,7 @@
                 "tag": "h1",
                 "class": "mb-6 px-6 pt-10 text-3xl font-semibold text-base-content",
                 "children": ["Search"],
-                "id": "0b18ea42-e192-43c1-b104-6effae47ecbb",
+                "id": "f81bd09f-fcc4-4f80-a715-1649a38aa12a",
                 "ord": "a0"
               },
               {
@@ -1492,11 +1492,11 @@
                 "component": "commerce.search",
                 "class": "mx-auto w-full max-w-6xl px-6 py-6",
                 "locked": "host",
-                "id": "2f71387f-1d23-4ca2-bcdc-b0163ea8fbe6",
+                "id": "b9e522b0-c4e2-44e3-8978-3b30e8a4800d",
                 "ord": "a1"
               }
             ],
-            "id": "ecf3688a-8c98-4923-a87c-bcdb98068f25",
+            "id": "b631c1c3-b0e0-477f-92f9-915f92458116",
             "ord": "a0"
           }
         ]
@@ -1513,7 +1513,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "34d0c8c6-a98c-48cd-afe3-df8191cfe0da",
+        "id": "15768807-c9f6-489d-8fda-6c554eb2b982",
         "children": [
           {
             "kind": "element",
@@ -1530,7 +1530,7 @@
                     "tag": "span",
                     "class": "text-sm font-semibold uppercase tracking-wide text-primary",
                     "children": ["The Wayfarer Journal"],
-                    "id": "c8cd9914-1041-4f8f-8592-3dcc07a70c78",
+                    "id": "b81cd80f-4a20-4b1e-be3a-c53a9b3d0a79",
                     "ord": "a0"
                   },
                   {
@@ -1538,7 +1538,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold leading-tight tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Places, seen properly"],
-                    "id": "e672a331-b822-4015-9580-aec15e41cb06",
+                    "id": "3ec6764c-6062-4dc4-a7dc-d1d9f51b9361",
                     "ord": "a1"
                   },
                   {
@@ -1548,15 +1548,15 @@
                     "children": [
                       "Long-scroll photo stories and reported features from the field — travel, nature, the night sky, and the craft of making a picture worth the walk."
                     ],
-                    "id": "3a1ad50e-572e-4f6e-bfe6-e34cf1797677",
+                    "id": "99751163-55b2-47a6-a2e3-306dc2d50cf4",
                     "ord": "a2"
                   }
                 ],
-                "id": "ab435b04-c2b0-45ce-b6a8-bd81e25c386e",
+                "id": "0a8202e5-7a54-4376-89df-eb0cdcf15876",
                 "ord": "a0"
               }
             ],
-            "id": "b5eda28f-a4ec-4067-8ce7-eda53699fb78",
+            "id": "3aaaa598-32bf-45b6-9c8c-0c5accf7cbaf",
             "ord": "a0"
           },
           {
@@ -1594,7 +1594,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "af1ec949-03d3-4229-bf41-5b98868f7492",
+                            "id": "ee20e2cb-8959-4087-97b1-a5e4b50df348",
                             "ord": "a0"
                           },
                           {
@@ -1606,7 +1606,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "ef523f8c-42c9-48da-89d2-f9a1cdd181c4",
+                            "id": "880dbcd0-1618-474e-bf9a-7979123776d1",
                             "ord": "a1"
                           },
                           {
@@ -1618,7 +1618,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "90c6744a-ab06-439f-aea1-e9c38940bf2b",
+                            "id": "738830db-1ff6-4253-bbc1-4395d10cc14f",
                             "ord": "a2"
                           },
                           {
@@ -1630,7 +1630,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "7913508a-bd7c-4287-87f8-0c9140493812",
+                            "id": "611fce22-1a58-486c-a800-24245992b531",
                             "ord": "a3"
                           }
                         ],
@@ -1639,7 +1639,7 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "459d8bbd-8c05-4fde-96fa-251b9cbf0ca6",
+                        "id": "ba47e552-73ea-4cd0-beee-4f966542d434",
                         "ord": "a0"
                       }
                     ],
@@ -1647,15 +1647,15 @@
                       "kind": "collection",
                       "ref": "cms.blog_post"
                     },
-                    "id": "bc35a7db-eeeb-47e5-8c55-b81dc7469a38",
+                    "id": "ca4d8acd-571d-4cf8-9ef4-d65447f10e82",
                     "ord": "a0"
                   }
                 ],
-                "id": "1de5aa75-b50e-4d38-87b1-8b8e6164d1d0",
+                "id": "15d7a2eb-3b47-4e9c-8e32-ed98ce05bae6",
                 "ord": "a0"
               }
             ],
-            "id": "e6092acd-f8ab-4ae8-8666-233d3c99182a",
+            "id": "2248b1e6-6ad8-4ea6-acf4-eecc26593d88",
             "ord": "a1"
           }
         ]
@@ -1672,7 +1672,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3f6bfaca-7f97-4305-8eab-7c15b7fb7074",
+        "id": "112a29e1-39f6-4730-8386-f4a965301a67",
         "children": [
           {
             "kind": "element",
@@ -1689,7 +1689,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["About Wayfarer"],
-                    "id": "47f4166d-3f04-49fe-98ef-c1dcd8fc0bdd",
+                    "id": "44e3e50d-c311-4b65-b8c6-dfe919e3d31c",
                     "ord": "a0"
                   },
                   {
@@ -1699,7 +1699,7 @@
                     "children": [
                       "Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them — the road it took to get there, the hour the light was worth waiting for, and the people we met along the way."
                     ],
-                    "id": "fb9dafcc-2a50-425c-804b-e3db5b308150",
+                    "id": "111ee176-b06e-4504-94c2-39b1b7a3a379",
                     "ord": "a1"
                   },
                   {
@@ -1709,15 +1709,15 @@
                     "children": [
                       "We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets — just the places, seen properly."
                     ],
-                    "id": "26a8726b-f0a7-42db-a11e-b8d9afc0ba21",
+                    "id": "450f51bd-2a73-45cd-8587-7869f5280a94",
                     "ord": "a2"
                   }
                 ],
-                "id": "32be29fb-bbf1-435d-a5ca-f8d0ed1dc4f3",
+                "id": "7e10e323-6331-4874-87e0-4cc998895c28",
                 "ord": "a0"
               }
             ],
-            "id": "157db84a-571f-42af-8a27-eb136758afdb",
+            "id": "c7da30a0-0ffa-4ade-ba9b-46485d1288ef",
             "ord": "a0"
           }
         ]
@@ -1734,7 +1734,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "45d9c72e-c42b-4163-95f3-5f3edf78add6",
+        "id": "651e9365-0b9c-4d31-9f44-d71aab2f024c",
         "children": [
           {
             "kind": "element",
@@ -1751,7 +1751,7 @@
                     "tag": "h1",
                     "class": "text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl",
                     "children": ["Send us somewhere"],
-                    "id": "8f465d3e-0202-486f-81b8-f4ad5e193c9b",
+                    "id": "2cad81bd-9498-4a3d-bc8d-908f8b8231fc",
                     "ord": "a0"
                   },
                   {
@@ -1761,7 +1761,7 @@
                     "children": [
                       "A place we should photograph, a story we should chase, or a print you want in a size we do not list yet? Tell us. We read every message, and we answer the good ones from wherever we happen to be."
                     ],
-                    "id": "36b13f0c-505b-4968-93e0-8d13a85d5ec3",
+                    "id": "56ec77d6-4e2a-49a7-b0ec-c201b2adba23",
                     "ord": "a1"
                   },
                   {
@@ -1772,15 +1772,15 @@
                       "href": "mailto:hello@wayfarer.example"
                     },
                     "children": ["Email the desk"],
-                    "id": "3138e038-4322-4274-b1d0-1621cea45765",
+                    "id": "ccf10735-f9d9-46fc-af32-a830ba43b372",
                     "ord": "a2"
                   }
                 ],
-                "id": "8ca95034-5151-466e-bfe9-68e5b7bd6a3b",
+                "id": "6e509106-3d87-47ea-b86b-9b5e48f7dcea",
                 "ord": "a0"
               }
             ],
-            "id": "d3b38eb9-24eb-4492-868e-96a1243b8b4d",
+            "id": "acda1cc8-d4bf-4013-bd6c-37ca18c2ce3d",
             "ord": "a0"
           }
         ]
@@ -1815,7 +1815,7 @@
                   "kind": "value",
                   "ref": "featuredImage"
                 },
-                "id": "b3370bc3-dced-49c0-bea0-c2f1282fbb94",
+                "id": "f165bcfc-5188-430b-9634-08cb183f1e1d",
                 "ord": "a0"
               },
               {
@@ -1845,18 +1845,18 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["←"],
-                                "id": "a247ccb1-eb3f-4da5-854b-93ad5ee2834b",
+                                "id": "a1dd46a5-3d1d-4d6c-b2ba-01aad95ee33f",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["All stories"],
-                                "id": "345a71be-35dd-4965-982b-cde8272d113a",
+                                "id": "cc57e4ff-e2f3-4312-a877-a5a67ecd2ca8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cedf8925-1cdf-42ce-8b28-de3ff0ab6c70",
+                            "id": "0d00066f-77a7-4bfa-bd30-c2d093657286",
                             "ord": "a0"
                           },
                           {
@@ -1868,7 +1868,7 @@
                               "kind": "visible",
                               "ref": "category"
                             },
-                            "id": "55c7de9b-2d31-47f2-98a5-39edac504a09",
+                            "id": "d660d083-a900-4dfa-b6fd-ba5fa3ee6895",
                             "ord": "a1"
                           },
                           {
@@ -1880,7 +1880,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "8cbb5fa2-7d96-4410-b429-807149b134de",
+                            "id": "138db981-40e1-4bb1-b3e1-92c8bc2f5161",
                             "ord": "a2"
                           },
                           {
@@ -1892,7 +1892,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "70d214b9-2a79-4929-8d41-bf0088e41445",
+                            "id": "2addb4ac-86ed-46b3-b74e-8c9792cb9342",
                             "ord": "a3"
                           },
                           {
@@ -1912,7 +1912,7 @@
                                   "kind": "visible",
                                   "ref": "authorAvatar"
                                 },
-                                "id": "34eeb4fa-ceff-41ee-858d-6008c4cac0c7",
+                                "id": "1422a1d3-f945-4aaa-9408-102277dc301c",
                                 "ord": "a0"
                               },
                               {
@@ -1929,7 +1929,7 @@
                                       "kind": "visible",
                                       "ref": "authorName"
                                     },
-                                    "id": "f3db2347-ea3a-410f-887e-fb0fc9f75b8a",
+                                    "id": "32529ec1-c816-47d1-8b88-12fce2d881e3",
                                     "ord": "a0"
                                   },
                                   {
@@ -1941,31 +1941,31 @@
                                       "kind": "value",
                                       "ref": "date"
                                     },
-                                    "id": "09bf2d30-f287-4078-a983-6657e7b74403",
+                                    "id": "73a8fd14-9d44-4a93-b6e1-69bdc220c4bd",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "62b99d60-511f-4e53-972d-fe4860bf939b",
+                                "id": "646919e4-470a-4989-b794-be7e9faa2ff0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "16fd05e0-cd53-4978-9f6f-bb94c607c817",
+                            "id": "ea768827-1485-49e0-8dc5-97fe8e436e56",
                             "ord": "a4"
                           }
                         ],
-                        "id": "885e929c-1ada-42bb-9754-d023a53850c9",
+                        "id": "a9733fc9-f89d-4fef-917f-12b9c47863d1",
                         "ord": "a0"
                       }
                     ],
-                    "id": "03edbb05-a142-4a4e-8d77-2f228bcae0a3",
+                    "id": "d8cdfc4b-f550-4c01-b2ad-300a5205ec29",
                     "ord": "a0"
                   }
                 ],
-                "id": "44120e73-2862-44c0-a52d-204b7fe712fb",
+                "id": "28dc4b89-96c9-415d-ac90-70c392ca3bd6",
                 "ord": "a1"
               }
             ],
-            "id": "bd45c794-326b-4a14-a43a-748c568b0731",
+            "id": "72fe8d47-992e-4b19-b3d2-640e1be90685",
             "ord": "a0"
           },
           {
@@ -1983,15 +1983,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "1dde9ec4-c56a-4a6b-a3f2-930e234f0e78",
+                    "id": "2c64e258-04d7-410d-8790-a518e0488f9a",
                     "ord": "a0"
                   }
                 ],
-                "id": "a6c30905-1d79-40f6-aa50-0ac6965645ee",
+                "id": "eb71fa5d-bb4f-4c7e-ad83-271e36fbe806",
                 "ord": "a0"
               }
             ],
-            "id": "a8d9ac8d-9453-4cbf-b754-5845fdc71a8c",
+            "id": "ad155689-444e-46e7-a2a9-21b65db12b37",
             "ord": "a1"
           },
           {
@@ -2021,7 +2021,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "231e73e2-6ae9-4a1a-b9f9-559ff454a7e3",
+                        "id": "eb1a0437-89f8-4f19-8309-f6f0056d7065",
                         "ord": "a0"
                       },
                       {
@@ -2038,7 +2038,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "58f61a0f-4554-4fad-a932-ca92da4a17d7",
+                            "id": "0863df25-5156-49c8-b73a-218457ff2b43",
                             "ord": "a0"
                           },
                           {
@@ -2050,11 +2050,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "abd8f8dc-62f9-4cac-bd33-ab806dafdb70",
+                            "id": "7cba344f-4b46-49c7-971e-b502d359e6c0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cd75cfa3-e1ca-45c9-9329-63fd9e9036a0",
+                        "id": "ecf8e20f-28b4-447d-b45e-193b707b903a",
                         "ord": "a1"
                       }
                     ],
@@ -2062,15 +2062,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "16caab1b-e44e-4c11-bac3-7b6a008d016a",
+                    "id": "277033a5-18ff-4557-8acc-3b0d23da2bef",
                     "ord": "a0"
                   }
                 ],
-                "id": "f8440523-67bb-4f6b-ba80-7333712bfa8e",
+                "id": "547779e3-51c7-4897-a7c2-e1922d0d8b01",
                 "ord": "a0"
               }
             ],
-            "id": "16b12a2a-3d6c-4aac-847b-164be0c27238",
+            "id": "f9d2c2d6-ea2b-40dd-a5c7-dfc9df513340",
             "ord": "a2"
           },
           {
@@ -2093,7 +2093,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "9458fbae-70ad-403b-b52d-3b6d235ea5c3",
+                        "id": "99f0f605-965b-42aa-8475-4230047d4698",
                         "ord": "a0"
                       },
                       {
@@ -2108,23 +2108,23 @@
                               "href": "/journal"
                             },
                             "children": ["More stories"],
-                            "id": "bf94885f-e1f5-42a4-b015-4ef741598c0d",
+                            "id": "3b61734f-55f1-455b-b6a7-04a12f5dc666",
                             "ord": "a0"
                           }
                         ],
-                        "id": "741e0389-3564-4679-b312-22b169c42781",
+                        "id": "32c3fe44-5383-473b-9ab5-9ac965225ea6",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f27c341d-dd6e-440a-80f7-21df63776c8f",
+                    "id": "6ddc9225-bdb6-426d-8842-ace641790203",
                     "ord": "a0"
                   }
                 ],
-                "id": "ad510231-90a8-44d2-bf6b-0e366515a50d",
+                "id": "405eb537-f6cf-4908-8f80-c3abd42d093d",
                 "ord": "a0"
               }
             ],
-            "id": "ef324e4e-882d-458d-9836-2709ad0f75ba",
+            "id": "76d15927-d817-441d-a8a3-5111ff892c30",
             "ord": "a3"
           }
         ],
@@ -2132,7 +2132,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "34b678c9-dab8-4455-abf4-b66123cc63e8"
+        "id": "c8a7617d-37a5-4659-a249-82dff768e626"
       }
     }
   ],

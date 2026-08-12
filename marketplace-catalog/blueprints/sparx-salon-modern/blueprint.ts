@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-salon-modern',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx — Salon (Modern)',
   summary:
     'A modern, warm, boho hair-salon site — an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, colour, balayage), three stylists you book by name with their own hours, and a colour-deposit policy. Ships as "Wildroot", a plant-filled little studio that specialises in curls and texture.',
