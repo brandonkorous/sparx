@@ -307,6 +307,22 @@ module "pubsub" {
     "social.inbox.sync"         = []
     "social.inbox.reply"        = []
 
+    # Finance (docs/148 §7). The spend ledger's invalidation path: recording or
+    # re-splitting an expense dirties the day it sits on, and the finance-worker
+    # recomputes that day's profit rollup. `finance.recurring.due` is an api-rest
+    # tick that hands the write loop to the worker, the same split as
+    # social.post.due. The worker is a handler inside services/event-worker (a
+    # pull subscriber), so these carry no push subscription of their own.
+    "finance.expense.recorded"  = []
+    "finance.expense.allocated" = []
+    "finance.recurring.due"     = []
+    "finance.profit.recompute"  = []
+    # Topic-only: the outcome of a sync with the tenant's accounting system. The
+    # notification fan-out rides the publish() tee — a `partial` run is the one
+    # anyone needs to see, because the failure that matters is the 3 records out
+    # of 140 that bounced.
+    "finance.accounting.sync.completed" = []
+
     # Module lifecycle. Topic-only here: the platform-crm-worker consumes both
     # via Cloud Run PUSH subscriptions (serverless.tf) — the first activation is
     # what moves a tenant out of Trial on sparx's own signup board (docs/140).
@@ -487,6 +503,30 @@ module "pubsub" {
     "inventory.oversell.blocked"     = []
     "inventory.source.stale"         = []
     "inventory.source.recovered"     = []
+
+    # Picking + packing (docs/146 Phase 4). No subscribers: the short pick has
+    # already restored and held its own units, so nothing downstream may touch
+    # stock. These exist for tenant automations — chase an unassigned walk, alert
+    # on a shelf that keeps coming up empty.
+    "inventory.pick_list.created"   = []
+    "inventory.pick_list.completed" = []
+    "inventory.pick.short"          = []
+    "inventory.package.packed"      = []
+
+    # A build finished (docs/146 Phase 6). The completion wrote every movement
+    # itself, so nothing downstream touches stock; this is the moment a
+    # made-to-stock business reprices, reindexes, or tells someone it is ready.
+    "inventory.assembly.completed" = []
+
+    # The nightly planning pass re-ranked the catalogue and items moved between
+    # ABC/XYZ classes (docs/146 Phase 7). One event per sweep with the tallies,
+    # never one per item.
+    "inventory.classification.changed" = []
+
+    # A submitted purchase order passed the date it was due with nothing
+    # received against it (docs/146 Phase 8.3). Fired once per order, the first
+    # night it goes late; moving the expected arrival date re-arms it.
+    "inventory.purchase_order.late" = []
 
     # Integration providers, blueprint/template installs, imports, chat
     "provider.installed"      = []

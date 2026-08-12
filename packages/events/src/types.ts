@@ -109,6 +109,37 @@ export type EventType =
   // nothing downstream mutates stock in response, it notifies a human.
   | 'inventory.reconciliation.drift'
   | 'inventory.oversell.blocked'
+  // Picking + packing (docs/146 Phase 4). A walk was generated, a walk finished,
+  // a box was sealed — and `pick.short`, which is the one that matters: a picker
+  // could not find stock the system believed was there. Nothing downstream
+  // mutates stock in response to any of them (the short pick already restored
+  // and held the units itself); they exist so an automation can chase a walk that
+  // has sat unassigned, or alert on a shelf that keeps coming up empty.
+  | 'inventory.pick_list.created'
+  | 'inventory.pick_list.completed'
+  | 'inventory.pick.short'
+  | 'inventory.package.packed'
+  // Assembly (docs/146 Phase 6). A run finished: components left the shelf and a
+  // finished thing arrived, with the cost settled from what actually went in.
+  // Nothing downstream mutates stock in response — the completion already wrote
+  // every movement itself — but it is the moment a made-to-stock business wants
+  // to reprice, reindex, or tell someone the batch is ready.
+  | 'inventory.assembly.completed'
+  // Planning (docs/146 Phase 7). The nightly pass re-ranked the catalogue and
+  // items moved between ABC/XYZ classes. Fired ONCE per sweep with the count and
+  // the tallies — never per item, because a re-ranking after a busy quarter
+  // moves hundreds and a few hundred notifications say nothing actionable. What
+  // reacts to it is a count schedule (an item that became an A needs counting
+  // more often) and anyone who asked to be told their attention list changed.
+  | 'inventory.classification.changed'
+  // Supplier performance (docs/146 Phase 8.3). A submitted purchase order has
+  // passed the date it was due and nothing has arrived against it. Fired ONCE
+  // per order, the first night it goes late — a nightly re-fire for an order
+  // that is six weeks overdue is how alerting gets muted. Moving the expected
+  // arrival date is a new promise, so it re-arms the alert. Nothing downstream
+  // mutates stock: it notifies whoever placed the order, and it is the trigger a
+  // business actually wants for "chase the supplier".
+  | 'inventory.purchase_order.late'
   // Cart + checkout
   | 'cart.created'
   | 'cart.updated'
@@ -323,7 +354,26 @@ export type EventType =
   | 'social.inbox.sync'
   // Someone at the business replied to an inbox item; send that reply to the platform.
   // Emitted by api-rest when a reply is composed, consumed by social-worker.
-  | 'social.inbox.reply';
+  | 'social.inbox.reply'
+  // ── Finance (docs/148) ────────────────────────────────────────────────────
+  // Spend was recorded, however it got there — typed, generated from a recurring
+  // template, imported, or derived. The profit rollup's invalidation trigger: the
+  // day it lands on is now stale and gets recomputed.
+  | 'finance.expense.recorded'
+  // An expense's split across jobs changed, so job profitability is stale even
+  // though the total spend did not move. A separate event because the rollup and
+  // the job view invalidate on different things.
+  | 'finance.expense.allocated'
+  // The recurring generator's tick. Emitted by the api-rest scheduler, consumed by
+  // finance-worker — generating rows is a write loop and belongs off the tick.
+  | 'finance.recurring.due'
+  // Recompute the profit rollup for a range. Emitted after spend changes and by
+  // the Profit surface's manual refresh.
+  | 'finance.profit.recompute'
+  // A sync with the tenant's accounting system finished. Carries the outcome so a
+  // `partial` or `failed` run can raise a notification — the failure that matters
+  // is the 3 records out of 140 that bounced, not the whole run.
+  | 'finance.accounting.sync.completed';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
@@ -428,7 +478,24 @@ export interface EmailSendPayload {
     | 'form-submission-confirmation'
     | 'billing-receipt'
     | 'billing-payment-failed'
-    | 'billing-trial-ending';
+    | 'billing-trial-ending'
+    | 'subscription-update'
+    | 'domain-live'
+    | 'domain-expired'
+    | 'email-domain-verified'
+    | 'document-signature-request'
+    | 'invitation-accepted'
+    | 'team-member-removed'
+    | 'team-role-changed'
+    | 'module-toggle'
+    | 'partner-application-received'
+    | 'partner-earnings'
+    | 'password-changed'
+    | 'two-factor-changed'
+    | 'new-device-signin'
+    | 'feedback-received'
+    | 'social-post-failed'
+    | 'social-connection-expired';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */
