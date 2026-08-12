@@ -10,24 +10,14 @@
   "facets": {
     "vertical": "services",
     "industry": "Electrician",
-    "requiredModules": [
-      "builder",
-      "scheduling",
-      "crm",
-      "email"
-    ]
+    "requiredModules": ["builder", "scheduling", "crm", "email"]
   },
   "pricing": {
     "model": "free",
     "priceCents": 0
   },
   "requires": {
-    "modules": [
-      "builder",
-      "scheduling",
-      "crm",
-      "email"
-    ]
+    "modules": ["builder", "scheduling", "crm", "email"]
   },
   "media": [
     {

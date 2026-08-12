@@ -16,11 +16,7 @@
     "priceCents": 0
   },
   "requires": {
-    "modules": [
-      "builder",
-      "cms",
-      "email"
-    ]
+    "modules": ["builder", "cms", "email"]
   },
   "media": [
     {
