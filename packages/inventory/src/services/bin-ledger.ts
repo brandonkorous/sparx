@@ -20,6 +20,9 @@ import type { TxClient } from '@sparx/db';
 
 import { InventoryValidationError } from '../errors';
 
+import { orderBinCandidates, toPickStrategy } from './pick-allocation';
+import type { PickStrategy } from './pick-allocation';
+
 export interface BinMovementInput {
   tenantId: string;
   binId: string;
@@ -201,9 +204,16 @@ export async function lockBinOnHand(
  *   • Inbound (delta > 0) goes to the named bin, else the variant's home shelf if
  *     it is in this warehouse, else the location's DEFAULT bin.
  *   • Outbound (delta < 0) is TAKEN FROM the named bin, else drawn down across
- *     the bins that actually hold stock, richest first — because a sale does not
- *     know which shelf a picker used, and refusing to record it until someone
- *     says would block every checkout in a bin-enabled warehouse.
+ *     the bins that actually hold stock, IN THE LOCATION'S ALLOCATION-STRATEGY
+ *     ORDER — because a sale does not know which shelf a picker used, and
+ *     refusing to record it until someone says would block every checkout in a
+ *     bin-enabled warehouse.
+ *
+ *     That draw-down IS the allocation (docs/146 Phase 4.2). A pick list does not
+ *     choose shelves; it reads the ones chosen here, because by the time the list
+ *     is generated these units have already left the books. Until Phase 4 this
+ *     ordering was hard-coded richest-first, which quietly meant FEFO did not
+ *     exist — a warehouse with dated stock shipped whatever pile was biggest.
  *
  * Returns silently when the warehouse does not use bins. That early return is
  * what keeps bins genuinely optional rather than optional-in-the-UI-only.
@@ -229,7 +239,7 @@ export async function mirrorMovementToBins(
 ): Promise<void> {
   const warehouse = await tx.warehouse.findFirst({
     where: { id: input.warehouseId },
-    select: { usesBins: true },
+    select: { usesBins: true, allocationStrategy: true },
   });
   if (!warehouse?.usesBins) return;
 
@@ -262,7 +272,13 @@ export async function mirrorMovementToBins(
     return;
   }
 
-  await drawDownAcrossBins(tx, common, Math.abs(input.delta), input.allowNegative ?? false);
+  await drawDownAcrossBins(
+    tx,
+    common,
+    Math.abs(input.delta),
+    input.allowNegative ?? false,
+    toPickStrategy(warehouse.allocationStrategy)
+  );
 }
 
 /** The shelf inbound stock lands on when nobody named one. */
@@ -330,13 +346,17 @@ export async function defaultBinFor(tx: TxClient, warehouseId: string): Promise<
 }
 
 /**
- * Take stock off the shelves that actually have it, richest first.
+ * Take stock off the shelves that actually have it, in the location's chosen
+ * order.
  *
- * A sale does not know which shelf a picker used. Refusing to record it until
- * someone says would block checkout in every bin-enabled warehouse, and guessing
- * ONE shelf would drive that shelf negative while others sat full. Richest-first
- * is the assumption most likely to match what happened and least likely to
- * produce an impossible shelf.
+ * A sale does not know which shelf a picker will walk to. Refusing to record it
+ * until someone says would block checkout in every bin-enabled warehouse, and
+ * guessing ONE shelf would drive that shelf negative while others sat full. So
+ * the ledger picks, and — since a pick list later READS this decision rather than
+ * making its own (docs/146 Phase 4.2) — it picks the way the warehouse asked to
+ * be picked: FIFO by default, FEFO where stock is dated, nearest-bin for the
+ * shortest walk, single-bin to keep a line on one shelf. Sellable shelves before
+ * quarantine and damaged ones, and the pick face before bulk, always.
  *
  * When the shelves cannot cover it — which means the location was oversold, or
  * the bin seating has drifted — the remainder lands on the DEFAULT bin and is
@@ -359,18 +379,18 @@ async function drawDownAcrossBins(
     source: string | null;
   },
   quantity: number,
-  allowNegative: boolean
+  allowNegative: boolean,
+  strategy: PickStrategy
 ): Promise<void> {
-  const holding = await tx.inventoryBinLevel.findMany({
-    where: {
-      tenantId: common.tenantId,
-      variantId: common.variantId,
-      warehouseId: common.warehouseId,
-      onHand: { gt: 0 },
-      bin: { isActive: true, deletedAt: null },
-    },
-    orderBy: { onHand: 'desc' },
-    select: { binId: true, onHand: true },
+  const holding = await orderBinCandidates(tx, {
+    tenantId: common.tenantId,
+    variantId: common.variantId,
+    warehouseId: common.warehouseId,
+    strategy,
+    quantity,
+    // The ledger must be able to describe stock leaving a quarantine or damaged
+    // shelf — a write-off, a disposal. They rank last, never excluded.
+    includeNonSellable: true,
   });
 
   let remaining = quantity;

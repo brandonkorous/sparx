@@ -29,6 +29,7 @@ import {
   serializeRow,
 } from './inventory-transfer-shared';
 import type { InventoryTransferDetail, InventoryTransferRow } from './inventory-transfer-shared';
+import { resolveLineUom, toBaseUnits } from './units-of-measure';
 
 // ─── Queries ───────────────────────────────────────────────────────────────────
 
@@ -144,14 +145,25 @@ async function createOnce(
     });
 
     if (input.lines.length > 0) {
-      await tx.inventoryTransferLine.createMany({
-        data: dedupeLines(input.lines).map((l) => ({
-          tenantId: ctx.tenantId,
-          transferId: transfer.id,
+      // Resolved one line at a time rather than in a `createMany` map, because
+      // the factor is a per-variant lookup and a quantity written before its
+      // unit is resolved is a quantity in the wrong scale.
+      for (const l of dedupeLines(input.lines)) {
+        const uom = await resolveLineUom(tx, {
           variantId: l.variantId,
-          quantity: l.quantity,
-        })),
-      });
+          ...(l.uomCode !== undefined ? { uomCode: l.uomCode } : {}),
+        });
+        await tx.inventoryTransferLine.create({
+          data: {
+            tenantId: ctx.tenantId,
+            transferId: transfer.id,
+            variantId: l.variantId,
+            quantity: toBaseUnits(l.quantity, uom.unitsPerUom),
+            uomCode: uom.uomCode,
+            unitsPerUom: uom.unitsPerUom,
+          },
+        });
+      }
     }
 
     await writeAuditLog({
@@ -171,14 +183,21 @@ async function createOnce(
   });
 }
 
-/** Collapse duplicate variant lines on create — last quantity wins (the unique
- *  (transfer, variant) constraint forbids two rows for one variant). */
-function dedupeLines(
-  lines: { variantId: string; quantity: number }[]
-): { variantId: string; quantity: number }[] {
-  const map = new Map<string, number>();
-  for (const l of lines) map.set(l.variantId, l.quantity);
-  return [...map.entries()].map(([variantId, quantity]) => ({ variantId, quantity }));
+interface TransferLineEntry {
+  variantId: string;
+  quantity: number;
+  /** The pack unit the quantity was entered in, if any (docs/146 Phase 6.2). */
+  uomCode?: string;
+}
+
+/** Collapse duplicate variant lines on create — the last one wins entirely, unit
+ *  and all (the unique (transfer, variant) constraint forbids two rows for one
+ *  variant). Keeping the quantity from one entry and the unit from another would
+ *  produce a line neither caller asked for. */
+function dedupeLines(lines: TransferLineEntry[]): TransferLineEntry[] {
+  const map = new Map<string, TransferLineEntry>();
+  for (const l of lines) map.set(l.variantId, l);
+  return [...map.values()];
 }
 
 async function assertVariantsExist(tx: TxClient, variantIds: string[]): Promise<void> {
@@ -205,12 +224,22 @@ export async function addTransferLine(
       throw new InventoryConflictError('That variant is already on the transfer', 'variantId');
     }
 
+    // Move whole pallets rather than units (docs/146 Phase 6.2). `quantity`
+    // stored is BASE units either way, so both ledger legs and the in-transit
+    // location keep counting one thing.
+    const uom = await resolveLineUom(tx, {
+      variantId: input.variantId,
+      ...(input.uomCode !== undefined ? { uomCode: input.uomCode } : {}),
+    });
+
     await tx.inventoryTransferLine.create({
       data: {
         tenantId: ctx.tenantId,
         transferId,
         variantId: input.variantId,
-        quantity: input.quantity,
+        quantity: toBaseUnits(input.quantity, uom.unitsPerUom),
+        uomCode: uom.uomCode,
+        unitsPerUom: uom.unitsPerUom,
       },
     });
   });
@@ -228,12 +257,24 @@ export async function updateTransferLine(
     await loadTransferForEdit(tx, transferId);
     const line = await tx.inventoryTransferLine.findFirst({
       where: { id: lineId, transferId },
-      select: { id: true },
+      select: { id: true, variantId: true, uomCode: true, unitsPerUom: true },
     });
     if (!line) throw new InventoryNotFoundError('InventoryTransferLine', lineId);
+
+    // Omitted, the line keeps the unit it was written with — editing only the
+    // quantity on a line entered in pallets still means pallets.
+    const uom =
+      input.uomCode !== undefined
+        ? await resolveLineUom(tx, { variantId: line.variantId, uomCode: input.uomCode })
+        : { uomCode: line.uomCode, unitsPerUom: line.unitsPerUom };
+
     await tx.inventoryTransferLine.update({
       where: { id: lineId },
-      data: { quantity: input.quantity },
+      data: {
+        quantity: toBaseUnits(input.quantity, uom.unitsPerUom),
+        uomCode: uom.uomCode,
+        unitsPerUom: uom.unitsPerUom,
+      },
     });
   });
   return getInventoryTransfer(ctx, transferId);

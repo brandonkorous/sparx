@@ -1,0 +1,96 @@
+# Nightly inventory planning sweep (docs/146 Phase 7). For each active Inventory
+# tenant, five stages in an order that is load-bearing:
+#
+#   1. LEAD TIMES — measure purchase-order-sent to goods-received, per supplier
+#      and per (supplier, variant). The stated lead time on a supplier record is
+#      whatever someone copied off a quote; this is what actually happened.
+#   2. DEMAND — units per day over 7/30/90 days from the movement ledger, the
+#      standard deviation of DAILY demand, and a seasonality multiplier where a
+#      year of history exists.
+#   3. CLASSIFY — rank every stock line by annual usage value and cut at 80/95
+#      for ABC; classify predictability by coefficient of variation for XYZ.
+#      Needs stage 2.
+#   4. REORDER POINTS — safety stock from the chosen service level against BOTH
+#      demand and lead-time variability, then the point itself. Needs 1 and 2.
+#      Writes `dynamic_reorder_point` beside the operative one and only
+#      overwrites the operative one where the level is explicitly auto-managed.
+#   5. COUNT SCHEDULES — generate the cycle counts that are due. Last, because
+#      an A-class schedule run before stage 3 would count yesterday's idea of
+#      what an A is.
+#
+# Runs at 03:30 UTC — BEFORE the integrity sweep at 04:30 and the valuation
+# snapshot at 05:30, so a night's numbers are planned, then checked, then priced,
+# in that order.
+#
+# Idempotent: every stage recomputes from source rather than accumulating, so a
+# re-run changes nothing but the timestamps. Stage 5 is idempotent by a different
+# mechanism — a schedule whose previous count is still open is skipped, and its
+# next date moves forward past the instant it ran for, so a paused schedule
+# resumes rather than firing a week of overdue counts.
+#
+# Forbid concurrency: the ABC cut ranks the whole catalogue, and two overlapping
+# passes would each rank against the other's half-written classes.
+#
+# `--max-time 1740` against a 30-minute deadline. This is the heaviest nightly
+# job on the platform — a standard deviation over ninety daily buckets for every
+# (variant, location), then a full-catalogue ranking — and a truncated pass that
+# leaves half the catalogue planned against last week is worse than a late one.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: inventory-planning-sweep
+  namespace: sparx-prod
+  labels:
+    app: inventory-planning-cron
+    job: planning-sweep
+spec:
+  schedule: '30 3 * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: inventory-planning-cron
+            job: planning-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 1740
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/inventory/planning-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

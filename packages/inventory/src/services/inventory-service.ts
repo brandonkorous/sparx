@@ -205,6 +205,7 @@ export {
 } from './purchase-order-lines';
 export {
   submitPurchaseOrder,
+  reschedulePurchaseOrderArrival,
   cancelPurchaseOrder,
   closePurchaseOrder,
 } from './purchase-order-lifecycle';
@@ -221,7 +222,12 @@ export type {
 
 // ─── Goods receipts (P3c supply path) ─────────────────────────────────
 export { listGoodsReceipts, getGoodsReceipt, createGoodsReceipt } from './goods-receipts';
-export type { GoodsReceiptRow, GoodsReceiptLineRow, GoodsReceiptDetail } from './goods-receipts';
+export type {
+  GoodsReceiptRow,
+  GoodsReceiptLineRow,
+  GoodsReceiptDetail,
+  GoodsReceiptChargeRow,
+} from './goods-receipts';
 
 // ─── Reorder engine (P3d supply path) ─────────────────────────────────
 // Low stock → reorder suggestions → draft PO to the preferred supplier. Manual
@@ -475,3 +481,359 @@ export type {
   ShrinkageTopVariant,
   ShrinkagePeriod,
 } from './shrinkage';
+
+// ─── Picking + packing (docs/146 Phase 4) ─────────────────────────────
+export { generatePickList, listPickLists, getPickList } from './pick-lists';
+export type { PickListRow, PickListLineRow, PickListDetail } from './pick-lists';
+
+export {
+  assignPickList,
+  cancelPickList,
+  confirmPick,
+  skipPick,
+  shortPick,
+  ensureShortCounts,
+} from './pick-lifecycle';
+export type { PickActionResult } from './pick-lifecycle';
+
+export { scanToPick, scanToPack } from './pick-scan';
+export type { ScanToPickResult, ScanToPackResult } from './pick-scan';
+
+export {
+  createPackage,
+  updatePackage,
+  packItem,
+  closePackage,
+  cancelPackage,
+  attachFulfillment,
+  listPackages,
+  getPackage,
+} from './packing';
+export type { PackageRow, PackageLineRow, PackageDetail } from './packing';
+
+export { buildPackingSlipHtml, renderPackingSlipHtml } from './packing-slip';
+export type { PackingSlipData, PackingSlipLine, PackingSlipBrand } from './packing-slip';
+
+export { pickThroughput } from './pick-analytics';
+export type {
+  PickThroughputReport,
+  PickerThroughput,
+  BinShortfall,
+  PackThroughput,
+} from './pick-analytics';
+
+export {
+  orderBinCandidates,
+  resolveFefoLot,
+  allocationsForOrderLine,
+  toPickStrategy,
+} from './pick-allocation';
+export type {
+  PickStrategy,
+  BinCandidate,
+  PickAllocation,
+  AllocationResult,
+} from './pick-allocation';
+
+// ─── True cost (docs/146 Phase 5) ─────────────────────────────────────
+//
+// What a unit cost to get onto the shelf (the freight and duty the basis was
+// missing), what it cost when it left, and how the business wants stock valued.
+
+export {
+  getCostingPolicy,
+  updateCostingPolicy,
+  setVariantCostingMethod,
+  resolveCosting,
+  DEFAULT_COSTING_METHOD,
+  DEFAULT_BASE_CURRENCY,
+} from './costing-policy';
+export type { CostingPolicyRow, ResolvedCosting } from './costing-policy';
+
+export {
+  listPurchaseOrderCharges,
+  createPurchaseOrderCharge,
+  updatePurchaseOrderCharge,
+  deletePurchaseOrderCharge,
+  listGoodsReceiptCharges,
+  createGoodsReceiptCharge,
+  updateGoodsReceiptCharge,
+  deleteGoodsReceiptCharge,
+  getLandedCostBreakdown,
+  reallocateOrderCharges,
+  allocateCharge,
+} from './landed-cost';
+export type {
+  ChargeRow,
+  ReceiptLandedCost,
+  LineLandedCost,
+  ChargeBreakdownRow,
+  AllocatableLine,
+  AllocatableCharge,
+  ChargeAllocation,
+  RevaluationResult,
+} from './landed-cost';
+
+export { listOpenLayers, movementCostBreakdown, layeredValuation } from './cost-layers';
+export type { CostLayerRow, MovementCostBreakdownRow, CostLayerSource } from './cost-layers';
+
+export {
+  valuationAsOf,
+  priceVarianceReport,
+  cogsReport,
+  variantCostLayers,
+  movementCostLayers,
+  windowOfDays,
+} from './cost-reports';
+export type {
+  AsOfValuationReport,
+  AsOfValuationRow,
+  PriceVarianceReport,
+  PriceVarianceRow,
+  CogsReport,
+  CogsRow,
+} from './cost-reports';
+
+// ─── Units of measure + assembly (docs/146 Phase 6) ───────────────────
+//
+// Buy a case, stock each, sell a pair; and make things out of other things.
+// Every quantity the ledger stores stays in BASE units — the unit is how a
+// person enters and reads it, never a second way of storing it.
+
+export {
+  listUnitsOfMeasure,
+  bootstrapUnitsOfMeasure,
+  createUnitOfMeasure,
+  updateUnitOfMeasure,
+  deleteUnitOfMeasure,
+  getVariantUoms,
+  setVariantUoms,
+  resolveLineUom,
+  toBaseUnitCost,
+  BASE_LINE_UOM,
+} from './units-of-measure';
+export type {
+  UnitOfMeasureRow,
+  VariantUomRow,
+  VariantUomSetup,
+  ResolvedLineUom,
+} from './units-of-measure';
+
+export {
+  listBoms,
+  getBom,
+  activeBomFor,
+  createBom,
+  updateBom,
+  setBomStatus,
+  deleteBom,
+  buildableQuantity,
+} from './boms';
+export type {
+  BomRow,
+  BomDetail,
+  BomComponentRow,
+  BuildableReport,
+  BuildableComponentRow,
+} from './boms';
+
+export {
+  listAssemblyOrders,
+  getAssemblyOrder,
+  createAssemblyOrder,
+  updateAssemblyOrder,
+  releaseAssemblyOrder,
+  completeAssemblyOrder,
+  cancelAssemblyOrder,
+} from './assembly-orders';
+export type { AssemblyOrderRow, AssemblyOrderDetail, AssemblyLineRow } from './assembly-orders';
+
+// ─── Planning intelligence (docs/146 Phase 7) ─────────────────────────────
+//
+// How much to keep and when to buy it again — measured from the ledger, the
+// receipts and the cost basis rather than typed in once and forgotten. The
+// arithmetic itself is PURE and lives in `@sparx/commerce-schemas/planning`, so
+// the nightly pass, the API and the screen cannot arrive at three answers.
+
+export {
+  getPlanningPolicy,
+  updatePlanningPolicy,
+  loadPlanningPolicy,
+  DEFAULT_PLANNING_POLICY,
+} from './planning-policy';
+export type { PlanningPolicyRow } from './planning-policy';
+
+export { recomputeDemandVelocity, getDemandVelocity, DEMAND_REASONS } from './demand';
+export type { DemandVelocityRow, DemandSweepResult } from './demand';
+
+export {
+  recomputeLeadTimes,
+  listLeadTimes,
+  resolveLeadTimeOnTx,
+  MIN_RELIABLE_SAMPLES,
+  DEFAULT_LEAD_TIME_DAYS,
+} from './lead-times';
+export type {
+  LeadTimeRow,
+  LeadTimeSweepResult,
+  ListLeadTimesFilter,
+  ResolvedLeadTime,
+} from './lead-times';
+
+export {
+  recomputeClassifications,
+  listClassifications,
+  getClassification,
+  setClassificationOverride,
+} from './classification';
+export type {
+  ClassificationRow,
+  ClassificationSweepResult,
+  ListClassificationsFilter,
+} from './classification';
+
+export {
+  recomputeReorderPoints,
+  getReorderPlan,
+  listReorderPlans,
+  setReorderPlanningPolicy,
+  applyComputedReorderPoint,
+} from './reorder-planning';
+export type {
+  ReorderPolicyRow,
+  ReorderPlanResult,
+  ListReorderPlansFilter,
+} from './reorder-planning';
+
+export {
+  listCountSchedules,
+  getCountSchedule,
+  createCountSchedule,
+  updateCountSchedule,
+  deleteCountSchedule,
+  generateDueCounts,
+} from './count-schedules';
+export type { CountScheduleRow, ScheduleGenerationResult } from './count-schedules';
+
+export { runPlanningSweep } from './planning-sweep';
+export type {
+  PlanningSweepResult,
+  PlanningSweepStage,
+  PlanningSweepOptions,
+} from './planning-sweep';
+
+export { stockoutRiskReport, slowMoverReport, holdingCostReport } from './planning-reports';
+export type {
+  StockoutRiskReport,
+  StockoutRiskRow,
+  StockoutRiskFilter,
+  SlowMoverReport,
+  SlowMoverRow,
+  SlowMoverKind,
+  HoldingCostReport,
+} from './planning-reports';
+
+export { planningProvenance } from './planning-provenance';
+export type { PlanningProvenance, PlanningInput, InputConfidence } from './planning-provenance';
+
+// ─── Supplier performance + procurement discipline (docs/146 Phase 8) ──────
+//
+// The other side of a purchase order: how the counterparty actually behaves, the
+// controls over spending with them, and the three documents either side of a
+// delivery. The scoring, price-break and three-way-match arithmetic is PURE and
+// lives in `@sparx/commerce-schemas/procurement`.
+
+export {
+  recomputeSupplierScorecards,
+  listSupplierScorecards,
+  getSupplierScorecard,
+  SCORECARD_WINDOW_DAYS,
+} from './supplier-scorecard';
+export type {
+  SupplierScorecardRow,
+  SupplierScorecardReport,
+  ScorecardSweepResult,
+  ListScorecardsFilter,
+} from './supplier-scorecard';
+
+export { getPriceLadder, setPriceBreaks, resolveSupplierPriceOnTx } from './supplier-price-breaks';
+export type { PriceBreakRow, PriceLadder } from './supplier-price-breaks';
+
+export {
+  listLatePurchaseOrders,
+  sweepLatePurchaseOrders,
+  rearmLateAlert,
+} from './purchase-order-alerts';
+export type { LatePurchaseOrderRow, LateOrderSweepResult } from './purchase-order-alerts';
+
+export {
+  listPoApprovalRules,
+  createPoApprovalRule,
+  updatePoApprovalRule,
+  deletePoApprovalRule,
+  listPoApprovals,
+  decidePoApproval,
+  cancelPoApproval,
+  resolveRequiredApproval,
+} from './purchase-order-approvals';
+export type {
+  PoApprovalRuleRow,
+  PoApprovalRow,
+  ApprovalQueueFilter,
+} from './purchase-order-approvals';
+
+export {
+  listAdvanceShipNotices,
+  getAdvanceShipNotice,
+  createAdvanceShipNotice,
+  updateAdvanceShipNotice,
+  cancelAdvanceShipNotice,
+  prefillFromAdvanceShipNotice,
+} from './advance-ship-notices';
+export type {
+  AsnRow,
+  AsnDetail,
+  AsnLineRow,
+  AsnPrefill,
+  AsnPrefillLine,
+  ListAsnFilter,
+} from './advance-ship-notices';
+
+export {
+  listSupplierReturns,
+  getSupplierReturn,
+  createSupplierReturn,
+  updateSupplierReturn,
+  sendSupplierReturn,
+  recordSupplierCredit,
+  closeSupplierReturn,
+  cancelSupplierReturn,
+} from './supplier-returns';
+export type {
+  SupplierReturnRow,
+  SupplierReturnDetail,
+  SupplierReturnLineRow,
+  SupplierReturnsReport,
+  ListSupplierReturnsFilter,
+} from './supplier-returns';
+
+export {
+  listSupplierBills,
+  getSupplierBill,
+  createSupplierBill,
+  updateSupplierBill,
+  approveSupplierBill,
+  acceptBillVariance,
+  disputeSupplierBill,
+  recordBillPayment,
+  cancelSupplierBill,
+} from './supplier-bills';
+export type {
+  SupplierBillRow,
+  SupplierBillDetail,
+  SupplierBillLineRow,
+  MatchedBillLine,
+  BillMatch,
+  SupplierBillsReport,
+  ListSupplierBillsFilter,
+} from './supplier-bills';

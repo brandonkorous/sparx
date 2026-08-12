@@ -16,11 +16,12 @@ model PurchaseOrder {
   supplierId  String @map("supplier_id") @db.Uuid
   warehouseId String @map("warehouse_id") @db.Uuid
 
-  // draft | submitted | partial | received | closed | cancelled. A CHECK
-  // constraint in the migration pins the vocabulary at the DB level; the Zod
-  // PurchaseOrderStatus enum guards writes. draft is editable; submitted is
-  // ordered; partial/received are driven by receiving (P3c); closed/cancelled
-  // are terminal.
+  // draft | pending_approval | submitted | partial | received | closed |
+  // cancelled. A CHECK constraint in the migration pins the vocabulary at the DB
+  // level; the Zod PurchaseOrderStatus enum guards writes. draft is editable;
+  // pending_approval is held awaiting sign-off (docs/146 Phase 8.5) and is NOT
+  // ordered — nothing may be received against it; submitted is ordered;
+  // partial/received are driven by receiving (P3c); closed/cancelled are terminal.
   status String @default("draft") @db.VarChar(20)
 
   currency     String  @default("USD") @db.VarChar(3)
@@ -40,16 +41,39 @@ model PurchaseOrder {
   shippingCents Int @default(0) @map("shipping_cents")
   totalCents    Int @default(0) @map("total_cents")
 
+  // Multi-currency purchasing (docs/146 Phase 5.7). `currency` above is what the
+  // supplier bills in; these two say what that is worth in the tenant's base
+  // currency. The rate is the ESTIMATE captured when the order is raised — the
+  // rate that actually matters is the one on the day the goods land, which the
+  // receipt captures. Null on a same-currency order, where converting would be
+  // multiplying by one and storing it as if it meant something.
+  fxRate                 Decimal? @map("fx_rate") @db.Decimal(18, 8)
+  baseCurrencyTotalCents Int?     @map("base_currency_total_cents")
+
   notes String? @db.Text
+
+  // When this order was flagged as overdue (docs/146 Phase 8.3). Null means
+  // nobody has said it yet — NOT that the order is on time. The nightly pass
+  // stamps it so the alert fires ONCE; moving `expectedArrivalAt` clears it,
+  // because a new promised date deserves a new alert when it is missed.
+  lateAlertedAt DateTime? @map("late_alerted_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant    Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  supplier  Supplier            @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  warehouse Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  tenant    Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier  Supplier              @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  warehouse Warehouse             @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
   lines     PurchaseOrderLine[]
   receipts  GoodsReceipt[]
+  charges   PurchaseOrderCharge[]
+
+  // Procurement discipline (docs/146 Phase 8) — who signed for the spend, what
+  // the supplier says is on the way, what went back, and what they billed
+  approvals          PurchaseOrderApproval[]
+  advanceShipNotices AdvanceShipNotice[]
+  supplierReturns    SupplierReturn[]
+  bills              SupplierBill[]
 
   @@unique([tenantId, number], map: "inventory_purchase_orders_tenant_number_unique")
   @@index([tenantId, status])
@@ -71,9 +95,20 @@ model PurchaseOrderLine {
   description String? @db.VarChar(255)
   supplierSku String? @map("supplier_sku") @db.VarChar(127)
 
+  // ALWAYS in base units, whatever the buyer typed (docs/146 Phase 6.2). The
+  // pair below records what they typed it IN, so the printed order reads
+  // "4 cases" and every downstream sum keeps working on one unit.
   quantityOrdered  Int @map("quantity_ordered")
   quantityReceived Int @default(0) @map("quantity_received")
+  // Per BASE unit, likewise: a case at £48 with twelve in it is 400 here.
   unitCostCents    Int @map("unit_cost_cents")
+
+  // The unit the buyer ordered in, snapshot. Text and factor, no foreign key —
+  // an FK's SET NULL would erase what "4" meant from a historical order the day
+  // someone tidies their unit list. Null/1 is "each", which is every line that
+  // predates units and most lines after.
+  uomCode     String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom Int     @default(1) @map("units_per_uom")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -82,6 +117,8 @@ model PurchaseOrderLine {
   purchaseOrder PurchaseOrder      @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
   variant       ProductVariant     @relation(fields: [variantId], references: [id], onDelete: Cascade)
   receiptLines  GoodsReceiptLine[]
+  asnLines      AdvanceShipNoticeLine[]
+  billLines     SupplierBillLine[]
 
   @@unique([purchaseOrderId, variantId], map: "inventory_po_lines_po_variant_unique")
   @@index([tenantId, variantId])

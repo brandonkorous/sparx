@@ -53,6 +53,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './data';
+import { PriceLadders, SupplierScorecardPanel } from './supplier-performance-panels';
 import {
   outstandingUnits,
   purchaseOrderState,
@@ -1024,11 +1025,18 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               appears once the record exists. */}
           {isNew || !supplier.data ? null : (
             <>
+              {/* How they have ACTUALLY behaved (docs/146 Phase 8.1), directly
+                  under the terms somebody typed in when the record was set up —
+                  because the point of the panel is the gap between the two. */}
+              <SupplierScorecardPanel supplierId={id} />
+
               <PurchasingLinks
                 supplierId={id}
                 variants={supplier.data.variants}
                 currency={supplier.data.currency}
               />
+
+              <PriceLadders variants={supplier.data.variants} currency={supplier.data.currency} />
 
               <SupplierPurchaseOrders supplierId={id} ctx={ctx} />
 

@@ -31,6 +31,9 @@ resources:
   # Without this, `onHand == Σ(movements.delta)` is a design guarantee nobody
   # ever re-derives, and a stale feed keeps selling stock that isn't there.
   - inventory-integrity-sweep.yaml
+  # Without this, a reorder point stays whatever number somebody typed once and
+  # nothing ever measures how fast anything sells or how long a supplier takes.
+  - inventory-planning-sweep.yaml
   - inventory-valuation-snapshot.yaml
   - channel-order-poll.yaml
   - market-settlement.yaml

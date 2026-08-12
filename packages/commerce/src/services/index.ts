@@ -37,6 +37,13 @@ export * as bulkPriceService from './bulk-price-service';
 // Phase 4 — bundles + configurator
 export * as configuratorService from './configurator-service';
 
+// How many of a bundle you can actually sell (docs/146 Phase 6.8) — derived
+// from its components, because a `decrement_components` bundle has no stock of
+// its own and the buy-box was answering "always available" for a gift set whose
+// candle ran out last Tuesday.
+export { bundleAvailability, bundleAvailabilityFor } from './bundle-availability';
+export type { BundleAvailability, BundleComponentAvailability } from './bundle-availability';
+
 // Phase 5 — cart, checkout, subscriptions, shipping, tax, providers
 export * as cartService from './cart-service';
 export * as checkoutService from './checkout-service';
@@ -64,6 +71,11 @@ export { dispatchShippingTrackingWebhook } from './shipping-webhook-dispatch';
 export { quoteOutboundRates } from './outbound-shipment-request';
 export { listFulfillmentLabels } from './fulfillment-label-store';
 export type { FulfillmentLabelRow } from './fulfillment-label-store';
+
+// Sealed box → shipping record (docs/146 Phase 4.6). Lives here because commerce
+// is the only package that can see both the warehouse and the order.
+export { fulfillPackedShipment, closeAndFulfillPackage } from './pack-fulfillment';
+export type { FulfillPackedShipmentInput, FulfillPackedShipmentResult } from './pack-fulfillment';
 export * as taxService from './tax-service';
 export * as providerService from './provider-service';
 

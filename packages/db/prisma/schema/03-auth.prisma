@@ -78,6 +78,14 @@ model User {
   billingPaymentsRecorded  BillingDocumentPayment[]  @relation("BillingPaymentRecordedBy")
   approvalRulesAsApprover  PurchaseApprovalRule[]    @relation("ApprovalRuleApprover")
 
+  // Spending controls on the way OUT (docs/146 Phase 8.5) — the mirror of the
+  // B2B rule above, which gates a customer's order rather than staff's spend.
+  poApprovalRulesAsApprover PurchaseOrderApprovalRule[] @relation("PoApprovalRuleApprover")
+  poApprovalsRequested      PurchaseOrderApproval[]     @relation("PoApprovalRequester")
+  poApprovalsToSign         PurchaseOrderApproval[]     @relation("PoApprovalRequiredApprover")
+  poApprovalsDecided        PurchaseOrderApproval[]     @relation("PoApprovalDecider")
+  supplierBillVariancesAccepted SupplierBill[]          @relation("SupplierBillVarianceAccepter")
+
   // Live Chat module — conversations this staff user is assigned to (docs/56)
   assignedChats ChatConversation[] @relation("ChatAssignedTo")
 

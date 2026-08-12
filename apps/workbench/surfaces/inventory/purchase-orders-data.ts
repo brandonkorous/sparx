@@ -36,10 +36,15 @@ export interface PurchaseOrderLine {
   supplierSku: string | null;
   variantSku: string | null;
   productTitle: string | null;
+  /** ALWAYS in single units, whatever the buyer typed (docs/146 Phase 6.2). The
+   *  pair below says what they typed it IN, so the line can read "4 cases". */
   quantityOrdered: number;
   quantityReceived: number;
+  /** Per single unit. Multiply by `unitsPerUom` for the price of a pack. */
   unitCostCents: number;
   lineTotalCents: number;
+  uomCode: string | null;
+  unitsPerUom: number;
 }
 
 export interface PurchaseOrder {
@@ -153,8 +158,13 @@ export interface PurchaseOrderLineDraft {
   productTitle: string | null;
   description: string | null;
   supplierSku: string | null;
+  /** Single units, always. The editor types singles; the unit below is carried
+   *  through so the row still reads "4 cases" and a save does not silently drop
+   *  the unit the line was ordered in. */
   quantityOrdered: number;
   unitCostCents: number;
+  uomCode: string | null;
+  unitsPerUom: number;
 }
 
 function lineToInput(line: PurchaseOrderLineDraft) {
@@ -333,6 +343,16 @@ export function purchaseOrderState(po: {
         label: 'Draft',
         tone: 'neutral',
         detail: 'Not sent yet. You can still change anything on it.',
+      };
+    // Its own state, not a flavour of draft (docs/146 Phase 8.5). The order has
+    // left the buyer's hands and is waiting on somebody else — but it has NOT
+    // been placed, and nothing may be received against it.
+    case 'pending_approval':
+      return {
+        label: 'Waiting for sign-off',
+        tone: 'warning',
+        detail:
+          'This order is over a limit your business set, so somebody has to approve it before it goes to the supplier. Nothing has been ordered yet.',
       };
     case 'submitted':
       return {

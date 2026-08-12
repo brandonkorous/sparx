@@ -25,7 +25,11 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 
+import { consumeAdvanceShipNoticeOnTx } from './advance-ship-notices';
 import { resolvePutAwayBin, systemBinFor } from './bin-routing';
+import { loadPolicy } from './costing-policy';
+import { reallocateOrderCharges } from './landed-cost';
+import { resolveLineUom, toBaseUnitCost, toBaseUnits } from './units-of-measure';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import type { MovementResult } from './ledger';
 
@@ -41,6 +45,25 @@ export interface GoodsReceiptLineRow {
   unitCostCents: number;
   lotNumber: string | null;
   movementId: string | null;
+  /** Landed cost (docs/146 Phase 5.2) — the invoice cost converted into base
+   *  currency, this line's share of the freight, and the two added together.
+   *  Null on deliveries booked before landed cost existed. */
+  baseUnitCostCents: number | null;
+  allocatedChargeCents: number;
+  landedUnitCostCents: number | null;
+  /** What the receiver counted in (docs/146 Phase 6.2). `quantityReceived` above
+   *  is always base units; this is how it was entered. */
+  uomCode: string | null;
+  unitsPerUom: number;
+}
+
+/** One charge on a delivery, as the receipt surface shows it. */
+export interface GoodsReceiptChargeRow {
+  id: string;
+  kind: string;
+  description: string | null;
+  amountCents: number;
+  allocationBasis: string;
 }
 
 export interface GoodsReceiptRow {
@@ -57,10 +80,20 @@ export interface GoodsReceiptRow {
   createdAt: string;
   lineCount: number;
   quantityReceived: number;
+  /** What the supplier billed in, what the cost ledger is kept in, and the rate
+   *  between them on the day the goods landed (docs/146 Phase 5.7). */
+  currency: string;
+  baseCurrency: string;
+  fxRate: number;
 }
 
 export interface GoodsReceiptDetail extends GoodsReceiptRow {
   lines: GoodsReceiptLineRow[];
+  charges: GoodsReceiptChargeRow[];
+  /** Goods + charges, base currency — the three numbers the breakdown adds up. */
+  goodsValueCents: number;
+  chargeTotalCents: number;
+  landedTotalCents: number;
 }
 
 const PARTY = { select: { name: true, code: true } };
@@ -78,6 +111,7 @@ const DETAIL_INCLUDE = {
     orderBy: { createdAt: 'asc' },
     include: { variant: { select: { sku: true, product: { select: { title: true } } } } },
   },
+  charges: { orderBy: { createdAt: 'asc' } },
 } satisfies Prisma.GoodsReceiptInclude;
 
 type ReceiptWithQty = Prisma.GoodsReceiptGetPayload<{ include: typeof LIST_INCLUDE }>;
@@ -171,7 +205,7 @@ async function createOnce(
   return withTenant(ctx, async (tx) => {
     const po = await tx.purchaseOrder.findFirst({
       where: { id: input.purchaseOrderId },
-      select: { id: true, number: true, status: true, warehouseId: true },
+      select: { id: true, number: true, status: true, warehouseId: true, currency: true },
     });
     if (!po) throw new InventoryNotFoundError('PurchaseOrder', input.purchaseOrderId);
     if (po.status !== 'submitted' && po.status !== 'partial') {
@@ -183,7 +217,7 @@ async function createOnce(
 
     const poLines = await tx.purchaseOrderLine.findMany({
       where: { purchaseOrderId: po.id, id: { in: input.lines.map((l) => l.purchaseOrderLineId) } },
-      select: { id: true, variantId: true, unitCostCents: true },
+      select: { id: true, variantId: true, unitCostCents: true, uomCode: true, unitsPerUom: true },
     });
     const byId = new Map(poLines.map((l) => [l.id, l]));
     for (const l of input.lines) {
@@ -195,6 +229,8 @@ async function createOnce(
     }
 
     const number = await nextGoodsReceiptNumber(tx, ctx.tenantId);
+    const receivedAt = input.receivedAt ? new Date(input.receivedAt) : new Date();
+    const policy = await loadPolicy(tx, ctx.tenantId);
     const receipt = await tx.goodsReceipt.create({
       data: {
         tenantId: ctx.tenantId,
@@ -203,25 +239,95 @@ async function createOnce(
         warehouseId: po.warehouseId,
         reference: input.reference ?? null,
         note: input.note ?? null,
-        receivedAt: input.receivedAt ? new Date(input.receivedAt) : new Date(),
+        receivedAt,
+        // FX captured at the moment the goods landed (docs/146 Phase 5.7). The
+        // supplier bills in the order's currency; the cost ledger is kept in the
+        // tenant's. A domestic delivery records both as the same code and a rate
+        // of 1, which is true rather than merely convenient — a business that
+        // starts importing later gets a continuous history rather than a cliff.
+        currency: po.currency,
+        baseCurrency: policy.baseCurrency,
+        fxRate: input.fxRate ?? '1',
       },
       select: { id: true, number: true },
     });
 
-    const events: ReceiptEvent[] = [];
+    for (const charge of input.charges ?? []) {
+      await tx.goodsReceiptCharge.create({
+        data: {
+          tenantId: ctx.tenantId,
+          goodsReceiptId: receipt.id,
+          kind: charge.kind,
+          description: charge.description ?? null,
+          amountCents: charge.amountCents,
+          allocationBasis: charge.allocationBasis ?? policy.defaultAllocationBasis,
+        },
+      });
+    }
+
+    // ── Three passes, and the order is the point ─────────────────────────────
+    //
+    // 1. Write the receipt LINES and credit the order, so the delivery exists on
+    //    paper before anything is costed. Crediting first also means the
+    //    allocator can tell whether this delivery closes the order, which is
+    //    what decides who takes the rounding remainder on the freight.
+    // 2. Allocate the charges across those lines, giving every line its landed
+    //    unit cost. This has to happen with ALL the lines present: a charge is
+    //    spread by each line's share of the delivery, and a delivery you are
+    //    still halfway through writing has no shares to speak of.
+    // 3. Only then move the stock — at the LANDED cost, so the moving average
+    //    and the cost layer both carry what the goods really cost rather than
+    //    what the supplier's invoice said before the freight was added.
+    const drafts: LineDraft[] = [];
     for (const lineInput of input.lines) {
       const poLine = byId.get(lineInput.purchaseOrderLineId)!;
-      events.push(
-        ...(await applyReceiptLine(tx, ctx, {
+      drafts.push(
+        await writeReceiptLine(tx, ctx, {
           receiptId: receipt.id,
           warehouseId: po.warehouseId,
           poLine,
           input: lineInput,
+        })
+      );
+    }
+
+    await reallocateOrderCharges(tx, ctx, po.id);
+
+    const landed = await tx.goodsReceiptLine.findMany({
+      where: { goodsReceiptId: receipt.id },
+      select: { id: true, landedUnitCostCents: true },
+    });
+    const landedById = new Map(landed.map((l) => [l.id, l.landedUnitCostCents]));
+
+    const events: ReceiptEvent[] = [];
+    for (const draft of drafts) {
+      events.push(
+        ...(await applyReceiptLine(tx, ctx, {
+          receiptId: receipt.id,
+          warehouseId: po.warehouseId,
+          receivedAt,
+          draft,
+          // Falls back to the invoice cost when the allocation could not run —
+          // a receipt with no charges lands exactly where it always did.
+          landedUnitCostCents: landedById.get(draft.lineId) ?? draft.unitCostCents,
         }))
       );
     }
 
     await advancePurchaseOrderStatus(tx, po.id, po.status);
+
+    // Settle the supplier's advance notice, if the receiver booked against one
+    // (docs/146 Phase 8.6). Deliberately AFTER the stock has moved and
+    // deliberately without comparing quantities: the discrepancy between what
+    // they said and what arrived is now recorded on both documents and is
+    // reported, never used to refuse a delivery that is physically on the floor.
+    if (input.advanceShipNoticeId) {
+      await consumeAdvanceShipNoticeOnTx(tx, {
+        advanceShipNoticeId: input.advanceShipNoticeId,
+        goodsReceiptId: receipt.id,
+        receivedAt,
+      });
+    }
 
     await writeAuditLog({
       tx,
@@ -244,16 +350,34 @@ interface PoLineLite {
   id: string;
   variantId: string;
   unitCostCents: number;
+  /** What the order was placed in (docs/146 Phase 6.2) — the default unit for a
+   *  delivery against it, because a case order arrives in cases. */
+  uomCode: string | null;
+  unitsPerUom: number;
 }
 
-/** Post one received line: for any GOOD units, a ledger `receive` movement
- *  (moving-average), the PO-line received bump, and an optional lot; for any
- *  damaged-on-arrival units, the receive/damage write-off pair. A total-loss line
- *  (good = 0, damaged > 0) skips the good movement, PO credit, and lot entirely —
- *  only the damaged pair is written, so nothing joins sellable stock and the PO
- *  stays open. Returns the post-commit event(s): one for the good arrival (when
- *  good > 0), and (when damaged > 0) two more for the damaged pair. */
-async function applyReceiptLine(
+/** A receipt line written but not yet costed or moved — the output of pass 1. */
+interface LineDraft {
+  lineId: string;
+  poLine: PoLineLite;
+  /** What the supplier billed, in the delivery's currency. */
+  unitCostCents: number;
+  good: number;
+  damaged: number;
+  lotNumber: string | null;
+  binId: string | null;
+}
+
+/**
+ * Pass 1 — write the receipt line and credit the order.
+ *
+ * No stock moves here and nothing is costed: the landed cost cannot be known
+ * until every line on the delivery exists, because a charge is spread by each
+ * line's share of the whole. What this pass DOES settle is which shelf the units
+ * went on and how much the order has now had, both of which the costing pass
+ * needs.
+ */
+async function writeReceiptLine(
   tx: TxClient,
   ctx: ServiceContext,
   params: {
@@ -270,14 +394,28 @@ async function applyReceiptLine(
        *  a bin-enabled location — the put-away suggester resolves it when the
        *  receiver is booking from a desk with the pallet still on the dock. */
       binId?: string;
+      /** Count the delivery in cartons rather than units (docs/146 Phase 6.2). */
+      uomCode?: string;
     };
   }
-): Promise<ReceiptEvent[]> {
+): Promise<LineDraft> {
   const { receiptId, warehouseId, poLine, input } = params;
-  const unitCostCents = input.unitCostCents ?? poLine.unitCostCents;
-  const good = input.quantity;
-  const damaged = input.quantityDamaged ?? 0;
-  const actorType = resolveActorType(ctx);
+
+  // The unit this delivery was COUNTED in. An explicit code wins; otherwise the
+  // order's own unit, because a delivery against a case order arrives in cases
+  // and making the receiver re-state that is how a 12× error gets typed.
+  // Everything below this line is in BASE units.
+  const uom =
+    input.uomCode !== undefined
+      ? await resolveLineUom(tx, { variantId: poLine.variantId, uomCode: input.uomCode })
+      : { uomCode: poLine.uomCode, unitsPerUom: poLine.unitsPerUom };
+
+  const unitCostCents =
+    input.unitCostCents !== undefined
+      ? toBaseUnitCost(input.unitCostCents, uom.unitsPerUom)
+      : poLine.unitCostCents;
+  const good = toBaseUnits(input.quantity, uom.unitsPerUom);
+  const damaged = toBaseUnits(input.quantityDamaged ?? 0, uom.unitsPerUom);
 
   // A line must record SOME arrival. The schema already rejects a good=0 &&
   // damaged=0 line; this is the defensive backstop so a bad caller can never
@@ -320,16 +458,53 @@ async function applyReceiptLine(
       unitCostCents,
       lotNumber,
       binId,
+      uomCode: uom.uomCode,
+      unitsPerUom: uom.unitsPerUom,
     },
     select: { id: true },
   });
+
+  // Only GOOD units are credited against the PO line — damaged units leave the
+  // supplier owing the shortfall, so the PO stays open for them.
+  if (good > 0) {
+    await tx.purchaseOrderLine.update({
+      where: { id: poLine.id },
+      data: { quantityReceived: { increment: good } },
+    });
+  }
+
+  return { lineId: line.id, poLine, unitCostCents, good, damaged, lotNumber, binId };
+}
+
+/** Pass 3 — move the stock, at the LANDED cost.
+ *
+ *  For any GOOD units, a ledger `receive` movement (which sets the moving
+ *  average and opens a cost layer) and an optional lot; for any damaged-on-
+ *  arrival units, the receive/damage write-off pair. A total-loss line
+ *  (good = 0, damaged > 0) writes only the damaged pair, so nothing joins
+ *  sellable stock. Returns the post-commit event(s): one for the good arrival
+ *  (when good > 0), and (when damaged > 0) two more for the damaged pair. */
+async function applyReceiptLine(
+  tx: TxClient,
+  ctx: ServiceContext,
+  params: {
+    receiptId: string;
+    warehouseId: string;
+    receivedAt: Date;
+    draft: LineDraft;
+    /** Goods + this line's share of the freight, in the tenant's base currency. */
+    landedUnitCostCents: number;
+  }
+): Promise<ReceiptEvent[]> {
+  const { receiptId, warehouseId, draft, landedUnitCostCents } = params;
+  const { poLine, good, damaged, lotNumber, binId } = draft;
+  const actorType = resolveActorType(ctx);
 
   const events: ReceiptEvent[] = [];
 
   // GOOD units — only when some arrived. A total-loss line writes NO good
   // `receive` movement (so the moving-average is untouched — nothing costed came
-  // in as sellable), credits the PO line by 0 (the supplier still owes the whole
-  // line, so the PO stays open), and attaches no lot.
+  // in as sellable) and attaches no lot.
   if (good > 0) {
     const result = await applyMovement(tx, {
       tenantId: ctx.tenantId,
@@ -339,25 +514,28 @@ async function applyReceiptLine(
       reason: 'receive',
       referenceType: 'GoodsReceipt',
       referenceId: receiptId,
-      unitCostCents,
+      // The LANDED cost, not the invoice cost: what the units are worth on the
+      // shelf includes what it cost to get them there (docs/146 Phase 5.2).
+      unitCostCents: landedUnitCostCents,
+      goodsUnitCostCents: draft.unitCostCents,
       actorType,
       actorId: ctx.userId ?? null,
-      idempotencyKey: `goods-receipt:${line.id}`,
+      idempotencyKey: `goods-receipt:${draft.lineId}`,
       binId,
+      // The cost layer points at the receipt LINE, so a freight invoice that
+      // turns up a fortnight later can find the exact layer to revalue.
+      layerSource: 'receipt',
+      layerSourceId: draft.lineId,
+      // FIFO orders by when the goods ARRIVED, which a back-dated receipt makes
+      // different from when someone typed it in.
+      acquiredAt: params.receivedAt,
     });
     if (result.movementId) {
       await tx.goodsReceiptLine.update({
-        where: { id: line.id },
+        where: { id: draft.lineId },
         data: { movementId: result.movementId },
       });
     }
-
-    // Only GOOD units are credited against the PO line — damaged units leave the
-    // supplier owing the shortfall, so the PO stays open for them.
-    await tx.purchaseOrderLine.update({
-      where: { id: poLine.id },
-      data: { quantityReceived: { increment: good } },
-    });
 
     if (lotNumber) {
       await upsertLot(tx, ctx.tenantId, poLine.variantId, warehouseId, lotNumber, good);
@@ -393,11 +571,15 @@ async function applyReceiptLine(
       reason: 'receive',
       referenceType: 'GoodsReceipt',
       referenceId: receiptId,
-      unitCostCents,
+      unitCostCents: landedUnitCostCents,
+      goodsUnitCostCents: draft.unitCostCents,
       actorType,
       actorId: ctx.userId ?? null,
-      idempotencyKey: `goods-receipt:${line.id}:damaged-in`,
+      idempotencyKey: `goods-receipt:${draft.lineId}:damaged-in`,
       binId: damagedBinId,
+      layerSource: 'receipt',
+      layerSourceId: draft.lineId,
+      acquiredAt: params.receivedAt,
     });
     const writeOff = await applyMovement(tx, {
       tenantId: ctx.tenantId,
@@ -407,10 +589,10 @@ async function applyReceiptLine(
       reason: 'damage',
       referenceType: 'GoodsReceipt',
       referenceId: receiptId,
-      unitCostCents,
+      unitCostCents: landedUnitCostCents,
       actorType,
       actorId: ctx.userId ?? null,
-      idempotencyKey: `goods-receipt:${line.id}:damaged-writeoff`,
+      idempotencyKey: `goods-receipt:${draft.lineId}:damaged-writeoff`,
       binId: damagedBinId,
     });
     events.push(
@@ -524,23 +706,52 @@ function serializeRow(r: ReceiptWithQty): GoodsReceiptRow {
     createdAt: r.createdAt.toISOString(),
     lineCount: r.lines.length,
     quantityReceived: r.lines.reduce((s, l) => s + l.quantityReceived, 0),
+    currency: r.currency,
+    baseCurrency: r.baseCurrency,
+    fxRate: Number(r.fxRate),
   };
 }
 
 function serializeDetail(r: ReceiptWithLines): GoodsReceiptDetail {
   const base = serializeRow(r);
+  const lines = r.lines.map((l) => ({
+    id: l.id,
+    purchaseOrderLineId: l.purchaseOrderLineId,
+    variantId: l.variantId,
+    variantSku: l.variant?.sku ?? null,
+    productTitle: l.variant?.product?.title ?? null,
+    quantityReceived: l.quantityReceived,
+    unitCostCents: l.unitCostCents,
+    lotNumber: l.lotNumber,
+    movementId: l.movementId,
+    baseUnitCostCents: l.baseUnitCostCents,
+    allocatedChargeCents: l.allocatedChargeCents,
+    landedUnitCostCents: l.landedUnitCostCents,
+    uomCode: l.uomCode,
+    unitsPerUom: l.unitsPerUom,
+  }));
+
+  // Summed from what was WRITTEN on the lines rather than re-derived from the
+  // charges, so the three totals on screen always add up to each other — a
+  // breakdown whose subtotal disagrees with its lines is worse than no breakdown.
+  const goodsValueCents = lines.reduce(
+    (s, l) => s + (l.baseUnitCostCents ?? l.unitCostCents) * l.quantityReceived,
+    0
+  );
+  const chargeTotalCents = lines.reduce((s, l) => s + l.allocatedChargeCents, 0);
+
   return {
     ...base,
-    lines: r.lines.map((l) => ({
-      id: l.id,
-      purchaseOrderLineId: l.purchaseOrderLineId,
-      variantId: l.variantId,
-      variantSku: l.variant?.sku ?? null,
-      productTitle: l.variant?.product?.title ?? null,
-      quantityReceived: l.quantityReceived,
-      unitCostCents: l.unitCostCents,
-      lotNumber: l.lotNumber,
-      movementId: l.movementId,
+    lines,
+    charges: r.charges.map((c) => ({
+      id: c.id,
+      kind: c.kind,
+      description: c.description,
+      amountCents: c.amountCents,
+      allocationBasis: c.allocationBasis,
     })),
+    goodsValueCents,
+    chargeTotalCents,
+    landedTotalCents: goodsValueCents + chargeTotalCents,
   };
 }

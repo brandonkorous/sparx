@@ -38,6 +38,37 @@ export * from './barcodes';
 // workbench and one drawn server-side are the same barcode.
 export * from './barcode-encode';
 
+// Picking + packing (docs/146 Phase 4) — generating a walk, confirming what came
+// off a shelf, saying what did not, and verifying what went in the box.
+export * from './picking';
+
+// True cost (docs/146 Phase 5) — the freight and duty that a unit's cost basis
+// was missing, how they spread across the lines they arrived with, and how the
+// business wants its stock valued.
+export * from './costing';
+
+// Units of measure (docs/146 Phase 6) — buy a case, stock each, sell a pair.
+// The conversion arithmetic and the one function every screen uses to say a
+// quantity out loud are PURE and live here, so a receipt and a count cannot
+// disagree about what three cartons means.
+export * from './uom';
+
+// Bills of materials + assembly orders (docs/146 Phase 6) — making things out
+// of other things, and taking them back apart.
+export * from './assembly';
+
+// Planning intelligence (docs/146 Phase 7) — how much to keep and when to buy
+// it again. The safety-stock, reorder-point, ABC/XYZ, cover and risk arithmetic
+// is PURE and lives here, so the nightly sweep, the API and the screen cannot
+// arrive at three different answers for the same item.
+export * from './planning';
+
+// Supplier performance + procurement discipline (docs/146 Phase 8) — the other
+// side of a purchase order. The price-break ladder, the scorecard grading and
+// the three-way-match arithmetic are PURE and live here, so the quote a buyer
+// is shown and the cost the order records cannot come out different.
+export * from './procurement';
+
 // Phase 3 — pricing + discounts + gift cards + account credit.
 export * from './pricing';
 export * from './discounts';

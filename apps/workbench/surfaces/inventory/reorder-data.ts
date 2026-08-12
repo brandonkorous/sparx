@@ -91,6 +91,24 @@ export interface ReorderRow {
   daysOfCover: number | null;
   /** ISO date this row is projected to hit zero, at that rate. Null with cover. */
   projectedStockoutAt: string | null;
+
+  // ── What running out would COST (docs/146 Phase 7.7) ──────────────────────
+  /** Days of cover counting stock already on order — the figure that decides
+   *  urgency, because an order on its way genuinely closes the gap. */
+  daysOfCoverWithInbound: number | null;
+  /** Units of demand with nowhere to come from before a replacement lands. */
+  unitsAtRisk: number;
+  /** What those units would have sold for. The default ordering of this list. */
+  revenueAtRiskCents: number;
+  /** The supplier's MEASURED delivery time where deliveries have been recorded. */
+  measuredLeadTimeDays: number | null;
+  /** measured | supplier | level | default — how much to trust the figure above. */
+  leadTimeSource: string | null;
+  abcClass: string | null;
+  xyzClass: string | null;
+  /** The whole calculation in one sentence. Null when the server had no
+   *  measurement for this row rather than a measured "nothing sells". */
+  reasoning: string | null;
 }
 
 /** A supplier, trimmed to what the filter needs. */
@@ -121,7 +139,7 @@ export interface DraftReorderResult {
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
-export type ReorderSort = 'urgency' | 'shortfall' | 'cover';
+export type ReorderSort = 'risk' | 'urgency' | 'shortfall' | 'cover';
 
 export interface ReorderQuery {
   q?: string;
@@ -299,6 +317,33 @@ function formatStockoutDate(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return 'soon';
   return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+}
+
+/**
+ * How the supplier's delivery time should read, and how much to trust it.
+ *
+ * A measured figure and a supplier's claim are the difference between a reorder
+ * level that works and one that is optimistic by however much the supplier is
+ * optimistic — so the row says which it has, rather than printing both the same.
+ */
+export function leadTimeSignal(
+  row: Pick<ReorderRow, 'measuredLeadTimeDays' | 'leadTimeSource' | 'leadTimeDays'>
+): { label: string; detail: string; tone: Tone } | null {
+  const days = row.measuredLeadTimeDays ?? row.leadTimeDays;
+  if (days === null) return null;
+  const label = `${Math.round(days)} days`;
+  switch (row.leadTimeSource) {
+    case 'measured':
+      return { label, detail: 'Measured from their real deliveries', tone: 'success' };
+    case 'supplier':
+      return { label, detail: 'What the supplier says — not yet checked', tone: 'warning' };
+    case 'level':
+      return { label, detail: 'The figure set on this stock line', tone: 'info' };
+    case 'default':
+      return { label, detail: 'Assumed — nothing is known about this one', tone: 'danger' };
+    default:
+      return { label, detail: 'From the supplier record', tone: 'neutral' };
+  }
 }
 
 /** How many distinct purchase orders a set of chosen lines would draft — one per

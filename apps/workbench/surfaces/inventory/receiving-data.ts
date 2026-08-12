@@ -31,9 +31,31 @@ export interface GoodsReceiptLine {
   variantSku: string | null;
   productTitle: string | null;
   quantityReceived: number;
+  /** What the supplier billed per unit, in the delivery's own currency. */
   unitCostCents: number;
   lotNumber: string | null;
   movementId: string | null;
+  /** What it really cost (docs/146 Phase 5). The invoice price in your own
+   *  currency, this line's share of the shipping and duty, and the two together.
+   *  Null on deliveries booked before extra costs could be recorded — there is
+   *  no freight bill to find for those, and inventing one would be worse than
+   *  the gap. */
+  baseUnitCostCents: number | null;
+  allocatedChargeCents: number;
+  landedUnitCostCents: number | null;
+  /** What the receiver counted in (docs/146 Phase 6.2). `quantityReceived` above
+   *  is always single units; this is how it was entered. */
+  uomCode: string | null;
+  unitsPerUom: number;
+}
+
+/** One extra cost on a delivery — the shipping invoice, the duty. */
+export interface GoodsReceiptCharge {
+  id: string;
+  kind: string;
+  description: string | null;
+  amountCents: number;
+  allocationBasis: string;
 }
 
 export interface GoodsReceipt {
@@ -52,10 +74,22 @@ export interface GoodsReceipt {
   createdAt: string;
   lineCount: number;
   quantityReceived: number;
+  /** What the supplier billed in, what your books are kept in, and the rate
+   *  between them on the day it arrived. Both the same and a rate of 1 on a
+   *  domestic delivery. */
+  currency: string;
+  baseCurrency: string;
+  fxRate: number;
 }
 
 export interface GoodsReceiptDetail extends GoodsReceipt {
   lines: GoodsReceiptLine[];
+  charges: GoodsReceiptCharge[];
+  /** The three numbers the cost breakdown adds up: what the goods cost, what
+   *  getting them here cost, and the total. */
+  goodsValueCents: number;
+  chargeTotalCents: number;
+  landedTotalCents: number;
 }
 
 export interface ReceiptListQuery {
@@ -113,12 +147,27 @@ export interface ReceiveLineInput {
   lotNumber?: string;
 }
 
+/** An extra cost booked WITH the delivery — the shipping invoice that came with
+ *  the pallet. Entered here so the landed cost is right the first time; a bill
+ *  that turns up later is added to the posted receipt instead, which corrects
+ *  what is still on the shelf. */
+export interface ReceiveChargeInput {
+  kind: string;
+  description?: string;
+  amountCents: number;
+  allocationBasis?: string;
+}
+
 export interface CreateReceiptInput {
   purchaseOrderId: string;
   receivedAt?: string;
   reference?: string;
   note?: string;
   lines: ReceiveLineInput[];
+  charges?: ReceiveChargeInput[];
+  /** Only sent when the supplier bills in another currency — the rate on the
+   *  day the goods landed, which is the one that decides what they cost. */
+  fxRate?: string;
 }
 
 /**

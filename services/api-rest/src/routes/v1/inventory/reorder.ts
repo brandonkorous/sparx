@@ -15,6 +15,29 @@
 // the one implementation shared with the reports route and the MCP supply tools,
 // merged onto each low row by (variant × warehouse). So "how long until this runs
 // out" and "how little is left" are two honest reads of the SAME low set.
+//
+// ── Worklist v2 (docs/146 Phase 7.7) ─────────────────────────────────────────
+//
+// The row now also carries what running out would COST — units of demand that
+// would have nowhere to come from before a replacement could land, priced at the
+// selling price — plus the measured supplier lead time, where that lead time came
+// from, the item's ABC/XYZ class, and a plain sentence explaining the whole
+// calculation. `sort=risk` is the new DEFAULT.
+//
+// Why the default changed: "least in stock first" ranks by how empty a shelf
+// looks. A buyer with forty rows and an hour does not need the emptiest shelf,
+// they need the one whose emptiness costs the most — a fast £40 line four days
+// from zero outranks a dormant £2 one down to its last unit. The old orderings
+// are all still there, because "furthest below target" is still the right lens
+// when the question is which rules are mis-set rather than what to buy.
+//
+// The risk read is merged, never recomputed: `stockoutRiskReport` is the same
+// implementation the planning surface and the MCP tools use. It is requested with
+// `atRiskOnly: false` so rows with no risk still get their reasoning sentence,
+// and its own ordering (risk first, then least cover) means the 500-row window
+// always contains every row that has any risk at all — a low row that falls
+// outside it is by construction one with no deadline, and it degrades to the
+// honest "not measured" nulls rather than a fabricated zero.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -33,9 +56,10 @@ const WorklistQuery = z.object({
   warehouse_id: z.string().uuid().optional(),
   supplier_id: z.string().uuid().optional(),
   q: z.string().trim().min(1).max(200).optional(),
-  // Least on the shelf first (urgency), furthest below its reorder point
-  // (shortfall), or soonest to run out at its current sales rate (cover).
-  sort: z.enum(['urgency', 'shortfall', 'cover']).optional(),
+  // Most money at risk first (risk — the default), least on the shelf first
+  // (urgency), furthest below its reorder point (shortfall), or soonest to run
+  // out at its current sales rate (cover).
+  sort: z.enum(['risk', 'urgency', 'shortfall', 'cover']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   // Trailing window the sales velocity is measured over (days). Passed straight
@@ -84,7 +108,38 @@ interface ReorderWorklistRow {
   daysOfCover: number | null;
   /** When it is projected to hit zero, at that rate. Null alongside daysOfCover. */
   projectedStockoutAt: string | null;
+
+  // ── The economics, merged from `stockoutRiskReport` (docs/146 Phase 7.7) ──
+  /** Days of cover counting stock already on a purchase order — the figure that
+   *  decides urgency, because an order on its way genuinely closes the gap. */
+  daysOfCoverWithInbound: number | null;
+  /** Units of demand with nowhere to come from before a replacement could land. */
+  unitsAtRisk: number;
+  /** What those units would have sold for. The default ordering. */
+  revenueAtRiskCents: number;
+  /** The supplier's MEASURED delivery time where deliveries have been recorded,
+   *  falling back through their stated figure to a platform assumption. */
+  measuredLeadTimeDays: number | null;
+  /** measured | supplier | level | default — how much to trust the figure above. */
+  leadTimeSource: string | null;
+  abcClass: string | null;
+  xyzClass: string | null;
+  /** The whole calculation in one sentence, in shop words. */
+  reasoning: string | null;
 }
+
+/** What a row with no merged risk read looks like — honest nulls, never zeros
+ *  dressed as measurements. */
+const NO_RISK_READ = {
+  daysOfCoverWithInbound: null,
+  unitsAtRisk: 0,
+  revenueAtRiskCents: 0,
+  measuredLeadTimeDays: null,
+  leadTimeSource: null,
+  abcClass: null,
+  xyzClass: null,
+  reasoning: null,
+} as const;
 
 /**
  * The value a row sorts by under "runs out soonest": days of cover, but with two
@@ -156,6 +211,33 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
         projectedStockoutAt: null,
       };
 
+    // The economics of running out, from the shared planning read (Phase 7.7).
+    // `atRiskOnly: false` so a row with no risk still gets its reasoning
+    // sentence — "nothing has sold in 90 days, so there is no deadline" is a
+    // useful thing to be told, and it is why this row is safe to leave.
+    const risk = await inventoryService.stockoutRiskReport(ctx, {
+      ...(q.warehouse_id !== undefined ? { warehouseId: q.warehouse_id } : {}),
+      atRiskOnly: false,
+      take: 500,
+    });
+    const riskByRow = new Map(
+      risk.rows.map((r) => [
+        `${r.variantId}:${r.warehouseId}`,
+        {
+          daysOfCoverWithInbound: r.daysOfCoverWithInbound,
+          unitsAtRisk: r.unitsAtRisk,
+          revenueAtRiskCents: r.revenueAtRiskCents,
+          measuredLeadTimeDays: r.leadTimeDays,
+          leadTimeSource: r.leadTimeSource,
+          abcClass: r.abcClass,
+          xyzClass: r.xyzClass,
+          reasoning: r.reasoning,
+        },
+      ])
+    );
+    const riskFor = (variantId: string, warehouseId: string) =>
+      riskByRow.get(`${variantId}:${warehouseId}`) ?? NO_RISK_READ;
+
     const rows: ReorderWorklistRow[] = [];
     for (const group of suggestions.groups) {
       for (const line of group.lines) {
@@ -181,6 +263,7 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
           unitCostCents: line.unitCostCents,
           estimatedCostCents: line.estimatedCostCents,
           ...velocityFor(line.variantId, line.warehouseId),
+          ...riskFor(line.variantId, line.warehouseId),
         });
       }
     }
@@ -207,6 +290,7 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
         unitCostCents: null,
         estimatedCostCents: null,
         ...velocityFor(item.variantId, item.warehouseId),
+        ...riskFor(item.variantId, item.warehouseId),
       });
     }
 
@@ -220,8 +304,20 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
       return true;
     });
 
-    const sort = q.sort ?? 'urgency';
+    const sort = q.sort ?? 'risk';
     filtered.sort((a, b) => {
+      if (sort === 'risk') {
+        // Most money at risk first. Rows with no risk figure all tie at zero, so
+        // the second key does the real work for them: soonest to run out, with
+        // already-empty shelves leading. That keeps the tail of the list in a
+        // sensible order instead of arbitrary.
+        if (a.revenueAtRiskCents !== b.revenueAtRiskCents) {
+          return b.revenueAtRiskCents - a.revenueAtRiskCents;
+        }
+        const ca = coverSortValue(a);
+        const cb = coverSortValue(b);
+        return ca !== cb ? ca - cb : a.available - b.available;
+      }
       if (sort === 'shortfall') {
         const gapDelta = b.reorderPoint - b.available - (a.reorderPoint - a.available);
         return gapDelta !== 0 ? gapDelta : a.available - b.available;

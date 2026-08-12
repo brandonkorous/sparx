@@ -26,6 +26,9 @@ import type { ServiceContext } from '../errors';
 import { publishInventoryEvent } from '../events';
 
 import { mirrorMovementToBins } from './bin-ledger';
+import { commitConsumption, planConsumption, restoreToLayers, writeCostLayer } from './cost-layers';
+import type { CostLayerSource } from './cost-layers';
+import { resolveCosting } from './costing-policy';
 import { recordOversellIncidentOnTx } from './integrity';
 import { syncProductInStock } from './internal';
 
@@ -69,6 +72,35 @@ export interface MovementInput {
    * Ignored entirely on a location that does not use bins.
    */
   binId?: string | null;
+  /**
+   * Landed cost of the goods alone, before allocated charges (docs/146 Phase 5).
+   * Only meaningful on an inbound movement, and only to split the cost layer's
+   * breakdown into "the part" and "the freight". Defaults to `unitCostCents`.
+   */
+  goodsUnitCostCents?: number | null;
+  /**
+   * Where the inbound units came from, for the cost layer. Derived from `reason`
+   * when omitted, which is right for every caller except receiving — a receipt
+   * wants the RECEIPT LINE as its source id so a later freight invoice can find
+   * the exact layer to revalue.
+   */
+  layerSource?: CostLayerSource;
+  layerSourceId?: string | null;
+  /**
+   * When the units arrived, for FIFO ordering. Defaults to now. A back-dated
+   * receipt sorts by when the goods landed rather than by when someone got round
+   * to typing it in.
+   */
+  acquiredAt?: Date;
+  /**
+   * Reverse the cost of a specific earlier movement (docs/146 Phase 5.9). Set on
+   * an INBOUND movement that undoes an outbound one — a cancelled order, a
+   * return coming back. The units go back onto the layers the original sale
+   * drained rather than onto a fresh layer at today's average, which is what
+   * keeps FIFO honest through a cancellation, and the cost is credited rather
+   * than charged.
+   */
+  costRestoreFromMovementId?: string | null;
 }
 
 export interface MovementResult {
@@ -83,6 +115,10 @@ export interface MovementResult {
   available: number;
   avgCostCents: number | null;
   reorderPoint: number | null;
+  /** What the goods on this movement cost (docs/146 Phase 5.9). Positive when
+   *  stock left, negative when a reversal credited it back, null on an ordinary
+   *  inbound. */
+  costConsumedCents: number | null;
 }
 
 interface LockedLevel {
@@ -220,6 +256,42 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
     input.unitCostCents ?? null
   );
 
+  // Cost of goods (docs/146 Phase 5.9). Resolved BEFORE the ledger row is
+  // written so the movement can be stamped in one insert rather than an insert
+  // and a correcting update — a movement whose cost arrives a moment later is a
+  // movement some reader will see without one.
+  //
+  // Only outbound movements need the resolution: an inbound one's basis is its
+  // own `unitCostCents`. Skipping it keeps receiving at exactly the query count
+  // it had before this phase.
+  const costing =
+    delta < 0
+      ? await resolveCosting(tx, {
+          tenantId: input.tenantId,
+          variantId: input.variantId,
+          warehouseId: input.warehouseId,
+        })
+      : null;
+  const plan =
+    delta < 0
+      ? await planConsumption(tx, {
+          tenantId: input.tenantId,
+          variantId: input.variantId,
+          warehouseId: input.warehouseId,
+          quantity: -delta,
+        })
+      : null;
+  const costConsumedCents =
+    costing && plan
+      ? costOfGoods({
+          method: costing.method,
+          quantity: -delta,
+          plan,
+          avgCostCents: current.avg_cost_cents,
+          standardCostCents: costing.standardCostCents,
+        })
+      : null;
+
   // 4. Single write to the locked row (onHand + allocated + moving-average).
   await tx.inventoryLevel.update({
     where: {
@@ -250,8 +322,27 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
       idempotencyKey: input.idempotencyKey ?? null,
       note: input.note ?? null,
       unitCostCents: input.unitCostCents ?? null,
+      costConsumedCents,
     },
   });
+
+  // 5b. The cost ledger rides along in THIS transaction, so the stock change and
+  //     what it cost can never disagree about whether they happened.
+  const creditedCostCents = await applyCostLedger(tx, input, {
+    movementId: movement.id,
+    delta,
+    plan,
+    avgCostCents: newAvg ?? current.avg_cost_cents,
+  });
+  // A reversal's credit is only knowable once the layers have been refilled, so
+  // it is the one case that needs a second touch on the row. Rare by nature: it
+  // happens on a cancellation, not on a sale.
+  if (creditedCostCents !== null) {
+    await tx.inventoryMovement.update({
+      where: { id: movement.id },
+      data: { costConsumedCents: creditedCostCents },
+    });
+  }
 
   // 6. Mirror the change onto a shelf (docs/146 Phase 2). A no-op on a location
   //    that does not use bins, which is what keeps the whole feature genuinely
@@ -286,7 +377,141 @@ export async function applyMovement(tx: TxClient, input: MovementInput): Promise
     available: newOnHand - newAllocated,
     avgCostCents: newAvg,
     reorderPoint: current.reorder_point,
+    costConsumedCents: creditedCostCents ?? costConsumedCents,
   };
+}
+
+/**
+ * What the goods on an outbound movement cost, per the tenant's method.
+ *
+ * The layers are consumed either way — see `cost-layers.ts` on why the ledger is
+ * kept regardless of method. This decides only which number gets STAMPED:
+ *
+ *   fifo            what the layers actually held, oldest first
+ *   moving_average  the running average at the moment it left
+ *   standard        the planned figure, so the difference from what was paid
+ *                   shows up as a variance instead of being buried in the basis
+ *
+ * Units the layers could not cover (stock that predates costing, or a sale under
+ * a `continue` policy) fall back to the moving average, then to the standard
+ * cost, then to zero — the same chain valuation has always used, so a cost here
+ * never disagrees with the report next to it.
+ */
+export function costOfGoods(params: {
+  method: 'moving_average' | 'fifo' | 'standard';
+  quantity: number;
+  plan: { coveredCostCents: number; shortfall: number };
+  avgCostCents: number | null;
+  standardCostCents: number | null;
+}): number {
+  const fallbackUnit = params.avgCostCents ?? params.standardCostCents ?? 0;
+  switch (params.method) {
+    case 'fifo':
+      return params.plan.coveredCostCents + params.plan.shortfall * fallbackUnit;
+    case 'standard':
+      return params.quantity * (params.standardCostCents ?? fallbackUnit);
+    case 'moving_average':
+    default:
+      return params.quantity * fallbackUnit;
+  }
+}
+
+/**
+ * Keep the cost layers in step with a stock change.
+ *
+ * Outbound draws the planned units off their layers. Inbound either gives units
+ * back to the layers an earlier movement drained (a cancellation — see
+ * `restoreToLayers`) or opens a new layer at what the units cost. Returns the
+ * credited cost when this was a reversal, so the caller can stamp it; null
+ * otherwise.
+ */
+async function applyCostLedger(
+  tx: TxClient,
+  input: MovementInput,
+  params: {
+    movementId: string;
+    delta: number;
+    plan: { slices: { layerId: string; quantity: number; unitCostCents: number }[] } | null;
+    avgCostCents: number | null;
+  }
+): Promise<number | null> {
+  if (params.delta < 0) {
+    if (params.plan) {
+      await commitConsumption(tx, {
+        tenantId: input.tenantId,
+        movementId: params.movementId,
+        plan: { ...params.plan, shortfall: 0, coveredCostCents: 0 },
+      });
+    }
+    return null;
+  }
+  if (params.delta === 0) return null;
+
+  // A reversal: the same units going back where they came from.
+  if (input.costRestoreFromMovementId) {
+    const restored = await restoreToLayers(tx, {
+      tenantId: input.tenantId,
+      movementId: params.movementId,
+      sourceMovementId: input.costRestoreFromMovementId,
+      quantity: params.delta,
+    });
+    // Anything the original movement cannot account for is still stock that
+    // exists — it gets its own layer at the current basis rather than being
+    // quietly uncosted.
+    if (restored.uncovered > 0) {
+      await writeCostLayer(tx, {
+        tenantId: input.tenantId,
+        variantId: input.variantId,
+        warehouseId: input.warehouseId,
+        quantity: restored.uncovered,
+        unitCostCents: input.unitCostCents ?? params.avgCostCents ?? 0,
+        ...(input.goodsUnitCostCents != null
+          ? { goodsUnitCostCents: input.goodsUnitCostCents }
+          : {}),
+        sourceType: layerSourceFor(input),
+        sourceId: input.layerSourceId ?? input.referenceId ?? null,
+        movementId: params.movementId,
+        ...(input.acquiredAt ? { acquiredAt: input.acquiredAt } : {}),
+      });
+    }
+    // Negative: reversing a sale CREDITS the cost of goods sold, so summing the
+    // column over a period gives period COGS with no special cases.
+    return -restored.creditedCostCents;
+  }
+
+  await writeCostLayer(tx, {
+    tenantId: input.tenantId,
+    variantId: input.variantId,
+    warehouseId: input.warehouseId,
+    quantity: params.delta,
+    unitCostCents: input.unitCostCents ?? params.avgCostCents ?? 0,
+    ...(input.goodsUnitCostCents != null ? { goodsUnitCostCents: input.goodsUnitCostCents } : {}),
+    sourceType: layerSourceFor(input),
+    sourceId: input.layerSourceId ?? input.referenceId ?? null,
+    movementId: params.movementId,
+    ...(input.acquiredAt ? { acquiredAt: input.acquiredAt } : {}),
+  });
+  return null;
+}
+
+/** Where inbound units came from, derived from the movement's reason when the
+ *  caller has not said. Receiving says, because it wants the receipt LINE as the
+ *  source so a freight invoice arriving later can find the layer to revalue. */
+function layerSourceFor(input: MovementInput): CostLayerSource {
+  if (input.layerSource) return input.layerSource;
+  switch (input.reason) {
+    case 'receive':
+      return 'receipt';
+    case 'return':
+    case 'cancel':
+      return 'return';
+    case 'transfer_in':
+      return 'transfer_in';
+    case 'recount':
+      return 'count';
+    default:
+      return 'adjustment';
+  }
 }
 
 /** Build a MovementResult that reflects the locked level with nothing written
@@ -301,6 +526,7 @@ function noChange(movementId: string, current: LockedLevel): MovementResult {
     available: current.on_hand - current.allocated,
     avgCostCents: current.avg_cost_cents,
     reorderPoint: current.reorder_point,
+    costConsumedCents: null,
   };
 }
 

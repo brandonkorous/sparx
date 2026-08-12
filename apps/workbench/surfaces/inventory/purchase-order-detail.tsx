@@ -68,6 +68,7 @@ import {
 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { PurchaseOrderProcurement } from './purchase-order-procurement';
 import { FormSection } from '../../components/form-section';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -98,6 +99,18 @@ import {
   type PurchaseOrderLine,
   type PurchaseOrderLineDraft,
 } from './purchase-orders-data';
+import {
+  ALLOCATION_BASES,
+  CHARGE_KINDS,
+  basisLabel,
+  chargeKindLabel,
+  useAddOrderCharge,
+  useOrderCharges,
+  useRemoveOrderCharge,
+  type AllocationBasis,
+  type ChargeKind,
+} from './costing-data';
+import { describeQuantityShort } from './assembly-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -156,6 +169,8 @@ function draftFromDetail(detail: PurchaseOrderDetail): Draft {
       supplierSku: line.supplierSku,
       quantityOrdered: line.quantityOrdered,
       unitCostCents: line.unitCostCents,
+      uomCode: line.uomCode,
+      unitsPerUom: line.unitsPerUom,
     })),
   };
 }
@@ -310,6 +325,11 @@ function LineEditor({
       supplierSku: supplierSku.trim() === '' ? null : supplierSku.trim(),
       quantityOrdered: qty,
       unitCostCents: costCents,
+      // The editor works in SINGLE units, so a line edited here keeps whatever
+      // unit it was ordered in without re-stating it — and a brand-new line is
+      // in singles, which is what a blank unit means.
+      uomCode: existing?.uomCode ?? null,
+      unitsPerUom: existing?.unitsPerUom ?? 1,
     });
     onClose();
   };
@@ -545,6 +565,295 @@ function LineEditor({
 }
 
 /* ── The pane ───────────────────────────────────────────────────────────── */
+
+/* ── What you expect it to cost to get here ─────────────────────────────── */
+
+/**
+ * The freight quote, entered when the order is raised.
+ *
+ * These are ESTIMATES, and the panel says so — the actual bill lands on the
+ * delivery. What makes them worth recording anyway is that a part-shipped order
+ * needs its freight apportioned across the deliveries as they arrive, and the
+ * only moment anyone knows the total is when the order is placed. Each delivery
+ * takes its share by value, and the panel shows how much has landed so far, so
+ * "£200 quoted, £80 already on deliveries" is legible rather than a mystery.
+ */
+function OrderChargesSection({
+  purchaseOrderId,
+  currency,
+}: {
+  purchaseOrderId: string;
+  currency: string;
+}) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const charges = useOrderCharges(purchaseOrderId);
+  const addCharge = useAddOrderCharge(purchaseOrderId);
+  const removeCharge = useRemoveOrderCharge();
+
+  const [adding, setAdding] = useState(false);
+  const [kind, setKind] = useState<ChargeKind>('freight');
+  const [amount, setAmount] = useState('');
+  const [basis, setBasis] = useState<AllocationBasis>('value');
+
+  const rows = charges.data ?? [];
+  const amountCents = chargeAmountCents(amount);
+  const canSave = amountCents !== null && amountCents > 0;
+  const total = rows.reduce((sum, c) => sum + c.amountCents, 0);
+  const landed = rows.reduce((sum, c) => sum + (c.allocatedCents ?? 0), 0);
+
+  const save = () => {
+    if (!canSave) return;
+    addCharge.mutate(
+      { kind, amountCents, allocationBasis: basis },
+      {
+        onSuccess: () => {
+          setAdding(false);
+          setAmount('');
+          toast.add({
+            title: 'Expected cost added',
+            description:
+              'Each delivery against this order will carry its share, worked out from how much of the order it brings.',
+            type: 'success',
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not add that cost',
+            description: buyingErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  const remove = async (chargeId: string, label: string, allocated: number) => {
+    const ok = await confirm({
+      title: `Remove ${label}?`,
+      description:
+        allocated > 0
+          ? `${formatCents(allocated, currency)} of this has already landed on deliveries. Removing it takes that back off and revalues whatever you still hold from them.`
+          : 'It has not reached any delivery yet, so nothing you hold will change.',
+      confirmLabel: 'Remove it',
+      cancelLabel: 'Keep it',
+      color: 'danger',
+    });
+    if (!ok) return;
+    removeCharge.mutate(chargeId, {
+      onError: (error) => {
+        toast.add({
+          title: 'Could not remove that cost',
+          description: buyingErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  return (
+    <FormSection
+      title="What you expect it to cost to get here"
+      description="Shipping, import duty, customs fees you have been quoted. Each delivery against this order carries its share, so what you hold is valued at what it really cost rather than at the invoice price."
+      action={
+        adding ? null : (
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            onClick={() => {
+              setAdding(true);
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            Add an expected cost
+          </Button>
+        )
+      }
+    >
+      {rows.length === 0 && !adding ? (
+        <Text className="text-sm">
+          Nothing expected on top of the goods. If a shipping quote comes in later, add it here and
+          every delivery against this order picks up its share.
+        </Text>
+      ) : null}
+
+      {rows.length > 0 ? (
+        <>
+          <Table size="sm">
+            <thead>
+              <tr>
+                <th>Cost</th>
+                <th className="hidden @lg:table-cell">Spread</th>
+                <th className="text-right whitespace-nowrap">Quoted</th>
+                <th className="hidden text-right whitespace-nowrap @md:table-cell">
+                  On deliveries
+                </th>
+                <th className="w-10" aria-label="Remove" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((charge) => {
+                const allocated = charge.allocatedCents ?? 0;
+                const done = allocated >= charge.amountCents;
+                return (
+                  <tr key={charge.id}>
+                    <td>
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate font-medium">{chargeKindLabel(charge.kind)}</span>
+                        {charge.description ? (
+                          <span className="truncate text-sm">{charge.description}</span>
+                        ) : null}
+                      </span>
+                    </td>
+                    <td className="hidden text-sm @lg:table-cell">
+                      {basisLabel(charge.allocationBasis)}
+                    </td>
+                    <td className="text-right font-medium tabular-nums">
+                      {formatCents(charge.amountCents, currency)}
+                    </td>
+                    <td className="hidden text-right @md:table-cell">
+                      {/* Colour carries the state: fully apportioned is done,
+                          partly is in progress, nothing yet is simply waiting. */}
+                      <Badge
+                        color={done ? 'success' : allocated > 0 ? 'info' : 'neutral'}
+                        variant="soft"
+                        size="sm"
+                      >
+                        {allocated === 0
+                          ? 'Not yet'
+                          : done
+                            ? 'All of it'
+                            : formatCents(allocated, currency)}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="danger"
+                        shape="square"
+                        aria-label={`Remove ${chargeKindLabel(charge.kind)}`}
+                        loading={removeCharge.isPending}
+                        onClick={() => {
+                          void remove(
+                            charge.id,
+                            chargeKindLabel(charge.kind).toLowerCase(),
+                            allocated
+                          );
+                        }}
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+          <Text className="text-sm">
+            {formatCents(total, currency)} expected in total
+            {landed > 0
+              ? `, of which ${formatCents(landed, currency)} has already landed on deliveries.`
+              : '. None of it has reached a delivery yet.'}
+          </Text>
+        </>
+      ) : null}
+
+      {adding ? (
+        <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
+          <div className="grid gap-2 @lg:grid-cols-[minmax(0,1fr)_8rem_minmax(0,1fr)]">
+            <Field>
+              <FieldLabel>What is it for?</FieldLabel>
+              <NativeSelect
+                aria-label="What this cost is"
+                value={kind}
+                onChange={(event) => {
+                  setKind(event.target.value as ChargeKind);
+                }}
+              >
+                {CHARGE_KINDS.map((k) => (
+                  <option key={k.value} value={k.value}>
+                    {k.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </Field>
+            <Field>
+              <FieldLabel required>Amount</FieldLabel>
+              <FieldControl
+                render={
+                  <Input
+                    color="module"
+                    inputMode="decimal"
+                    placeholder="0.00"
+                    aria-label="Amount"
+                    className="text-right tabular-nums"
+                    value={amount}
+                    onChange={(event) => {
+                      setAmount(event.target.value);
+                    }}
+                  />
+                }
+              />
+            </Field>
+            <Field>
+              <FieldLabel>How should it be spread?</FieldLabel>
+              <NativeSelect
+                aria-label="How to spread it"
+                value={basis}
+                onChange={(event) => {
+                  setBasis(event.target.value as AllocationBasis);
+                }}
+              >
+                {ALLOCATION_BASES.filter((b) => b.value !== 'manual').map((b) => (
+                  <option key={b.value} value={b.value}>
+                    {b.label}
+                  </option>
+                ))}
+              </NativeSelect>
+              <FieldDescription>
+                {ALLOCATION_BASES.find((b) => b.value === basis)?.hint}
+              </FieldDescription>
+            </Field>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              color="module"
+              disabled={!canSave}
+              loading={addCharge.isPending}
+              onClick={save}
+            >
+              Add it
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              onClick={() => {
+                setAdding(false);
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : null}
+    </FormSection>
+  );
+}
+
+/** Pounds-and-pence as typed → whole pence, or null while it is still being
+ *  typed. Distinct from the line editor's `inputToCents`, which rejects zero;
+ *  a charge of zero is simply nothing to add. */
+function chargeAmountCents(raw: string): number | null {
+  const trimmed = raw.trim();
+  if (trimmed === '') return null;
+  const value = Number(trimmed);
+  if (!Number.isFinite(value) || value < 0) return null;
+  return Math.round(value * 100);
+}
 
 export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
@@ -995,7 +1304,8 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Button>
         ) : null}
 
-        {detail && (status === 'draft' || status === 'submitted') ? (
+        {detail &&
+        (status === 'draft' || status === 'pending_approval' || status === 'submitted') ? (
           <Button
             size="sm"
             variant="ghost"
@@ -1282,7 +1592,17 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                               </span>
                             </span>
                           </td>
-                          <td className="text-right tabular-nums">{line.quantityOrdered}</td>
+                          {/* Both readings, always. The pack count is how it
+                              was bought; the singles are what the ledger holds,
+                              and dropping either is how a wrong pack factor
+                              stays invisible until a stock take. */}
+                          <td className="text-right tabular-nums">
+                            {describeQuantityShort({
+                              baseQuantity: line.quantityOrdered,
+                              uomCode: line.uomCode,
+                              unitsPerUom: line.unitsPerUom,
+                            })}
+                          </td>
                           <td className="hidden text-right tabular-nums @md:table-cell">
                             {formatCents(line.unitCostCents, currency)}
                           </td>
@@ -1333,7 +1653,13 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                                 </span>
                               </span>
                             </td>
-                            <td className="text-right tabular-nums">{line.quantityOrdered}</td>
+                            <td className="text-right tabular-nums">
+                              {describeQuantityShort({
+                                baseQuantity: line.quantityOrdered,
+                                uomCode: line.uomCode,
+                                unitsPerUom: line.unitsPerUom,
+                              })}
+                            </td>
                             <td className="hidden text-right tabular-nums @md:table-cell">
                               {formatCents(line.unitCostCents, currency)}
                             </td>
@@ -1380,6 +1706,25 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
             ) : null}
           </FormSection>
+
+          {/* Only once the order exists — a charge needs an order to hang off,
+              and an estimate typed against nothing would vanish on save. */}
+          {isNew ? null : <OrderChargesSection purchaseOrderId={id} currency={currency} />}
+
+          {/* Everything that happens AROUND the order (docs/146 Phase 8): who is
+              holding it, when it is now expected, what they say has shipped, and
+              what they have billed. Each panel appears only in the states where
+              it means something. */}
+          {isNew || !detail ? null : (
+            <PurchaseOrderProcurement
+              purchaseOrderId={id}
+              purchaseOrderNumber={detail.number}
+              status={status}
+              expectedArrivalAt={detail.expectedArrivalAt}
+              currency={currency}
+              ctx={ctx}
+            />
+          )}
 
           <FormSection title="Notes">
             <Field>

@@ -45,7 +45,9 @@ import {
   ArrowDownToLine,
   ClipboardCheck,
   CloudUpload,
+  PackageOpen,
   PackageSearch,
+  Route,
   Search,
   Truck,
   WifiOff,
@@ -55,6 +57,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, useStockLocations } from './data';
 import { useBins } from './bins-data';
 import { ScanInput, playScanFeedback } from './scan-input';
+import { pickListState, usePickLists } from './picking-data';
 import {
   resolveScan,
   scanKindLabel,
@@ -65,10 +68,16 @@ import {
   type ScanResolution,
 } from './scan-data';
 
-type Job = 'lookup' | 'put_away' | 'count' | 'receive';
+type Job = 'lookup' | 'pick' | 'pack' | 'put_away' | 'count' | 'receive';
 
+// Six jobs, in the order a shift actually runs: find out what something is,
+// fetch orders, box them, put the delivery away, count a shelf, take a delivery
+// in. Two columns on a phone, three given room — never one long list, because a
+// job switcher you have to scroll is a job switcher nobody uses.
 const JOBS: { value: Job; label: string; hint: string; icon: typeof Search }[] = [
   { value: 'lookup', label: 'What is this', hint: 'Scan anything', icon: Search },
+  { value: 'pick', label: 'Pick', hint: 'Open a walk', icon: Route },
+  { value: 'pack', label: 'Pack', hint: 'Open an order', icon: PackageOpen },
   { value: 'put_away', label: 'Put away', hint: 'Item, then shelf', icon: ArrowDownToLine },
   { value: 'count', label: 'Count', hint: 'Open a count', icon: ClipboardCheck },
   { value: 'receive', label: 'Receive', hint: 'Open a delivery', icon: Truck },
@@ -89,7 +98,7 @@ export function WarehouseModeSurface({ ctx }: { ctx: SurfaceContext }) {
     <div className={PANE_SHELL}>
       {/* Job switcher. Filled shapes, not tabs with an underline — from arm's
           length a 2px rule is invisible and a filled block is not. */}
-      <div className="grid shrink-0 grid-cols-2 gap-2 @lg:grid-cols-4">
+      <div className="grid shrink-0 grid-cols-2 gap-2 @lg:grid-cols-3 @3xl:grid-cols-6">
         {JOBS.map((entry) => {
           const Icon = entry.icon;
           const active = job === entry.value;
@@ -157,6 +166,8 @@ export function WarehouseModeSurface({ ctx }: { ctx: SurfaceContext }) {
           <LookupJob warehouseId={locationId || undefined} ctx={ctx} />
         ) : job === 'put_away' ? (
           <PutAwayJob warehouseId={locationId} />
+        ) : job === 'pick' ? (
+          <MyWalksJob ctx={ctx} warehouseId={locationId} />
         ) : (
           <OpenSomethingJob job={job} ctx={ctx} warehouseId={locationId} />
         )}
@@ -443,7 +454,7 @@ function OpenSomethingJob({
   ctx,
   warehouseId,
 }: {
-  job: 'count' | 'receive';
+  job: 'count' | 'receive' | 'pack';
   ctx: SurfaceContext;
   warehouseId: string;
 }) {
@@ -451,7 +462,12 @@ function OpenSomethingJob({
   const [busy, setBusy] = useState(false);
   const queue = useScanQueue();
 
-  const expect = job === 'count' ? (['count'] as const) : (['purchase_order'] as const);
+  const expect =
+    job === 'count'
+      ? (['count'] as const)
+      : job === 'pack'
+        ? (['variant'] as const)
+        : (['purchase_order'] as const);
 
   const onScan = async (value: string) => {
     setBusy(true);
@@ -465,12 +481,22 @@ function OpenSomethingJob({
         setMessage(
           job === 'count'
             ? `No stock count has the number ${found.scanned}.`
-            : `No purchase order has the number ${found.scanned}.`
+            : job === 'pack'
+              ? `Nothing in the catalogue matches ${found.scanned}.`
+              : `No purchase order has the number ${found.scanned}.`
         );
         playScanFeedback('not_found');
         return;
       }
       playScanFeedback('applied');
+      if (job === 'pack') {
+        // The pack bench is per ORDER, and a scanned product cannot say which
+        // one. So this opens the bench with nothing chosen rather than guessing —
+        // and the bench asks. Scanning a walk sheet is the fast path, which is
+        // what the Pick job is for.
+        ctx.open('inventory.packing.bench', {});
+        return;
+      }
       ctx.open(job === 'count' ? 'inventory.counts.detail' : 'inventory.receiving.scan', {
         id: hit.id,
       });
@@ -488,7 +514,13 @@ function OpenSomethingJob({
         <div className="p-4">
           <ScanInput
             onScan={onScan}
-            placeholder={job === 'count' ? 'Scan a count sheet' : 'Scan a purchase order'}
+            placeholder={
+              job === 'count'
+                ? 'Scan a count sheet'
+                : job === 'pack'
+                  ? 'Scan anything on the order'
+                  : 'Scan a purchase order'
+            }
             busy={busy}
             queued={queue.size}
             large
@@ -512,10 +544,109 @@ function OpenSomethingJob({
           <Text className="text-sm">
             {job === 'count'
               ? 'Scan the number printed on the count sheet, or type it. The count opens with the scanner ready.'
-              : 'Scan the number on the delivery paperwork, or type it. The delivery opens with the scanner ready.'}
+              : job === 'pack'
+                ? 'Open the pack bench and choose the order you are boxing. Every item is scanned in, and anything that does not belong is refused.'
+                : 'Scan the number on the delivery paperwork, or type it. The delivery opens with the scanner ready.'}
           </Text>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ── Pick (docs/146 Phase 4.3) ──────────────────────────────────────────── */
+
+/**
+ * The walks waiting to be worked, as big tap targets.
+ *
+ * Deliberately NOT a scan-first screen, unlike every other job here. A picker
+ * arriving for a shift does not have a walk sheet in their hand yet — they have
+ * to be given one, and the useful question is "what needs picking", not "what is
+ * this piece of paper". Scanning a printed walk sheet still works: it resolves
+ * through the Look-it-up job like any other document.
+ *
+ * Unassigned walks come first. A walk with somebody's name on it is somebody
+ * else's job, and burying the free ones under it is how two people end up on one
+ * trolley.
+ */
+function MyWalksJob({ ctx, warehouseId }: { ctx: SurfaceContext; warehouseId: string }) {
+  const walks = usePickLists({
+    ...(warehouseId ? { warehouseId } : {}),
+    take: 25,
+    skip: 0,
+  });
+
+  const open = (walks.data?.items ?? []).filter(
+    (w) => w.status === 'draft' || w.status === 'assigned' || w.status === 'picking'
+  );
+  const ordered = [...open].sort((a, b) => {
+    const mine = Number(Boolean(a.assignedTo)) - Number(Boolean(b.assignedTo));
+    return mine !== 0 ? mine : a.number.localeCompare(b.number);
+  });
+
+  if (walks.isLoading) {
+    return (
+      <p className="p-4 text-sm" role="status">
+        Loading walks…
+      </p>
+    );
+  }
+
+  if (ordered.length === 0) {
+    return (
+      <EmptyState
+        icon={<Route className="size-6" aria-hidden />}
+        title="Nothing to pick right now"
+        description="When somebody in the office turns orders into a walk, it shows up here and you can start straight away."
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {ordered.map((walk) => {
+        const state = pickListState(walk.status);
+        return (
+          <Card key={walk.id}>
+            <div className="flex flex-col gap-3 p-4">
+              <span className="flex flex-wrap items-center gap-2">
+                <Badge color={state.tone} variant="soft">
+                  {state.label}
+                </Badge>
+                <span className="font-mono text-sm">{walk.number}</span>
+                {walk.assignedTo ? (
+                  <Badge color="info" variant="outline" size="sm">
+                    {walk.assignedTo}
+                  </Badge>
+                ) : null}
+              </span>
+
+              <span className="flex flex-col">
+                <span className="text-lg font-semibold">
+                  {plural(walk.lineCount, 'thing', 'things')} to fetch
+                </span>
+                <Text className="text-sm">
+                  {walk.warehouseName} · {plural(walk.orderCount, 'order', 'orders')}
+                  {walk.unitsPicked > 0
+                    ? ` · ${String(walk.unitsPicked)} of ${String(walk.unitsRequested)} units done`
+                    : ''}
+                </Text>
+              </span>
+
+              <Button
+                color="module-inventory"
+                size="lg"
+                className={TOUCH}
+                onClick={() => {
+                  ctx.open('inventory.picking.guided', { id: walk.id });
+                }}
+              >
+                {walk.status === 'picking' ? 'Carry on' : 'Start this walk'}
+              </Button>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }

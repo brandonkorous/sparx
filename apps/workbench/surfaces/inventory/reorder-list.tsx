@@ -21,6 +21,21 @@
 // is drawing it down. Soonest-to-run-out is a sort, because the shortest cover is
 // the most urgent thing to buy.
 //
+// ── The ORDER is money, not emptiness (docs/146 Phase 7.7) ────────────────
+//
+// The default sort is now what running out would COST: the demand that would
+// have nowhere to come from before a replacement could land, priced at the
+// selling price. "Least in stock first" ranks by how empty a shelf looks, and a
+// buyer with forty rows and an hour does not need the emptiest shelf — they need
+// the one whose emptiness costs the most. A fast £40 line four days out beats a
+// dormant £2 one down to its last unit, every time.
+//
+// Every row carries the sentence explaining its own figure, and the supplier's
+// delivery time says whether it was MEASURED from real deliveries or is just
+// what the supplier claims — which is most of the difference between a reorder
+// level that works and one that is optimistic by however much the supplier is.
+// Clicking through opens the full calculation.
+//
 // ── Every narrowing is a SERVER query ────────────────────────────────────
 //
 // Search, the location and supplier filters, the sort and the paging all go to
@@ -62,9 +77,10 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { locationLabel, plural, stockErrorMessage, useStockLocations } from './data';
+import { formatCents, locationLabel, plural, stockErrorMessage, useStockLocations } from './data';
 import {
   coverSignal,
+  leadTimeSignal,
   purchaseOrderCount,
   supplierLabel,
   useDraftReorder,
@@ -106,7 +122,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [locationId, setLocationId] = useState('');
   const [supplierId, setSupplierId] = useState('');
-  const [sort, setSort] = useState<ReorderSort>('urgency');
+  const [sort, setSort] = useState<ReorderSort>('risk');
 
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -234,8 +250,15 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  // Clicking a row opens the CALCULATION, not the stock item. On this screen the
+  // question is always "should I buy this, and why does it say that" — and the
+  // stock item is one click further on from there.
   const open = (row: ReorderRow, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('inventory.stock.item', { variantId: row.variantId }, { target: targetFor(event) });
+    ctx.open(
+      'inventory.planning.explain',
+      { variantId: row.variantId, warehouseId: row.warehouseId },
+      { target: targetFor(event) }
+    );
   };
 
   const body = () => {
@@ -312,17 +335,19 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th>Item</th>
             <th className="hidden @2xl:table-cell">Supplier</th>
             <th className="hidden text-right whitespace-nowrap @lg:table-cell">Available</th>
-            <th className="hidden text-right whitespace-nowrap @xl:table-cell">Reorder at</th>
+            <th className="hidden whitespace-nowrap @3xl:table-cell">Takes</th>
             <th className="hidden text-right whitespace-nowrap @xl:table-cell">Sells</th>
             <th className="text-right whitespace-nowrap">To order</th>
             <th className="hidden text-right whitespace-nowrap @3xl:table-cell">On the way</th>
             <th className="whitespace-nowrap">Runs out</th>
+            <th className="text-right whitespace-nowrap">At risk</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => {
             const cover = coverSignal(row);
             const sells = velocityLabel(row);
+            const lead = leadTimeSignal(row);
             const key = rowKey(row);
             const suppliable = row.supplierId !== null;
             return (
@@ -381,6 +406,12 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {sells ? (
                       <span className="truncate text-sm @xl:hidden">Sells {sells}</span>
                     ) : null}
+                    {/* The whole calculation in one sentence. It is the row's
+                        most useful line — it is what turns "at risk £412" from
+                        an assertion into something a buyer can agree with. */}
+                    {row.reasoning ? (
+                      <span className="truncate text-sm">{row.reasoning}</span>
+                    ) : null}
                   </span>
                 </td>
 
@@ -398,8 +429,17 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </td>
 
                 <td className="hidden text-right tabular-nums @lg:table-cell">{row.available}</td>
-                <td className="hidden text-right tabular-nums @xl:table-cell">
-                  {row.reorderPoint}
+                {/* Replaces "Reorder at". The trigger level is on the row's own
+                    calculation page; how long the supplier ACTUALLY takes, and
+                    whether that is measured or claimed, changes what to do now. */}
+                <td className="hidden whitespace-nowrap @3xl:table-cell">
+                  {lead ? (
+                    <Badge color={lead.tone} variant="soft" size="sm" title={lead.detail}>
+                      {lead.label}
+                    </Badge>
+                  ) : (
+                    '—'
+                  )}
                 </td>
                 <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
                   {sells ?? '—'}
@@ -414,6 +454,13 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Badge color={cover.tone} variant="soft" size="sm">
                     {cover.label}
                   </Badge>
+                </td>
+                {/* A number, not a badge: it is the one thing on the row a buyer
+                    compares straight down the column. Zero reads as a dash —
+                    "£0.00" would look like a measurement of nothing, when it
+                    almost always means there is no deadline at all. */}
+                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                  {row.revenueAtRiskCents > 0 ? formatCents(row.revenueAtRiskCents) : '—'}
                 </td>
               </tr>
             );
@@ -479,10 +526,12 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           ))}
         </NativeSelect>
 
-        {/* Default order is the useful one — least on the shelf first. The other
-            views ("runs out soonest" and "furthest below its trigger") are
-            wide-pane refinements, so they shed below @2xl rather than crowd the
-            filters that matter more. */}
+        {/* Default order is the one that spends an hour best — most money at
+            risk first. The others are lenses on the same set: "least in stock"
+            for a walk round the shelves, "runs out soonest" for a deadline, and
+            "furthest below target" for finding rules that are mis-set rather
+            than stock that needs buying. Wide-pane refinements, so they shed
+            below @2xl rather than crowd the filters that matter more. */}
         <NativeSelect
           size="sm"
           className="hidden max-w-48 shrink @2xl:block"
@@ -493,8 +542,9 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             resetWindow();
           }}
         >
-          <option value="urgency">Least in stock first</option>
+          <option value="risk">Costs the most to miss</option>
           <option value="cover">Runs out soonest</option>
+          <option value="urgency">Least in stock first</option>
           <option value="shortfall">Furthest below target</option>
         </NativeSelect>
 
@@ -573,7 +623,8 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         {rows.length > 0 ? (
           <Text className="hidden px-1 pb-1 text-sm @xl:block">
             <Truck className="mr-1 inline size-4 align-text-bottom" aria-hidden />
-            Choose lines to draft orders · click a row to open its stock · shift-click alongside
+            Choose lines to draft orders · click a row to see how its figures were worked out ·
+            shift-click alongside
           </Text>
         ) : null}
       </div>

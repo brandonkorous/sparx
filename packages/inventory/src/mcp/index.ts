@@ -7,6 +7,10 @@ import { binReadTools, binWriteTools } from './bin-tools';
 import { integrityReadTools, integrityWriteTools } from './integrity-tools';
 import { readTools, writeTools } from './tools';
 import { scanReadTools, scanWriteTools } from './scan-tools';
+import { pickReadTools, pickWriteTools } from './pick-tools';
+import { costingReadTools, costingWriteTools } from './costing-tools';
+import { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
+import { planningReadTools, planningWriteTools } from './planning-tools';
 import { managementWriteTools } from './write-management-tools';
 
 export * from './tools';
@@ -14,6 +18,10 @@ export { managementWriteTools } from './write-management-tools';
 export { integrityReadTools, integrityWriteTools } from './integrity-tools';
 export { binReadTools, binWriteTools } from './bin-tools';
 export { scanReadTools, scanWriteTools } from './scan-tools';
+export { pickReadTools, pickWriteTools } from './pick-tools';
+export { costingReadTools, costingWriteTools } from './costing-tools';
+export { assemblyReadTools, assemblyWriteTools } from './assembly-tools';
+export { planningReadTools, planningWriteTools } from './planning-tools';
 
 /** The full Inventory tool set the MCP server publishes. */
 export const inventoryMcpTools = [
@@ -33,4 +41,28 @@ export const inventoryMcpTools = [
   // scanner: read the digits, pass them to `resolve_scan`.
   ...scanReadTools,
   ...scanWriteTools,
+  // "Fetch these orders, and tell me when a shelf is empty" (docs/146 Phase 4).
+  // Handing a sealed box to shipping is deliberately NOT here — it buys a carrier
+  // label and needs the order side, so it lives in commerce's tool set.
+  ...pickReadTools,
+  ...pickWriteTools,
+  // "What did this actually cost me once the freight is in" (docs/146 Phase 5).
+  // Changing the costing METHOD is deliberately absent: switching from moving
+  // average to FIFO changes every future figure and is a decision a business
+  // makes with its accountant, not one an agent makes on a hunch.
+  ...costingReadTools,
+  ...costingWriteTools,
+  // "How many can I make, and what runs out first" (docs/146 Phase 6). Editing
+  // a RECIPE is deliberately absent: a bill of materials is a specification, and
+  // an agent quietly changing what a product is made of is a different category
+  // of mistake from mis-recording a count.
+  ...assemblyReadTools,
+  ...assemblyWriteTools,
+  // "What should I buy today, what is dead, and why is that number that number"
+  // (docs/146 Phase 7). Turning ON automatic reorder-point management is
+  // deliberately absent: it hands the nightly maths permission to rewrite an
+  // operational trigger every night, and the whole value of that decision is
+  // that a person made it knowingly.
+  ...planningReadTools,
+  ...planningWriteTools,
 ];

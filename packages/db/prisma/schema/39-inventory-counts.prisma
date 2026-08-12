@@ -39,6 +39,12 @@ model InventoryCount {
   // reason cycle counts are worth doing at all.
   isBlind Boolean @default(false) @map("is_blind")
 
+  // Set when a cycle-count schedule generated this count rather than a person
+  // (docs/146 Phase 7.9). SET NULL on delete, not cascade — deleting the
+  // standing instruction must never delete the counts it produced, which are
+  // the evidence that counting happened.
+  scheduleId String? @map("schedule_id") @db.Uuid
+
   // counting | review | approved | posted | cancelled. A CHECK pins it. counting
   // is editable; review freezes the variance + the approval requirement; approved
   // is the admin sign-off when over threshold; posted has applied the recounts;
@@ -68,11 +74,17 @@ model InventoryCount {
 
   tenant    Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   warehouse Warehouse            @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  schedule  CycleCountSchedule?  @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
   lines     InventoryCountLine[]
 
   @@unique([tenantId, number], map: "inventory_counts_tenant_number_unique")
   @@index([tenantId, status])
   @@index([tenantId, warehouseId])
+  // "Which counts did this schedule produce" — the schedule detail's history
+  // read (docs/146 Phase 7.9). Declared here as well as in the migration: an
+  // index the model cannot see is one a later `prisma migrate dev` would offer
+  // to drop.
+  @@index([tenantId, scheduleId])
   @@map("inventory_counts")
 }
 
@@ -94,13 +106,19 @@ model InventoryCountLine {
   // and collapsing it to fifteen loses where to go and look when it is wrong.
   binId String? @map("bin_id") @db.Uuid
 
-  expectedQuantity Int     @map("expected_quantity")
-  countedQuantity  Int?    @map("counted_quantity")
-  appliedDelta     Int?    @map("applied_delta")
+  // Base units, all three (docs/146 Phase 6.2). The pair below says what the
+  // counter counted in — a shelf of sealed cartons is counted in cartons, and
+  // making someone multiply by twelve at the shelf is how a count goes wrong.
+  expectedQuantity Int  @map("expected_quantity")
+  countedQuantity  Int? @map("counted_quantity")
+  appliedDelta     Int? @map("applied_delta")
+
+  uomCode     String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom Int     @default(1) @map("units_per_uom")
   // Soft pointer to the inventory_movements row this line wrote on post (no FK —
   // the ledger is append-only and never deleted under a count line).
-  movementId       String? @map("movement_id") @db.Uuid
-  note             String? @db.Text
+  movementId  String? @map("movement_id") @db.Uuid
+  note        String? @db.Text
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 

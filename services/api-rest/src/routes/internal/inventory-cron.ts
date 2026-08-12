@@ -59,6 +59,16 @@ interface IntegrityOutcome {
   error?: string;
 }
 
+interface PlanningOutcome {
+  tenantId: string;
+  ok: boolean;
+  levelsPlanned?: number;
+  countsGenerated?: number;
+  durationMs?: number;
+  failedStages?: { stage: string; error: string }[];
+  error?: string;
+}
+
 const inventoryCronRoutes: FastifyPluginAsync = (app) => {
   app.post('/internal/inventory/valuation-snapshot', async (request) => {
     authorize(request);
@@ -157,6 +167,61 @@ const inventoryCronRoutes: FastifyPluginAsync = (app) => {
       }
 
       outcomes.push(outcome);
+    }
+
+    return { success: true, data: { tenants: tenants.length, outcomes } };
+  });
+
+  // ── Planning sweep (docs/146 Phase 7) ──────────────────────────────────────
+  //
+  //   POST /internal/inventory/planning-sweep
+  //     → per active Inventory tenant, in this order: measure supplier lead
+  //       times from receipts, measure demand from the ledger, re-rank ABC/XYZ,
+  //       recompute reorder points, then generate the cycle counts that are due.
+  //
+  // Runs at 03:30 UTC — BEFORE the integrity sweep at 04:30 and the valuation
+  // snapshot at 05:30. The order matters in one direction only: classification
+  // reads the cost basis, so it wants to run before the day's valuation is
+  // frozen, and a drift discovered at 04:30 should be reported against numbers
+  // that were planned the same night rather than the night before.
+  //
+  // Per-tenant AND per-stage failures are collected rather than thrown. The
+  // sweep itself already collects its stages; this loop collects tenants, so one
+  // corrupt catalogue cannot leave every tenant after it unplanned.
+  app.post('/internal/inventory/planning-sweep', async (request) => {
+    authorize(request);
+
+    const tenants = await prisma.tenant.findMany({
+      where: {
+        status: 'active',
+        settings: { path: ['modules', 'inventory', 'enabled'], equals: true },
+      },
+      select: { id: true },
+    });
+
+    const outcomes: PlanningOutcome[] = [];
+    for (const t of tenants) {
+      try {
+        const run = await inventoryService.runPlanningSweep({ tenantId: t.id });
+        outcomes.push({
+          tenantId: t.id,
+          ok: run.ok,
+          levelsPlanned: run.levelsPlanned,
+          countsGenerated: run.countsGenerated,
+          durationMs: run.durationMs,
+          // Only the stages that FAILED. A green run reports a count, not five
+          // paragraphs nobody reads.
+          failedStages: run.stages
+            .filter((s) => !s.ok)
+            .map((s) => ({ stage: s.stage, error: s.error ?? 'unknown' })),
+        });
+      } catch (err) {
+        outcomes.push({
+          tenantId: t.id,
+          ok: false,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
     }
 
     return { success: true, data: { tenants: tenants.length, outcomes } };

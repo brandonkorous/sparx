@@ -33,6 +33,7 @@ import {
   AlertTitle,
   Badge,
   Card,
+  DateInput,
   EmptyState,
   Heading,
   NativeSelect,
@@ -45,7 +46,7 @@ import {
   Text,
   Timestamp,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, Boxes, Clock, MapPin } from 'lucide-react';
+import { BarChart3, Boxes, CalendarClock, Clock, Coins, MapPin } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -70,6 +71,7 @@ import {
   type ShrinkageReport,
   type TurnoverReport,
 } from './reports-data';
+import { cogsReasonLabel, useCogsReport, useValuationAsOf } from './costing-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 const NUMBER = new Intl.NumberFormat();
@@ -598,6 +600,217 @@ function ShrinkageCard({
   );
 }
 
+/* ── What it was worth on a date ─────────────────────────────────────────── */
+
+/**
+ * Valuation as it stood at a moment in the past.
+ *
+ * Every other figure on this screen is about today, and today is the wrong day
+ * for the two occasions this number is most often wanted: the year-end figure an
+ * accountant asks for in March, and "what were we holding when this went wrong".
+ * Both are answered by walking the movement and cost ledgers back to the moment
+ * asked for — so any date works, not only dates somebody thought to snapshot.
+ *
+ * The uncosted count is shown rather than hidden. Stock the platform never
+ * costed cannot be valued, and a valuation that silently treats it as worthless
+ * is the kind of number an audit finds for you.
+ */
+function AsOfCard({ locationId }: { locationId: string }) {
+  const [asOf, setAsOf] = useState<Date | null>(() => new Date());
+  const iso = asOf ? asOf.toISOString() : '';
+  const report = useValuationAsOf(iso, locationId || undefined);
+
+  return (
+    <section className="card bg-base-100 flex flex-col gap-3 p-4">
+      <div className="border-base-300 flex flex-wrap items-start justify-between gap-2 border-b pb-2">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
+            <CalendarClock className="size-4" aria-hidden />
+            What it was worth on a date
+          </Heading>
+          <Text className="text-sm">
+            The figure an accountant asks for at year end. Worked out from your stock history, so
+            any date works — not only the ones somebody remembered to record.
+          </Text>
+        </div>
+        <DateInput
+          color="module"
+          value={asOf}
+          aria-label="Value the stock as at this date"
+          onValueChange={(date) => {
+            setAsOf(date);
+          }}
+        />
+      </div>
+
+      {report.isError ? (
+        <Text className="text-sm">
+          Could not work that out just now. The rest of your figures are fine.
+        </Text>
+      ) : !report.data ? (
+        <p className="text-sm" role="status">
+          Working it out…
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 gap-2 @md:grid-cols-2">
+            <div className="flex flex-col">
+              <Text className="text-module text-2xl font-semibold tabular-nums">
+                {formatCents(report.data.totalValueCents, report.data.currency)}
+              </Text>
+              <Text className="text-sm">Value of the stock you held</Text>
+            </div>
+            <div className="flex flex-col">
+              <Text className="text-2xl font-semibold tabular-nums">
+                {NUMBER.format(report.data.totalUnits)}
+              </Text>
+              <Text className="text-sm">Units on hand at that moment</Text>
+            </div>
+          </div>
+
+          {report.data.uncostedUnits > 0 ? (
+            <Alert color="warning" variant="soft">
+              <AlertContent>
+                <AlertTitle>
+                  {plural(report.data.uncostedUnits, 'unit', 'units')} with no purchase behind
+                  {report.data.uncostedUnits === 1 ? ' it' : ' them'}
+                </AlertTitle>
+                <AlertDescription>
+                  Those units are counted but not valued, because nothing records what they cost —
+                  usually stock that was here before you started recording deliveries. The value
+                  above is everything else.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          ) : null}
+
+          {report.data.rows.length > 0 ? (
+            <Table size="sm">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th className="hidden @lg:table-cell">Where</th>
+                  <th className="hidden text-right @md:table-cell">Units</th>
+                  <th className="text-right whitespace-nowrap">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.data.rows.slice(0, 10).map((row) => (
+                  <tr key={`${row.variantId}:${row.warehouseId}`}>
+                    <td className="w-full max-w-0">
+                      <span className="flex min-w-0 flex-col">
+                        <span className="truncate">{row.title ?? 'Untitled product'}</span>
+                        <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
+                      </span>
+                    </td>
+                    <td className="hidden max-w-32 truncate @lg:table-cell">{row.warehouseCode}</td>
+                    <td className="hidden text-right tabular-nums @md:table-cell">
+                      {NUMBER.format(row.units)}
+                    </td>
+                    <td className="text-right font-medium tabular-nums">
+                      {formatCents(row.valueCents, report.data.currency)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : null}
+        </>
+      )}
+    </section>
+  );
+}
+
+/* ── What the goods that left actually cost ──────────────────────────────── */
+
+/**
+ * Cost of goods over the period, split by why the goods left.
+ *
+ * The figure was stamped on each movement at the moment the stock went, so it
+ * does not drift when tomorrow's delivery moves the average — last quarter's
+ * margin stays last quarter's margin. Splitting by reason is what turns one
+ * number into a decision: goods sold is cost of sales, goods lost is a problem,
+ * and adding them together hides the second inside the first.
+ */
+function CostOfGoodsCard({
+  range,
+  locationId,
+}: {
+  range: { from: string; to: string };
+  locationId: string;
+}) {
+  const report = useCogsReport(range, locationId || undefined);
+  if (report.isError || !report.data) return null;
+  const data = report.data;
+  if (data.byReason.length === 0) return null;
+
+  const peak = Math.max(1, ...data.byReason.map((r) => Math.abs(r.costCents)));
+  const notSold = data.totalCostCents - data.saleCostCents;
+
+  return (
+    <section className="card bg-base-100 flex flex-col gap-3 p-4">
+      <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
+        <Heading level={2} className="flex items-center gap-2 text-lg font-semibold">
+          <Coins className="size-4" aria-hidden />
+          What the goods that left cost you
+        </Heading>
+        <Text className="text-sm">
+          Recorded when each item went, so it does not move when the next delivery changes your
+          average. This is the number your margin is worked out from.
+        </Text>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col">
+          <Text className="text-2xl font-semibold tabular-nums">
+            {formatCents(data.saleCostCents, data.currency)}
+          </Text>
+          <Text className="text-sm">Cost of what you sold</Text>
+        </div>
+        <div className="flex flex-col">
+          <Text
+            className={
+              notSold > 0
+                ? 'text-danger text-2xl font-semibold tabular-nums'
+                : 'text-2xl font-semibold tabular-nums'
+            }
+          >
+            {formatCents(notSold, data.currency)}
+          </Text>
+          <Text className="text-sm">Cost of what left without being sold</Text>
+        </div>
+      </div>
+
+      <ul className="flex flex-col gap-3">
+        {data.byReason.map((row) => (
+          <li key={row.reason} className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <Text className="font-medium">{cogsReasonLabel(row.reason)}</Text>
+              <Text className="text-sm tabular-nums">
+                {formatCents(row.costCents, data.currency)} · {plural(row.units, 'unit', 'units')}
+              </Text>
+            </div>
+            <div className="bg-base-200 h-2 w-full overflow-hidden rounded-full">
+              <div
+                className={`h-full rounded-full ${row.reason === 'sale' ? 'bg-success' : 'bg-danger'} ${barWidthClass(
+                  Math.abs(row.costCents) / peak
+                )}`}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {data.unattributedUnits > 0 ? (
+        <Text className="text-sm">
+          {plural(data.unattributedUnits, 'unit', 'units')} left in this period before costs began
+          being recorded against each movement, so they are not in the figures above.
+        </Text>
+      ) : null}
+    </section>
+  );
+}
+
 /* ── The surface ─────────────────────────────────────────────────────────── */
 
 export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -758,6 +971,17 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : turnover.data ? (
           <TurnoverCard report={turnover.data} currency={currency} />
         ) : null}
+
+        {/* Cost of goods sits after selling pace because it is the other half of
+            the same sum: pace says how fast stock moved, this says what the
+            stock that moved had cost. Follows the SAME period picker, so the two
+            are comparable rather than merely adjacent. */}
+        <CostOfGoodsCard range={range} locationId={locationId} />
+
+        {/* Last, because it is the one figure on the screen that is not about
+            now — an accountant's question, asked occasionally, rather than the
+            owner's question, asked daily. */}
+        <AsOfCard locationId={locationId} />
       </div>
     );
   };

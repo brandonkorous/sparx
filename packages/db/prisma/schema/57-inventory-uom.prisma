@@ -1,0 +1,130 @@
+// Units of measure — buy a case, stock each, sell a pair (docs/146 Phase 6.1–6.3).
+//
+// ── The gap this closes ──────────────────────────────────────────────────────
+//
+// A distributor buys in cases of twelve, keeps singles on the shelf, and sells
+// pairs. Today the platform knows one number per variant and no unit at all, so
+// a buyer ordering four cases types 48 and hopes, a receiver counting cartons
+// multiplies in their head, and a counter looking at a shelf of boxes has to
+// decide what "quantity" meant. Every one of those is a place a stock number
+// goes wrong quietly.
+//
+// UoM only exists for EXTERNAL feeds today (`inventory_source_links.
+// units_per_external`) — the platform can convert a supplier's cases into its
+// own units but cannot express its own.
+//
+// ── The base unit is the ledger's unit, always ───────────────────────────────
+//
+// `inventory_levels.on_hand`, every `inventory_movements.delta`, every bin
+// level: all of them are in BASE units and none of them changes. A UoM is a way
+// of ENTERING and DISPLAYING a quantity, never a second way of storing one. A
+// document line records which unit was used and how many base units it was worth
+// AT THE TIME; the quantity column stays base. That is what keeps a case factor
+// changing next year from silently rewriting last year's purchase orders.
+//
+// ── Factors are integers, and that is a design decision ──────────────────────
+//
+// `unitsPerUom` is an integer ≥ 1. A fractional factor would make on-hand
+// fractional, and an inventory system that can hold 4.999999 of something is one
+// that cannot reconcile. The answer for goods that genuinely divide is to make
+// the BASE unit small enough: stock grams and sell a 500 g bag as a UoM of 500,
+// rather than stocking kilograms and selling 0.5 of one.
+
+// One unit a business measures things in. Tenant-scoped, because "PK" means a
+// pack of six to one business and a pallet to another, and a platform-wide list
+// would be wrong for both.
+
+model UnitOfMeasure {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // The short form that goes on a document line: EA, CS, BX, PR, KG. Unique per
+  // tenant, upper-cased on write, because a line reading "4 CS" and another
+  // reading "4 cs" are the same unit and must not be two rows.
+  code String @db.VarChar(12)
+
+  // What a person calls it. Both forms, because "1 case" and "4 cases" both
+  // appear on the same screen and a naive `+ 's'` gets boxes right and
+  // inches wrong.
+  name       String @db.VarChar(60)
+  pluralName String @map("plural_name") @db.VarChar(60)
+
+  // count | weight | volume | length | area. Not enforced against the factor —
+  // it exists so a picker can group the list and so a future conversion between
+  // two units of the SAME dimension has something to check. A variant's own
+  // conversions are what actually decide arithmetic.
+  dimension String @default("count") @db.VarChar(12)
+
+  // A unit the platform seeded for a tenant that had none. Distinguished so the
+  // list can say "we started you off with these" and so a bootstrap re-run
+  // recognises its own work rather than duplicating it.
+  isSystem Boolean @default(false) @map("is_system")
+  isActive Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Only LIVE configuration points at a unit row. Document lines record the code
+  // as TEXT plus the factor they used, with no foreign key at all — see the note
+  // below `VariantUomConversion` on why.
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversions VariantUomConversion[]
+  stockingFor ProductVariant[]       @relation("VariantStockingUom")
+
+  @@unique([tenantId, code], map: "inventory_uom_tenant_code_unique")
+  @@index([tenantId, isActive])
+  @@map("inventory_units_of_measure")
+}
+
+// How many base units one of this unit is, FOR THIS VARIANT.
+//
+// Per variant rather than global because that is the only place the answer is
+// knowable: a case of spark plugs is 12 and a case of oil filters is 6, and both
+// are "CS". A global factor would be wrong for one of them the moment a second
+// product existed.
+
+model VariantUomConversion {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+  uomId     String @map("uom_id") @db.Uuid
+
+  // Base units in one of these. A case of twelve is 12. Integer, ≥ 1 — see the
+  // header on why fractional factors are refused rather than supported.
+  unitsPerUom Int @map("units_per_uom")
+
+  // Which unit a new purchase-order or sales line reaches for first. At most one
+  // of each per variant (partial unique indexes in the migration): "usually
+  // bought by the case, usually sold in pairs" is one fact each, and two rows
+  // claiming to be the default is a question with no answer.
+  isPurchaseDefault Boolean @default(false) @map("is_purchase_default")
+  isSalesDefault    Boolean @default(false) @map("is_sales_default")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  uom     UnitOfMeasure  @relation(fields: [uomId], references: [id], onDelete: Cascade)
+
+  @@unique([variantId, uomId], map: "inventory_variant_uom_unique")
+  @@index([tenantId, variantId])
+  @@map("inventory_variant_uom_conversions")
+}
+
+// ── How a DOCUMENT records a unit, and why it is not a foreign key ───────────
+//
+// Purchase-order lines, receipt lines, count lines, transfer lines and order
+// items each carry `uom_code` (text) and `units_per_uom` (integer) — a snapshot,
+// with no FK to `inventory_units_of_measure`.
+//
+// A foreign key would mean `ON DELETE SET NULL`, and that erases the unit from a
+// historical purchase order the day somebody tidies their unit list. "We ordered
+// 4" with no memory of what four meant is worse than useless: it is a number
+// that reads as base units and is not. The factor is snapshot for the same
+// reason — a case becoming 24 next year must not silently double what last
+// year's orders were for.
+//
+// The canonical quantity column on every one of those lines stays in BASE units
+// and is untouched by any of this. The pair exists to say what was TYPED and
+// what it was worth; the quantity says what it means.

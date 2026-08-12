@@ -168,7 +168,7 @@ model Tenant {
   // CRM module — customer spine
   customers         Customer[]
   customerAddresses CustomerAddress[]
-  companies       Company[]
+  companies         Company[]
 
   // CRM module — sales pipeline
   pipelines            Pipeline[]
@@ -262,6 +262,50 @@ model Tenant {
   variantBarcodes          VariantBarcode[]
   inventoryBarcodeSequence InventoryBarcodeSequence?
   inventoryScanEvents      InventoryScanEvent[]
+
+  // Picking + packing (docs/146 Phase 4) — the warehouse work behind a shipment
+  pickLists            PickList[]
+  pickListOrders       PickListOrder[]
+  pickListLines        PickListLine[]
+  shipmentPackages     ShipmentPackage[]
+  shipmentPackageLines ShipmentPackageLine[]
+
+  // True cost (docs/146 Phase 5) — what a unit cost to get here, and to sell
+  purchaseOrderCharges     PurchaseOrderCharge[]
+  goodsReceiptCharges      GoodsReceiptCharge[]
+  inventoryCostLayers      InventoryCostLayer[]
+  inventoryCostConsumption InventoryCostConsumption[]
+  costingPolicy            CostingPolicy?
+
+  // Units of measure + assembly (docs/146 Phase 6) — buy a case, stock each,
+  // sell a pair; and make things out of other things
+  unitsOfMeasure        UnitOfMeasure[]
+  variantUomConversions VariantUomConversion[]
+  billsOfMaterials      BillOfMaterials[]
+  bomComponents         BomComponent[]
+  assemblyOrders        AssemblyOrder[]
+  assemblyOrderLines    AssemblyOrderLine[]
+
+  // Planning intelligence (docs/146 Phase 7) — how much to keep, when to buy
+  demandVelocity          DemandVelocity[]
+  inventoryClassification InventoryClassification[]
+  reorderPolicies         ReorderPolicy[]
+  supplierLeadTimes       SupplierLeadTime[]
+  cycleCountSchedules     CycleCountSchedule[]
+  planningPolicy          InventoryPlanningPolicy?
+
+  // Supplier performance + procurement discipline (docs/146 Phase 8) — how the
+  // people you buy from actually behave, and the controls over spending with them
+  supplierScorecards         SupplierScorecard[]
+  supplierPriceBreaks        SupplierPriceBreak[]
+  poApprovalRules            PurchaseOrderApprovalRule[]
+  poApprovals                PurchaseOrderApproval[]
+  advanceShipNotices         AdvanceShipNotice[]
+  advanceShipNoticeLines     AdvanceShipNoticeLine[]
+  supplierReturns            SupplierReturn[]
+  supplierReturnLines        SupplierReturnLine[]
+  supplierBills              SupplierBill[]
+  supplierBillLines          SupplierBillLine[]
 
   // Commerce module — pricing + discounts
   priceLists             PriceList[]
@@ -523,6 +567,21 @@ model Tenant {
   partnerPayoutRuns     PartnerPayoutRun[]
   bootcamps             Bootcamp[]
   bootcampRegistrations BootcampRegistration[]
+
+  // Finance module (docs/148) — the spend ledger, its vendors + categories, the
+  // recurring templates, the accounting handoff, and the daily profit rollup.
+  // Deliberately NOT a general ledger: sparx records spend and nets it against
+  // revenue, and exports to QuickBooks / Xero / Sage 50 rather than replacing them.
+  financeExpenseCategories     FinanceExpenseCategory[]
+  financeVendors               FinanceVendor[]
+  financeExpenses              FinanceExpense[]
+  financeExpenseAllocations    FinanceExpenseAllocation[]
+  financeExpenseAttachments    FinanceExpenseAttachment[]
+  financeRecurringExpenses     FinanceRecurringExpense[]
+  financeAccountingConnections FinanceAccountingConnection[]
+  financeAccountingMappings    FinanceAccountingMapping[]
+  financeAccountingSyncRuns    FinanceAccountingSyncRun[]
+  rollupFinanceDailyProfit     RollupFinanceDailyProfit[]
 
   @@map("tenants")
 }

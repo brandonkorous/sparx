@@ -1,8 +1,8 @@
 # sparx Platform — Inventory: Market Parity & Gap Closure Plan
 
-**Version:** 1.3
+**Version:** 1.9
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-10
+**Last Updated:** 2026-08-11
 
 ---
 
@@ -412,66 +412,519 @@ seat are listed on their own surface rather than silently dropped.
   Firefox, so the button is hidden there rather than shown broken. The keyboard-wedge path — which
   is what actual scanners use — works everywhere.
 
-### Phase 4 — Pick, pack, ship ⬜
+### Phase 4 — Pick, pack, ship ✅
 
-- [ ] **4.1** `PickList` + `PickListLine` — generated from orders (single, batch, or wave), assigned to a picker, bin-sequenced **[P3] DB**
-- [ ] **4.2** Allocation strategy per warehouse: FIFO / FEFO / nearest-bin / single-bin-preferred **[P3][P18]**
-- [ ] **4.3** Guided pick surface — next bin, item, quantity; scan-to-verify; short-pick with a reason that routes to a count **[P3] UI**
-- [ ] **4.4** Pack verification — scan every item into a package; mismatch blocks; capture package dimensions/weight **[P3] UI**
-- [ ] **4.5** Packing slip document, matching the PO document's build path **[P3]**
-- [ ] **4.6** Pack → `OrderFulfillment` + label purchase handoff (existing shipping providers), so picking flows into the shipping we already have **[P3]**
-- [ ] **4.7** Pick/pack throughput report — units per hour, accuracy rate, short-pick rate by picker and by bin **[P3][P21]**
+**Shipped 2026-08-10.** Migration `20270224000000_inventory_picking`; everything else is in the
+working tree.
 
-### Phase 5 — True cost ⬜
+**The decision the whole phase turns on: picking changes no stock number.** By the time a pick list
+exists, `commitSaleOnTx` has already taken the units off `inventory_levels.on_hand` — the goods are
+gone from the ledger and still physically on the shelf. A confirmed pick that decremented again
+would sell one unit twice in the books. So a pick writes NO warehouse movement. What it adds is
+knowledge of WHICH SHELF, and when the picker took from somewhere other than the instruction, that
+difference is written to the bin ledger alone. Same layering as Phase 2, for the same reason.
 
-- [ ] **5.1** `PurchaseOrderCharge` / `GoodsReceiptCharge` — freight, duty, insurance, broker, other; per-PO and per-receipt **[P4] DB**
-- [ ] **5.2** Landed-cost allocation across receipt lines by value / quantity / weight / manual, feeding the cost basis on post **[P4]**
-- [ ] **5.3** Landed-cost breakdown on the receipt surface: invoice cost → allocated charges → landed unit cost **[P4] UI**
-- [ ] **5.4** `InventoryCostLayer` — FIFO layers written on inbound, consumed on outbound, with the consumed layers recorded on the movement **[P5] DB**
-- [ ] **5.5** Per-tenant (and per-variant override) costing method: `moving_average` | `fifo` | `standard` **[P5] DB**
-- [ ] **5.6** Standard cost + purchase price variance report (standard vs actual landed) **[P5][P21]**
-- [ ] **5.7** FX capture at receipt — PO currency, rate used, base-currency landed cost stored alongside **[P15] DB**
-- [ ] **5.8** As-of-date valuation — value the ledger at any past timestamp, not just now **[P21]**
-- [ ] **5.9** COGS movement attribution: every `sale` movement carries the cost consumed, so margin is exact rather than estimated **[P5]**
+**Which forced the second decision, and it is the more interesting one: the ALLOCATION is the
+checkout draw-down.** A pick list that chose shelves by reading current bin levels would read levels
+the sale had already drawn down and conclude the stock was nowhere. So `mirrorMovementToBins` became
+strategy-aware — the shelf chosen at checkout is now the shelf the warehouse's strategy would have
+chosen — and the pick list READS that decision rather than making a second one. One decision, one
+place, nothing to reconcile. It also fixed a latent Phase 2 shortcoming: the draw-down was
+hard-coded richest-first, which quietly meant FEFO did not exist and a warehouse with dated stock
+was shipping whatever pile happened to be biggest.
 
-### Phase 6 — Units of measure, kits, and assembly ⬜
+**And the third: a short pick moves stock UP.** Units nobody could find were never picked, so the
+sale that removed them has not happened. They go back on-hand AND into a reservation for the order
+that still wants them, so nobody can buy something we have just admitted we cannot find — then the
+shelf goes on a blind count. The alternative (leave the decrement, treat the units as shrinkage) is
+wrong twice: it books a loss nobody has confirmed, and it leaves the order owing units the system
+believes were shipped.
 
-- [ ] **6.1** `UnitOfMeasure` + per-variant conversions: stocking UoM (base), purchase UoM, sales UoM, with integer-safe factors **[P6] DB**
-- [ ] **6.2** UoM applied through PO lines, receipts, counts, transfers, and the sell path; the ledger always stores base units **[P6]**
-- [ ] **6.3** UoM display everywhere with the base-unit equivalent shown alongside ("4 cases (48 ea)") **[P6] UI**
-- [ ] **6.4** `BillOfMaterials` + `BomComponent` — components, quantity per, scrap %, optional operations/labour cost **[P7] DB**
-- [ ] **6.5** `AssemblyOrder` — planned → released → completed; consumes components and produces finished stock, all through the ledger; cost rolls up from components + labour **[P7] DB**
-- [ ] **6.6** Disassembly (produce components from a finished unit) **[P7]**
-- [ ] **6.7** Buildable-quantity calculation — "you can make 14 of these from what's on hand," with the limiting component named **[P7] UI**
-- [ ] **6.8** Bundle availability derived from component availability (today's `decrement_components` bundles have no availability math) **[P7]**
-- [ ] **6.9** Assembly surfaces: BOM editor, assembly orders list + detail **[P7] UI**
+- [x] **4.1** `PickList` + `PickListLine` + `PickListOrder` — generated from orders (single / batch / wave), assignable, bin-sequenced. A line always points at ONE order item even on a wave: merging by variant would shorten the walk by nothing and would destroy the only thing that makes a short pick actionable, which is knowing whose unit is missing **[P3] DB**
+- [x] **4.2** Allocation strategy per warehouse (FIFO / FEFO / nearest-bin / single-bin), applied where it actually decides anything — inside the checkout draw-down, which the walk then reads. Sellable shelves before quarantine and damaged; the pick face before bulk; FEFO excludes recalled batches outright rather than ranking them last **[P3][P18]**
+- [x] **4.3** Guided pick surface — shelf, then item, then quantity, in that order of size, because the first question in an aisle is always "am I in the right place". Scan-to-verify (wrong item refused, wrong shelf refused and told where to go), and a short-pick reason from a closed list that raises a blind count on the shelf **[P3] UI**
+- [x] **4.4** Pack verification — `ShipmentPackage` + `ShipmentPackageLine`, scan every item in, anything not on the order REFUSED, per-line scanned-vs-typed recorded, weight and dimensions captured for the rate quote. Splitting an order across boxes is assumed rather than treated as an exception **[P3] UI**
+- [x] **4.5** Packing slip on the PO document's build path — pure renderer plus tenant-scoped loader. No prices (the box may be a gift, a dropship, or one of four), a scanned-verified tick per line, and an "also in this order, sent separately" block that costs four lines of paper and prevents a support ticket every time **[P3]**
+- [x] **4.6** Sealed box → `OrderFulfillment`, one fulfillment PER BOX so a three-parcel order gets three tracking numbers, feeding the existing rate quote and label purchase unchanged. Lives in `@sparx/commerce` — the only package that can see both the warehouse and the order **[P3]**
+- [x] **4.7** Throughput — units per hour measured against time actually spent picking, scan-verified rate, short-pick rate, per picker AND per shelf, with the reasons grouped **[P3][P21]**
 
-### Phase 7 — Planning intelligence ⬜
+**Also landed with it:**
 
-- [ ] **7.1** Demand velocity — trailing 7/30/90-day units-per-day per `(variant, warehouse)`, computed from the ledger's `sale` movements, materialized nightly **[P8] DB**
-- [ ] **7.2** Seasonality index — same-period-last-year multiplier where ≥12 months of history exists, ignored otherwise (and said so on screen) **[P8]**
-- [ ] **7.3** Lead-time actuals — measured PO-submit-to-receipt per supplier and per variant, with variance **[P8][D9]**
-- [ ] **7.4** Safety stock from a chosen service level (90/95/99%) using demand and lead-time variability **[P8]**
-- [ ] **7.5** Dynamic reorder point = (forecast demand × lead time) + safety stock, recalculated nightly, with a manual override that sticks **[P8]**
-- [ ] **7.6** Projected stockout date + days-of-cover on every level **[D12]**
-- [ ] **7.7** Reorder surface v2 — sorted by revenue at risk, with the reasoning shown inline (velocity, lead time, cover, what's already on order) **[P8][D12] UI**
-- [ ] **7.8** ABC classification (by value) and XYZ (by demand variability), recomputed nightly, overridable **[P9] DB**
-- [ ] **7.9** Cycle-count schedules — recurring, ABC-driven cadence (A monthly, B quarterly, C annually), auto-generating counts and assigning them **[P10] DB**
-- [ ] **7.10** Overstock / dead-stock / slow-mover report with capital tied up and a suggested action **[P21]**
-- [ ] **7.11** Holding-cost estimate per variant and in total (configurable annual carrying rate) **[D12][P21]**
-- [ ] **7.12** Every planning number is explainable — the same provenance treatment as Phase 1, applied to derived numbers **[D1][D10]**
+- **Time is measured per walk per person, first confirmed line to last.** A walk assigned at 08:00
+  and worked at 11:00 took twenty minutes, and any other reading slanders the picker. Attribution is
+  per LINE, so a walk handed over halfway credits both people for what each actually did.
+- **The metric is called "confirmed by scan", not "accuracy".** We can measure how many lines a
+  trigger pull confirmed. We cannot measure what was picked wrong and never noticed, and a metric
+  named "accuracy" would claim we can.
+- **The shelf table is the one that pays.** A shelf that keeps coming up empty is a put-away
+  problem, a signage problem or a theft problem, and it will never appear in a per-person view.
+- **Pick scans are deliberately NOT replayed from the offline queue.** Receiving replays because the
+  pallet is still on the dock either way; a pick replayed hours later would confirm units off a
+  shelf somebody has since counted and corrected. A dropped pick scan costs one trigger pull.
+- **`inventory_scan_events` gained a `pack` context**, so a bench scan is recorded on the same terms
+  as every other trigger pull — same idempotency, same evidence trail.
+- 21 REST endpoints, 16 MCP tools (15 on inventory, plus `fulfill_package` on commerce, which is
+  there because it writes an order and inventory must not depend on `@sparx/crm`), five workbench
+  surfaces, and two new jobs in warehouse mode.
 
-### Phase 8 — Supplier performance and procurement discipline ⬜
+**Outstanding, stated rather than hidden:**
 
-- [ ] **8.1** Supplier scorecard — on-time delivery %, fill rate, lead-time actual vs promised, price variance vs PO, damage rate on receipt, rolling 12 months **[P11][D9] DB**
-- [ ] **8.2** Scorecard panel on supplier detail + a supplier league table **[P11] UI**
-- [ ] **8.3** Late-PO detection and alerting (`inventory.purchase_order.late`) against expected arrival **[D9]**
-- [ ] **8.4** Supplier price breaks / quantity tiers on `SupplierVariant` **[P11] DB**
-- [ ] **8.5** PO approval workflow — thresholds by amount, approver roles, an approval queue, and an audit trail **[P12] DB**
-- [ ] **8.6** ASN / advance ship notice — supplier submits (file or API) what shipped and when; receiving pre-fills from it; discrepancies flagged **[P17] DB**
-- [ ] **8.7** Supplier returns / RTV — send stock back with a credit expectation, tracked to resolution **[P11] DB**
-- [ ] **8.8** Three-way match: PO ↔ receipt ↔ supplier bill, with the variance surfaced before the bill is paid **[P16][C8]**
-- [ ] **8.9** Reorder math consumes measured lead times instead of the supplier's stated one **[D9][P8]**
+- **A wave does not consolidate identical lines on screen yet.** The route groups by shelf, which is
+  where the walking saving is, but nine orders wanting the same widget still read as nine rows at
+  that shelf rather than "take nine, sort into totes 1–9". The data supports it; the display does
+  not do it yet.
+- **Nothing re-picks a shorted line automatically.** The units are back on hand and held for the
+  order, and the count settles whether they exist — but putting them on a NEW walk is a person
+  generating one. Automatic re-allocation belongs with backorders (Phase 9), which is where the
+  "what do we do when it genuinely is not there" question actually gets answered.
+
+### Phase 5 — True cost ✅
+
+**The gap in one sentence.** A unit's cost basis was whatever the supplier invoiced for the goods —
+so the freight, the duty, the broker's fee and the insurance, all of it real money spent to acquire
+that stock, reached no margin figure anywhere on the platform. On imported goods that is routinely
+15–30%, which is the whole margin on a lot of lines. A business pricing off that number is selling
+its thinnest lines at a loss and cannot see it.
+
+- [x] **5.1** `PurchaseOrderCharge` / `GoodsReceiptCharge` — freight, duty, insurance, broker, handling, other; per-PO (the estimate, apportioned across deliveries by value share) and per-receipt (the actual, all of it landing there) **[P4] DB**
+- [x] **5.2** Landed-cost allocation across receipt lines by value / quantity / weight / manual, feeding the cost basis on post. Largest-remainder rounding, so the per-line amounts sum to the charge EXACTLY; a basis that cannot divide (weight, against a catalogue with no weights) falls back to units and SAYS it fell back **[P4]**
+- [x] **5.3** Landed-cost breakdown on the receipt surface: invoice cost → allocated charges → landed unit cost, per line, with each charge named and the basis it was spread on **[P4] UI**
+- [x] **5.4** `InventoryCostLayer` + `InventoryCostConsumption` — layers written on inbound, consumed oldest-first on outbound, with the consumed layers recorded per movement **[P5] DB**
+- [x] **5.5** Per-tenant (and per-variant override) costing method: `moving_average` | `fifo` | `standard`, on its own workbench surface that explains each by what it is FOR **[P5] DB**
+- [x] **5.6** Standard cost + purchase price variance report — planned against actual LANDED, per variant and supplier, with units that have no standard reported rather than counted as zero variance **[P5][P21]**
+- [x] **5.7** FX capture at receipt — the delivery's currency, the rate on the day it landed, and the base-currency landed cost stored alongside **[P15] DB**
+- [x] **5.8** As-of-date valuation — the two append-only ledgers walked back to any past instant, so the year-end figure works for a date nobody thought to snapshot **[P21]**
+- [x] **5.9** COGS movement attribution: `cost_consumed_cents` on every movement that takes stock out, so margin is a subtraction rather than an estimate **[P5]**
+
+**Also landed with it** (not on the original list, needed to make the above true):
+
+- **The cost ledger is kept whatever method the tenant chose.** Layers are written and consumed
+  regardless of `moving_average` / `fifo` / `standard`; the method decides which number gets STAMPED
+  on the movement, not whether the history exists. A business switching to FIFO next year needs the
+  layers to already be there, and a layer ledger only some tenants keep is one nobody can trust.
+- **An OPENING layer per stocked (variant, location), written by the migration** at the moving
+  average the platform was already reporting. Not a new number — the one valuation, margin and
+  shrinkage have all been using — so `Σ(open layers) == on_hand` is true from day one and FIFO works
+  immediately instead of after a year of sell-through.
+- **`cost_consumed_cents` is SIGNED.** A reversal credits the cost of goods sold, so summing the
+  column over a period gives period COGS with no special cases and a cancelled order nets to zero.
+- **A cancelled order gives the units back to the layers it took them from**, at what they cost then
+  — recorded as a negative consumption rather than by editing the original row. Putting them on a
+  fresh layer at today's average would re-cost the same goods and silently reorder FIFO for
+  everything behind them.
+- **A charge arriving late is the normal case, and it revalues.** The forwarder bills a fortnight
+  after the pallet; adding that charge replays the whole order's allocation from a zeroed base
+  (which makes it idempotent), corrects the layers, and nudges the moving average by the value
+  change across the units STILL ON HAND. It does not restate what already sold — that cost was
+  recorded when the goods left, and editing it is what an accountant means by "the books moved".
+- **`cogs_report` by reason.** Goods sold is cost of sales; goods lost is a problem. Adding them
+  together hides the second inside the first, so the report splits them and the surface colours
+  them differently.
+- 15 REST endpoints, 8 MCP tools, two new workbench surfaces (cost vs plan; how stock is valued),
+  the landed-cost breakdown and charge entry on the receipt surface, expected charges on the
+  purchase order, and cost-of-goods + as-of valuation added to Reports.
+- **Changing the costing METHOD is deliberately absent from MCP.** Switching from moving average to
+  FIFO changes how every future figure is computed and is a decision a business makes with its
+  accountant, not one an agent makes on a hunch. Recording a freight bill IS there — it is a
+  bookkeeping entry, and a fully reversible one.
+
+**Deviations from the plan above, stated rather than quietly taken:**
+
+- **The schema file is `56-inventory-costing.prisma`, not `45-`.** §7's table named 45 before the
+  inventory files settled into their own run (51-integrity → 55-picking); 56 continues it.
+- **`inventory_movements` gained `cost_consumed_cents` but NOT `cost_layer_ids`.** An array column
+  cannot carry how many units came off each layer, which is exactly what the breakdown needs, so
+  the per-layer detail is a child table (`inventory_cost_consumptions`) instead.
+- **A purchase-order charge cannot use the `manual` basis.** It is apportioned across deliveries
+  that do not exist yet, so there are no lines to name amounts against. Manual is receipt-only, and
+  a CHECK constraint pins it rather than a comment.
+- **Standard cost reuses `inventory_levels.unit_cost_cents` / `commerce_product_variants.cost_cents`**
+  rather than adding a column. Both already mean "the planned/manually-set cost"; a third field
+  meaning the same thing is how two of them start to disagree.
+
+**Outstanding, stated rather than hidden:**
+
+- **Nothing writes an accounting journal yet.** The figures are exact and the reasons are separated,
+  but posting them into QuickBooks or Xero is Phase 10 (10.7). Until then a bookkeeper reads these
+  reports and types.
+- **A revaluation nudges the moving average but writes no movement.** It cannot — a freight invoice
+  moves no stock — so the correction is visible in the level and the layers but does not appear in
+  the movement feed. When the audit trail for cost-only changes is wanted (it will be, alongside the
+  GL work), it wants its own record rather than a fake movement.
+- **Per-variant costing overrides are settable via the API but have no UI.** The tenant-level choice
+  has a surface; the per-variant escape hatch is a one-field POST, and it belongs on the product's
+  own cost panel rather than on a costing screen nobody would think to look at for it.
+
+### Phase 6 — Units of measure, kits, and assembly ✅
+
+**The gap in one sentence, twice.** A distributor buys in cases of twelve, keeps singles on the
+shelf and sells pairs — and the platform knew one number per variant and no unit at all, so a buyer
+ordering four cases typed 48 and hoped and a counter facing a shelf of sealed cartons had to decide
+for themselves what "quantity" meant. And a manufacturer takes components off a shelf and puts a
+finished thing on it — an event with no representation anywhere, because a `Bundle` decrements three
+stock numbers at checkout without anything ever being _built_.
+
+- [x] **6.1** `UnitOfMeasure` + per-variant conversions: a stocking UoM on the variant (the base), any number of conversions, a purchase default and a sales default, with integer-safe factors **[P6] DB**
+- [x] **6.2** UoM applied through PO lines, receipts, counts, transfers and order items; the ledger always stores base units, and the conversion happens at ONE seam (`resolveLineUom`) **[P6]**
+- [x] **6.3** UoM display with the base-unit equivalent always alongside — `describeQuantity` is pure, shared, and never drops the singles figure **[P6] UI**
+- [x] **6.4** `BillOfMaterials` + `BomComponent` — components, quantity per BATCH, scrap %, labour cost, versioned with exactly one active recipe per output **[P7] DB**
+- [x] **6.5** `AssemblyOrder` — planned → released → completed; releasing HOLDS the components, completing consumes them and produces finished stock through the ledger, and the cost rolls up from what actually left plus labour **[P7] DB**
+- [x] **6.6** Disassembly — the same two reasons with the arrows reversed, with the finished unit's cost split back across its components in proportion to what each is worth **[P7]**
+- [x] **6.7** Buildable quantity — "you can make 14, you run out of hinges", measured against what is FREE rather than raw on-hand **[P7] UI**
+- [x] **6.8** Bundle availability derived from component availability, with optional and sell-past-zero components correctly not gating **[P7]**
+- [x] **6.9** Surfaces: units, recipes list + editor, runs list + detail **[P7] UI**
+
+**Also landed with it** (not on the original list, needed to make the above true):
+
+- **Factors are integers, and the refusal is the feature.** A fractional factor makes on-hand
+  fractional, and an inventory system that can hold 4.999999 of something cannot reconcile. Goods
+  that genuinely divide get a smaller BASE unit: stock grams, sell a 500 g bag as a unit of 500.
+- **A document line records the unit as TEXT plus the factor, with no foreign key.** An FK means
+  `SET NULL`, which erases what "4" meant from a historical purchase order the day somebody tidies
+  their unit list. The factor is snapshot for the same reason — a case becoming 24 next year must
+  not silently double what last year's orders were for.
+- **Component quantities are per BATCH, not per finished unit.** A run of 100 needing three litres
+  of glue records 3 against a batch of 100; per-unit would record 0.03 and the ledger stores
+  integers. Every label on the recipe editor says "per run" for the same reason.
+- **`assembly` is a first-class reservation holder**, alongside cart / order / subscription. A
+  scheduled build is as real a claim on stock as a placed order, and releasing a run is what stops
+  the last four hinges going out on this morning's order.
+- **The cost roll-up is exact because Phase 5 exists.** Each component's `assembly_out` is stamped
+  with `cost_consumed_cents` by the cost ledger, so a finished unit costs the sum of what genuinely
+  left the shelf plus labour — not a price-list estimate. The recipe's own estimate is shown beside
+  it and labelled as an estimate; the difference between the two is worth looking at.
+- **A part-completed run scales its parts down and rounds UP**, and cannot grow past what was
+  planned — a run that quietly grew is one nobody scheduled the parts for.
+- **A tenant is seeded a starter set of fourteen units on first read**, marked `isSystem` so
+  "we started you off with this" stays distinguishable from "we set this up". Deleting them all is
+  honoured rather than quietly undone on the next load.
+- 15 REST endpoints, 11 MCP tools, one new event (`inventory.assembly.completed`, provisioned in
+  Terraform), five workbench surfaces, and pack readings on the purchase-order and delivery panes.
+- **Editing a RECIPE is deliberately absent from MCP.** A bill of materials is a specification, and
+  an agent quietly changing what a product is made of is a different category of mistake from
+  mis-recording a count. Planning, releasing and completing a run are all there.
+
+**Deviations from the plan above, stated rather than quietly taken:**
+
+- **The schema files are `57-inventory-uom.prisma` and `58-inventory-assembly.prisma`**, not `46-`
+  and `47-` — §7's table predates the inventory files settling into their own 51→58 run.
+- **No `stocking_uom_id` / `purchase_uom` / `sales_uom` triple on the variant.** Only the stocking
+  unit is a column; purchase and sales defaults are FLAGS on the conversion rows, because they are
+  properties of the set ("usually bought by the case" is one fact) and two columns could disagree
+  with the conversions they point at. Partial unique indexes enforce one of each.
+- **The sell path carries the unit but the storefront cart does not offer one.** `order_items` has
+  the snapshot pair and every quantity in it is base units, so fulfilment, picking, packing and the
+  ledger all keep counting one thing. Letting a shopper _choose_ "2 pairs" is a storefront cart and
+  checkout change, and it belongs with that surface rather than in an inventory phase.
+
+**Outstanding, stated rather than hidden:**
+
+- **Multi-level recipes do not explode.** A recipe whose component is itself made to a recipe
+  consumes that component as stock; it does not automatically build it. That is the right default
+  (you usually want to see the sub-assembly on a shelf), but "build what you need to build this"
+  is a real feature and is not here.
+- **Nothing schedules a run against a due date.** `plannedFor` is recorded and shown; capacity,
+  sequencing and "what must start today" are planning questions and belong with Phase 7.
+- **A bundle's swappable component is counted on its default variant only.** Working out that the
+  shopper could pick a different candle would mean resolving the whole swap set and being wrong the
+  moment the storefront offers a different one, so the figure is honest about being the default
+  configuration's.
+
+### Phase 7 — Planning intelligence ✅
+
+**The gap in one sentence.** A reorder point was an integer somebody typed once: it knew nothing
+about how fast the thing sells, nothing about how long the supplier really takes (as opposed to what
+they promised), and nothing about how erratic either of those is — so it was wrong in both
+directions at once, too high on the steady lines and too low on the spiky ones. That single missing
+number is why 37.5% of operators report overstock and 33.5% report stockouts _at the same time_.
+
+**The architectural decision that shaped all of it — the consent rule.** The computed figure is
+written to a NEW column, `inventory_levels.dynamic_reorder_point`, BESIDE the existing
+`reorder_point` rather than on top of it. The operative trigger — what the reorder engine and
+`inventory.low` actually read — is overwritten only where the level is explicitly auto-managed,
+which is false by default and false for every level that already has a hand-typed point. A buyer who
+typed 40 last spring and finds the system quietly buying at 87 has learned that the platform edits
+their settings behind their back, and no feature earns that back. So: show the difference, explain
+it, let them adopt it. `autoApplyReorderPoints` flips the default only for levels that have never had
+a point at all, where there is nothing to overwrite and the alternative is no warning whatsoever.
+
+**Two places on purpose, same shape as Phase 5.** Four denormalised columns on `inventory_levels`
+are the FAST READ (sort a stock list by class or cover without joining anything); the four planning
+tables are the EXPLANATION (every input, its window, its sample size). Both are written by the same
+nightly pass in one transaction per level, so they cannot disagree — exactly the relationship the
+moving average has with its cost layers.
+
+**And the thing that is deliberately NOT materialised.** The rate is measured nightly because it
+barely moves; the quantity moves every time somebody sells something. Days of cover is one divided
+by the other, so storing it would produce a screen confidently reporting eleven days of cover on a
+shelf that emptied at lunchtime — the exact "the numbers are wrong" complaint this plan exists to
+answer. Cover, projected stockout and revenue at risk are computed LIVE from the stored rate against
+the live quantity, every time.
+
+- [x] **7.1** Demand velocity — trailing 7/30/90-day units-per-day per `(variant, warehouse)`, the standard deviation of DAILY demand (including the days nothing sold, so a line that sold everything in one afternoon cannot read as steady), the coefficient of variation, and how much history any of it stands on. Materialised nightly. **Demand is `sale` AND `assembly_out`** — a component consumed by a production run is demand in every sense that matters, and a WMS-lite manufacturer with no commerce module would otherwise forecast zero for every part they use **[P8] DB** — `services/demand.ts`
+- [x] **7.2** Seasonality index — same-period-last-year against that year's average, NULL (never a defaulted 1.0) below a year of history, clamped to ×0.2–×5 so one freak order cannot thirty-times a reorder point **[P8]**
+- [x] **7.3** Lead-time actuals — measured order-SENT to first-receipt, at two grains (supplier overall, and supplier × variant), with the spread, the sample count, the promise captured alongside, and the on-time rate. Two partial unique indexes rather than one over a nullable column **[P8][D9]** — `services/lead-times.ts`
+- [x] **7.4** Safety stock = `z × √(LT·σ_d² + d²·σ_LT²)`. **Both** variability terms, not just demand — a supplier whose lead time swings 3–21 days puts far more stock at risk than one whose demand wobbles, and σ_LT is the only term that says so, which matters because supplier reliability is the category's #1 complaint **[P8]**
+- [x] **7.5** Dynamic reorder point = `d × LT × seasonality + safety stock`, recomputed nightly, with the consent rule above and a one-click "adopt today's figure" that is deliberately NOT the same act as handing the level to the nightly maths **[P8]**
+- [x] **7.6** Projected stockout date + days-of-cover on every level, computed live rather than stamped **[D12]**
+- [x] **7.7** Reorder worklist v2 — default sort is now **money at risk**, with the measured lead time and its provenance on the row, and a plain-English sentence explaining the whole calculation inline. Clicking a row opens the calculation, not the stock item **[P8][D12] UI**
+- [x] **7.8** ABC (cumulative usage-VALUE cut at 80/95) and XYZ (coefficient of variation), recomputed nightly, with a sticky override that survives a re-rank and keeps the measured class beside it, plus a one-sentence instruction for each of the nine pairs **[P9] DB** — `services/classification.ts`
+- [x] **7.9** Cycle-count schedules — ABC-driven cadence, generating real counts (blind by default), taking the least-recently-counted slice with never-counted first, refusing to stack a second count on an unfinished one, and advancing `nextRunAt` from the date that WAS due so a paused schedule resumes rather than firing six overdue counts **[P10] DB** — `services/count-schedules.ts`
+- [x] **7.10** Slow-mover report in three kinds that need different answers — **dead** (all of it is excess; the question is disposal), **overstock** (it sells, there is just far more cover than the horizon; the answer is to stop buying), **slow** (worth an eye) — each with the capital tied up and what to do **[P21]**
+- [x] **7.11** Holding cost per item and in total, at a configurable annual carrying rate defaulting to the category's 25%, broken down by ABC class, with the most expensive things to KEEP listed separately from the most valuable things to own **[D12][P21]**
+- [x] **7.12** Phase 1's provenance treatment applied to derived numbers: every input with its source and an honest confidence, both formulas with this item's numbers substituted in, and a verdict that is the WEAKEST input rather than an average — plus what would most improve it **[D1][D10]** — `services/planning-provenance.ts`
+
+**Also landed with it** (not on the original list, needed to make the above true):
+
+- **`inventory-planning-sweep` k8s CronJob at 03:30 UTC** — five stages in a load-bearing order
+  (lead times → demand → classify → reorder points → generate due counts), each collecting its own
+  failure so one bad stage does not skip the ones after it. Deliberately BEFORE the integrity sweep
+  at 04:30 and the valuation snapshot at 05:30: a night's numbers are planned, then checked, then
+  priced, in that order.
+- **`InventoryPlanningPolicy`** — a fifth table beyond the four §7 named, because 7.11's "configurable
+  annual carrying rate" and 7.4's service level had nowhere to live. Same contract as `CostingPolicy`:
+  absent means the defaults, so a tenant who never opens the screen still gets a working forecast.
+- **Twelve MCP tools** (`get_stockout_risk`, `explain_reorder_point`, `get_demand_forecast`,
+  `get_abc_classification`, `get_slow_moving_stock`, `get_holding_cost`, `get_supplier_lead_times`,
+  `get_planning_policy`, `list_count_schedules`, `apply_computed_reorder_point`,
+  `set_stock_classification`, `recompute_planning`) **[D10]**. Turning ON automatic reorder-point
+  management is deliberately absent from the tool set: it hands the nightly maths permission to
+  rewrite an operational trigger every night, and the entire value of that decision is that a person
+  made it knowingly.
+- `inventory.classification.changed` — ONE event per sweep with the tallies, never one per item: a
+  re-ranking after a busy quarter moves hundreds, and a few hundred notifications say nothing
+  anybody can act on individually.
+- Three workbench surfaces — **Planning** (five tabs: at risk · what matters · not selling · cost to
+  keep · settings), **Why this number**, and **Counting schedules** + its editor.
+- `pnpm test`: 45 pure assertions on the arithmetic every planning figure is made of (service-level
+  z, both variability terms, the ABC cut including the item that CROSSES a threshold, XYZ against a
+  null CV, cover with no demand, revenue at risk with stock inbound, seasonality below a year of
+  history), plus **21 DB-backed** covering the steady-vs-spiky distinction, `assembly_out` as demand,
+  `transfer_out` NOT as demand, measured-vs-promised lead time, the consent rule in both directions,
+  a sticky override through a re-rank, schedule generation refusing to stack behind an open count,
+  a six-weeks-overdue schedule resuming on a sane date, and the weakest-input verdict.
+
+**Two real defects the integration suite caught on first run**, both worth the pattern:
+
+1. **`audit_logs.entity_id` is a UUID column, so a composite `variant:warehouse` key fails at
+   INSERT.** Four audit writes in the new services keyed on the pair, and every one of them threw
+   `Error creating UUID … found ':' at 37` the moment it ran. The house convention already existed —
+   `setReorderPolicy` keys on the variant and carries the warehouse in the diff — and typecheck
+   cannot see any of this, because the field is a `string`.
+2. **A duplicate route for one surface.** `inventory.packing.bench` had TWO entries in
+   `packages/links/src/routes.ts` (bare, and with an `:orderId`), which `check:routes` passes
+   happily — it only checks that every surface HAS an address — while the links package's own
+   `routes.test.ts` fails on it. Fixed by making the bare station canonical and the order-scoped path
+   an alias. Shipped unnoticed in Phase 4: **`check:routes` is not a substitute for `pnpm test`.**
+
+**Deviations from the plan as written:**
+
+- **The schema file is `59-inventory-planning.prisma`, not `48-`.** §7's numbering was aspirational
+  and Phases 5 and 6 already landed at 56/57/58; a 48 would sort into the middle of the CRM files
+  and mean nothing. The migration is `20270227000000_inventory_planning`.
+- **Lead-time measurement lands here rather than in Phase 8.** §7.3 asked for it and §7.9 needs it,
+  and the on-time rate falls out of the same pass for free. Phase 8's scorecard reads
+  `inventory_supplier_lead_times` rather than measuring it again.
+- **No economic order quantity.** EOQ needs a per-order cost figure no small business has to hand,
+  and its answer is wildly sensitive to that guess — a precise-looking number built on an invented
+  one. The suggested quantity tops up to the point plus a review period instead, which is
+  explainable in a sentence.
+
+**Outstanding, stated rather than hidden:**
+
+- **The seasonality index conflates growth with season until two years of history exist.** It
+  compares the same period last year against the trailing year's average, so a business that has
+  tripled reads every month as "hot". The ×5 clamp bounds the damage and the surface reports the
+  index rather than hiding it, but the honest fix needs the year-before-last as the baseline.
+- **Seasonality is applied as one forward 30-day window, uniformly.** The multiplier that should
+  really apply is the one covering the lead-time window ahead, which differs per level; a fixed
+  window is close enough for a first pass and wrong for a 90-day import lead time.
+- **A cycle-count schedule's zone filter reads the bin ledger, so it only narrows for tenants using
+  bins.** A zone on a location with no bins matches nothing, which is correct but reads as an empty
+  schedule rather than as a misconfiguration.
+- **Nothing consumes `inventory.classification.changed` yet.** The event fires and the count
+  schedules already read the fresh class on their next run; an automation trigger on it (tell me
+  when something becomes an A) is a Phase 11 custom-field/automation item.
+
+#### What the browser walk-through found (2026-08-11)
+
+Phase 7 passed typecheck, lint and 209 tests and was still wrong in five places. Every one of them
+needed a person to look at a screen; none was findable from a green suite. The common thread in the
+first three is one fault — **an unmeasured thing presented as a measurement** — which is precisely
+what the phase claimed to have solved and had only solved for seasonality.
+
+1. **XYZ called everything "Erratic".** A coefficient of variation is a finite number for any
+   history at all: two sales in thirty days yields ≈4.0, comfortably past the Z threshold. So a young
+   catalogue reported eighteen lines of "Erratic", six of which had never sold a unit, each advised
+   to be ordered little and often and counted monthly. `classifyXyz` now takes the evidence
+   (`MIN_DEMAND_DAYS_FOR_XYZ = 6`, `MIN_HISTORY_DAYS_FOR_XYZ = 28`) and returns **null** below it;
+   `inventory_classifications.xyz_class` became nullable (migration
+   `20270301000000_planning_xyz_unknown`) and the screen says "Not enough history". Three extra
+   advice sentences cover the unknown-steadiness pairs, and the provenance surface no longer prints
+   "(very erratic)" beside a spread it cannot justify.
+2. **An unknown cost price rendered as `$0.00`.** A hundred notebooks nobody had costed showed as
+   worth nothing, and the money totals silently excluded them. Both money reports now carry
+   `costKnown` per row and `itemsWithoutCost` per report: the cell reads "No cost set" and the header
+   says by how much the total understates.
+3. **Empty lists claimed everything was fine before any pass had run.** "Nothing is at risk — this is
+   the good version of an empty list" appeared on a tenant nobody had measured. Every planning
+   surface now distinguishes measured-and-clear from never-looked-at.
+4. **The "set reorder levels automatically" switch was a permanent no-op.** The first sweep creates a
+   policy row for every level it plans and — under a two-state `is_auto_managed` — stamped `false`,
+   because the switch is off by default. The "decided once, never re-litigated" rule then read that
+   default as a decision forever, so turning the switch on later did nothing at all, silently. The
+   flag is now **three-state** with an `auto_managed_source` (migration
+   `20270302000000_reorder_auto_managed_undecided`): NULL means nobody decided and the switch
+   governs; `sweep` means automation adopted it and the switch still governs; `person` is final in
+   both directions. Switching off RELEASES a sweep-adopted level and removes the number automation
+   wrote — leaving it behind would be indistinguishable from a hand-typed figure and the level could
+   never be adopted again.
+5. **A panel with no error branch reported a broken server as a finding.** A 500 on the slow-mover
+   report fell through to `rows = []`, and "Not selling" announced "Nothing has been checked yet"
+   with /usr/bin/bash.00 across the board — while api-rest was simply mid-restart. Same fault as the others,
+   caught live. `isError` now precedes the empty state on all three report panels, and its copy talks
+   about the connection rather than about the stock.
+6. **The switch adopted levels it had never seen move.** Three of the four it took on had
+   `history_days = 0` and were handed a reorder point of 0 — not "you need none" but "we have never
+   seen this item", and it made them look configured. Adoption now also requires history to compute
+   from; a level becomes eligible the first sweep after its first movement.
+7. **UI faults that no test can see:** a second tab strip three pixels under the pane strip (Planning
+   was one surface with five tabs; it is now five dockable surfaces sharing `planning-shell.tsx`); a
+   second toolbar of filters floating above the table; the settings pane hand-rolling cards instead
+   of `FormSection` + `Field` + explicit Save, left-hugging with a dead right gutter; the same SKU
+   appearing twice with nothing naming its location; the same advice sentence repeated down seven
+   consecutive rows; `0.7105 a day` and `3.3118 a day either way` printed to four decimals; and a
+   freshly created count schedule announcing "Next run: 7 seconds ago".
+
+**Two defects in earlier phases surfaced on the way past.** `GET /v1/inventory/pick-lists` and
+`GET /v1/inventory/packages` both sent `ok({items,total})` where every client reads `paged(items)`,
+so `rows.map is not a function` — the Walks surface had never rendered since Phase 4. And React
+rejected `toast.add` inside a mutation's `onSuccess` (`flushSync` inside a commit); `lib/defer.ts`
+gained `afterCommit` alongside its `afterMenuClose` / `afterPaneChange` siblings.
+
+### Phase 8 — Supplier performance and procurement discipline ✅
+
+- [x] **8.1** Supplier scorecard — on-time delivery %, fill rate, lead-time actual vs promised, price variance vs PO, damage rate on receipt, rolling 12 months **[P11][D9] DB**
+- [x] **8.2** Scorecard panel on supplier detail + a supplier league table **[P11] UI**
+- [x] **8.3** Late-PO detection and alerting (`inventory.purchase_order.late`) against expected arrival **[D9]**
+- [x] **8.4** Supplier price breaks / quantity tiers on `SupplierVariant` **[P11] DB**
+- [x] **8.5** PO approval workflow — thresholds by amount, approver roles, an approval queue, and an audit trail **[P12] DB**
+- [x] **8.6** ASN / advance ship notice — supplier submits (file or API) what shipped and when; receiving pre-fills from it; discrepancies flagged **[P17] DB**
+- [x] **8.7** Supplier returns / RTV — send stock back with a credit expectation, tracked to resolution **[P11] DB**
+- [x] **8.8** Three-way match: PO ↔ receipt ↔ supplier bill, with the variance surfaced before the bill is paid **[P16][C8]**
+- [x] **8.9** Reorder math consumes measured lead times instead of the supplier's stated one **[D9][P8]** — shipped in Phase 7.3
+
+#### What Phase 8 actually built
+
+Ten tables ([60-inventory-supplier-perf.prisma](../packages/db/prisma/schema/60-inventory-supplier-perf.prisma),
+migration `20270304000000_inventory_supplier_performance`), one column
+(`20270305000000_purchase_order_late_alert`), one new ledger reason, one new PO
+status, one new event, five API route files and eleven workbench surfaces.
+
+The whole phase is about the party at the OTHER end of a purchase order. Every
+figure it reports was already in the database — a PO records what was promised, a
+receipt records what turned up — and nobody had ever added the two together.
+
+**One rule governs every measured column, and it is Phase 7's lesson applied
+before the fact rather than after it:** a figure nobody could measure is NULL,
+and its sample count sits beside it. A scorecard is where that matters most,
+because its output is a judgement about somebody you have to keep buying from.
+"0% on time" that actually means "they never quoted a date" is a defensible-
+looking number that ends a relationship, and no test can catch it because the
+arithmetic is fine. So `onTimeRate`, `fillRate`, `priceVariancePct` and
+`damageRate` are each nullable on their own terms, and `score` is NULL below two
+measurable components with `scoredComponents` travelling beside it.
+
+**Decisions worth recording:**
+
+- **The scorecard READS `inventory_supplier_lead_times` rather than measuring
+  lead time again.** Two independent measurements of one thing is how a scorecard
+  starts disagreeing with the screen it links to.
+- **Fill rate counts lines on FINISHED orders only.** A line on an open order is
+  in transit, not short; counting it would score every supplier zero the day their
+  order was raised.
+- **Price variance compares same-currency deliveries only**, weighted by value. A
+  variance computed across two currencies at a rate nobody recorded is a
+  fabricated number, and a 40% overcharge on one washer must not outweigh a 1%
+  drift across the year's engines.
+- **Damage is read from the ledger's `damage` movements against a receipt**, so
+  the phase adds no second record of a fact receiving already writes.
+- **A price break is a FLOOR, not a range**, and the resolver never substitutes a
+  cheaper rung the order has not reached — a supplier is free to publish a more
+  expensive pallet price, and quoting the tier below it would promise a price they
+  will not honour. The arithmetic is pure (`resolvePurchasePrice`) so the price a
+  buyer is SHOWN and the price the order RECORDS cannot diverge.
+- **`pending_approval` had to be its own PO status.** Left a draft, a held order
+  vanishes from the buyer's "sent" list and gets raised twice; called submitted,
+  stock can be received against it, which defeats the control entirely. Nothing is
+  stamped as ordered until somebody signs — approving is what places the order.
+- **Approval precedence is STATED, not inherited from query order.** Unlike the
+  B2B rule (docs/10 §12), these rules carry an approver, so two matching rules can
+  disagree about who signs: highest cleared threshold, then sort order, then age.
+- **A rejection returns the order to DRAFT, not cancelled** — "change this and ask
+  again" — and mints a new approval row on resubmission so the trail reads as the
+  sequence of decisions it was.
+- **The late-order alert fires ONCE** (`late_alerted_at`), and rescheduling the
+  expected arrival clears it. A nightly re-fire for an order six weeks overdue is
+  how alerting gets muted. Rescheduling also had to be built: `updatePurchaseOrder`
+  is draft-only, so until now there was no way at all to record "they rang to say
+  it will be a fortnight".
+- **An order with no due date is UNDATED, not on time.** The count is reported at
+  the top of the overdue list rather than omitted, so an empty list is not read as
+  a punctual supply chain.
+- **An ASN moves no stock and stores no discrepancy.** The gap is the difference
+  between the notice and the receipt, both already recorded; a third copy goes
+  stale the first time a receipt is corrected. `discrepancyUnits` is NULL until a
+  delivery is actually booked — printing 0 before that would read as "matched",
+  which is a claim about an unopened pallet. Receiving pre-fill is a READ that
+  returns a suggestion, never a write, and it does NOT clamp the supplier's claim
+  to what is outstanding, because that is precisely the case the notice exists to
+  expose.
+- **A return moves stock on SEND, not on create**, and `creditReceivedCents` stays
+  NULL until somebody records a credit note — zero would mean "they refused",
+  which is a different conversation from "we are still waiting". A line the
+  service cannot cost is REFUSED rather than recorded at £0, because a return
+  worth nothing moves the stock and silently writes the money off. Stock going
+  back gets its own ledger reason (`return_to_supplier`) so shrinkage reports do
+  not libel the warehouse.
+- **The three-way match compares billed against RECEIVED, not against ordered.** A
+  supplier who ships eight of ten and invoices for ten has made no ordering error;
+  they have billed for goods that are not on your shelf, and only the receipt
+  knows. Approving a bill is REFUSED while a variance is unexplained — that
+  refusal is the feature, and the way past it is accepting the difference with a
+  written reason recorded against a person.
+- **`match.ok` is `boolean | null`.** A carriage-only bill tied to no order has not
+  PASSED the check; the check never ran. A rogue line on a bill that IS tied to an
+  order still gets checked and flagged.
+- **This is not bookkeeping and never becomes one** (docs/148 §1). The bill exists
+  so the match can exist. And docs/148's locked decision #2 holds: a supplier bill
+  for stock never becomes an expense-ledger row — the value went into inventory on
+  receipt and becomes cost when the goods sell.
+
+**Where it runs.** The scorecard sweep and the late-order sweep are the last two
+stages of the existing nightly planning pass rather than a CronJob of their own:
+both are nightly, per-tenant, inventory-wide passes over the same tables, and a
+second scheduler would be another thing to keep alive for no gain. They are last
+so a failure in either cannot cost a business its stock numbers.
+
+**Outstanding, stated rather than hidden:**
+
+- **An approval rule routes to a ROLE, not to a named person, in the UI.** The
+  schema and the service both carry `requiredApproverUserId` and enforce it, but
+  the form has no user picker until the team screens land — so today a rule says
+  "any administrator" rather than "Sam".
+- **ASN ingestion is manual only.** The `source` column distinguishes
+  `manual | file | api` and the API accepts all three, but nothing parses an
+  EDI 856 or exposes a supplier-facing endpoint yet. A buyer types the notice in
+  from an email, which is still the difference between a visible discrepancy and
+  an invisible one.
+- **A bill's lines cannot be edited after entry** — a mis-keyed invoice is
+  cancelled and re-entered. That is deliberate for now (a bill is somebody else's
+  document) but it will annoy anyone who fat-fingers a quantity.
+- **`priceVarianceCents` is summed across a supplier's own currency only**, and the
+  scorecard reports one figure. A tenant buying from one supplier in two
+  currencies gets a variance covering the same-currency half, with the sample
+  count saying so.
 
 ### Phase 9 — Demand-side commitments ⬜
 
@@ -526,31 +979,34 @@ New tables, grouped by the schema file they belong in. All tenant-scoped, all RL
 prefixed `inventory_*`. Migration names must sort **after** the newest existing migration
 ([packages/db/CLAUDE.md](../packages/db/CLAUDE.md)).
 
-| Schema file (new)                   | Models                                                                                                    | Phase |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- | ----- |
-| `42-inventory-bins.prisma`          | `InventoryBin`, `InventoryBinLevel`                                                                       | 2     |
-| `43-inventory-barcodes.prisma`      | `VariantBarcode`                                                                                          | 3     |
-| `44-inventory-picking.prisma`       | `PickList`, `PickListLine`, `PackVerification`                                                            | 4     |
-| `45-inventory-costing.prisma`       | `InventoryCostLayer`, `PurchaseOrderCharge`, `GoodsReceiptCharge`, `CostingPolicy`                        | 5     |
-| `46-inventory-uom.prisma`           | `UnitOfMeasure`, `VariantUomConversion`                                                                   | 6     |
-| `47-inventory-assembly.prisma`      | `BillOfMaterials`, `BomComponent`, `AssemblyOrder`, `AssemblyOrderLine`                                   | 6     |
-| `48-inventory-planning.prisma`      | `DemandVelocity`, `InventoryClassification`, `CycleCountSchedule`, `ReorderPolicy`                        | 7     |
-| `49-inventory-supplier-perf.prisma` | `SupplierScorecard`, `SupplierPriceBreak`, `PurchaseOrderApproval`, `AdvanceShipNotice`, `SupplierReturn` | 8     |
-| `50-inventory-demand.prisma`        | `Backorder`, `BackorderAllocation`                                                                        | 9     |
-| `51-inventory-integrity.prisma`     | `ReconciliationRun`, `OversellIncident`                                                                   | 1     |
+| Schema file (new)                   | Models                                                                                                                            | Phase |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `42-inventory-bins.prisma`          | `InventoryBin`, `InventoryBinLevel`                                                                                               | 2     |
+| `43-inventory-barcodes.prisma`      | `VariantBarcode`                                                                                                                  | 3     |
+| `44-inventory-picking.prisma`       | `PickList`, `PickListLine`, `PackVerification`                                                                                    | 4     |
+| `56-inventory-costing.prisma` ✅    | `InventoryCostLayer`, `InventoryCostConsumption`, `PurchaseOrderCharge`, `GoodsReceiptCharge`, `CostingPolicy`                    | 5     |
+| `46-inventory-uom.prisma`           | `UnitOfMeasure`, `VariantUomConversion`                                                                                           | 6     |
+| `47-inventory-assembly.prisma`      | `BillOfMaterials`, `BomComponent`, `AssemblyOrder`, `AssemblyOrderLine`                                                           | 6     |
+| `59-inventory-planning.prisma` ✅   | `DemandVelocity`, `InventoryClassification`, `ReorderPolicy`, `SupplierLeadTime`, `CycleCountSchedule`, `InventoryPlanningPolicy` | 7     |
+| `49-inventory-supplier-perf.prisma` | `SupplierScorecard`, `SupplierPriceBreak`, `PurchaseOrderApproval`, `AdvanceShipNotice`, `SupplierReturn`                         | 8     |
+| `50-inventory-demand.prisma`        | `Backorder`, `BackorderAllocation`                                                                                                | 9     |
+| `51-inventory-integrity.prisma`     | `ReconciliationRun`, `OversellIncident`                                                                                           | 1     |
 
 Column additions to existing tables:
 
-| Table                           | Columns                                                                                 | Phase   |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ------- |
-| `inventory_movements`           | `bin_id`, `from_bin_id`, `to_bin_id`, `cost_consumed_cents`, `cost_layer_ids`           | 2, 5    |
-| `inventory_levels`              | `abc_class`, `xyz_class`, `forecast_daily_demand`, `dynamic_reorder_point`, `ownership` | 7, 9    |
-| `inventory_warehouses`          | `allocation_strategy`, `uses_bins`                                                      | 2, 4    |
-| `inventory_sources`             | `expected_interval_sec`, `staleness_policy`                                             | 1       |
-| `inventory_suppliers`           | `on_time_rate`, `fill_rate`, `measured_lead_time_days`, `scorecard_updated_at`          | 8       |
-| `inventory_purchase_orders`     | `approval_status`, `approved_by`, `approved_at`, `fx_rate`, `base_currency_total_cents` | 5, 8    |
-| `inventory_goods_receipt_lines` | `allocated_charge_cents`, `landed_unit_cost_cents`, `bin_id`                            | 2, 5    |
-| `commerce_product_variants`     | `default_bin_id`, `stocking_uom_id`, `costing_method`                                   | 2, 5, 6 |
+| Table                                                                                                                                 | Columns                                                                                                            | Phase   |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------- |
+| `inventory_movements`                                                                                                                 | `bin_id`, `from_bin_id`, `to_bin_id`, `cost_consumed_cents`                                                        | 2, 5    |
+| `inventory_levels`                                                                                                                    | `abc_class`, `xyz_class`, `forecast_daily_demand`, `dynamic_reorder_point`, `planning_computed_at`, `ownership`    | 7, 9    |
+| `inventory_counts`                                                                                                                    | `schedule_id` (SET NULL — deleting the standing instruction must never delete the evidence that counting happened) | 7       |
+| `inventory_warehouses`                                                                                                                | `allocation_strategy`, `uses_bins`                                                                                 | 2, 4    |
+| `inventory_sources`                                                                                                                   | `expected_interval_sec`, `staleness_policy`                                                                        | 1       |
+| `inventory_suppliers`                                                                                                                 | `on_time_rate`, `fill_rate`, `measured_lead_time_days`, `scorecard_updated_at`                                     | 8       |
+| `inventory_purchase_orders`                                                                                                           | `approval_status`, `approved_by`, `approved_at`, `fx_rate`, `base_currency_total_cents`                            | 5, 8    |
+| `inventory_goods_receipt_lines`                                                                                                       | `allocated_charge_cents`, `base_unit_cost_cents`, `landed_unit_cost_cents`, `bin_id`                               | 2, 5    |
+| `inventory_goods_receipts`                                                                                                            | `currency`, `base_currency`, `fx_rate`                                                                             | 5       |
+| `commerce_product_variants`                                                                                                           | `default_bin_id`, `stocking_uom_id`, `costing_method`                                                              | 2, 5, 6 |
+| `inventory_purchase_order_lines`, `inventory_goods_receipt_lines`, `inventory_count_lines`, `inventory_transfer_lines`, `order_items` | `uom_code`, `units_per_uom`                                                                                        | 6       |
 
 **Non-negotiable:** none of these introduce a second writer to `on_hand`. Bin levels, cost layers,
 and backorder allocations are all written inside the same transaction as their `applyMovement()` call.
@@ -583,25 +1039,33 @@ D10 are the explanatory ones: `explain_stock_level`, `get_stockout_risk`, `get_s
 
 ## 9. Workbench surfaces
 
-Existing: 21. New: 17 — **5 shipped** (provenance, integrity, shelves list + detail, shelf labels).
+Existing: 21. New: 25 — **21 shipped** (provenance, integrity, shelves list + detail, shelf labels,
+warehouse mode, product labels, walks list + detail, guided pick, pack bench, throughput, cost vs
+plan, how stock is valued, units, recipes list + editor, runs list + detail, planning, why this
+number, counting schedules list + editor). The existing reorder worklist was rebuilt in place
+rather than replaced — same surface, ordered by money and carrying its own reasoning.
 
-| Surface                  | Phase | Notes                                                                     |
-| ------------------------ | ----- | ------------------------------------------------------------------------- |
-| Provenance drawer        | 1     | ✅ shipped as a PANE, opened beside the number it explains                |
-| Integrity                | 1     | ✅ shipped — verdict, drifts, oversell log, feed freshness                |
-| Bins list / detail       | 2     | ✅ shipped — plus a printable label sheet (three sizes, QR)               |
-| Warehouse mode           | 3     | Full-screen scan shell hosting receive / count / pick / transfer / lookup |
-| Labels                   | 3     | Label design + print queue                                                |
-| Pick lists list / detail | 4     | Two surfaces                                                              |
-| Pack station             | 4     | Scan-to-verify packing                                                    |
-| BOM editor               | 6     |                                                                           |
-| Assemblies list / detail | 6     | Two surfaces                                                              |
-| Planning                 | 7     | Forecast, ABC/XYZ, dynamic reorder points                                 |
-| Count schedules          | 7     |                                                                           |
-| Supplier scorecards      | 8     | League table; the per-supplier panel lives on supplier detail             |
-| PO approvals             | 8     | Approval queue                                                            |
-| Backorders               | 9     |                                                                           |
-| Import                   | 11    | Mapping + dry-run diff                                                    |
+| Surface                  | Phase | Notes                                                                                          |
+| ------------------------ | ----- | ---------------------------------------------------------------------------------------------- |
+| Provenance drawer        | 1     | ✅ shipped as a PANE, opened beside the number it explains                                     |
+| Integrity                | 1     | ✅ shipped — verdict, drifts, oversell log, feed freshness                                     |
+| Bins list / detail       | 2     | ✅ shipped — plus a printable label sheet (three sizes, QR)                                    |
+| Warehouse mode           | 3     | ✅ shipped — six jobs, phone-first                                                             |
+| Labels                   | 3     | ✅ shipped — product labels + the document sticker                                             |
+| Pick lists list / detail | 4     | ✅ shipped as "Walks" — two surfaces plus the guided pick                                      |
+| Pack station             | 4     | ✅ shipped — scan-to-verify, one fulfillment per box                                           |
+| Cost vs plan             | 5     | ✅ shipped — planned against actual landed, per item and supplier                              |
+| How stock is valued      | 5     | ✅ shipped — the costing method, base currency, default charge spread                          |
+| Recipes list / editor    | 6     | ✅ shipped as "Recipes" — the editor carries buildable quantity                                |
+| Runs list / detail       | 6     | ✅ shipped as "Runs" — plan, hold the parts, mark it made                                      |
+| Units                    | 6     | ✅ shipped — the vocabulary; what a case CONTAINS is per item                                  |
+| Planning                 | 7     | ✅ shipped — five tabs: at risk · what matters · not selling · cost to keep · settings         |
+| Why this number          | 7     | ✅ shipped as a pane — every input, its confidence, and the formulas with your numbers in them |
+| Count schedules          | 7     | ✅ shipped — list + editor; "count now" on a row                                               |
+| Supplier scorecards      | 8     | League table; the per-supplier panel lives on supplier detail                                  |
+| PO approvals             | 8     | Approval queue                                                                                 |
+| Backorders               | 9     |                                                                                                |
+| Import                   | 11    | Mapping + dry-run diff                                                                         |
 
 **Design constraints** (binding — [DESIGN.md](../DESIGN.md), [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md)):
 inventory is amber `--color-module-inventory`; cross-module panels wear the other module's hue via a
@@ -613,32 +1077,34 @@ silicaui components only, no inline `style`, no eyebrows, no gradients or shadow
 
 ## 10. Report inventory (the full set when done)
 
-| Report                     | Status today | Phase |
-| -------------------------- | ------------ | ----- |
-| Valuation (current)        | ✅ live      | —     |
-| Valuation (as of a date)   | ❌           | 5     |
-| Turnover                   | ✅ live      | —     |
-| Aging                      | ✅ live      | —     |
-| Reorder analysis           | ✅ live      | —     |
-| Low stock                  | ✅ live      | —     |
-| Shrinkage                  | ✅ shipped   | 1     |
-| Reconciliation / drift     | ✅ shipped   | 1     |
-| Oversell incidents         | ✅ shipped   | 1     |
-| Pick/pack throughput       | ❌           | 4     |
-| Purchase price variance    | ❌           | 5     |
-| Landed cost breakdown      | ❌           | 5     |
-| Dead stock / slow movers   | ❌           | 7     |
-| Days of cover              | ❌           | 7     |
-| Holding cost               | ❌           | 7     |
-| ABC / XYZ distribution     | ❌           | 7     |
-| Supplier scorecard         | ❌           | 8     |
-| Expiring stock             | ❌           | 9     |
-| Sell-through               | ❌           | 10    |
-| GMROI                      | ❌           | 10    |
-| Fill rate                  | ❌           | 10    |
-| Stockout frequency         | ❌           | 10    |
-| Movement summary by reason | ❌           | 10    |
-| GL reconciliation          | ❌           | 10    |
+| Report                      | Status today | Phase |
+| --------------------------- | ------------ | ----- |
+| Valuation (current)         | ✅ live      | —     |
+| Valuation (as of a date)    | ✅ shipped   | 5     |
+| Turnover                    | ✅ live      | —     |
+| Aging                       | ✅ live      | —     |
+| Reorder analysis            | ✅ live      | —     |
+| Low stock                   | ✅ live      | —     |
+| Shrinkage                   | ✅ shipped   | 1     |
+| Reconciliation / drift      | ✅ shipped   | 1     |
+| Oversell incidents          | ✅ shipped   | 1     |
+| Pick/pack throughput        | ✅ shipped   | 4     |
+| Purchase price variance     | ✅ shipped   | 5     |
+| Landed cost breakdown       | ✅ shipped   | 5     |
+| Stockout risk (money)       | ✅ shipped   | 7     |
+| Measured supplier lead time | ✅ shipped   | 7     |
+| Dead stock / slow movers    | ✅ shipped   | 7     |
+| Days of cover               | ✅ shipped   | 7     |
+| Holding cost                | ✅ shipped   | 7     |
+| ABC / XYZ distribution      | ✅ shipped   | 7     |
+| Supplier scorecard          | ❌           | 8     |
+| Expiring stock              | ❌           | 9     |
+| Sell-through                | ❌           | 10    |
+| GMROI                       | ❌           | 10    |
+| Fill rate                   | ❌           | 10    |
+| Stockout frequency          | ❌           | 10    |
+| Movement summary by reason  | ❌           | 10    |
+| GL reconciliation           | ❌           | 10    |
 
 ---
 

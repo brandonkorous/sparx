@@ -21,6 +21,7 @@ import {
   UpdateTaxZoneInput,
 } from '@sparx/commerce-schemas';
 
+import { closeAndFulfillPackage, fulfillPackedShipment } from '../services/pack-fulfillment';
 import { returnService, shippingService, taxService } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
 
@@ -234,6 +235,39 @@ const issueReturnRefund: McpToolDefinition = {
   run: (ctx, input) => returnService.issueRefund(ctx, input),
 };
 
+// ── Warehouse hand-off (docs/146 Phase 4.6) ──────────────────────────────────
+//
+// Lives HERE rather than in @sparx/inventory's tool set because it writes an
+// OrderFulfillment, and inventory must not depend on @sparx/crm — the dependency
+// rule points consumers at inventory, never the reverse. Commerce sees both, and
+// this sits next to the rate quoting and label purchase it feeds.
+
+const fulfillPackage: McpToolDefinition = {
+  name: 'fulfill_package',
+  description:
+    'Hand a sealed box to shipping: creates the shipping record for exactly what is in that box, so a three-box order gets three tracking numbers rather than one. Set `close` to seal an open box first — the one button a pack bench needs — and `allowPartial` when the box deliberately does not complete the order. Idempotent: a box that already has a shipping record returns it rather than making a second one.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: z.object({
+    packageId: uuid(),
+    carrier: z.string().max(63).optional(),
+    service: z.string().max(63).optional(),
+    trackingNumber: z.string().max(127).optional(),
+    trackingUrl: z.string().url().max(2048).optional(),
+    markShipped: z
+      .boolean()
+      .optional()
+      .describe('Mark it shipped now, for a shop that hands boxes to a driver and buys no label.'),
+    notes: z.string().max(10_000).optional(),
+    close: z.boolean().optional(),
+    allowPartial: z.boolean().optional(),
+  }),
+  run: (ctx, input) => {
+    const i = input as { close?: boolean } & Parameters<typeof fulfillPackedShipment>[1];
+    return i.close ? closeAndFulfillPackage(ctx, i) : fulfillPackedShipment(ctx, i);
+  },
+};
+
 export const fulfillmentWriteTools: AnyMcpTool[] = [
   createShippingZone,
   updateShippingZone,
@@ -255,4 +289,5 @@ export const fulfillmentWriteTools: AnyMcpTool[] = [
   markReturnReceived,
   recordReturnInspection,
   issueReturnRefund,
+  fulfillPackage,
 ];

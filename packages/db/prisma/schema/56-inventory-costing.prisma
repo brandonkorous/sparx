@@ -1,0 +1,273 @@
+// True cost — what a unit ACTUALLY cost to get onto the shelf, and what it cost
+// when it left (docs/146 Phase 5).
+//
+// ── The gap this closes ──────────────────────────────────────────────────────
+//
+// Until now a unit's cost was whatever the supplier invoiced for the goods. The
+// freight, the duty, the customs broker and the insurance were real money spent
+// to acquire that stock and none of it reached the cost basis, so every margin
+// figure on the platform was optimistic by exactly the amount it cost to get the
+// pallet here. On imported goods that is routinely 15–30%. A business that prices
+// off that number is quietly selling at a loss on its thinnest lines and cannot
+// see it.
+//
+// ── Two ledgers, one truth ───────────────────────────────────────────────────
+//
+// `inventory_levels.avg_cost_cents` is a moving-average SUMMARY — one number per
+// (variant, location). It answers "what is a unit worth" cheaply and it is what
+// valuation has always read. It cannot answer "which units, bought when, at what
+// price" — and that is the question an accountant asks when they say FIFO.
+//
+// `inventory_cost_layers` answers it: one row per costed arrival, carrying how
+// many of those units are still on the shelf. Outbound movements consume layers
+// oldest-first and record what they took in `inventory_cost_consumptions`. The
+// layer ledger is maintained REGARDLESS of the tenant's chosen costing method —
+// a business that switches to FIFO next year needs the history to already exist,
+// and a layer ledger that only some tenants keep is a layer ledger nobody can
+// trust. The method decides which number gets STAMPED on the movement, not
+// whether the layers are kept.
+//
+// Non-negotiable, and the reason none of this is frightening: **nothing here
+// writes `on_hand`.** Layers are written and consumed inside the same
+// transaction as the `applyMovement()` call that moved the stock, from inside
+// that function. There is still exactly one writer.
+//
+// ── Charges are estimates that become actuals ────────────────────────────────
+//
+// Freight is quoted when the order is placed and invoiced weeks after it lands.
+// So charges live in two places on purpose: on the PURCHASE ORDER (the estimate,
+// apportioned across deliveries by the share of the order's value each one
+// brings) and on the RECEIPT (the actual, all of it landing on that delivery).
+// Adding a charge later REVALUES what is still on hand — see
+// `packages/inventory/src/services/landed-cost.ts`.
+
+// Money spent to acquire the goods on a purchase order, over and above the
+// goods themselves. Entered when the order is raised, so it is an ESTIMATE: the
+// freight quote, the expected duty. Apportioned across the deliveries that
+// order produces by the share of the order's value each delivery brings, with
+// `allocatedCents` tracking how much has landed so far and the final delivery
+// taking the rounding remainder.
+
+model PurchaseOrderCharge {
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String @map("tenant_id") @db.Uuid
+  purchaseOrderId String @map("purchase_order_id") @db.Uuid
+
+  // freight | duty | insurance | broker | handling | other. A CHECK pins it.
+  // Kept as a short vocabulary rather than free text because the landed-cost
+  // breakdown groups on it, and "Freight"/"freight "/"FREIGHT" would be three
+  // rows in that breakdown.
+  kind        String  @db.VarChar(20)
+  description String? @db.VarChar(255)
+
+  // In the PURCHASE ORDER's currency, minor units — the same currency the lines
+  // are in, because it is the same invoice.
+  amountCents Int @map("amount_cents")
+
+  // How this charge spreads across the receipt lines it lands on:
+  //   value     by each line's share of the delivery's goods value (the default —
+  //             duty and insurance genuinely scale with value)
+  //   quantity  by units (a per-carton handling fee)
+  //   weight    by weight (freight, when the goods differ wildly in density)
+  // `manual` is deliberately NOT permitted here: a purchase-order charge is
+  // apportioned across deliveries that do not exist yet, so there are no lines
+  // to name amounts against. Manual belongs on the receipt charge.
+  allocationBasis String @default("value") @map("allocation_basis") @db.VarChar(10)
+
+  // How much of `amountCents` has already been pushed onto a receipt. The last
+  // delivery on the order takes `amountCents − allocatedCents` so the pennies
+  // lost to rounding land somewhere rather than evaporating.
+  allocatedCents Int @default(0) @map("allocated_cents")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, purchaseOrderId])
+  @@map("inventory_purchase_order_charges")
+}
+
+// Money spent on THIS delivery — the actual freight invoice, the actual duty
+// paid at the border. All of it lands on this receipt's lines; none of it is
+// apportioned anywhere else.
+//
+// A charge added after the receipt was posted is normal (the forwarder's invoice
+// arrives a fortnight later), and adding one re-allocates the receipt and
+// revalues the units still on hand. It does NOT restate the cost of units
+// already sold — that cost was recorded when they left, and retroactively
+// editing shipped COGS is exactly what an accountant means by "the books moved".
+
+model GoodsReceiptCharge {
+  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String @map("tenant_id") @db.Uuid
+  goodsReceiptId String @map("goods_receipt_id") @db.Uuid
+
+  kind        String  @db.VarChar(20)
+  description String? @db.VarChar(255)
+
+  // In the RECEIPT's currency (which defaults to the order's), minor units.
+  amountCents Int @map("amount_cents")
+
+  // value | quantity | weight | manual. A CHECK pins it.
+  allocationBasis String @default("value") @map("allocation_basis") @db.VarChar(10)
+
+  // Only read when `allocationBasis` is `manual`: { [goodsReceiptLineId]: cents }.
+  // A JSON map rather than a child table because it is a hand-typed override of
+  // one charge across a handful of lines on one delivery — it has no life of its
+  // own, is never queried across receipts, and dies with its charge.
+  manualAllocation Json @default("{}") @map("manual_allocation")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  goodsReceipt GoodsReceipt @relation(fields: [goodsReceiptId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, goodsReceiptId])
+  @@map("inventory_goods_receipt_charges")
+}
+
+// One costed arrival: N units of a variant, into a location, at a landed unit
+// cost, on a date. `quantityRemaining` counts down as outbound movements consume
+// it oldest-first, and a layer with nothing left stays for the history.
+//
+// The invariant that makes this reconcilable:
+//   quantityRemaining == quantity − Σ(consumptions.quantity)
+// and, across all open layers for a (variant, warehouse):
+//   Σ quantityRemaining == on_hand   — whenever every inbound was layered.
+//
+// That second one is made true at the start by an OPENING layer per stocked
+// (variant, location), written by the migration at the moving average the
+// platform was already using. That is not inventing a cost — it is writing down
+// the number valuation has reported all along, so FIFO is usable on day one
+// instead of after a year of sell-through. Where the shortfall does open up
+// anyway (a sale under a continue policy that drove on-hand negative), the
+// consumer values the uncovered units at the moving average rather than refusing
+// to answer.
+
+model InventoryCostLayer {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  quantity          Int @map("quantity")
+  quantityRemaining Int @map("quantity_remaining")
+
+  // The landed unit cost in the tenant's BASE currency — goods plus every
+  // allocated charge, after FX. This is the number FIFO costing reports.
+  unitCostCents Int @map("unit_cost_cents")
+
+  // What the goods themselves cost, before charges — kept so the breakdown can
+  // say "£4.00 of goods, £0.62 of freight" rather than only the total.
+  goodsUnitCostCents Int @map("goods_unit_cost_cents")
+
+  // receipt | adjustment | return | transfer_in | opening | count. Names where
+  // the units came from; `sourceId` points at that record (soft, no FK — the
+  // sources are heterogeneous and a layer outlives a cancelled anything).
+  sourceType String  @map("source_type") @db.VarChar(20)
+  sourceId   String? @map("source_id") @db.Uuid
+
+  // The ledger row that created these units. Soft pointer for the same reason as
+  // everywhere else: the movement ledger is append-only and never deleted.
+  movementId String? @map("movement_id") @db.Uuid
+
+  // When the units arrived — the FIFO sort key. Distinct from `createdAt`
+  // because a receipt can be booked with a back-dated arrival date, and FIFO
+  // that ordered by data-entry time would consume in the order someone typed.
+  acquiredAt DateTime @default(now()) @map("acquired_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant      ProductVariant             @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse    Warehouse                  @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  consumptions InventoryCostConsumption[]
+
+  // The consumption query: open layers for one (variant, location), oldest
+  // first. Partial on `quantity_remaining > 0` so a decade of exhausted layers
+  // costs the hot path nothing.
+  @@index([tenantId, variantId, warehouseId, acquiredAt])
+  @@index([tenantId, movementId])
+  @@map("inventory_cost_layers")
+}
+
+// What one movement took out of one layer. The join that turns "COGS was
+// £412.60" into "£412.60, being 40 units off the March receipt at £8.20 and 12
+// off the January one at £7.15" — which is the whole point of keeping layers.
+//
+// `quantity` is SIGNED. A reversal (a cancelled order restocking, a return
+// coming back) gives units BACK to the layers the original sale took them from,
+// and records that as a negative consumption rather than by editing the original
+// row. The sale did happen; it was later reversed. Both are facts and the ledger
+// keeps both.
+
+model InventoryCostConsumption {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Soft pointer to `inventory_movements` — append-only, never deleted.
+  movementId String @map("movement_id") @db.Uuid
+  layerId    String @map("layer_id") @db.Uuid
+
+  // Positive = consumed off the layer. Negative = given back to it.
+  quantity Int
+
+  // The layer's unit cost at the moment it was consumed, snapshot. A later
+  // revaluation of that layer (a freight invoice arriving) must not silently
+  // restate what a sale six weeks ago cost.
+  unitCostCents Int @map("unit_cost_cents")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  layer  InventoryCostLayer @relation(fields: [layerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, movementId])
+  @@index([tenantId, layerId])
+  @@map("inventory_cost_consumptions")
+}
+
+// How this tenant values stock. One row per tenant; absent means the defaults
+// below, which are what the platform has always done.
+//
+//   moving_average  the running average of everything bought. The default, and
+//                   right for most businesses: no layer arithmetic to explain,
+//                   and price swings smooth out.
+//   fifo            oldest units cost first. What an accountant will ask for by
+//                   name, and required where stock is perishable or the price
+//                   has moved a lot.
+//   standard        every unit costs the planned figure; the difference from
+//                   what was actually paid is a purchase price variance and is
+//                   reported rather than buried in the cost basis. Manufacturing
+//                   and anyone doing serious cost control.
+//
+// A variant may override the tenant's choice (`commerce_product_variants.
+// costing_method`) — a business can run standard costing on the twelve parts it
+// manufactures and moving average on everything it resells.
+
+model CostingPolicy {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  // moving_average | fifo | standard. A CHECK pins it.
+  method String @default("moving_average") @db.VarChar(20)
+
+  // The default for a new charge's allocation basis, so a business that always
+  // apportions freight by weight sets it once.
+  defaultAllocationBasis String @default("value") @map("default_allocation_basis") @db.VarChar(10)
+
+  // The currency the cost ledger is kept in. Foreign-currency purchases are
+  // converted into it at the rate captured on the receipt, so valuation is one
+  // number in one currency however many currencies the business buys in.
+  baseCurrency String @default("USD") @map("base_currency") @db.VarChar(3)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_costing_policies")
+}

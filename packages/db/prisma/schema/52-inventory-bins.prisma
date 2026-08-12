@@ -40,7 +40,7 @@ model InventoryBin {
   // What is painted on the label. Unique per warehouse, not per tenant — two
   // buildings both having an "A-01-01" is normal and forcing global uniqueness
   // would make people invent prefixes.
-  code String @db.VarChar(32)
+  code String  @db.VarChar(32)
   name String? @db.VarChar(120)
 
   // Optional hierarchy, all free text. Deliberately NOT four foreign-keyed tables:
@@ -103,12 +103,13 @@ model InventoryBin {
 
   levels            InventoryBinLevel[]
   movements         InventoryBinMovement[]
-  movementsFrom     InventoryBinMovement[]   @relation("BinMoveFrom")
-  movementsTo       InventoryBinMovement[]   @relation("BinMoveTo")
-  defaultForVariant ProductVariant[]         @relation("VariantDefaultBin")
+  movementsFrom     InventoryBinMovement[] @relation("BinMoveFrom")
+  movementsTo       InventoryBinMovement[] @relation("BinMoveTo")
+  defaultForVariant ProductVariant[]       @relation("VariantDefaultBin")
   receiptLines      GoodsReceiptLine[]
   countLines        InventoryCountLine[]
   scanEvents        InventoryScanEvent[]
+  pickListLines     PickListLine[]
 
   @@unique([warehouseId, code], map: "inventory_bins_warehouse_code_unique")
   @@index([tenantId, warehouseId, isActive])

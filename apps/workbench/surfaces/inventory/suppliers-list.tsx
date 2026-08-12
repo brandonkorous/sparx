@@ -31,7 +31,6 @@ import {
 import { Archive, Plus, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { supplierState, supplierTerms, useSuppliers } from './suppliers-data';
@@ -128,7 +127,8 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         );
       }
       return (
-        <WelcomeEmptyState
+        <EmptyState
+          icon={<Truck className="size-6" aria-hidden />}
           title="No suppliers yet"
           description="A supplier is a business you buy stock from. Add your first one and you can raise purchase orders against it."
           actions={addSupplier}

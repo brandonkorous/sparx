@@ -170,6 +170,12 @@ export async function reverseOrderSale(
         actorType: 'system',
         actorId: null,
         allowNegative: true,
+        // The units go back onto the layers this sale drained, at what they
+        // cost then — not onto a fresh layer at today's average (docs/146
+        // Phase 5.9). A cancellation is the same goods coming back, and
+        // re-costing them would quietly reorder FIFO for everything behind
+        // them and credit the wrong amount of cost of goods sold.
+        costRestoreFromMovementId: s.id,
       });
       if (!result.deduped) {
         emissions.push({ variantId: s.variantId, warehouseId: s.warehouseId, result });

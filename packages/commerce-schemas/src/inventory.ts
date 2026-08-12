@@ -74,6 +74,11 @@ export const InventoryAdjustReason = z.enum([
   'release',
   'manual',
   'sync', // corrective delta from an authoritative external source (ERP/WMS)
+  // Stock going BACK to the supplier with a credit expected (docs/146 Phase
+  // 8.7). Its own reason rather than a `loss`: the units are not lost, they are
+  // somebody else's problem now and money is owed for them, and a report that
+  // folded them into shrinkage would libel the warehouse.
+  'return_to_supplier',
 ]);
 export type InventoryAdjustReason = z.infer<typeof InventoryAdjustReason>;
 
@@ -336,6 +341,10 @@ export type UpsertSupplierVariantInput = z.infer<typeof UpsertSupplierVariantInp
 
 export const PurchaseOrderStatus = z.enum([
   'draft',
+  // Held awaiting sign-off (docs/146 Phase 8.5). Deliberately its own state: a
+  // held order is not a draft (it has been sent for approval and left the
+  // buyer's hands) and it is not submitted (nothing may be received against it).
+  'pending_approval',
   'submitted',
   'partial',
   'received',
@@ -352,6 +361,12 @@ export const PurchaseOrderLineInput = z.object({
   unitCostCents: z.number().int().nonnegative().optional(),
   supplierSku: z.string().max(127).optional(),
   description: z.string().max(255).optional(),
+  // Order in a pack unit (docs/146 Phase 6.2). When present, `quantity` and
+  // `unitCostCents` are read AS THAT UNIT — 4 cases at £48 — and the service
+  // converts both to base units before storing, using the variant's own factor
+  // for that code. Absent, both are base units, which is every line written
+  // before units existed and most written after.
+  uomCode: z.string().trim().min(1).max(12).optional(),
 });
 export type PurchaseOrderLineInput = z.infer<typeof PurchaseOrderLineInput>;
 
@@ -387,6 +402,8 @@ export const UpdatePurchaseOrderLineInput = z.object({
   unitCostCents: z.number().int().nonnegative().optional(),
   supplierSku: z.string().max(127).nullable().optional(),
   description: z.string().max(255).nullable().optional(),
+  /** Re-read the quantity and cost in this pack unit — see the create input. */
+  uomCode: z.string().trim().min(1).max(12).optional(),
 });
 export type UpdatePurchaseOrderLineInput = z.infer<typeof UpdatePurchaseOrderLineInput>;
 
@@ -428,6 +445,13 @@ export const ReceiveLineInput = z
     // put-away suggester picks — home shelf, then a shelf already holding it,
     // then the default. Damaged units ignore this entirely and go to DAMAGED.
     binId: Uuid.optional(),
+    // Count the delivery in cartons rather than in units (docs/146 Phase 6.2).
+    // When present, `quantity`, `quantityDamaged` and `unitCostCents` are read
+    // AS THAT UNIT and converted before anything is written — the receiver
+    // enters 3 for three cartons and the ledger moves 36. Absent, everything is
+    // base units. Defaults to the purchase-order line's unit when that line was
+    // ordered in one, because a delivery against a case order arrives in cases.
+    uomCode: z.string().trim().min(1).max(12).optional(),
   })
   // A receipt line must record SOME arrival — good units, damaged units, or both.
   // A line with zero of each is a no-op that books nothing and must be rejected.
@@ -439,10 +463,44 @@ export type ReceiveLineInput = z.infer<typeof ReceiveLineInput>;
 
 export const CreateGoodsReceiptInput = z.object({
   purchaseOrderId: Uuid,
+  // The supplier's advance ship notice this delivery satisfies (docs/146 Phase
+  // 8.6). Optional — most deliveries arrive with no notice at all. When given,
+  // the notice is marked received and its stated quantities become comparable
+  // against what actually turned up. The receipt is NOT validated against it:
+  // the pallet is on the floor, and refusing to book it because the paperwork
+  // disagrees is how a discrepancy becomes an unrecorded one.
+  advanceShipNoticeId: Uuid.optional(),
   receivedAt: z.string().datetime().optional(),
   reference: z.string().max(120).optional(), // packing slip / carrier ref
   note: z.string().max(2000).optional(),
   lines: z.array(ReceiveLineInput).min(1).max(500),
+
+  // FX captured AT RECEIPT (docs/146 Phase 5.7). The rate on the day the goods
+  // landed is the one that decides what they cost, so it belongs here rather
+  // than being inherited from a quote weeks old. Omitted on a domestic delivery,
+  // where the receipt takes the order's currency and a rate of 1.
+  fxRate: z
+    .string()
+    .trim()
+    .regex(/^\d+(\.\d{1,8})?$/, 'Enter a rate like 1.0842, with up to eight decimal places')
+    .refine((v) => Number(v) > 0, 'A rate has to be greater than zero')
+    .optional(),
+
+  // Money spent on THIS delivery — the freight invoice that came with the pallet
+  // (docs/146 Phase 5.1). Booked with the receipt so the landed cost is right
+  // the first time; a bill that turns up later is added to the posted receipt
+  // and revalues what is still on the shelf.
+  charges: z
+    .array(
+      z.object({
+        kind: z.enum(['freight', 'duty', 'insurance', 'broker', 'handling', 'other']),
+        description: z.string().trim().max(255).optional(),
+        amountCents: z.number().int().min(0).max(1_000_000_000),
+        allocationBasis: z.enum(['value', 'quantity', 'weight', 'manual']).optional(),
+      })
+    )
+    .max(20)
+    .optional(),
 });
 export type CreateGoodsReceiptInput = z.infer<typeof CreateGoodsReceiptInput>;
 
@@ -542,6 +600,11 @@ export const AddCountLineInput = z.object({
   /** Which shelf this line counts. Required on a bin- or zone-scoped count, where
    *  the same variant may legitimately appear on several lines. */
   binId: Uuid.optional(),
+  /** Count this line in cartons rather than units (docs/146 Phase 6.2). Set on
+   *  the LINE rather than on each entry, because a shelf of sealed boxes is
+   *  counted in boxes for the whole count — and asking the counter to restate it
+   *  every time they type a number is how a 12× error gets in. */
+  uomCode: z.string().trim().min(1).max(12).optional(),
 });
 export type AddCountLineInput = z.infer<typeof AddCountLineInput>;
 
@@ -575,6 +638,10 @@ export type InventoryTransferStatus = z.infer<typeof InventoryTransferStatus>;
 export const TransferLineInput = z.object({
   variantId: Uuid,
   quantity: z.number().int().positive(),
+  /** Move whole pallets rather than units (docs/146 Phase 6.2). When present,
+   *  `quantity` is read AS THAT UNIT and converted before storage; the ledger
+   *  moves base units either way. */
+  uomCode: z.string().trim().min(1).max(12).optional(),
 });
 export type TransferLineInput = z.infer<typeof TransferLineInput>;
 
@@ -593,6 +660,9 @@ export type AddTransferLineInput = z.infer<typeof AddTransferLineInput>;
 
 export const UpdateTransferLineInput = z.object({
   quantity: z.number().int().positive(),
+  /** Omitted, the line keeps the unit it was written with — so editing only the
+   *  quantity on a line entered in pallets still means pallets. */
+  uomCode: z.string().trim().min(1).max(12).optional(),
 });
 export type UpdateTransferLineInput = z.infer<typeof UpdateTransferLineInput>;
 

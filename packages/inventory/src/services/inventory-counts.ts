@@ -21,6 +21,7 @@ import {
 import type { ServiceContext } from '../errors';
 
 import { ensureVariantExists, ensureWarehouseActive } from './internal';
+import { resolveLineUom, toBaseUnits } from './units-of-measure';
 import {
   LIST_INCLUDE,
   isUniqueViolation,
@@ -253,12 +254,22 @@ export async function addCountLine(
       },
       select: { onHand: true },
     });
+    // The unit this line is counted in (docs/146 Phase 6.2). `expectedQuantity`
+    // stays in BASE units like every other quantity; the pair records how the
+    // counter will be entering their number so `enterCounts` can convert it.
+    const uom = await resolveLineUom(tx, {
+      variantId: input.variantId,
+      ...(input.uomCode !== undefined ? { uomCode: input.uomCode } : {}),
+    });
+
     await tx.inventoryCountLine.create({
       data: {
         tenantId: ctx.tenantId,
         countId,
         variantId: input.variantId,
         expectedQuantity: level?.onHand ?? 0,
+        uomCode: uom.uomCode,
+        unitsPerUom: uom.unitsPerUom,
       },
     });
   });
@@ -292,11 +303,11 @@ export async function enterCounts(
     await loadCountForEdit(tx, countId);
     const lines = await tx.inventoryCountLine.findMany({
       where: { countId },
-      select: { id: true },
+      select: { id: true, unitsPerUom: true },
     });
-    const valid = new Set(lines.map((l) => l.id));
+    const factorByLine = new Map(lines.map((l) => [l.id, l.unitsPerUom]));
     for (const e of input.entries) {
-      if (!valid.has(e.lineId)) {
+      if (!factorByLine.has(e.lineId)) {
         throw new InventoryValidationError('Entry references a line not on this count', [
           { field: 'entries', message: `unknown line ${e.lineId}` },
         ]);
@@ -306,7 +317,11 @@ export async function enterCounts(
       await tx.inventoryCountLine.update({
         where: { id: e.lineId },
         data: {
-          countedQuantity: e.countedQuantity,
+          // The counter typed a number in whatever this line is counted in;
+          // `countedQuantity` is BASE units, so posting reconciles against the
+          // same scale `expectedQuantity` is on (docs/146 Phase 6.2). A line
+          // with no unit has a factor of 1 and nothing changes.
+          countedQuantity: toBaseUnits(e.countedQuantity, factorByLine.get(e.lineId) ?? 1),
           ...(e.note !== undefined ? { note: e.note } : {}),
         },
       });

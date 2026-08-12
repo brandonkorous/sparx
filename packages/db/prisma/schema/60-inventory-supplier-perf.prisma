@@ -1,0 +1,562 @@
+// Inventory — supplier performance and procurement discipline (docs/146 Phase 8).
+//
+// Everything before this phase treats a supplier as an address to send an order
+// to. This phase treats them as a counterparty whose behaviour is a fact you
+// hold: how late they run, how full they ship, what they actually charge versus
+// what they quoted, and how much of what arrives is broken. Every one of those
+// is already recorded somewhere in the purchasing tables — nobody has ever added
+// them up.
+//
+// Six capabilities live here, and they share one design rule:
+//
+//   A METRIC NOBODY COULD MEASURE IS NULL, AND ITS SAMPLE COUNT IS STORED
+//   BESIDE IT.
+//
+// That rule is not a preference. Phase 7 shipped a classification defaulted to
+// "erratic" and a cost COALESCEd to zero, and both were completely convincing on
+// screen — a coefficient of variation is a finite number for two sales, and
+// $0.00 is a price. A supplier scorecard is the same trap with sharper teeth,
+// because its output is a judgement about someone you have to keep buying from.
+// A "0% on time" that means "they never quoted a date" ends a relationship over
+// a missing field. So each figure below is nullable, each carries the number of
+// observations it stands on, and the overall score records how many of its
+// components were measurable at all.
+
+// ─── 8.1 The scorecard ───────────────────────────────────────────────────────
+//
+// One recomputed row per supplier, over a rolling window. Stored rather than
+// derived on read for the same reason `SupplierLeadTime` is: the league table
+// sorts on these columns, and re-deriving five aggregate queries per supplier to
+// paint one list is the difference between a screen that opens and one that
+// times out.
+//
+// It READS `inventory_supplier_lead_times` rather than measuring lead time again
+// (docs/146 Phase 7.3 owns that measurement). Two independent measurements of the
+// same thing is how a scorecard starts disagreeing with the screen it links to.
+
+model SupplierScorecard {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  supplierId String @map("supplier_id") @db.Uuid
+
+  /// How far back the window reaches. 365 by default — "rolling 12 months" is
+  /// the category's convention and it is long enough to survive a seasonal
+  /// business's quiet half.
+  windowDays Int      @default(365) @map("window_days")
+  measuredAt DateTime @default(now()) @map("measured_at") @db.Timestamptz
+
+  // ── Volume. Context for every rate below: 92% on time means one thing across
+  // 60 deliveries and nothing at all across two.
+  ordersPlaced  Int @default(0) @map("orders_placed")
+  deliveries    Int @default(0)
+  /// What arrived, valued at the delivered goods cost in the supplier's currency
+  /// — how much of the business this counterparty carries.
+  spendCents    Int @default(0) @map("spend_cents")
+  receivedUnits Int @default(0) @map("received_units")
+
+  // ── On time. Null when the supplier never stated a lead time and no order
+  // ever carried an expected-arrival date, which is common and is itself the
+  // finding: you cannot be late for a date nobody set.
+  onTimeRate     Decimal? @map("on_time_rate") @db.Decimal(5, 4)
+  onTimeSample   Int      @default(0) @map("on_time_sample")
+  lateDeliveries Int      @default(0) @map("late_deliveries")
+  /// Mean days late across the LATE deliveries only. An average that folded in
+  /// the early ones would report a chronically-late supplier as punctual.
+  avgDaysLate    Decimal? @map("avg_days_late") @db.Decimal(8, 2)
+
+  // ── Fill rate: did the line arrive in full, or did they short you. Measured
+  // over lines on orders that have finished (received/closed) — a line on an
+  // order still open is not short, it is in transit, and counting it would score
+  // every supplier at zero the day the order was raised.
+  fillRate       Decimal? @map("fill_rate") @db.Decimal(5, 4)
+  fillRateSample Int      @default(0) @map("fill_rate_sample")
+  shortLines     Int      @default(0) @map("short_lines")
+
+  // ── Lead time. COPIED from inventory_supplier_lead_times at sweep time so the
+  // league table can sort on it; the measurement itself is not repeated here.
+  // Null when that table has no row for this supplier.
+  leadTimeMeanDays     Decimal? @map("lead_time_mean_days") @db.Decimal(8, 2)
+  leadTimePromisedDays Int?     @map("lead_time_promised_days")
+  /// Measured minus promised. Positive = slower than they said.
+  leadTimeVarianceDays Decimal? @map("lead_time_variance_days") @db.Decimal(8, 2)
+  leadTimeSample       Int      @default(0) @map("lead_time_sample")
+
+  // ── Price variance: what they invoiced against what the order agreed.
+  // Compared only where the delivery and the order are in the SAME currency —
+  // a variance computed across two currencies at an unrecorded rate is a
+  // fabricated number, so those lines are excluded and the sample says so.
+  priceVariancePct    Decimal? @map("price_variance_pct") @db.Decimal(7, 4)
+  priceVarianceCents  Int?     @map("price_variance_cents")
+  priceVarianceSample Int      @default(0) @map("price_variance_sample")
+
+  // ── Damage on arrival. Measured from the ledger's `damage` movements written
+  // against a goods receipt, so it needs no second record of the same fact.
+  // Null only when nothing was received at all — a clean delivery genuinely
+  // recorded zero damage, and zero is the right answer there.
+  damageRate   Decimal? @map("damage_rate") @db.Decimal(5, 4)
+  damagedUnits Int      @default(0) @map("damaged_units")
+
+  /// 0–100, and DELIBERATELY nullable. It is the weighted mean of whichever
+  /// components were measurable, so `scoredComponents` travels with it: a "100"
+  /// standing on one component is not the same claim as a "100" standing on
+  /// four, and a supplier nobody can measure scores NULL rather than zero.
+  score            Int?    @db.SmallInt
+  /// A | B | C | D, derived from `score`. Null whenever the score is.
+  grade            String? @db.VarChar(1)
+  scoredComponents Int     @default(0) @map("scored_components")
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, supplierId], map: "inventory_supplier_scorecards_tenant_supplier_unique")
+  @@index([tenantId, score])
+  @@map("inventory_supplier_scorecards")
+}
+
+// ─── 8.4 Quantity price breaks ───────────────────────────────────────────────
+//
+// "£4.10 each, or £3.60 if you take fifty." Every distributor prices this way and
+// a platform that stores one cost per supplier-variant silently plans against the
+// wrong number: the reorder suggestion tops up to 38 units, the buyer manually
+// rounds to 50 because they know about the break, and the recorded cost basis was
+// never right in the first place.
+//
+// A break is a floor, not a range: the applicable price is the one attached to
+// the largest `minQuantity` the order clears. Storing ranges would let an author
+// leave a gap between 49 and 50 that resolves to nothing.
+
+model SupplierPriceBreak {
+  id                String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId          String @map("tenant_id") @db.Uuid
+  supplierVariantId String @map("supplier_variant_id") @db.Uuid
+
+  /// In BASE units, like every other quantity in this module — the buyer may
+  /// type "4 cases" and the service converts before it gets here.
+  minQuantity   Int @map("min_quantity")
+  /// Per BASE unit, in the supplier's currency.
+  unitCostCents Int @map("unit_cost_cents")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant          Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierVariant SupplierVariant @relation(fields: [supplierVariantId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierVariantId, minQuantity], map: "inventory_supplier_price_breaks_link_qty_unique")
+  @@index([tenantId, supplierVariantId])
+  @@map("inventory_supplier_price_breaks")
+}
+
+// ─── 8.5 Purchase-order approval ─────────────────────────────────────────────
+//
+// A spending control on the way OUT, mirroring the B2B one on the way in
+// (`purchase_approval_rules`, docs/10 §12). It is a separate table rather than a
+// second axis on that one because the two gate opposite directions and share no
+// field beyond an amount: that rule holds a customer's order until staff agree to
+// sell, this one holds staff's order until someone senior agrees to spend.
+//
+// PRECEDENCE MATTERS HERE, and this is the difference from the B2B rule. That one
+// is a boolean gate — every matching rule says the same thing, "hold it" — so
+// arbitrary ordering is harmless. These rules carry an APPROVER, so two matching
+// rules can disagree about who signs. The resolution is stated rather than
+// inherited from query order: among the rules that match, the one with the
+// highest `minAmountCents` wins (the strictest threshold the order clears), then
+// `sortOrder`, then the oldest. A £20k order routes to the £10k approver, not the
+// £500 one.
+
+model PurchaseOrderApprovalRule {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  name String @db.VarChar(80)
+
+  /// Null = every supplier. Set = only orders to this one, which is how a
+  /// business puts extra eyes on a counterparty it does not yet trust.
+  supplierId  String? @map("supplier_id") @db.Uuid
+  /// Null = every location.
+  warehouseId String? @map("warehouse_id") @db.Uuid
+
+  /// The order's total must reach this for the rule to fire. 0 = every order.
+  minAmountCents Int @default(0) @map("min_amount_cents")
+
+  /// A named person must sign. Null = anybody holding `requiredRole`.
+  requiredApproverUserId String? @map("required_approver_user_id") @db.Uuid
+  /// owner | admin | editor — the sparx staff role a signer must hold when no
+  /// specific person is named. NOT Better Auth's org vocabulary: there is no
+  /// `member` role here, and a rule routing to one could never be satisfied.
+  /// `viewer` is excluded for the same reason — read-only cannot approve spend.
+  /// Null = anybody who can edit purchasing.
+  requiredRole           String? @map("required_role") @db.VarChar(16)
+
+  /// Tie-break below `minAmountCents`. Lower sorts first.
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant           Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier         Supplier?               @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  warehouse        Warehouse?              @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  requiredApprover User?                   @relation("PoApprovalRuleApprover", fields: [requiredApproverUserId], references: [id], onDelete: SetNull)
+  approvals        PurchaseOrderApproval[]
+
+  @@index([tenantId, isActive, minAmountCents])
+  @@map("inventory_po_approval_rules")
+}
+
+// One request for sign-off, and its outcome. Append-only in practice: a rejected
+// order that is amended and resubmitted gets a NEW row rather than reopening the
+// old one, so the trail reads as the sequence of decisions it was — which is the
+// entire point of an approval record and the thing an auditor asks for.
+
+model PurchaseOrderApproval {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String  @map("tenant_id") @db.Uuid
+  purchaseOrderId String  @map("purchase_order_id") @db.Uuid
+  /// Which rule fired. SetNull rather than Cascade — deleting the rule must not
+  /// erase the history of the orders it held.
+  ruleId          String? @map("rule_id") @db.Uuid
+
+  /// pending | approved | rejected | cancelled. A CHECK pins the vocabulary.
+  status String @default("pending") @db.VarChar(12)
+
+  /// The order total AT REQUEST TIME, snapshot. Editing the order after approval
+  /// must not retroactively change what was signed for — that is exactly the
+  /// hole an approval workflow exists to close.
+  amountCents Int    @map("amount_cents")
+  currency    String @default("USD") @db.VarChar(3)
+
+  requestedByUserId      String?   @map("requested_by_user_id") @db.Uuid
+  requestedAt            DateTime  @default(now()) @map("requested_at") @db.Timestamptz
+  requiredApproverUserId String?   @map("required_approver_user_id") @db.Uuid
+  decidedByUserId        String?   @map("decided_by_user_id") @db.Uuid
+  decidedAt              DateTime? @map("decided_at") @db.Timestamptz
+  /// Why. Required by the service on a rejection — "no" without a reason sends
+  /// the buyer back to guess.
+  note                   String?   @db.Text
+
+  tenant           Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchaseOrder    PurchaseOrder              @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  rule             PurchaseOrderApprovalRule? @relation(fields: [ruleId], references: [id], onDelete: SetNull)
+  requestedBy      User?                      @relation("PoApprovalRequester", fields: [requestedByUserId], references: [id], onDelete: SetNull)
+  requiredApprover User?                      @relation("PoApprovalRequiredApprover", fields: [requiredApproverUserId], references: [id], onDelete: SetNull)
+  decidedBy        User?                      @relation("PoApprovalDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status, requestedAt])
+  @@index([tenantId, purchaseOrderId])
+  @@map("inventory_po_approvals")
+}
+
+// ─── 8.6 Advance ship notice ─────────────────────────────────────────────────
+//
+// What the supplier says they put on the lorry, before it gets here. Its value is
+// not the paperwork: it is that receiving stops being transcription. The receiver
+// opens the delivery, the lines are already there with quantities on them, and
+// their job narrows to confirming or correcting — which is both faster and, more
+// importantly, the only way a DISCREPANCY becomes visible. Without an ASN, a
+// short shipment is indistinguishable from a short order, and nobody ever
+// notices they were billed for the difference.
+//
+// Discrepancies are NOT stored. They are the difference between this table and
+// the receipt lines, both of which are already recorded; a third copy would be a
+// number that can go stale. The service computes them on read.
+
+model AdvanceShipNotice {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  /// Per-tenant human identifier (ASN-000001), same scheme as POs and receipts.
+  number   String @db.VarChar(20)
+
+  purchaseOrderId String @map("purchase_order_id") @db.Uuid
+  /// Denormalized from the order so the supplier's inbound pipeline is one index
+  /// hit. Set by the service at creation and never edited — the order owns it.
+  supplierId      String @map("supplier_id") @db.Uuid
+
+  /// expected | received | cancelled. `received` is stamped when a goods receipt
+  /// consumes it; a notice for a lorry that never arrived stays `expected` and
+  /// shows up as overdue, which is the point.
+  status String @default("expected") @db.VarChar(12)
+
+  /// The supplier's own shipment reference, off their paperwork.
+  reference      String? @db.VarChar(120)
+  carrier        String? @db.VarChar(80)
+  trackingNumber String? @map("tracking_number") @db.VarChar(120)
+  /// Total cartons/pallets on the notice, as stated. Informational — the
+  /// receiver counts what turns up.
+  packageCount   Int?    @map("package_count")
+
+  shippedAt         DateTime? @map("shipped_at") @db.Timestamptz
+  expectedArrivalAt DateTime? @map("expected_arrival_at") @db.Timestamptz
+  receivedAt        DateTime? @map("received_at") @db.Timestamptz
+
+  /// Which receipt consumed it. Soft link with SetNull: a receipt can be
+  /// reversed, and the notice is still a true record of what was said to ship.
+  goodsReceiptId String? @map("goods_receipt_id") @db.Uuid
+
+  /// manual | file | api — how it got here. A notice keyed in by a buyer off an
+  /// emailed PDF and one posted by the supplier's system deserve different
+  /// confidence, and only this column can tell them apart.
+  source String @default("manual") @db.VarChar(8)
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  purchaseOrder PurchaseOrder           @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  supplier      Supplier                @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  goodsReceipt  GoodsReceipt?           @relation(fields: [goodsReceiptId], references: [id], onDelete: SetNull)
+  lines         AdvanceShipNoticeLine[]
+
+  @@unique([tenantId, number], map: "inventory_asns_tenant_number_unique")
+  @@index([tenantId, status, expectedArrivalAt])
+  @@index([tenantId, purchaseOrderId])
+  @@index([tenantId, supplierId])
+  @@map("inventory_advance_ship_notices")
+}
+
+model AdvanceShipNoticeLine {
+  id                  String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId            String @map("tenant_id") @db.Uuid
+  advanceShipNoticeId String @map("advance_ship_notice_id") @db.Uuid
+  purchaseOrderLineId String @map("purchase_order_line_id") @db.Uuid
+  variantId           String @map("variant_id") @db.Uuid
+
+  /// Base units, always — the pair below records what the supplier stated it in.
+  quantityShipped Int     @map("quantity_shipped")
+  uomCode         String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom     Int     @default(1) @map("units_per_uom")
+
+  /// The batch they say is on the pallet, so the receiver does not have to read
+  /// it off a label to pre-fill it.
+  lotNumber String? @map("lot_number") @db.VarChar(63)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  advanceShipNotice AdvanceShipNotice @relation(fields: [advanceShipNoticeId], references: [id], onDelete: Cascade)
+  purchaseOrderLine PurchaseOrderLine @relation(fields: [purchaseOrderLineId], references: [id], onDelete: Cascade)
+  variant           ProductVariant    @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([advanceShipNoticeId, purchaseOrderLineId], map: "inventory_asn_lines_asn_po_line_unique")
+  @@index([tenantId, variantId])
+  @@map("inventory_advance_ship_notice_lines")
+}
+
+// ─── 8.7 Return to supplier (RTV) ────────────────────────────────────────────
+//
+// Stock going back the way it came, with money expected in return. The reason it
+// needs a record rather than an adjustment is the money: an operator who writes
+// off six broken pumps has told the ledger the truth about the shelf and nothing
+// at all about the £900 the supplier owes. That credit is then remembered by one
+// person, in their head, until they leave.
+//
+// So the expectation is recorded when the goods leave, and the resolution is a
+// separate, later fact. `creditReceivedCents` is NULLABLE and stays null until
+// somebody records a credit note: zero would mean "they refused", which is a
+// completely different conversation from "we are still waiting".
+
+model SupplierReturn {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  /// Per-tenant human identifier (RTV-000001).
+  number   String @db.VarChar(20)
+
+  supplierId      String  @map("supplier_id") @db.Uuid
+  warehouseId     String  @map("warehouse_id") @db.Uuid
+  /// The order it came in on, when anyone knows. Optional — stock returned two
+  /// years later has usually lost its paperwork, and refusing the return over
+  /// that is how it stops being recorded at all.
+  purchaseOrderId String? @map("purchase_order_id") @db.Uuid
+
+  /// draft | sent | credited | closed | cancelled. `sent` is when the stock
+  /// physically left and the ledger moved; `credited` when the money came back;
+  /// `closed` is the terminal state for a return that will never be credited and
+  /// somebody has accepted that.
+  status String @default("draft") @db.VarChar(12)
+
+  /// damaged | wrong_item | overstock | quality | recall | expired | other.
+  reason String @db.VarChar(16)
+
+  /// What we expect back, summed from the lines at what we paid.
+  creditExpectedCents Int    @default(0) @map("credit_expected_cents")
+  /// What actually came back. NULL until someone records it — see above.
+  creditReceivedCents Int?   @map("credit_received_cents")
+  currency            String @default("USD") @db.VarChar(3)
+
+  /// Their authorisation number, which most distributors demand before they will
+  /// accept a pallet back.
+  rmaNumber      String? @map("rma_number") @db.VarChar(64)
+  carrier        String? @db.VarChar(80)
+  trackingNumber String? @map("tracking_number") @db.VarChar(120)
+
+  sentAt     DateTime? @map("sent_at") @db.Timestamptz
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier      Supplier             @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  warehouse     Warehouse            @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  purchaseOrder PurchaseOrder?       @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  lines         SupplierReturnLine[]
+
+  @@unique([tenantId, number], map: "inventory_supplier_returns_tenant_number_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, supplierId])
+  @@map("inventory_supplier_returns")
+}
+
+model SupplierReturnLine {
+  id               String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId         String @map("tenant_id") @db.Uuid
+  supplierReturnId String @map("supplier_return_id") @db.Uuid
+  variantId        String @map("variant_id") @db.Uuid
+
+  /// Base units, always.
+  quantity      Int     @map("quantity")
+  /// What we paid per base unit — the basis for the credit expectation, not a
+  /// selling price. Defaulted from the linked order line when there is one.
+  unitCostCents Int     @map("unit_cost_cents")
+  uomCode       String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom   Int     @default(1) @map("units_per_uom")
+
+  lotNumber String? @map("lot_number") @db.VarChar(63)
+  note      String? @db.VarChar(255)
+
+  /// The ledger row written when the return was sent. Soft pointer, no FK — the
+  /// ledger is append-only and is never deleted under a return line.
+  movementId String? @map("movement_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierReturn SupplierReturn @relation(fields: [supplierReturnId], references: [id], onDelete: Cascade)
+  variant        ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, supplierReturnId])
+  @@index([tenantId, variantId])
+  @@map("inventory_supplier_return_lines")
+}
+
+// ─── 8.8 The supplier's bill, and the three-way match ────────────────────────
+//
+// The last document in the chain and the one most likely to be wrong. A business
+// that checks nothing pays whatever arrives; a business that checks by eye
+// catches the £400 errors and never the £12 ones, which are the ones that repeat
+// every month.
+//
+// Three-way matching compares what was ORDERED (the PO line), what was RECEIVED
+// (the receipt lines), and what was BILLED (this table) — and the variance is
+// surfaced BEFORE the bill is approved for payment, because after payment it is
+// no longer a discrepancy, it is a refund request.
+//
+// This is not bookkeeping and does not become one. There is no ledger here, no
+// double entry and no chart of accounts — docs/148 §1 makes that a permanent
+// product position. The bill exists so the match can exist; paying it is either
+// a payment recorded here or a bill handed to QuickBooks (docs/146 §10.7).
+//
+// Note also docs/148's locked decision #2: stock is NOT an expense. A supplier
+// bill for goods never becomes an expense-ledger row — the value went into
+// inventory on receipt and becomes cost when the goods sell. Writing it into
+// both is how every part gets counted twice.
+
+model SupplierBill {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  /// THEIR invoice number, not ours — this document is authored by the supplier
+  /// and the number is how a query to their accounts department is phrased.
+  number     String @db.VarChar(40)
+  supplierId String @map("supplier_id") @db.Uuid
+
+  /// The order being billed. Optional: consolidated monthly statements covering
+  /// several orders exist, and the per-line link below is what the match
+  /// actually runs on.
+  purchaseOrderId String? @map("purchase_order_id") @db.Uuid
+
+  /// draft | awaiting_approval | approved | disputed | paid | cancelled.
+  /// `disputed` is a real state rather than a note, because it is the one that
+  /// must stop a payment run.
+  status String @default("draft") @db.VarChar(20)
+
+  currency String   @default("USD") @db.VarChar(3)
+  /// What the billed currency was worth when the bill was entered. Null on a
+  /// same-currency bill, where storing 1 would dress a non-conversion as one.
+  fxRate   Decimal? @map("fx_rate") @db.Decimal(18, 8)
+
+  billedAt DateTime  @map("billed_at") @db.Timestamptz
+  dueAt    DateTime? @map("due_at") @db.Timestamptz
+
+  subtotalCents Int @default(0) @map("subtotal_cents")
+  taxCents      Int @default(0) @map("tax_cents")
+  shippingCents Int @default(0) @map("shipping_cents")
+  totalCents    Int @default(0) @map("total_cents")
+
+  /// Null until it is paid. Not 0 — an unpaid bill and a bill paid with a zero
+  /// credit note are different facts, and only one of them should stop chasing.
+  paidCents Int?      @map("paid_cents")
+  paidAt    DateTime? @map("paid_at") @db.Timestamptz
+
+  /// Set when somebody accepts a variance the match found, with `notes` carrying
+  /// why. An override that leaves no trace is indistinguishable from a match.
+  varianceAcceptedByUserId String?   @map("variance_accepted_by_user_id") @db.Uuid
+  varianceAcceptedAt       DateTime? @map("variance_accepted_at") @db.Timestamptz
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant             Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier           Supplier           @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  purchaseOrder      PurchaseOrder?     @relation(fields: [purchaseOrderId], references: [id], onDelete: SetNull)
+  varianceAcceptedBy User?              @relation("SupplierBillVarianceAccepter", fields: [varianceAcceptedByUserId], references: [id], onDelete: SetNull)
+  lines              SupplierBillLine[]
+
+  @@unique([tenantId, supplierId, number], map: "inventory_supplier_bills_tenant_supplier_number_unique")
+  @@index([tenantId, status, dueAt])
+  @@index([tenantId, supplierId])
+  @@map("inventory_supplier_bills")
+}
+
+model SupplierBillLine {
+  id             String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String @map("tenant_id") @db.Uuid
+  supplierBillId String @map("supplier_bill_id") @db.Uuid
+
+  /// What this line is being matched against. Null on a line that matches
+  /// nothing — freight, a pallet deposit, or a part they billed that was never
+  /// ordered, which is precisely the case the match has to be able to show.
+  purchaseOrderLineId String? @map("purchase_order_line_id") @db.Uuid
+  variantId           String? @map("variant_id") @db.Uuid
+
+  /// As printed on their invoice, so the two documents can be read side by side.
+  description String? @db.VarChar(255)
+
+  /// Base units, always.
+  quantity      Int     @map("quantity")
+  unitCostCents Int     @map("unit_cost_cents")
+  /// What they actually charged for the line. Stored rather than multiplied out,
+  /// because a supplier's rounding is their own and a recomputed total that
+  /// disagrees with the paper by a penny reads as a bug.
+  amountCents   Int     @map("amount_cents")
+  uomCode       String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom   Int     @default(1) @map("units_per_uom")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierBill      SupplierBill       @relation(fields: [supplierBillId], references: [id], onDelete: Cascade)
+  purchaseOrderLine PurchaseOrderLine? @relation(fields: [purchaseOrderLineId], references: [id], onDelete: SetNull)
+  variant           ProductVariant?    @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, supplierBillId])
+  @@index([tenantId, purchaseOrderLineId])
+  @@map("inventory_supplier_bill_lines")
+}

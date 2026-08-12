@@ -438,6 +438,8 @@ export function movementReason(reason: string): string {
       return 'Sent to another location';
     case 'receive':
       return 'Received from a supplier';
+    case 'return_to_supplier':
+      return 'Sent back to the supplier';
     case 'reserve':
       return 'Put aside for an order';
     case 'release':

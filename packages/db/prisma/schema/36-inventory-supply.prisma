@@ -44,7 +44,21 @@ model Supplier {
   tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   variants       SupplierVariant[]
   purchaseOrders PurchaseOrder[]
-  barcodes       VariantBarcode[]
+
+  // How long they ACTUALLY take, measured from their own deliveries
+  // (docs/146 Phase 7.3)
+  leadTimes SupplierLeadTime[]
+  barcodes  VariantBarcode[]
+
+  // How they actually perform, and the paperwork either side of a delivery
+  // (docs/146 Phase 8)
+  // Array rather than `SupplierScorecard?` only because the DB uniqueness is the
+  // compound (tenant_id, supplier_id) — there is at most one row per supplier.
+  scorecards         SupplierScorecard[]
+  approvalRules      PurchaseOrderApprovalRule[]
+  advanceShipNotices AdvanceShipNotice[]
+  returns            SupplierReturn[]
+  bills              SupplierBill[]
 
   @@unique([tenantId, code], map: "inventory_suppliers_tenant_code_unique")
   @@index([tenantId, isActive])
@@ -74,6 +88,10 @@ model SupplierVariant {
   tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   supplier Supplier       @relation(fields: [supplierId], references: [id], onDelete: Cascade)
   variant  ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  // "£4.10 each, or £3.60 if you take fifty" (docs/146 Phase 8.4). The scalar
+  // `unitCostCents` above is the price at any quantity below the first break.
+  priceBreaks SupplierPriceBreak[]
 
   @@unique([supplierId, variantId], map: "inventory_supplier_variants_supplier_variant_unique")
   @@index([tenantId, variantId])

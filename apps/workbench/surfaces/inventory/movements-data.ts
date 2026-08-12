@@ -103,6 +103,7 @@ export const MOVEMENT_REASONS: readonly string[] = [
   'transfer_out',
   'loss',
   'damage',
+  'return_to_supplier',
   'reserve',
   'release',
   'sync',

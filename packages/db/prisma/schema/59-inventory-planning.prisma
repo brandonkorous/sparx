@@ -1,0 +1,430 @@
+// Planning intelligence — how much to keep, and when to buy it again
+// (docs/146 Phase 7).
+//
+// ── The gap this closes ──────────────────────────────────────────────────────
+//
+// Until now a reorder point was an integer a human typed once. It knew nothing
+// about how fast the thing actually sells, nothing about how long the supplier
+// really takes (as opposed to what they promised), and nothing about how erratic
+// either of those is. So it was wrong in both directions at once: too high on the
+// steady lines (money sat on a shelf) and too low on the spiky ones (a stockout
+// on the week it mattered). 37.5% of operators report overstock and 33.5% report
+// stockouts, and it is the same missing number causing both.
+//
+// ── Measured, not modelled ───────────────────────────────────────────────────
+//
+// Everything here is derived from records the platform already keeps — the
+// movement ledger for demand, purchase orders against goods receipts for lead
+// time, the cost ledger for value. Nothing is a parameter someone tunes and
+// nothing is a black box: every figure below can be traced to the rows it came
+// from, which is what `planning-provenance.ts` exists to do. That matters more
+// than sophistication. An operator who is shown "reorder at 84" and cannot find
+// out why will override it to the number they had in their head, and then the
+// forecast was for nothing.
+//
+// ── Two places, on purpose ───────────────────────────────────────────────────
+//
+//   inventory_levels.forecast_daily_demand / abc_class / xyz_class /
+//   dynamic_reorder_point            ← the FAST READ. Denormalised onto the
+//                                      level so a stock list can sort by class
+//                                      or cover without joining four tables.
+//
+//   inventory_demand_velocity /      ← the EXPLANATION. Every input that
+//   inventory_classifications /        produced those numbers, with its window,
+//   inventory_reorder_policies /       its sample size and its confidence.
+//   inventory_supplier_lead_times
+//
+// Same relationship as Phase 5's moving average against its cost layers: a
+// summary you read constantly and a history you read when you need to be sure.
+// Both are written by the SAME nightly pass, in one transaction per level, so
+// they cannot disagree.
+//
+// ── Nothing here writes on_hand, and nothing here silently rewrites a human ──
+//
+// This whole file is derived read-side state. The one write that touches
+// operational behaviour is copying a computed reorder point onto
+// `inventory_levels.reorder_point`, and that happens ONLY where the level is
+// explicitly auto-managed. A level whose reorder point a person typed keeps it
+// until they say otherwise; the computed figure sits alongside as
+// `dynamic_reorder_point` so the difference is visible and adopting it is one
+// click. Quietly overwriting a number someone chose is how a planning feature
+// loses an operator's trust in a single night.
+
+// How fast one thing sells in one place, measured over three windows.
+//
+// Three windows rather than one because they disagree usefully: a line whose
+// 7-day rate is triple its 90-day rate is accelerating and its reorder point is
+// already stale, and a single 30-day average would have hidden that. The
+// forecast picks ONE of them (`forecastBasis` records which) so downstream
+// arithmetic has a single number, but the other two stay on the row because the
+// disagreement is the interesting part.
+//
+// Materialised nightly rather than computed on read: the standard deviation over
+// 90 daily buckets per (variant, location) is a real query, the reorder surface
+// wants it for every low line at once, and demand does not change meaningfully
+// between one afternoon and the next.
+
+model DemandVelocity {
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+
+  // Units sold in each trailing window — the raw counts, kept so the surface can
+  // say "12 sold in the last 30 days" rather than only a rate.
+  units7  Int @default(0) @map("units_7")
+  units30 Int @default(0) @map("units_30")
+  units90 Int @default(0) @map("units_90")
+
+  perDay7  Decimal @default(0) @map("per_day_7") @db.Decimal(12, 4)
+  perDay30 Decimal @default(0) @map("per_day_30") @db.Decimal(12, 4)
+  perDay90 Decimal @default(0) @map("per_day_90") @db.Decimal(12, 4)
+
+  // The figure everything downstream uses, and which window produced it.
+  // `7d` when the item is too new for a longer read, `30d` normally, `90d` for
+  // a slow mover whose 30-day window is mostly zeroes, `none` when nothing has
+  // ever sold. Stored rather than re-derived so the explanation and the
+  // arithmetic can never drift apart.
+  forecastPerDay Decimal @default(0) @map("forecast_per_day") @db.Decimal(12, 4)
+  forecastBasis  String  @default("none") @map("forecast_basis") @db.VarChar(8)
+
+  // Standard deviation of DAILY demand across the 90-day window, in units. The
+  // safety-stock formula's σ_d — the whole reason a spiky line needs more
+  // cushion than a steady one selling the same volume.
+  demandStdDev Decimal @default(0) @map("demand_std_dev") @db.Decimal(12, 4)
+
+  // Coefficient of variation (σ / mean) — the XYZ axis. Null when the mean is
+  // zero, because a ratio against nothing is not a large number, it is no
+  // number, and reporting it as 0 would classify a dead item as perfectly
+  // predictable.
+  demandCv Decimal? @map("demand_cv") @db.Decimal(10, 4)
+
+  // How many of the last 90 days saw any sale at all. Distinguishes "two a day,
+  // every day" from "sixty in one afternoon and nothing since", which have the
+  // same average and want completely different policies.
+  daysWithDemand Int @default(0) @map("days_with_demand")
+
+  // Same period last year ÷ the trailing year's average, so 1.40 means "this
+  // time of year runs 40% hot". NULL — never 1.0 — when there is less than a
+  // year of history: a default of 1.0 is indistinguishable from a measured 1.0,
+  // and the surface has to be able to say "not enough history yet".
+  seasonalityIndex Decimal? @map("seasonality_index") @db.Decimal(8, 4)
+
+  // How far back the ledger goes for this level. The honesty field: every figure
+  // above is only as good as this, and a forecast standing on 9 days of history
+  // must not be presented like one standing on three years.
+  historyDays     Int       @default(0) @map("history_days")
+  firstMovementAt DateTime? @map("first_movement_at") @db.Timestamptz
+  lastSaleAt      DateTime? @map("last_sale_at") @db.Timestamptz
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, warehouseId])
+  @@index([tenantId, warehouseId])
+  @@index([tenantId, forecastPerDay])
+  @@map("inventory_demand_velocity")
+}
+
+// What a thing is worth paying attention to (ABC) and how predictable it is
+// (XYZ).
+//
+// ABC is by annual usage VALUE, not by units and not by margin: the question it
+// answers is "where is the money", and 10 units a year of a £900 part outranks
+// 4,000 units of a 12p washer. The cut is cumulative — items are ranked by value,
+// and the ones making up the first 80% are A, to 95% are B, the tail is C.
+//
+// XYZ is by the coefficient of variation of daily demand: X is steady enough to
+// forecast, Y wobbles, Z is effectively unforecastable. Together they say what to
+// DO — an AX line justifies a tight reorder point and a monthly count; a CZ line
+// justifies buying it when someone asks and counting it once a year.
+//
+// The override is sticky by design. A buyer who knows the £900 part is being
+// discontinued, or that the washer is the one that stops a production line, is
+// carrying information no ledger holds. The nightly pass recomputes the measured
+// class regardless and stores both, so the surface can show "measured C, you set
+// A" rather than pretending the override was the finding.
+
+model InventoryClassification {
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+
+  // A | B | C. A CHECK pins both.
+  abcClass String @default("C") @map("abc_class") @db.VarChar(1)
+  // X | Y | Z, or NULL for "not enough selling days to judge steadiness yet".
+  //
+  // Nullable rather than defaulted, and that is the whole point: the column used
+  // to default to 'Z', so a catalogue nobody had sold from yet reported every
+  // line as erratic. A CV is computable from any history at all — two sales in a
+  // month yields about 4.0 — so the arithmetic never objects, and the screen ends
+  // up advising "order little and often" on the strength of nothing. NULL says
+  // unmeasured, which is the honest answer and the one the UI can phrase.
+  xyzClass String? @map("xyz_class") @db.VarChar(1)
+
+  // Units moved in the trailing year × the current cost basis. The ranking key.
+  annualUsageUnits      Int    @default(0) @map("annual_usage_units")
+  annualUsageValueCents BigInt @default(0) @map("annual_usage_value_cents")
+
+  // This item's share of the tenant's total annual usage value, and the running
+  // total at its rank — the two numbers that make the cut explainable ("you are
+  // 0.4% of spend, and everything above you adds to 93%, so you are a B").
+  valueSharePct      Decimal @default(0) @map("value_share_pct") @db.Decimal(9, 6)
+  cumulativeSharePct Decimal @default(0) @map("cumulative_share_pct") @db.Decimal(9, 6)
+
+  demandCv Decimal? @map("demand_cv") @db.Decimal(10, 4)
+
+  // Set by a person; wins over the measured class everywhere it is used, and the
+  // nightly pass never clears it.
+  abcOverride    String?   @map("abc_override") @db.VarChar(1)
+  xyzOverride    String?   @map("xyz_override") @db.VarChar(1)
+  overrideReason String?   @map("override_reason") @db.VarChar(255)
+  overrideBy     String?   @map("override_by") @db.VarChar(127)
+  overrideAt     DateTime? @map("override_at") @db.Timestamptz
+
+  classifiedAt DateTime @default(now()) @map("classified_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, warehouseId])
+  @@index([tenantId, abcClass, xyzClass])
+  @@index([tenantId, annualUsageValueCents])
+  @@map("inventory_classifications")
+}
+
+// The reorder arithmetic for one (variant, location), and who owns the answer.
+//
+//   safety stock  = z(service level) × √( LT·σ_d² + d²·σ_LT² )
+//   reorder point = d × LT × seasonality + safety stock
+//
+// Both halves of the variability term matter and most tools only carry the
+// first. A supplier whose lead time swings between 3 and 21 days puts far more
+// stock at risk than one whose demand wobbles a little, and the σ_LT term is the
+// only thing that says so. `leadTimeSource` records whether the LT used was
+// MEASURED from receipts, taken from the supplier's stated figure, or from the
+// level — because "we measured your last 14 deliveries" and "your supplier says
+// 5 days" deserve very different confidence.
+//
+// `isAutoManaged` is the consent flag, and it has THREE states, not two. False
+// means the level's own `reorder_point` is a human's number and the sweep only
+// ever writes the computed figure to `dynamic_reorder_point` beside it. NULL
+// means nobody has decided, so the tenant's switch governs. `autoManagedSource`
+// says who decided — a person's answer is final, the sweep's is still subject to
+// the switch. Two states could not say "undecided", so the sweep stamped `false`
+// on everything it planned and the tenant switch became a permanent no-op.
+
+model ReorderPolicy {
+  variantId   String @map("variant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+
+  // p50 | p80 | p90 | p95 | p99, or null to follow the tenant default. Higher
+  // means more cushion for the same demand: p95 says "be in stock 95% of the
+  // replenishment cycles", and the last few points cost real money.
+  serviceLevel String? @map("service_level") @db.VarChar(4)
+
+  // Overrides for the two inputs a person may genuinely know better than the
+  // data — a supplier who has just changed factory, or a cushion an operator
+  // wants regardless of what the maths says.
+  leadTimeDaysOverride Int? @map("lead_time_days_override")
+  safetyStockOverride  Int? @map("safety_stock_override")
+
+  // ── Computed nightly ──
+  safetyStockUnits      Int     @default(0) @map("safety_stock_units")
+  computedReorderPoint  Int     @default(0) @map("computed_reorder_point")
+  computedOrderQuantity Int     @default(0) @map("computed_order_quantity")
+  leadTimeDaysUsed      Decimal @default(0) @map("lead_time_days_used") @db.Decimal(8, 2)
+  leadTimeStdDevUsed    Decimal @default(0) @map("lead_time_std_dev_used") @db.Decimal(8, 2)
+
+  // measured | supplier | level | default. A CHECK pins it.
+  leadTimeSource String @default("default") @map("lead_time_source") @db.VarChar(12)
+
+  // When true the sweep copies `computedReorderPoint` onto the level. NULL means
+  // undecided — see the file header. `person` | `sweep`; a CHECK pins the pair so
+  // a decision always carries its decider.
+  isAutoManaged     Boolean?  @map("is_auto_managed")
+  autoManagedSource String?   @map("auto_managed_source") @db.VarChar(8)
+  appliedAt         DateTime? @map("applied_at") @db.Timestamptz
+
+  computedAt DateTime @default(now()) @map("computed_at") @db.Timestamptz
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@id([variantId, warehouseId])
+  @@index([tenantId, isAutoManaged])
+  @@map("inventory_reorder_policies")
+}
+
+// How long a supplier ACTUALLY takes, measured from the day the order was sent
+// to the day the goods were booked in.
+//
+// Kept at two grains in one table: a row with `variantId` null is the supplier's
+// overall figure; a row with it set is that supplier for that item, which is
+// often materially different (they stock the common part and drop-ship the rare
+// one). The reorder maths prefers the per-variant row and falls back to the
+// supplier's. Two PARTIAL unique indexes rather than one over a nullable column
+// — a plain UNIQUE treats nulls as distinct and would happily accept fifty
+// "overall" rows for the same supplier.
+//
+// `promisedDays` is the stated lead time captured at measuring time, so the
+// gap between promise and reality is a stored fact rather than something a
+// report recomputes against a figure that has since been edited. That gap is
+// the seed of Phase 8's scorecard; it lands here because Phase 7's reorder
+// point is wrong without it (7.3, 7.9).
+
+model SupplierLeadTime {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  supplierId String  @map("supplier_id") @db.Uuid
+  variantId  String? @map("variant_id") @db.Uuid
+
+  // How many (order → receipt) pairs the figures below stand on. One delivery is
+  // an anecdote; the surface says so rather than treating it as a measurement.
+  sampleCount Int @default(0) @map("sample_count")
+
+  meanDays   Decimal @default(0) @map("mean_days") @db.Decimal(8, 2)
+  stdDevDays Decimal @default(0) @map("std_dev_days") @db.Decimal(8, 2)
+  minDays    Int     @default(0) @map("min_days")
+  maxDays    Int     @default(0) @map("max_days")
+
+  // The supplier's stated figure at measuring time, and the share of deliveries
+  // that arrived on or before it.
+  promisedDays Int?     @map("promised_days")
+  onTimeRate   Decimal? @map("on_time_rate") @db.Decimal(5, 4)
+
+  lastReceiptAt DateTime? @map("last_receipt_at") @db.Timestamptz
+  measuredAt    DateTime  @default(now()) @map("measured_at") @db.Timestamptz
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier Supplier        @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  variant  ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, supplierId])
+  @@map("inventory_supplier_lead_times")
+}
+
+// A standing instruction to keep counting a slice of the warehouse.
+//
+// Counts have existed since docs/100 and every one of them had to be created by
+// hand, which means in practice they stop happening in week three. A schedule is
+// the difference between "we cycle count" as an intention and as a fact.
+//
+// ABC-driven cadence is the market's convention and it is right: count the stock
+// that carries the money often, and the long tail rarely. A monthly A-class
+// schedule, a quarterly B and an annual C covers a catalogue completely with a
+// tenth of the counting a full stocktake needs.
+//
+// `nextRunAt` is a stored date rather than something derived from `lastRunAt` +
+// interval, because a schedule that was paused for six weeks should resume on a
+// sane date rather than immediately firing six overdue counts.
+
+model CycleCountSchedule {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId    String @map("tenant_id") @db.Uuid
+  warehouseId String @map("warehouse_id") @db.Uuid
+
+  name String @db.VarChar(80)
+
+  // What it covers. Null class = every class; null zone = the whole location.
+  abcClass String? @map("abc_class") @db.VarChar(1)
+  zoneName String? @map("zone_name") @db.VarChar(60)
+
+  // weekly | monthly | quarterly | annually | custom. A CHECK pins it.
+  // `intervalDays` is the operative number — resolved from the cadence on write
+  // so the generator never re-interprets a word, and free for `custom`.
+  cadence      String @db.VarChar(12)
+  intervalDays Int    @map("interval_days")
+
+  // A count of four hundred lines does not get done. The generator takes the
+  // most overdue slice up to this size and leaves the rest for next time.
+  maxItemsPerRun Int @default(50) @map("max_items_per_run")
+
+  // Blind by default here, unlike a hand-made count: a scheduled count exists to
+  // measure accuracy, and showing the expected figure to the counter measures
+  // agreement instead.
+  isBlind Boolean @default(true) @map("is_blind")
+
+  // Who the generated count is for. Free text (a user id) rather than an FK, to
+  // match `approvedBy` on the count itself.
+  assignedTo String? @map("assigned_to") @db.VarChar(127)
+
+  isActive Boolean @default(true) @map("is_active")
+
+  lastRunAt   DateTime? @map("last_run_at") @db.Timestamptz
+  lastCountId String?   @map("last_count_id") @db.Uuid
+  nextRunAt   DateTime  @map("next_run_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  warehouse Warehouse        @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  counts    InventoryCount[]
+
+  @@index([tenantId, warehouseId])
+  @@index([tenantId, isActive, nextRunAt])
+  @@map("inventory_cycle_count_schedules")
+}
+
+// The knobs a business is allowed to turn, in one place, with defaults that are
+// right for almost everybody.
+//
+// One row per tenant, absent by default — and absent means these defaults, so a
+// tenant who never opens the screen still gets a working forecast. Same contract
+// as `CostingPolicy`.
+//
+// The holding-cost rate deserves a note: 25% a year is the figure the category
+// uses (warehousing, insurance, capital, shrink and obsolescence, together), and
+// 54% of operators report their real number is above 10%. It is a genuine
+// estimate and the surface says so. It exists because "you have £41,000 sitting
+// in stock that has not moved in a year" is an interesting sentence and "that is
+// costing you about £10,000 a year to keep" is an actionable one.
+
+model InventoryPlanningPolicy {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  // p50 | p80 | p90 | p95 | p99. A CHECK pins it.
+  serviceLevel String @default("p95") @map("service_level") @db.VarChar(4)
+
+  // Annual carrying cost as a percentage of the stock's value.
+  holdingCostRatePct Decimal @default(25.00) @map("holding_cost_rate_pct") @db.Decimal(5, 2)
+
+  // The cumulative-value cuts for ABC. Defaults are the classic 80/95.
+  abcAThresholdPct Decimal @default(80.00) @map("abc_a_threshold_pct") @db.Decimal(5, 2)
+  abcBThresholdPct Decimal @default(95.00) @map("abc_b_threshold_pct") @db.Decimal(5, 2)
+
+  // The coefficient-of-variation cuts for XYZ.
+  xyzXMaxCv Decimal @default(0.500) @map("xyz_x_max_cv") @db.Decimal(6, 3)
+  xyzYMaxCv Decimal @default(1.000) @map("xyz_y_max_cv") @db.Decimal(6, 3)
+
+  // Cover beyond which stock counts as overstock, and the idle period beyond
+  // which it counts as dead. Separate numbers because they are separate
+  // problems: overstock is too much of something that sells, dead stock is
+  // anything at all of something that does not.
+  overstockCoverDays Int @default(180) @map("overstock_cover_days")
+  deadStockDays      Int @default(180) @map("dead_stock_days")
+
+  // Whether a level with no reorder point yet gets an auto-managed one the first
+  // time the sweep sees it. Off by default: an automatic number that appears
+  // without being asked for is indistinguishable from a bug.
+  autoApplyReorderPoints Boolean @default(false) @map("auto_apply_reorder_points")
+
+  // How much history a seasonality multiplier needs before it is trusted at all.
+  minSeasonalityHistoryDays Int @default(365) @map("min_seasonality_history_days")
+
+  lastSweepAt DateTime? @map("last_sweep_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("inventory_planning_policies")
+}

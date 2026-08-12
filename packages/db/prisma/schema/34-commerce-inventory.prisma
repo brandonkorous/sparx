@@ -82,6 +82,18 @@ model Warehouse {
   binLevels    InventoryBinLevel[]
   binMovements InventoryBinMovement[]
 
+  pickLists      PickList[]
+  costLayers     InventoryCostLayer[]
+  assemblyOrders AssemblyOrder[]
+
+  // Planning intelligence (docs/146 Phase 7)
+  demandVelocity      DemandVelocity[]
+  classifications     InventoryClassification[]
+  reorderPolicies     ReorderPolicy[]
+  cycleCountSchedules CycleCountSchedule[]
+  poApprovalRules     PurchaseOrderApprovalRule[]
+  supplierReturns     SupplierReturn[]
+
   @@unique([tenantId, code], map: "inventory_warehouses_tenant_code_unique")
   @@index([tenantId, isActive])
   @@map("inventory_warehouses")
@@ -117,6 +129,23 @@ model InventoryLevel {
   // ProductVariant.costCents before the first costed receipt.
   unitCostCents Int? @map("unit_cost_cents")
   avgCostCents  Int? @map("avg_cost_cents")
+
+  // ── Planning intelligence, denormalised for reading (docs/146 Phase 7) ──
+  //
+  // Every one of these is DERIVED and rewritten by the nightly planning sweep;
+  // the tables in 59-inventory-planning.prisma hold the inputs that produced
+  // them. They live here so a stock list can sort by class, or filter to "less
+  // than a fortnight of cover", without joining four tables per row.
+  //
+  // `dynamicReorderPoint` sits BESIDE `reorderPoint`, never on top of it: the
+  // computed suggestion and the operative trigger are different facts, and the
+  // sweep only copies one onto the other where the level is explicitly
+  // auto-managed (`inventory_reorder_policies.is_auto_managed`).
+  abcClass            String?   @map("abc_class") @db.VarChar(1)
+  xyzClass            String?   @map("xyz_class") @db.VarChar(1)
+  forecastDailyDemand Decimal?  @map("forecast_daily_demand") @db.Decimal(12, 4)
+  dynamicReorderPoint Int?      @map("dynamic_reorder_point")
+  planningComputedAt  DateTime? @map("planning_computed_at") @db.Timestamptz
 
   asOf      DateTime @default(now()) @map("as_of") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -167,6 +196,21 @@ model InventoryMovement {
 
   note          String? @db.Text
   unitCostCents Int?    @map("unit_cost_cents")
+
+  // What the goods on this movement COST, in the tenant's base currency
+  // (docs/146 Phase 5.9). Stamped on every movement that takes stock out — a
+  // sale, a loss, a damage, a transfer leg — so margin is a subtraction rather
+  // than an estimate, and shrinkage is priced at what the units really cost
+  // rather than at today's average.
+  //
+  // SIGNED, and that matters: a reversal (a cancelled order restocking) carries
+  // a NEGATIVE cost, because reversing a sale credits the cost of goods sold.
+  // Summing the column over a period gives period COGS with no special cases.
+  //
+  // Null on ordinary inbound movements — a receipt's cost basis is
+  // `unitCostCents` above, and stamping the same number twice under two names
+  // is how two numbers start to disagree.
+  costConsumedCents Int? @map("cost_consumed_cents")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 

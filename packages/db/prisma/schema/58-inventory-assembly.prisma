@@ -1,0 +1,237 @@
+// Making things out of other things — bills of materials and assembly orders
+// (docs/146 Phase 6.4–6.7).
+//
+// ── What we had, and why it was not this ─────────────────────────────────────
+//
+// `Bundle` with `inventoryMode: decrement_components` looks adjacent and is not.
+// A bundle is a SELLING construct: three things go in a box at checkout and
+// three stock numbers go down. Nothing is ever built, nothing is ever on the
+// shelf as the bundle, and there is no moment where components stop existing and
+// a new thing starts existing. That moment is what an assembly is, and it is
+// where a manufacturer's cost actually forms.
+//
+// ── Everything moves through the one ledger ──────────────────────────────────
+//
+// Completing an assembly writes ordinary `applyMovement` calls: one `assembly_out`
+// per component and one `assembly_in` for the finished goods, in a single
+// transaction. No second writer of `on_hand`, no bespoke arithmetic, and the
+// movement feed reads "12 left because we built something" rather than going
+// quiet. A disassembly is the same two reasons the other way round — units left
+// because of an assembly order, units arrived because of one.
+//
+// ── The cost rolls up because Phase 5 exists ─────────────────────────────────
+//
+// Each component's `assembly_out` movement is stamped with `cost_consumed_cents`
+// by the cost ledger, per the tenant's costing method. So the finished unit's
+// cost is the SUM OF WHAT ACTUALLY LEFT plus labour, divided by how many came
+// out — not an estimate from a price list. Without Phase 5 this would have had
+// to guess.
+//
+// ── Batch quantities, not per-unit ───────────────────────────────────────────
+//
+// `BillOfMaterials.outputQuantity` is the batch size and `BomComponent.
+// quantityPer` is what the whole batch needs. A run of 100 needing three litres
+// of glue records 3 against a batch of 100 — where per-unit would record 0.03,
+// and an integer ledger cannot hold that. Recipes are naturally expressed per
+// batch anyway, which is why every kitchen writes them that way.
+
+model BillOfMaterials {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // What this recipe makes.
+  outputVariantId String @map("output_variant_id") @db.Uuid
+
+  name    String @db.VarChar(127)
+  // Bumped by hand when the recipe changes materially. Kept rather than
+  // overwriting because an assembly order snapshots its components, and being
+  // able to say WHICH version a finished batch was built to is the difference
+  // between a recall you can scope and one you cannot.
+  version Int    @default(1)
+
+  // draft | active | archived. A CHECK pins it. Exactly one ACTIVE bill per
+  // output variant (a partial unique index in the migration) — "which recipe do
+  // we build to" must have one answer.
+  status String @default("draft") @db.VarChar(12)
+
+  // How many finished units one run of this recipe produces. See the header.
+  outputQuantity Int @default(1) @map("output_quantity")
+
+  // What it costs in PEOPLE to run the batch once, in cents. Folded into the
+  // finished unit's cost alongside the components, because a business that
+  // prices assembled goods off component cost alone is pricing its own time at
+  // zero. Zero is a legitimate answer and the default.
+  laborCostCents Int @default(0) @map("labor_cost_cents")
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  outputVariant  ProductVariant  @relation("BomOutput", fields: [outputVariantId], references: [id], onDelete: Cascade)
+  components     BomComponent[]
+  assemblyOrders AssemblyOrder[]
+
+  @@unique([tenantId, outputVariantId, version], map: "inventory_boms_variant_version_unique")
+  @@index([tenantId, status])
+  @@map("inventory_bills_of_materials")
+}
+
+// One ingredient. `quantityPer` is base units consumed per BATCH — see the
+// header on why per-batch rather than per-unit.
+
+model BomComponent {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId  String @map("tenant_id") @db.Uuid
+  bomId     String @map("bom_id") @db.Uuid
+  variantId String @map("variant_id") @db.Uuid
+
+  quantityPer Int @map("quantity_per")
+
+  // How much of this is expected to be WASTED making the batch — offcuts, spills,
+  // the first one that never comes out right. A percentage rather than a
+  // quantity so it scales with the run, and stored to two decimals because 2.5%
+  // is a real answer and 2% is not the same number.
+  //
+  // It is added on TOP of `quantityPer` when an order works out what to pull,
+  // and it is a plan rather than a measurement — what actually got consumed is
+  // recorded on the assembly line, and the difference between the two is the
+  // thing worth looking at.
+  scrapPercent Decimal @default(0) @map("scrap_percent") @db.Decimal(5, 2)
+
+  position Int     @default(0)
+  notes    String? @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bom     BillOfMaterials @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  variant ProductVariant  @relation("BomComponentVariant", fields: [variantId], references: [id], onDelete: Restrict)
+
+  @@unique([bomId, variantId], map: "inventory_bom_components_unique")
+  @@index([tenantId, variantId])
+  @@map("inventory_bom_components")
+}
+
+// A run: build N of something, or take N of something apart.
+//
+// planned    it exists on paper; nothing has moved
+// released   the components are spoken for — HELD, not consumed, so nobody
+//            sells the last of a part that a scheduled build needs
+// completed  terminal; the movements are written and the cost is settled
+// cancelled  terminal; any hold is released and nothing was consumed
+
+model AssemblyOrder {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Per-tenant human identifier (ASM-000001). Prints as a scannable label on the
+  // same path as every other document number.
+  number String @db.VarChar(20)
+
+  // assemble | disassemble. A CHECK pins it. One model rather than two tables
+  // because they are the same event with the arrows reversed, and splitting them
+  // would mean two of every query, surface and report for one difference.
+  kind String @default("assemble") @db.VarChar(12)
+
+  // The recipe this was built to. Nullable because a disassembly can be recorded
+  // against a unit whose recipe was archived, and refusing that would mean the
+  // only way to take something apart is to un-archive its bill first.
+  bomId String? @map("bom_id") @db.Uuid
+
+  outputVariantId String @map("output_variant_id") @db.Uuid
+  warehouseId     String @map("warehouse_id") @db.Uuid
+
+  status String @default("planned") @db.VarChar(12)
+
+  // In OUTPUT units, both. An assembly that only half-finished completes for what
+  // was actually made; the remainder is a new order rather than a partly-done one
+  // that never closes.
+  quantityPlanned   Int @map("quantity_planned")
+  quantityCompleted Int @default(0) @map("quantity_completed")
+
+  // Snapshot from the bill at release, editable before completion — the run that
+  // needed two extra hours cost two extra hours.
+  laborCostCents Int @default(0) @map("labor_cost_cents")
+
+  // Settled on completion: (Σ what the components actually cost + labour) ÷ what
+  // came out. Recorded here as well as on the movement so the order can be read
+  // as a costing document without joining the ledger.
+  outputUnitCostCents Int? @map("output_unit_cost_cents")
+  totalCostCents      Int? @map("total_cost_cents")
+
+  notes String? @db.Text
+
+  plannedFor      DateTime? @map("planned_for") @db.Timestamptz
+  releasedAt      DateTime? @map("released_at") @db.Timestamptz
+  completedAt     DateTime? @map("completed_at") @db.Timestamptz
+  cancelledAt     DateTime? @map("cancelled_at") @db.Timestamptz
+  cancelledReason String?   @map("cancelled_reason") @db.VarChar(500)
+
+  createdBy String?  @map("created_by") @db.VarChar(127)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bom           BillOfMaterials?    @relation(fields: [bomId], references: [id], onDelete: SetNull)
+  outputVariant ProductVariant      @relation("AssemblyOutput", fields: [outputVariantId], references: [id], onDelete: Cascade)
+  warehouse     Warehouse           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  lines         AssemblyOrderLine[]
+
+  @@unique([tenantId, number], map: "inventory_assembly_orders_tenant_number_unique")
+  @@index([tenantId, status, createdAt(sort: Desc)])
+  @@index([tenantId, outputVariantId])
+  @@index([tenantId, warehouseId, status])
+  @@map("inventory_assembly_orders")
+}
+
+// One component on a run, with the recipe SNAPSHOT at the moment it was planned.
+//
+// Snapshot rather than a live read of the bill for the same reason a purchase
+// order snapshots its prices: the recipe can change tomorrow, and a completed
+// batch has to keep saying what actually went into it.
+
+model AssemblyOrderLine {
+  id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId        String @map("tenant_id") @db.Uuid
+  assemblyOrderId String @map("assembly_order_id") @db.Uuid
+  variantId       String @map("variant_id") @db.Uuid
+
+  quantityPerBatch Int     @map("quantity_per_batch")
+  scrapPercent     Decimal @default(0) @map("scrap_percent") @db.Decimal(5, 2)
+
+  // What the plan says to pull for this run, scrap included. Computed once when
+  // the order is planned, so changing the recipe afterwards cannot silently
+  // change what a released order is holding.
+  quantityRequired Int @map("quantity_required")
+
+  // What actually went in. Equal to `quantityRequired` on an ordinary
+  // completion; different when someone corrects it at the bench, and that
+  // difference is the number a production manager actually wants.
+  quantityConsumed Int @default(0) @map("quantity_consumed")
+
+  // What those units cost, taken from the movement's own `cost_consumed_cents`
+  // rather than from a price list — so the finished unit's cost is the sum of
+  // what genuinely left the shelf.
+  costConsumedCents Int @default(0) @map("cost_consumed_cents")
+
+  // Soft pointer to the ledger row (append-only, never deleted under a line).
+  movementId    String? @map("movement_id") @db.Uuid
+  // The hold placed at release, released on completion or cancellation.
+  reservationId String? @map("reservation_id") @db.Uuid
+
+  position Int @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  assemblyOrder AssemblyOrder  @relation(fields: [assemblyOrderId], references: [id], onDelete: Cascade)
+  variant       ProductVariant @relation("AssemblyComponentVariant", fields: [variantId], references: [id], onDelete: Restrict)
+
+  @@unique([assemblyOrderId, variantId], map: "inventory_assembly_lines_unique")
+  @@index([tenantId, variantId])
+  @@map("inventory_assembly_order_lines")
+}

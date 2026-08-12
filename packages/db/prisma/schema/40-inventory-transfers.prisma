@@ -45,8 +45,12 @@ model InventoryTransferLine {
 
   // quantity = requested/shipped units; receivedQuantity is set on receive and may
   // be short (the shortfall is written off the in-transit level as a `loss`).
+  // Base units (docs/146 Phase 6.2); the pair below says what was entered.
   quantity         Int
   receivedQuantity Int? @map("received_quantity")
+
+  uomCode     String? @map("uom_code") @db.VarChar(12)
+  unitsPerUom Int     @default(1) @map("units_per_uom")
 
   // Soft pointers to the source `transfer_out` (ship) and destination `transfer_in`
   // (receive) movements — the ledger is the authority, these are for display.

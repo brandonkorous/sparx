@@ -40,6 +40,13 @@ export type InventoryTopic = Extract<
   | 'inventory.oversell.blocked'
   | 'inventory.source.stale'
   | 'inventory.source.recovered'
+  | 'inventory.pick_list.created'
+  | 'inventory.pick_list.completed'
+  | 'inventory.pick.short'
+  | 'inventory.package.packed'
+  | 'inventory.assembly.completed'
+  | 'inventory.classification.changed'
+  | 'inventory.purchase_order.late'
 >;
 
 export interface InventoryEventInput<T = Record<string, unknown>> {

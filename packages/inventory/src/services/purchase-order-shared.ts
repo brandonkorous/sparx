@@ -10,6 +10,9 @@ import type { Prisma, TxClient } from '@sparx/db';
 
 import { InventoryConflictError, InventoryNotFoundError } from '../errors';
 
+import { resolveSupplierPriceOnTx } from './supplier-price-breaks';
+import { resolveLineUom, toBaseUnitCost, toBaseUnits } from './units-of-measure';
+
 // ─── Row shapes (serialized, API-facing) ──────────────────────────────────────
 
 export interface PurchaseOrderLineRow {
@@ -19,10 +22,15 @@ export interface PurchaseOrderLineRow {
   supplierSku: string | null;
   variantSku: string | null;
   productTitle: string | null;
+  /** Base units, always (docs/146 Phase 6.2). The pair below says what the
+   *  buyer ordered in, so the screen can read "4 cases (48 each)". */
   quantityOrdered: number;
   quantityReceived: number;
+  /** Per base unit. Multiply by `unitsPerUom` for the price of a pack. */
   unitCostCents: number;
   lineTotalCents: number;
+  uomCode: string | null;
+  unitsPerUom: number;
 }
 
 export interface PurchaseOrderRow {
@@ -127,6 +135,8 @@ export function serializePurchaseOrderLine(line: PoLineFull): PurchaseOrderLineR
     quantityReceived: line.quantityReceived,
     unitCostCents: line.unitCostCents,
     lineTotalCents: line.quantityOrdered * line.unitCostCents,
+    uomCode: line.uomCode,
+    unitsPerUom: line.unitsPerUom,
   };
 }
 
@@ -205,15 +215,32 @@ export async function recomputeTotals(tx: TxClient, purchaseOrderId: string): Pr
 
 export interface ResolvedLineData {
   variantId: string;
+  /** Base units, always — whatever the buyer typed it in. */
   quantityOrdered: number;
+  /** Per base unit, likewise. */
   unitCostCents: number;
   supplierSku: string | null;
   description: string | null;
+  /** What the buyer ordered in, snapshot onto the line (docs/146 Phase 6.2). */
+  uomCode: string | null;
+  unitsPerUom: number;
 }
 
 /** Resolve a PO line's stored fields from input + defaults: cost falls back from
  *  the explicit override → the (supplier, variant) link cost → the variant cost →
- *  0; SKU + description snapshot from the link / catalog when omitted. */
+ *  0; SKU + description snapshot from the link / catalog when omitted.
+ *
+ *  Units of measure (docs/146 Phase 6.2): when the buyer names a pack unit, the
+ *  quantity and the cost they typed are IN that unit — "4 cases at £48" — and
+ *  both are converted here, once, before anything is stored. What lands in
+ *  `quantityOrdered` and `unitCostCents` is always base units and per-base-unit
+ *  cost, so every existing sum, receipt, reorder suggestion and report keeps
+ *  working on one unit and needs to know nothing about cases. The code and the
+ *  factor are snapshot alongside so the printed order can still read "4 cases".
+ *
+ *  With no unit named, the item's usual PURCHASE unit is used when it has one —
+ *  a business that buys everything by the case should not have to say so on
+ *  every line. Nothing set anywhere means base units, which is most items. */
 export async function resolveLineData(
   tx: TxClient,
   supplierId: string,
@@ -230,12 +257,43 @@ export async function resolveLineData(
     select: { unitCostCents: true, supplierSku: true },
   });
 
+  const uom = await resolveLineUom(tx, {
+    variantId: input.variantId,
+    ...(input.uomCode !== undefined ? { uomCode: input.uomCode } : {}),
+    purpose: 'purchase',
+  });
+
+  const quantityOrdered = toBaseUnits(input.quantity, uom.unitsPerUom);
+
+  // Quantity price breaks (docs/146 Phase 8.4). Resolved against the BASE-unit
+  // quantity, because a ladder written as "fifty units" must not be dodged by
+  // ordering five cases of ten. Only consulted when the buyer did not type a
+  // cost — an explicit figure is a negotiated one and always wins.
+  const ladderPrice =
+    input.unitCostCents === undefined
+      ? await resolveSupplierPriceOnTx(tx, {
+          supplierId,
+          variantId: input.variantId,
+          quantity: quantityOrdered,
+        })
+      : null;
+
+  // The fallback costs (the supplier link, the catalogue) are already per base
+  // unit — only a cost the buyer TYPED alongside a pack unit is per pack.
+  const typedCost = input.unitCostCents;
+  const baseUnitCost =
+    typedCost !== undefined
+      ? toBaseUnitCost(typedCost, uom.unitsPerUom)
+      : (ladderPrice?.unitCostCents ?? link?.unitCostCents ?? variant.costCents ?? 0);
+
   return {
     variantId: input.variantId,
-    quantityOrdered: input.quantity,
-    unitCostCents: input.unitCostCents ?? link?.unitCostCents ?? variant.costCents ?? 0,
+    quantityOrdered,
+    unitCostCents: baseUnitCost,
     supplierSku: input.supplierSku ?? link?.supplierSku ?? null,
     description: input.description ?? variant.title ?? variant.product?.title ?? null,
+    uomCode: uom.uomCode,
+    unitsPerUom: uom.unitsPerUom,
   };
 }
 

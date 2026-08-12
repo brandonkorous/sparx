@@ -20,6 +20,19 @@ import inventoryIntegrityRoutes from './integrity.js';
 import inventoryBinRoutes from './bins.js';
 import inventoryBarcodeRoutes from './barcodes.js';
 import inventoryScanningRoutes from './scanning.js';
+import inventoryPickingRoutes from './picking.js';
+import inventoryCostingRoutes from './costing.js';
+import inventoryUomRoutes from './uom.js';
+import inventoryAssemblyRoutes from './assemblies.js';
+import inventoryPlanningRoutes from './planning.js';
+import inventoryClassificationRoutes from './classifications.js';
+import inventoryScheduleRoutes from './schedules.js';
+// Supplier performance + procurement discipline (docs/146 Phase 8)
+import supplierPerformanceRoutes from './supplier-performance.js';
+import poApprovalRoutes from './po-approvals.js';
+import advanceShipNoticeRoutes from './advance-ship-notices.js';
+import supplierReturnRoutes from './supplier-returns.js';
+import supplierBillRoutes from './supplier-bills.js';
 
 const inventoryRoutes: FastifyPluginAsync = async (app) => {
   // The documented public API (docs/06 §7) — registered first so its canonical
@@ -45,6 +58,24 @@ const inventoryRoutes: FastifyPluginAsync = async (app) => {
   await app.register(inventoryBinRoutes);
   await app.register(inventoryBarcodeRoutes);
   await app.register(inventoryScanningRoutes);
+  await app.register(inventoryPickingRoutes);
+  await app.register(inventoryCostingRoutes);
+  await app.register(inventoryUomRoutes);
+  await app.register(inventoryAssemblyRoutes);
+  await app.register(inventoryPlanningRoutes);
+  await app.register(inventoryClassificationRoutes);
+  await app.register(inventoryScheduleRoutes);
+
+  // Phase 8. Registered AFTER the purchase-order routes: Fastify matches static
+  // path segments ahead of parameterised ones, so `/purchase-orders/late` and
+  // `/purchase-orders/approvals` resolve correctly either way — but keeping the
+  // order explicit means a future `/purchase-orders/:id` change cannot silently
+  // swallow them.
+  await app.register(supplierPerformanceRoutes);
+  await app.register(poApprovalRoutes);
+  await app.register(advanceShipNoticeRoutes);
+  await app.register(supplierReturnRoutes);
+  await app.register(supplierBillRoutes);
 };
 
 export default inventoryRoutes;

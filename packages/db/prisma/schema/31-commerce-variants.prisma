@@ -55,8 +55,26 @@ model ProductVariant {
 
   priceCents          Int    @map("price_cents")
   compareAtPriceCents Int?   @map("compare_at_price_cents")
+  // The PLANNED cost — what a unit is expected to cost. Under standard costing
+  // this IS the cost basis and the difference from what was actually paid is
+  // reported as a purchase price variance; under the other methods it is the
+  // fallback until the first costed receipt sets a real basis.
   costCents           Int?   @map("cost_cents")
   currency            String @db.VarChar(3)
+
+  // Per-variant override of the tenant's costing method (docs/146 Phase 5.5):
+  // moving_average | fifo | standard. Null = follow the tenant policy, which is
+  // what almost every variant will do. It exists because a business that
+  // manufactures a dozen parts and resells four hundred wants standard costing
+  // on the twelve and moving average on the rest, and forcing one method on the
+  // whole catalogue would make them keep the other set in a spreadsheet.
+  costingMethod String? @map("costing_method") @db.VarChar(20)
+
+  // The unit the LEDGER counts this in (docs/146 Phase 6.1) — its base unit.
+  // Null means "each", which is what every variant meant before units existed
+  // and what almost all of them will go on meaning. Every other unit for this
+  // variant is a `VariantUomConversion` expressed as a multiple of this one.
+  stockingUomId String? @map("stocking_uom_id") @db.Uuid
 
   weightGrams Int? @map("weight_grams")
   lengthMm    Int? @map("length_mm")
@@ -91,9 +109,9 @@ model ProductVariant {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant                Tenant                      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  product               Product                     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  markupRule            MarkupRule?                 @relation(fields: [markupRuleId], references: [id], onDelete: SetNull)
+  tenant                Tenant                         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product               Product                        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  markupRule            MarkupRule?                    @relation(fields: [markupRuleId], references: [id], onDelete: SetNull)
   optionAssignments     ProductVariantOptionValue[]
   images                VariantImage[]
   inventoryLevels       InventoryLevel[]
@@ -104,6 +122,9 @@ model ProductVariant {
   supplierLinks         SupplierVariant[]
   purchaseOrderLines    PurchaseOrderLine[]
   goodsReceiptLines     GoodsReceiptLine[]
+  asnLines              AdvanceShipNoticeLine[]
+  supplierReturnLines   SupplierReturnLine[]
+  supplierBillLines     SupplierBillLine[]
   countLines            InventoryCountLine[]
   transferLines         InventoryTransferLine[]
   priceListEntries      PriceListEntry[]
@@ -127,9 +148,26 @@ model ProductVariant {
   channelBuffers        InventoryChannelBuffer[]
   binLevels             InventoryBinLevel[]
   binMovements          InventoryBinMovement[]
-  defaultBin            InventoryBin?               @relation("VariantDefaultBin", fields: [defaultBinId], references: [id], onDelete: SetNull)
+  defaultBin            InventoryBin?                  @relation("VariantDefaultBin", fields: [defaultBinId], references: [id], onDelete: SetNull)
   barcodes              VariantBarcode[]
   scanEvents            InventoryScanEvent[]
+  pickListLines         PickListLine[]
+  packageLines          ShipmentPackageLine[]
+  costLayers            InventoryCostLayer[]
+
+  // Units of measure + assembly (docs/146 Phase 6)
+  stockingUom           UnitOfMeasure?         @relation("VariantStockingUom", fields: [stockingUomId], references: [id], onDelete: SetNull)
+  uomConversions        VariantUomConversion[]
+  bomOutputs            BillOfMaterials[]      @relation("BomOutput")
+  bomComponentUses      BomComponent[]         @relation("BomComponentVariant")
+  assemblyOutputs       AssemblyOrder[]        @relation("AssemblyOutput")
+  assemblyComponentUses AssemblyOrderLine[]    @relation("AssemblyComponentVariant")
+
+  // Planning intelligence (docs/146 Phase 7)
+  demandVelocity    DemandVelocity[]
+  classifications   InventoryClassification[]
+  reorderPolicies   ReorderPolicy[]
+  supplierLeadTimes SupplierLeadTime[]
 
   @@unique([tenantId, sku], map: "product_variants_sku_unique")
   @@index([tenantId, productId])
