@@ -147,7 +147,20 @@ ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
 ARG NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 
-RUN pnpm --filter @sparx/workbench build
+# NODE_OPTIONS on the RUN line, NOT an ENV: the runner stage below is a separate
+# FROM and sets its own cap to match the pod's memory limit, which must never be
+# shadowed by a build-time value.
+#
+# `next build` runs TypeScript over the whole surface layer, and at 306 surfaces
+# that program no longer fits V8's DEFAULT old-space ceiling (~4 GB). It does not
+# fail as a type error — the build worker dies with `Ineffective mark-compacts
+# near heap limit` and `SIGABRT`, which reads as a broken build rather than a
+# box that ran short. The same wall has already been hit by `@sparx/api-rest`
+# (pre-push, CI) and `@sparx/api-mcp` (CI at 6144); this is the third.
+#
+# Each image builds on its own runner (release.yml's matrix, max-parallel 6), so
+# 8192 is one build against 16 GB rather than six sharing it.
+RUN NODE_OPTIONS=--max-old-space-size=8192 pnpm --filter @sparx/workbench build
 
 # ----- Production runner -----
 FROM node:${NODE_VERSION} AS runner
