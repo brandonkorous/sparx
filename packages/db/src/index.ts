@@ -280,6 +280,18 @@ export type {
   ExternalBusyBlock,
   BookingNotification,
   BusinessLocation,
+  // Finance (docs/148) — the spend ledger, its vendors + categories, recurring
+  // templates, the accounting handoff, and the daily profit rollup.
+  FinanceExpenseCategory,
+  FinanceVendor,
+  FinanceExpense,
+  FinanceExpenseAllocation,
+  FinanceExpenseAttachment,
+  FinanceRecurringExpense,
+  FinanceAccountingConnection,
+  FinanceAccountingMapping,
+  FinanceAccountingSyncRun,
+  RollupFinanceDailyProfit,
 } from '@prisma/client';
 
 // `Prisma` is exported as a VALUE (not type-only) because callers need the

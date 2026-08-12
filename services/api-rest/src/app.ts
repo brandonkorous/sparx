@@ -57,6 +57,7 @@ import {
   ServiceNotFoundError as SchedulingServiceNotFoundError,
   SlotUnavailableError,
 } from '@sparx/scheduling';
+import { FinanceError } from '@sparx/finance';
 import { createAuthPlugin } from '@sparx/api-core/auth';
 import { createErrorsPlugin, type ErrorEnvelope } from '@sparx/api-core/errors-plugin';
 import { env } from './env.js';
@@ -190,6 +191,7 @@ import channelWebhookRoutes from './routes/v1/public/channel-webhooks.js';
 import socialMetaCallbackRoutes from './routes/v1/public/social-meta-callbacks.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import jobsRoutes from './routes/v1/jobs.js';
+import migrationRoutes from './routes/v1/migration.js';
 import activityRoutes from './routes/v1/activity.js';
 import notificationRoutes from './routes/v1/notifications.js';
 import notificationPreferenceRoutes from './routes/v1/notification-preferences.js';
@@ -707,6 +709,34 @@ function schedulingErrorMapper(
   return undefined;
 }
 
+// Finance errors (@sparx/finance) — same envelope vocabulary as the rest.
+//
+// Two get their own status on purpose. Over-allocating an expense is a 422: the
+// request is well-formed, it just charges jobs for money nobody spent. A
+// protected/in-use category is a 409, because the fix is a different action
+// (archive it, or re-file its spend) rather than a corrected field — and the
+// message already says which, in words an owner can act on.
+function financeErrorMapper(
+  err: unknown,
+  request: { id: string },
+  reply: FastifyReply
+): FastifyReply | undefined {
+  if (!(err instanceof FinanceError)) return undefined;
+  const requestId = request.id;
+
+  const status = err.code.endsWith('_NOT_FOUND')
+    ? 404
+    : err.code === 'SYSTEM_CATEGORY_PROTECTED' || err.code === 'CATEGORY_IN_USE'
+      ? 409
+      : 422;
+
+  const body: ErrorEnvelope = {
+    success: false,
+    error: { code: err.code, message: err.message, request_id: requestId },
+  };
+  return reply.code(status).send(body);
+}
+
 export async function createApp(): Promise<FastifyInstance> {
   // Populate the integration-framework registry + wire the SecretReader
   // before any route can call providerService.runPayment*.
@@ -755,6 +785,7 @@ export async function createApp(): Promise<FastifyInstance> {
         emailErrorMapper,
         automationErrorMapper,
         schedulingErrorMapper,
+        financeErrorMapper,
       ],
     })
   );
@@ -939,6 +970,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(emailRoutes);
   await app.register(dashboardRoutes);
   await app.register(jobsRoutes);
+  await app.register(migrationRoutes);
   await app.register(activityRoutes);
   await app.register(notificationRoutes);
   await app.register(notificationPreferenceRoutes);

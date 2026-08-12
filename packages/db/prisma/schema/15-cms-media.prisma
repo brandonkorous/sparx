@@ -50,6 +50,10 @@ model MediaAsset {
   refsTo        ContentReference[]
   authorAvatars Author[]
   collections   MediaAssetCollection[]
+  // Receipts + bills attached to a spend row (docs/148 §3). Media is the platform's
+  // one upload path, so a receipt is an asset like any other rather than a second
+  // file store nobody remembers to back up.
+  financeReceipts FinanceExpenseAttachment[]
 
   @@index([tenantId, status])
   @@index([tenantId, updatedAt(sort: Desc)])

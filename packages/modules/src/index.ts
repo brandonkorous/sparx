@@ -41,7 +41,22 @@ export type ModuleSlug =
   // entry): a CMS-only publisher, a CRM-only outreach team, and a full storefront
   // all want it, so it is gated on its own flag rather than folded into commerce
   // the way channels is. No REQUIRES/BUNDLED_FREE — it runs standalone.
-  | 'social';
+  | 'social'
+  // Spend tracking + profitability (docs/148). Records what the business PAID and
+  // nets it against what the existing surfaces already know came in. Stands
+  // completely alone — unlike invoicing (needs someone to invoice) or inventory
+  // (needs products), a solo consultant with no other module is a valid
+  // finance-only tenant, which is why it carries a standalone price. But it is
+  // BUNDLED_FREE with commerce/b2b: a business already selling through sparx has
+  // the money-in half of its P&L here, and charging a second time to see the
+  // money-out half prices out exactly the small businesses this is for.
+  //
+  // NOTE the half that is NOT gated on this. The money-IN surfaces (Payments,
+  // Payouts, Owed to you, Where money comes from, Your sparx bill) are a view of
+  // data the tenant already paid for through commerce/invoicing/b2b, so they carry
+  // their own `requiresModules` in the workbench catalog and stay reachable
+  // without this flag. Only the spend + profitability half is billable.
+  | 'finance';
 
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
 // by their own manifest list. This is just the closed set we probe.
@@ -59,6 +74,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'ai',
   'scheduling',
   'social',
+  'finance',
 ];
 
 // ── Module dependency graph ──────────────────────────────────────────────────
@@ -94,6 +110,13 @@ export const BUNDLED_FREE: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = 
   // tenant gets the full inventory surface at $0 (mirrors invoicing↔b2b/commerce).
   // A WMS-only tenant with neither pays the $29 standalone `inventory` price.
   inventory: ['commerce', 'b2b'],
+  // Spend + profitability rides along with the selling modules for the same
+  // reason, and one more specific to it: profit is revenue MINUS spend, and a
+  // Commerce/B2B tenant already bought the revenue half. Selling them the
+  // subtrahend separately is charging twice for one number. A tenant with
+  // neither — a consultancy, a nonprofit, a landlord tracking spend against
+  // invoices — pays the $29 standalone `finance` price.
+  finance: ['commerce', 'b2b'],
 };
 
 export const REQUIRES: Partial<Record<ModuleSlug, readonly ModuleSlug[]>> = {

@@ -171,6 +171,15 @@ model Property {
   rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
   rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
+  rollupFinanceDailyProfit      RollupFinanceDailyProfit[]
+
+  // Finance (docs/148 §3) — spend belongs to a BUSINESS, not a billing container:
+  // two unrelated businesses under one owner never share a ledger, and a bookkeeper
+  // for one has no business seeing the other's books. Nullable on the finance side,
+  // where null is the "tenant-level, not attributable to one site" bucket.
+  financeExpenses              FinanceExpense[]
+  financeRecurringExpenses     FinanceRecurringExpense[]
+  financeAccountingConnections FinanceAccountingConnection[]
 
   // Per-site pricing (docs/131 §4): price lists apply via a junction (Discount
   // shape). Markup + surcharge rules are deliberately tenant-wide — markup writes a

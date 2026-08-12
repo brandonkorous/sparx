@@ -10,6 +10,21 @@ export function formatMoney(amount: number, currency = 'USD'): string {
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
 }
 
+/** The spend half of Finance speaks CENTS on the wire (docs/148) — money crosses
+ *  the API as integers so a rounding error cannot reach a ledger. The money-in
+ *  routes predate that and send major units, hence two formatters rather than one
+ *  that guesses which it was handed. */
+export function formatCents(cents: number, currency = 'USD'): string {
+  return formatMoney(cents / 100, currency);
+}
+
+/** Signed, for anywhere a negative is the point rather than an error: a loss, a
+ *  vendor credit, a period-over-period fall. `-$40.00`, never `$-40.00`. */
+export function formatCentsSigned(cents: number, currency = 'USD'): string {
+  const formatted = formatCents(Math.abs(cents), currency);
+  return cents < 0 ? `−${formatted}` : formatted;
+}
+
 /** Compact above five figures, exact below — a $545.30 total rendered "$545.3"
  *  reads as a typo, but past $10k the cents stop being the point and width does. */
 export function formatMoneyCompact(amount: number, currency = 'USD'): string {
@@ -132,6 +147,141 @@ export function paymentState(status: string): { label: string; tone: Tone } {
     default:
       return { label: status, tone: 'neutral' };
   }
+}
+
+/* ── The spend half (docs/148) ─────────────────────────────────────────────── */
+
+/**
+ * The three cost slices, and the colour each wears everywhere.
+ *
+ * These three must be told apart AT A GLANCE — a P&L where cost of sale, wages
+ * and overhead render the same grey is a failed P&L (docs/148 §5, DESIGN.md
+ * RULE #4). Getting three hues that stay distinct in BOTH themes rules most of
+ * the semantic palette out: `success` and the finance module hue are both green,
+ * `error`/`danger` mean broken, `primary` is the affirmative action, and
+ * `secondary`/`accent` collapse into `info` in dark mode. That leaves amber and
+ * blue, so the third is borrowed from the module palette — violet, the furthest
+ * registered hue from the other two.
+ *
+ * Defined ONCE here and read through `kindColor` so no surface ever types the
+ * borrowed name: if a better registered colour appears, this is the only edit.
+ */
+export type SpendColor = 'warning' | 'info' | 'module-chat';
+
+export type ExpenseKindName = 'cost_of_sale' | 'labor' | 'operating';
+
+export function kindColor(kind: ExpenseKindName): SpendColor {
+  switch (kind) {
+    case 'cost_of_sale':
+      return 'warning';
+    case 'labor':
+      return 'info';
+    default:
+      return 'module-chat';
+  }
+}
+
+/** What each slice is called on screen. Never "COGS", never "opex" — the reader
+ *  owns a business, not an accounting qualification. */
+export function kindLabel(kind: ExpenseKindName): string {
+  switch (kind) {
+    case 'cost_of_sale':
+      return 'Cost of the work';
+    case 'labor':
+      return 'Wages';
+    default:
+      return 'Running costs';
+  }
+}
+
+/** One line on what belongs in each slice, for the category editor — the whole
+ *  profit calculation hinges on an owner filing things in the right one. */
+export function kindHelp(kind: ExpenseKindName): string {
+  switch (kind) {
+    case 'cost_of_sale':
+      return 'Costs that only happen because you did the job — parts, materials, a subcontractor. These come off first.';
+    case 'labor':
+      return 'What you pay people. Wages, contractors on retainer, payroll costs.';
+    default:
+      return 'The cost of being open whether or not you sell anything — rent, software, insurance, fuel, marketing.';
+  }
+}
+
+/** A bill's state, in plain words + its semantic colour. Two dates decide it, and
+ *  conflating them is the classic error: `paidAt` says whether money left, `dueAt`
+ *  says whether it is late. A paid bill is never overdue, however old. */
+export function billState(
+  paidAt: string | null,
+  dueAt: string | null,
+  now = new Date()
+): { label: string; tone: Tone } {
+  if (paidAt) return { label: 'Paid', tone: 'success' };
+  if (!dueAt) return { label: 'Unpaid', tone: 'warning' };
+
+  const due = new Date(dueAt).getTime();
+  const days = Math.floor((now.getTime() - due) / 86_400_000);
+  if (days > 0) {
+    return { label: days === 1 ? '1 day late' : `${String(days)} days late`, tone: 'error' };
+  }
+  if (days === 0) return { label: 'Due today', tone: 'warning' };
+  if (days >= -7) return { label: `Due in ${String(-days)} days`, tone: 'warning' };
+  return { label: `Due ${formatDate(dueAt)}`, tone: 'info' };
+}
+
+/** How often a recurring cost lands, in plain words. */
+export function cadenceLabel(cadence: string): string {
+  switch (cadence) {
+    case 'weekly':
+      return 'Every week';
+    case 'biweekly':
+      return 'Every two weeks';
+    case 'monthly':
+      return 'Every month';
+    case 'quarterly':
+      return 'Every three months';
+    case 'annual':
+      return 'Once a year';
+    default:
+      return cadence;
+  }
+}
+
+/** Where an expense row came from. A derived row is corrected at its source, and
+ *  the label has to make that obvious before someone hunts for an edit button. */
+export function sourceLabel(source: string): string {
+  switch (source) {
+    case 'manual':
+      return 'Entered by hand';
+    case 'recurring':
+      return 'From a repeating cost';
+    case 'imported':
+      return 'Imported';
+    case 'purchase_order':
+      return 'From a purchase order';
+    case 'supplier_bill':
+      return 'From a supplier bill';
+    default:
+      return source.replace(/_/g, ' ');
+  }
+}
+
+/**
+ * A margin rate as a percentage — or an em-dash when there is no rate.
+ *
+ * `null` means nobody could compute one (no revenue to divide by), and it must
+ * never render as "0%": that would rank a job that took £80 of cost and earned
+ * nothing alongside one that genuinely broke even.
+ */
+export function formatRate(rate: number | null): string {
+  if (rate === null) return '—';
+  return `${(rate * 100).toFixed(1)}%`;
+}
+
+/** Period-over-period movement, or null when the previous period was zero and a
+ *  percentage would be meaningless (everything is an infinite rise from nothing). */
+export function changeRate(current: number, previous: number): number | null {
+  if (previous === 0) return null;
+  return (current - previous) / Math.abs(previous);
 }
 
 /** A payout's state — has it reached the bank yet? The derived model only ever emits

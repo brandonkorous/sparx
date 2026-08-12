@@ -64,6 +64,27 @@ export interface SurfaceDefinition {
   readonly title: string | ((params: SurfaceParams) => string);
   /** Drives the pane's accent hue. A pane showing another module's data wears that module's colour. */
   readonly module: WorkbenchModule;
+  /**
+   * Which activated modules make this surface worth OFFERING — any one of them
+   * is enough. Absent means "gate on `module`", which is what almost every
+   * surface wants and is the behaviour that existed before this field.
+   *
+   * It exists because hue and entitlement are not always the same question.
+   * Finance is the case that forced it: the module group is one colour and one
+   * place in the rail, but half of it (Payments, Payouts, Owed to you) is a free
+   * view of data the tenant already bought with commerce/invoicing/b2b, while
+   * the spend + profitability half is the billable `finance` module. Gating the
+   * whole group on one flag would either give the paid half away or take the
+   * free half hostage.
+   *
+   * An EMPTY array means never gated — for a surface that must stay reachable
+   * however the account is configured (Your sparx bill is where someone goes to
+   * BUY a module; hiding it behind one is a locked door with the key inside).
+   *
+   * This is about what is worth showing, never about enforcement: api-rest gates
+   * every module route independently.
+   */
+  readonly requiresModules?: readonly string[];
   readonly icon: LucideIcon;
   readonly component: ComponentType<{ ctx: SurfaceContext }>;
   /**

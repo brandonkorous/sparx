@@ -58,6 +58,7 @@ import * as commerceIndexer from '@sparx/commerce-indexer';
 import * as domain from '@sparx/domain-worker';
 import * as dropship from '@sparx/dropship-worker';
 import * as email from '@sparx/email-worker';
+import * as finance from '@sparx/finance-worker';
 import * as inventory from '@sparx/inventory-worker';
 import * as legalSeed from '@sparx/legal-seed-worker';
 import * as markupRecompute from '@sparx/markup-recompute-worker';
@@ -93,6 +94,7 @@ const SUBSCRIPTIONS: WorkerSubscription[] = [
   domain.createSubscription(forWorker(domain.DURABLE)),
   dropship.createSubscription(forWorker(dropship.DURABLE)),
   email.createSubscription(forWorker(email.DURABLE)),
+  finance.createSubscription(forWorker(finance.DURABLE)),
   inventory.createSubscription(forWorker(inventory.DURABLE)),
   legalSeed.createSubscription(forWorker(legalSeed.DURABLE)),
   markupRecompute.createSubscription(forWorker(markupRecompute.DURABLE)),
