@@ -75,14 +75,23 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // last SHIPPED default, replaced now by the module-aware orientation body (a
     // `featureList` + per-module `moduleFeature` cards). Append so pristine tenants refresh.
     '9e617bb9b2a8265fb8ccb6240ac799188470f2956dfcab622c6a9de3683940c9',
+    // Outgoing (2026-08-11 email redesign): the module-orientation body BEFORE the
+    // content rail — replaced now by the same + a CMS-gated "Fresh from …" content rail.
+    'ef13a8e8b2411f3237b321213dd441ada811166b257582dff047d9baf65c9bc9',
   ]),
   'win-back': new Set([
     'ef8658cbd7ce2f8cb29c1d7065dab56b38ddd8528bf8949c9c9090c7fc01f183',
     '62079f2868e75c7fdaa218e0e73c304276ccaa09a20fb0a57e87406c7d7a8be4',
+    // Outgoing (2026-08-11 email redesign): the bare "heading + para + button" win-back,
+    // replaced now by the same + a CMS-gated content rail (fresh stories re-engage).
+    '40ba0e44f634fa0a1405d72a162a01185e34099466138829fb686cef5ff2cefe',
   ]),
   'abandoned-cart': new Set([
     'c43ddf1e78a48270f73e43c9297f98f5ad7fe78dfe6c48769c7213cf0f3f83ab',
     '650b5c77a6c80d7978311f2fb437e7e997fc800bc833cd437f03bdb78bf466e2',
+    // Outgoing (2026-08-11 email redesign): pre-thumbnail body, replaced now by product
+    // thumbnails on the cart line items + a "You might also like" cross-sell rail.
+    '2a8998435942d33c9433830afee08cf444e2b1893592d09ab15dde1b34fdc163',
   ]),
   'post-purchase-review': new Set([
     '7dda0d718e85cc2c11313fb63f3fa3a5d87aa4438d24eea9008c1a8069413271',
@@ -90,6 +99,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // Outgoing (2026-07-29): pre-cross-sell body, replaced by the same + a commerce-gated
     // "More to explore" cross-sell (marketing send, rides under the unsubscribe footer).
     '820b636ac7f2d0b088f4d938734dda68ae55ce94186c36558d3e78d157608ec8',
+    // Outgoing (2026-08-11 email redesign): pre-thumbnail body, replaced by product
+    // thumbnails on the reviewed line items.
+    '566cc3887c2e25670ab4ab1a61fcb7869b54331f8491fd97883b43365f0d890a',
   ]),
   'b2b-account-approved': new Set([
     '441bf1990f64208d59bebe4fd11e905bf8e1828766e4a9414b142992d456dd3c',
@@ -138,16 +150,26 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     // commerce-gated "While you wait" nudge under the transactional content (CAN-SPAM
     // primary-purpose — the order is still the email's point).
     'fb1c69280d78ec34450b36aaaa2006e010543075fb8b53b666cca306999b5782',
+    // Outgoing (2026-08-11 email redesign): the "While you wait" body, replaced now by
+    // the full receipt — product thumbnails, a subtotal/shipping/tax/total cost summary,
+    // a self-dropping ship-to card, and a "Pairs well with" rail.
+    '20ac7029d9ba4bea9fa35e4bd603f04bac5401b3791ae64cf2dc6c870ea6f8e1',
   ]),
   'shipping-confirmation': new Set([
     'c9d48b50aaf7363fc5f029b24d1ec49476259ba20c7a29a746a47707d4162fdc',
     '488c49bdbb7abef2929bfc28e41648889527534cb7dd1576c760c2bf2019f223',
+    // Outgoing (2026-08-11 email redesign): pre-thumbnail body, replaced by product
+    // thumbnails on the shipped line items.
+    'd1ea5c3abfeec15b164f3e7622afa9768c3a7183c01f09754c0488d2e366a454',
   ]),
   'order-delivered': new Set([
     '92833d0d5e436a08bf2fa8aea7036704d1e7892b8936e34a63865e1085a0ba23',
     // Outgoing (2026-07-29): pre-cross-sell body, replaced by the same + a commerce-gated
     // "Ready for your next find?" nudge (delivery is the natural re-purchase moment).
     '79be08e9f7e15517cd5e32b4db8741f7f6ec2749b842a61aad79ee527bbf4ed2',
+    // Outgoing (2026-08-11 email redesign): the product-rail body, replaced now by the
+    // same + a CMS-gated content rail ("While it's fresh") for content-and-commerce.
+    '48e7eac39513db9790afa45cd27f4b16af5d8c3e021b00d646a93b1243f7ebdf',
   ]),
   'order-cancelled': new Set(['1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990']),
   'order-refunded': new Set(['ecb62f9de7b8a7f3a735c8db9b8e958d3375a069844b5c8dd17cfbd0c05a60b6']),

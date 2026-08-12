@@ -158,6 +158,15 @@ function money(amount: unknown): string {
   return `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+/** Money that HIDES a zero. A `$0.00` shipping / tax / discount line is noise on a
+ *  receipt, and an empty string makes the cost-summary row self-drop (same
+ *  `hideWhenEmpty` mechanism as any optional row) — so free shipping and a
+ *  tax-exempt order simply show no line rather than a `$0.00` one. */
+function moneyPositive(amount: unknown): string {
+  const n = Number(amount);
+  return Number.isFinite(n) && n > 0 ? money(amount) : '';
+}
+
 /** Cents money (carts) → `$12.50`. */
 function moneyCents(cents: number | null | undefined): string {
   if (cents == null) return '';
@@ -356,6 +365,9 @@ async function resolveOrder(
         status: true,
         total: true,
         subtotal: true,
+        shippingTotal: true,
+        taxTotal: true,
+        discountTotal: true,
         refundTotal: true,
         placedAt: true,
         deliveredAt: true,
@@ -387,6 +399,11 @@ async function resolveOrder(
     status: order.status,
     total: money(order.total),
     subtotal: money(order.subtotal),
+    // The receipt breakdown — each hides its zero so a free-shipping / tax-exempt /
+    // undiscounted order shows no line rather than a `$0.00` one.
+    shippingTotal: moneyPositive(order.shippingTotal),
+    taxTotal: moneyPositive(order.taxTotal),
+    discountTotal: moneyPositive(order.discountTotal),
     // The amount refunded (order-refunded email hero) and the lifecycle fields the
     // delivered / cancelled emails read. Empty-string when absent so an optional
     // card row self-drops (a cancelled order with no reason shows no "Reason" line).
@@ -931,6 +948,7 @@ async function resolveModules(ctx: ServiceContext): Promise<Record<string, strin
     'ai',
     'scheduling',
     'social',
+    'finance',
   ];
   const out: Record<string, string> = {};
   for (const m of ALL) out[m] = enabled.has(m) ? m : '';

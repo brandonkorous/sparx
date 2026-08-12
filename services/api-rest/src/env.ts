@@ -61,6 +61,9 @@ const EnvSchema = z
     // fallback (careers@sparx.works) so a fresh env still delivers — mirrors the
     // DASHBOARD_URL-style "optional env, sane default" idiom used elsewhere.
     CAREERS_NOTIFY_EMAIL: z.string().email().optional(),
+    // Where new partner-program applications are announced for staff review. Same
+    // "optional env, sane default" idiom as CAREERS_NOTIFY_EMAIL (partners@sparx.works).
+    PARTNER_NOTIFY_EMAIL: z.string().email().optional(),
     // Optional: when set, the Pub/Sub publisher uses Google Cloud Pub/Sub;
     // otherwise it logs to stdout and is a no-op (dev default). The publisher
     // resolves a topic per `EventType` (topic name == event type) — there is

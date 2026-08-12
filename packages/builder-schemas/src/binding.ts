@@ -684,6 +684,11 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('status', 'Status'),
       text('total', 'Total'),
       text('subtotal', 'Subtotal'),
+      // The receipt breakdown — each self-drops when zero (the resolver blanks a
+      // `$0.00`), so a free-shipping / tax-exempt / undiscounted order shows no line.
+      text('shippingTotal', 'Shipping'),
+      text('taxTotal', 'Tax'),
+      text('discountTotal', 'Discount'),
       // The amount refunded (order-refunded hero) and the lifecycle fields the
       // delivered / cancelled emails read; each is empty when it doesn't apply, so
       // an optional row self-drops (a cancelled order with no reason shows no line).

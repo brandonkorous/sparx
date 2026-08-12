@@ -105,6 +105,9 @@ function toView(row: {
 
 const IdParam = z.object({ id: z.string().uuid() });
 
+// Per-site module scope. Kept in step with @sparx/modules' ALL_MODULES — a slug
+// missing here cannot be scoped off for one site, which reads as the toggle
+// silently doing nothing.
 const MODULE_SLUGS = [
   'builder',
   'commerce',
@@ -112,10 +115,14 @@ const MODULE_SLUGS = [
   'crm',
   'email',
   'b2b',
+  'invoicing',
   'dropship',
   'inventory',
+  'chat',
   'ai',
   'scheduling',
+  'social',
+  'finance',
 ] as const;
 
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here

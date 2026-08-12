@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailCallout, EmailHeading, EmailMuted, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailAlert,
+  EmailDisplayHeading,
+  EmailFinePrint,
+  EmailParagraph,
+} from '../components';
 
 /**
  * "One of your accounts needs reconnecting."
@@ -35,35 +40,38 @@ export function SocialConnectionExpiredEmail({
   const label = accountName ? `${accountName} (${platformName})` : platformName;
 
   return (
-    <EmailLayout preview={`${platformName} needs reconnecting`}>
-      <Section>
-        <EmailHeading>{platformName} needs reconnecting</EmailHeading>
+    <PlatformEmailLayout
+      preview={`${platformName} needs reconnecting`}
+      footerReason={`You're receiving this because your ${platformName} connection stopped working.`}
+    >
+      <EmailDisplayHeading>{platformName} needs reconnecting</EmailDisplayHeading>
 
-        <EmailCallout tone="warn">sparx can no longer post to {label}.</EmailCallout>
+      <EmailAlert tone="warn" title={`sparx can no longer post to ${label}`}>
+        The permission this account gave sparx ran out, or it was removed from the platform&apos;s
+        own settings.
+      </EmailAlert>
 
+      <EmailParagraph>
+        Reconnecting takes a few seconds — you sign in to {platformName} again and everything picks
+        up where it left off.
+      </EmailParagraph>
+
+      {scheduledCount > 0 ? (
         <EmailParagraph>
-          The permission this account gave sparx has run out, or it was removed from the
-          platform&apos;s own settings. Reconnecting takes a few seconds — you sign in to{' '}
-          {platformName} again and everything picks up where it left off.
+          {scheduledCount === 1
+            ? 'There is 1 post waiting to go out to this account.'
+            : `There are ${scheduledCount} posts waiting to go out to this account.`}{' '}
+          They won&apos;t be published until it&apos;s reconnected.
         </EmailParagraph>
+      ) : null}
 
-        {scheduledCount > 0 ? (
-          <EmailParagraph>
-            {scheduledCount === 1
-              ? 'There is 1 post waiting to go out to this account.'
-              : `There are ${scheduledCount} posts waiting to go out to this account.`}{' '}
-            They will not be published until it is reconnected.
-          </EmailParagraph>
-        ) : null}
+      <EmailActionButton href={reconnectUrl}>Reconnect {platformName}</EmailActionButton>
 
-        <EmailButton href={reconnectUrl}>Reconnect {platformName}</EmailButton>
-
-        <EmailMuted>
-          Nothing you have already posted is affected — it stays live on {platformName}. Your other
-          connected accounts keep working normally.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+      <EmailFinePrint>
+        Nothing you&apos;ve already posted is affected — it stays live on {platformName}. Your other
+        connected accounts keep working normally.
+      </EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

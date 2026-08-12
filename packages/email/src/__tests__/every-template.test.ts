@@ -145,6 +145,97 @@ const CASES: { [K in TemplateId]: PropsFor<K> } = {
     trialEndLabel: 'August 20, 2026',
     manageUrl: 'https://app.sparx.works/billing',
   },
+  'subscription-update': {
+    kind: 'plan-changed',
+    accountName: 'Rosa Flowers',
+    planLabel: 'Growth plan',
+    amountLabel: '$49.00 / month',
+    renewsOnLabel: 'September 1, 2026',
+    effectiveLabel: 'August 10, 2026',
+    manageUrl: 'https://app.sparx.works/billing',
+  },
+  'domain-live': {
+    domainName: 'rosasflowers.com',
+    siteUrl: 'https://rosasflowers.com',
+    dashboardUrl: 'https://app.sparx.works/domains',
+  },
+  'domain-expired': {
+    domainName: 'rosasflowers.com',
+    expiredOnLabel: 'August 9, 2026',
+    renewUrl: 'https://app.sparx.works/domains',
+  },
+  'email-domain-verified': {
+    domainName: 'mail.rosasflowers.com',
+    dashboardUrl: 'https://app.sparx.works/email/settings',
+  },
+  'document-signature-request': {
+    signerName: 'Dev Patel',
+    documentLabel: 'Estimate',
+    documentNumber: 'EST-1042',
+    documentTotal: 1499,
+    currency: 'USD',
+    expiresAt: new Date('2026-09-01T00:00:00Z').toISOString(),
+    signingUrl: 'https://rosasflowers.com/sign/abc',
+  },
+  'invitation-accepted': {
+    inviterName: 'Rosa',
+    inviteeName: 'Dev Patel',
+    inviteeEmail: 'dev@example.test',
+    orgName: 'Rosa Flowers',
+    dashboardUrl: 'https://app.sparx.works/team',
+  },
+  'team-member-removed': {
+    memberName: 'Dev Patel',
+    orgName: 'Rosa Flowers',
+  },
+  'team-role-changed': {
+    memberName: 'Dev Patel',
+    orgName: 'Rosa Flowers',
+    newRole: 'admin',
+    dashboardUrl: 'https://app.sparx.works/team',
+  },
+  'module-toggle': {
+    enabled: true,
+    accountName: 'Rosa Flowers',
+    moduleName: 'Commerce',
+    dashboardUrl: 'https://app.sparx.works/settings/modules',
+  },
+  'partner-application-received': {
+    applicantName: 'Dev Patel',
+    applicantEmail: 'dev@example.test',
+    requestedTier: 'Certified',
+    websiteUrl: 'https://dev.example.test',
+    kind: 'Agency',
+    reviewUrl: 'https://admin.sparx.works/partners/applications/1',
+  },
+  'partner-earnings': {
+    kind: 'commission',
+    partnerName: 'Rosa',
+    amountLabel: '$120.00',
+    dashboardUrl: 'https://app.sparx.works/partners',
+  },
+  'password-changed': {
+    name: 'Rosa',
+    changedAtLabel: 'August 10, 2026 at 9:41 AM',
+    secureUrl: 'https://app.sparx.works/security',
+  },
+  'two-factor-changed': {
+    enabled: true,
+    name: 'Rosa',
+    secureUrl: 'https://app.sparx.works/security',
+  },
+  'new-device-signin': {
+    name: 'Rosa',
+    location: 'San Diego, CA',
+    ipAddress: '203.0.113.9',
+    device: 'Chrome on macOS',
+    signedInAtLabel: 'August 10, 2026 at 9:41 AM',
+    secureUrl: 'https://app.sparx.works/security',
+  },
+  'feedback-received': {
+    recipientName: 'Dev Patel',
+    feedbackTitle: 'Add Saturday delivery windows to bookings',
+  },
   'social-post-failed': {
     excerpt: 'Saturday deliveries are here.',
     failed: [{ name: 'Instagram', reason: 'Token expired' }],
@@ -195,6 +286,6 @@ describe('every coded template renders', () => {
     // the other direction — an id removed from the union but left behind here — and
     // pins the count so a silent drop is visible.
     expect(new Set(IDS).size).toBe(IDS.length);
-    expect(IDS.length).toBe(20);
+    expect(IDS.length).toBe(35);
   });
 });

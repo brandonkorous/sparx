@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
+import { PlatformEmailLayout } from './_layout';
 import {
-  EmailButton,
+  EmailActionButton,
   EmailCallout,
-  EmailHeading,
-  EmailLink,
-  EmailMuted,
+  EmailDisplayHeading,
+  EmailFinePrint,
   EmailParagraph,
+  EmailSectionLabel,
+  EmailStatusPill,
 } from '../components';
 
 // In-product feedback — "WizeWorks replied to your feedback" notification
@@ -40,25 +40,28 @@ export function FeedbackResponseEmail({
   threadUrl,
 }: FeedbackResponseEmailProps) {
   return (
-    <EmailLayout preview={`${responderName} replied to your feedback`}>
-      <Section>
-        <EmailHeading>We replied to your feedback</EmailHeading>
-        <EmailParagraph>{recipientName ? `Hi ${recipientName},` : 'Hi there,'}</EmailParagraph>
-        <EmailParagraph>
-          Thanks for taking the time to share this with us. {responderName} replied to your feedback
-          {statusLabel ? ` and marked it “${statusLabel}”` : ''}:
-        </EmailParagraph>
-        <EmailMuted>Your feedback: {feedbackTitle}</EmailMuted>
-        <EmailCallout tone="info">{responseBody}</EmailCallout>
-        <EmailButton href={threadUrl}>View the conversation</EmailButton>
-        <EmailParagraph flush>
-          You can reply right from the thread: <EmailLink href={threadUrl}>{threadUrl}</EmailLink>
-        </EmailParagraph>
-        <EmailMuted>
-          You&apos;re receiving this because you submitted feedback in your sparx dashboard.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview={`${responderName} replied to your feedback`}
+      footerLinks={[{ label: 'View the conversation', href: threadUrl }]}
+      footerReason="You're receiving this because you submitted feedback in your sparx dashboard."
+    >
+      <EmailDisplayHeading>We replied to your feedback</EmailDisplayHeading>
+      <EmailParagraph>{recipientName ? `Hi ${recipientName},` : 'Hi there,'}</EmailParagraph>
+      <EmailParagraph>
+        Thanks for taking the time to share this. {responderName} got back to you
+        {statusLabel ? ' — with an update' : ''}:
+      </EmailParagraph>
+
+      <EmailSectionLabel>Your feedback</EmailSectionLabel>
+      <EmailParagraph style={{ marginBottom: 8 }}>{feedbackTitle}</EmailParagraph>
+      {statusLabel ? <EmailStatusPill label={statusLabel} tone="info" /> : null}
+
+      <EmailCallout tone="info">{responseBody}</EmailCallout>
+
+      <EmailActionButton href={threadUrl}>View the conversation</EmailActionButton>
+
+      <EmailFinePrint>You can reply right from the thread.</EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

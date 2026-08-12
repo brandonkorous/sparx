@@ -1,7 +1,14 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailCallout, EmailHeading, EmailMuted, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailAlert,
+  EmailDisplayHeading,
+  EmailFinePrint,
+  EmailParagraph,
+  EmailStatusList,
+  type StatusRow,
+} from '../components';
 
 /**
  * "Your post didn't go out."
@@ -39,51 +46,49 @@ export function SocialPostFailedEmail({
   const partial = succeeded.length > 0;
   const failedLabel = failed.length === 1 ? 'account' : 'accounts';
 
+  const rows: StatusRow[] = [
+    ...succeeded.map((name) => ({
+      title: name,
+      status: { label: 'Posted', tone: 'success' as const },
+    })),
+    ...failed.map((t) => ({
+      title: t.name,
+      detail: t.reason,
+      status: { label: 'Failed', tone: 'danger' as const },
+    })),
+  ];
+
   return (
-    <EmailLayout
+    <PlatformEmailLayout
       preview={
-        partial ? `Your post reached some accounts but not all of them` : `Your post didn't go out`
+        partial ? 'Your post reached some accounts but not all of them' : "Your post didn't go out"
       }
+      footerLinks={[{ label: 'Open the post', href: postUrl }]}
+      footerReason="You're receiving this because a post you scheduled could not be published."
     >
-      <Section>
-        <EmailHeading>
-          {partial ? 'Your post only reached some accounts' : "Your post didn't go out"}
-        </EmailHeading>
+      <EmailDisplayHeading>
+        {partial ? 'Your post only reached some accounts' : "Your post didn't go out"}
+      </EmailDisplayHeading>
 
-        <EmailCallout tone={partial ? 'warn' : 'warn'}>
-          &ldquo;{excerpt}&rdquo;
-          {scheduledFor ? ` — due ${scheduledFor}` : null}
-        </EmailCallout>
+      <EmailAlert tone="warn" title={`"${excerpt}"`}>
+        {scheduledFor ? `Scheduled for ${scheduledFor}.` : 'Scheduled post.'}{' '}
+        {partial
+          ? `It posted to ${succeeded.join(', ')}, but ${failed.length} ${failedLabel} missed out.`
+          : 'Nothing was posted to any of your accounts.'}
+      </EmailAlert>
 
-        <EmailParagraph>
-          {partial ? (
-            <>
-              It posted to {succeeded.join(', ')}, but {failed.length} {failedLabel} did not get it.
-              Nothing has been posted twice — you can send it to just the ones that missed out.
-            </>
-          ) : (
-            <>
-              Nothing was posted to any of your accounts. Your post is safe and unchanged — you can
-              fix what went wrong and send it again.
-            </>
-          )}
-        </EmailParagraph>
+      <EmailParagraph>
+        {partial
+          ? 'Nothing has been posted twice — you can send it to just the accounts that missed out.'
+          : 'Your post is safe and unchanged — fix what went wrong and send it again.'}
+      </EmailParagraph>
 
-        {failed.map((target) => (
-          <EmailParagraph key={target.name}>
-            <strong>{target.name}</strong>
-            {target.reason ? ` — ${target.reason}` : null}
-          </EmailParagraph>
-        ))}
+      <EmailStatusList rows={rows} />
 
-        <EmailButton href={postUrl}>Open the post</EmailButton>
+      <EmailActionButton href={postUrl}>Open the post</EmailActionButton>
 
-        <EmailMuted>
-          You&apos;re getting this because a post you scheduled could not be published. Anything
-          that did go out is still live on those accounts.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+      <EmailFinePrint>Anything that did go out is still live on those accounts.</EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

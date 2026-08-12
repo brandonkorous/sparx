@@ -10,6 +10,7 @@ export {
   EmailLink,
   EmailButton,
   EmailCallout,
+  EmailFieldPanel,
   EmailSpacer,
   EmailDivider,
   type EmailHeadingProps,
@@ -18,7 +19,35 @@ export {
   type EmailLinkProps,
   type EmailButtonProps,
   type EmailCalloutProps,
+  type EmailFieldRow,
+  type EmailFieldPanelProps,
   type EmailSpacerProps,
 } from './primitives';
-export { colors, typography, spacing, radius, fontFamily } from './tokens';
+export { colors, typography, spacing, radius, fontFamily, signal } from './tokens';
 export { BrandProvider, useBrand, defaultBrand, type BrandTokens } from './brand';
+
+// "Signal" — structural block components for sparx PLATFORM emails (composed
+// inside PlatformEmailLayout). See ./blocks.
+export {
+  EmailDisplayHeading,
+  EmailLead,
+  EmailSectionLabel,
+  EmailStatusPill,
+  EmailStatusList,
+  EmailAmountHero,
+  EmailSteps,
+  EmailLineItems,
+  EmailPayCard,
+  EmailTimeline,
+  EmailAlert,
+  EmailActionButton,
+  EmailCodeBlock,
+  EmailFallbackLink,
+  EmailFinePrint,
+  type Tone,
+  type StepItem,
+  type LineItem,
+  type SummaryRow,
+  type TimelineRow,
+  type StatusRow,
+} from './blocks';

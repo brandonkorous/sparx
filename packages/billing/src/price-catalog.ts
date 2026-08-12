@@ -11,12 +11,12 @@ import type { ModuleSlug } from '@sparx/modules';
 export type BillingInterval = 'monthly' | 'annual';
 
 // Monthly list price (cents) per billable module. A module with NO entry is not
-// separately billed (`builder` is the only always-cheap base). Invoicing ($19)
-// and Inventory ($29) carry a standalone list price but are BUNDLED_FREE with
-// Commerce/B2B — the bundling is handled by the module graph, not here: a bundled
-// tenant simply never has an explicit flag for the capability, so no Stripe item
-// is created. A WMS-only tenant that turns Inventory on without Commerce/B2B is
-// billed the $29 standalone price.
+// separately billed (`builder` is the only always-cheap base). Invoicing ($19),
+// Inventory ($29) and Finance ($29) carry a standalone list price but are
+// BUNDLED_FREE with Commerce/B2B — the bundling is handled by the module graph,
+// not here: a bundled tenant simply never has an explicit flag for the
+// capability, so no Stripe item is created. A WMS-only tenant that turns
+// Inventory on without Commerce/B2B is billed the $29 standalone price.
 export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   builder: 1000,
   commerce: 4900,
@@ -30,6 +30,14 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   invoicing: 1900,
   chat: 1900,
   scheduling: 2900,
+  // Spend tracking + profitability (docs/148 §2). Same tier as inventory and
+  // scheduling. Priced to attach broadly rather than to extract: it is the first
+  // module that is useful to EVERY tenant regardless of what else they run — a
+  // CMS-only publisher pays rent, a CRM-only team buys software — so the price
+  // should never be the reason someone says no. This is the price a tenant with
+  // NEITHER selling module pays; Commerce/B2B bundle it free (BUNDLED_FREE),
+  // because profit is revenue minus spend and they already bought the revenue.
+  finance: 2900,
   // NOTE: `social` (docs/133) is intentionally absent — it is a FREE module. No
   // entry ⇒ `isBillableModule` is false ⇒ the toggle path creates no Stripe item,
   // so it activates at $0 through the normal flow. Do not add a price here without

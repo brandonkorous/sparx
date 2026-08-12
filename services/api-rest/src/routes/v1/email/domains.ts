@@ -12,6 +12,9 @@ import { z } from 'zod';
 import { domainService } from '@sparx/email-platform';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { publish } from '@sparx/api-core/pubsub';
+import { prisma } from '@sparx/db';
+import { appOrigin } from '@sparx/links/server';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 
@@ -56,7 +59,28 @@ const emailDomainRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'admin');
     await requireEmailModule(request);
     const { id } = PathId.parse(request.params);
-    const domain = await domainService.verify(toEmailContext(request), id);
+    const ctx = toEmailContext(request);
+    // Snapshot the state so we email the owner ONCE, on the pending→verified
+    // transition — not on every re-check of an already-verified domain.
+    const before = await domainService.get(ctx, id);
+    const domain = await domainService.verify(ctx, id);
+    if (before.state !== 'verified' && domain.state === 'verified') {
+      try {
+        const tenant = await prisma.tenant.findUnique({
+          where: { id: ctx.tenantId },
+          select: { email: true },
+        });
+        if (tenant?.email) {
+          await publish(request.log, 'email.send', ctx.tenantId, null, {
+            to: tenant.email,
+            template: 'email-domain-verified',
+            props: { domainName: domain.domain, dashboardUrl: appOrigin() },
+          });
+        }
+      } catch (err) {
+        request.log.warn({ err, domainId: id }, 'failed to publish email-domain-verified');
+      }
+    }
     return ok(domain);
   });
 

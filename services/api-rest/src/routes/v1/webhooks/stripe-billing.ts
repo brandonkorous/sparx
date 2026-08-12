@@ -75,6 +75,52 @@ function billingSettingsUrl(): string {
 const asString = (v: string | { id: string } | null | undefined): string | undefined =>
   typeof v === 'string' ? v : (v?.id ?? undefined);
 
+/** Which subscription-update email (if any) a Stripe subscription event warrants.
+ *  `updated` fires for many reasons, so it only emails when the PLAN itself changed
+ *  (`previous_attributes.items` present) — never on every reconcile; and `created`
+ *  only once the subscription is actually live (active/trialing), not `incomplete`. */
+function subscriptionUpdateKind(
+  eventType: string,
+  sub: Stripe.Subscription,
+  previousAttributes: Record<string, unknown> | undefined
+): 'started' | 'canceled' | 'plan-changed' | 'paused' | 'resumed' | null {
+  switch (eventType) {
+    case 'customer.subscription.created':
+      return sub.status === 'active' || sub.status === 'trialing' ? 'started' : null;
+    case 'customer.subscription.deleted':
+      return 'canceled';
+    case 'customer.subscription.paused':
+      return 'paused';
+    case 'customer.subscription.resumed':
+      return 'resumed';
+    case 'customer.subscription.updated':
+      return previousAttributes && 'items' in previousAttributes ? 'plan-changed' : null;
+    default:
+      return null;
+  }
+}
+
+/** The human-facing plan labels for a subscription-update email, all best-effort:
+ *  the price nickname, the normalized monthly amount, the renewal date, and (for a
+ *  trial) the trial end. Any that can't be resolved are omitted and the template
+ *  renders without them. */
+function planSummary(sub: Stripe.Subscription): {
+  planLabel?: string;
+  amountLabel?: string;
+  renewsOnLabel?: string;
+  trialEndLabel?: string;
+} {
+  const currency = sub.currency ?? 'usd';
+  const planLabel = sub.items?.data?.[0]?.price?.nickname ?? undefined;
+  const mrr = monthlyRecurringCents(sub);
+  const amountLabel = mrr != null ? `${money(mrr, currency)} / month` : undefined;
+  // `current_period_end` isn't on every pinned Stripe type version — read defensively.
+  const periodEnd = (sub as unknown as { current_period_end?: number }).current_period_end;
+  const renewsOnLabel = periodEnd ? dateLabel(periodEnd) : undefined;
+  const trialEndLabel = sub.trial_end ? dateLabel(sub.trial_end) : undefined;
+  return { planLabel, amountLabel, renewsOnLabel, trialEndLabel };
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
   // Raw bytes for signature verification, scoped to this encapsulated plugin.
@@ -147,8 +193,39 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
           currency: sub.currency,
         });
       }
+      // Notify the tenant about the state change — one `subscription-update` email
+      // per meaningful transition (started/canceled/plan-changed/paused/resumed).
+      const kind = subscriptionUpdateKind(
+        event.type,
+        sub,
+        (event.data as { previous_attributes?: Record<string, unknown> }).previous_attributes
+      );
+      if (kind) {
+        const recipient = await billingRecipient(asString(sub.customer));
+        if (recipient) {
+          const ps = planSummary(sub);
+          await publish(log, 'email.send', recipient.tenantId, null, {
+            template: 'subscription-update',
+            to: recipient.email,
+            props: {
+              kind,
+              accountName: recipient.name,
+              ...(ps.planLabel ? { planLabel: ps.planLabel } : {}),
+              ...(ps.amountLabel ? { amountLabel: ps.amountLabel } : {}),
+              ...(ps.renewsOnLabel ? { renewsOnLabel: ps.renewsOnLabel } : {}),
+              ...(kind === 'started' && ps.trialEndLabel
+                ? { trialEndLabel: ps.trialEndLabel }
+                : {}),
+              ...(kind === 'canceled' && ps.renewsOnLabel
+                ? { effectiveLabel: ps.renewsOnLabel }
+                : {}),
+              manageUrl: billingSettingsUrl(),
+            },
+          });
+        }
+      }
       log.info(
-        { eventType: event.type, tenantId, status: sub.status },
+        { eventType: event.type, tenantId, status: sub.status, notified: Boolean(kind) },
         'stripe billing webhook: subscription reconciled'
       );
       break;

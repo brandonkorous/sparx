@@ -17,6 +17,9 @@ export { auth, type Auth } from './server';
 // filter) pinned to the caller's tenant. Business data still belongs on the
 // @sparx/db client inside withTenant()/withRequestTenant().
 export { authPrisma } from './prisma';
+// Publishes an `email.send` event from auth-side contexts (better-auth callbacks +
+// the workbench accept-invite server action). See email-events.ts.
+export { publishAuthEmail, type PublishAuthEmailInput } from './email-events';
 export {
   signUpMerchant,
   SignUpError,

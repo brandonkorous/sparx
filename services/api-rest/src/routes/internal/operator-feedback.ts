@@ -22,6 +22,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant, type Prisma } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
+import { appOrigin } from '@sparx/links/server';
 import type { FeedbackRespondedPayload } from '@sparx/events';
 import { writePlatformNotice } from '../../lib/platform-notice.js';
 import type {
@@ -473,6 +474,23 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
           recipientEmail: before.submitterEmail,
         };
         await publish(request.log, 'feedback.responded', tenantId, authorId, { ...payload });
+        // Actually deliver the reply. `feedback.responded` has no email subscriber
+        // (terraform maps it to []), so this `email.send` is what closes the loop to
+        // the submitter's inbox alongside the in-app notice above.
+        const feedbackTitle =
+          row.subject && row.subject.trim().length > 0 ? row.subject : 'your feedback';
+        await publish(request.log, 'email.send', tenantId, authorId, {
+          to: before.submitterEmail,
+          template: 'feedback-response',
+          props: {
+            recipientName: null,
+            feedbackTitle,
+            responseBody: body,
+            responderName: authorName ?? 'sparx Support',
+            ...(status ? { statusLabel: status } : {}),
+            threadUrl: appOrigin(),
+          },
+        });
       }
       return toDetail(row, id);
     }

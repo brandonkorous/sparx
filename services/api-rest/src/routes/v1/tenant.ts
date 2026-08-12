@@ -29,6 +29,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
+import { appOrigin } from '@sparx/links/server';
 import {
   requiredModules,
   blockingDependents,
@@ -54,6 +55,26 @@ import {
   startSparxPayOnboarding,
 } from '../../lib/payments-onboarding.js';
 import { env } from '../../env.js';
+
+// Human labels for the module-toggle confirmation email — acronyms stay uppercase.
+// A slug not listed falls back to itself; keep in step with the module registry.
+const MODULE_LABELS: Record<string, string> = {
+  builder: 'Builder',
+  commerce: 'Commerce',
+  cms: 'CMS',
+  crm: 'CRM',
+  invoicing: 'Invoicing',
+  email: 'Email',
+  b2b: 'B2B',
+  dropship: 'Dropship',
+  inventory: 'Inventory',
+  chat: 'Chat',
+  scheduling: 'Scheduling',
+  ai: 'AI',
+  automations: 'Automations',
+  seo: 'SEO',
+  social: 'Social',
+};
 
 const PatchConsent = z.object({
   mode: z.enum(['off', 'gdpr', 'ccpa']).optional(),
@@ -645,6 +666,31 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     });
     if (result.blocked.length) {
       throw conflict(moduleBlockedMessage(result.blocked, target), 'module');
+    }
+    // Confirm a real change to the account owner — a module toggle carries a billing
+    // implication, so it's never silent. Only on an actual flip (a redundant toggle is
+    // a no-op), and only the per-slug path — the bulk onboarding PUT would spam.
+    if (result.changed) {
+      try {
+        const owner = await prisma.tenant.findUnique({
+          where: { id: auth.tenantId },
+          select: { email: true, name: true },
+        });
+        if (owner?.email) {
+          await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
+            to: owner.email,
+            template: 'module-toggle',
+            props: {
+              enabled,
+              accountName: owner.name ?? undefined,
+              moduleName: MODULE_LABELS[target] ?? target,
+              dashboardUrl: appOrigin(),
+            },
+          });
+        }
+      } catch (err) {
+        request.log.warn({ err, slug: target }, 'failed to publish module-toggle email');
+      }
     }
     return ok({ slug: target, enabled });
   });

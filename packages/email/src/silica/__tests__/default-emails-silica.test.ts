@@ -74,10 +74,10 @@ describe('the provisioned default emails, on silica', () => {
       { brand }
     );
     expect(out.subject).toBe('Your order 1042 is confirmed');
-    expect(out.html).toContain('Thanks for your order, Rosa');
-    // The order total is now the emphasized hero row of the summary card — the
-    // `{{order.total}}` token still resolves, just under an "Order total" label.
-    expect(out.html).toContain('Order total');
+    // The greeting resolves in the hero, the order number in the lead line.
+    expect(out.html).toContain('Thanks, Rosa');
+    expect(out.html).toContain('order 1042');
+    // The order total is the strong row of the cost summary — `{{order.total}}` resolves.
     expect(out.html).toContain('$88.00');
   });
 
@@ -90,9 +90,9 @@ describe('the provisioned default emails, on silica', () => {
       },
       { brand }
     );
-    // `{{customer.firstName ?? "there"}}` — silica's native pass ignores the fallback
-    // syntax, and sparx's pass over the projected HTML honors it.
-    expect(out.html).toContain('Thanks for your order, there');
+    // The greeting is `{{customer.greeting}}`, derived to never be blank — with no
+    // customer at all it falls back to "there" rather than leaving a hole in the hero.
+    expect(out.html).toContain('Thanks, there');
   });
 
   it('shows an optional card row when its data is present', () => {
@@ -140,11 +140,12 @@ describe('the provisioned default emails, on silica', () => {
       { brand }
     );
     // The status cue carries the state in a FIXED semantic color (success green) — the
-    // same for every tenant, independent of the brand hue, so "Confirmed" never reads
-    // as a warning on a red-branded site.
-    expect(out.html).toContain('✓ Confirmed');
+    // same for every tenant, independent of the brand hue, so "confirmed" never reads
+    // as a warning on a red-branded site. It leads the email as a standalone pill above
+    // the hero heading now, rather than sitting inside the panel.
+    expect(out.html).toContain('✓ Order confirmed');
     expect(out.html).toContain('#15803d');
-    // The card is a rounded, bordered panel (silicaui 0.33 section box-decoration).
+    // The ship-to card is a rounded, bordered inset panel (silicaui section box-decoration).
     expect(out.html).toContain('border-radius:16px');
   });
 

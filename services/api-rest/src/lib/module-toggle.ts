@@ -42,8 +42,16 @@ export const MODULE_SLUGS: ModuleSlug[] = [
   'ai',
   'scheduling',
   'social',
+  'finance',
 ];
 export const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
+
+// This list is `ModuleSlug[]` but NOT exhaustive over the union, so a slug added
+// to @sparx/modules and forgotten here typechecks fine and then fails at the one
+// moment that matters: the activation toggle refuses it as "Request validation
+// failed", and the module can never be turned on at all. `inventory` and
+// `finance` have both been in exactly that state. When you add a slug, grep an
+// existing one across the repo — several other lists re-declare the vocabulary.
 
 /** Read the raw EXPLICIT module flags from `settings.modules.<slug>.enabled`.
  *  BUNDLED_FREE derivation is intentionally NOT applied here — the toggle

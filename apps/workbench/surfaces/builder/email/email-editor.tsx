@@ -53,6 +53,7 @@ import {
   DialogClose,
   DialogContent,
   DialogTitle,
+  EmptyState,
   Heading,
   Input,
   NativeSelect,
@@ -69,6 +70,7 @@ import {
   Copy,
   Eye,
   History,
+  Mail,
   Monitor,
   Moon,
   MousePointerClick,
@@ -113,7 +115,6 @@ import {
   toSilicaDataSources,
   type MergeTag,
 } from '@sparx/builder-schemas';
-import { WelcomeEmptyState } from '../../../components/welcome-empty-state';
 import { MediaPickerProvider } from '../../cms/media-picker';
 import { emailInspectorPanels } from './email-asset-panel';
 import { PaneScope } from '../../../lib/dock/window-boundary';
@@ -736,7 +737,8 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   if (!isPending && emails?.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <WelcomeEmptyState
+        <EmptyState
+          icon={<Mail className="size-6" aria-hidden />}
           title="No emails yet"
           description="Create your first email — it opens straight into the editor."
           actions={

@@ -1,7 +1,14 @@
 import * as React from 'react';
 import { Section } from '@react-email/components';
 import { EmailLayout } from './_layout';
-import { EmailCallout, EmailHeading, EmailLink, EmailMuted, EmailParagraph } from '../components';
+import {
+  EmailButton,
+  EmailFieldPanel,
+  EmailHeading,
+  EmailMuted,
+  EmailParagraph,
+  type EmailFieldRow,
+} from '../components';
 
 // Owner-facing notification when someone submits a Builder form on the site
 // (docs/115). A form's fields are whatever named inputs the author composed, so the
@@ -42,44 +49,42 @@ export function FormSubmissionNotificationEmail({
   const who = name ?? email ?? 'Someone';
   const site = siteName ?? 'your site';
   const label = (formName ?? 'form').toLowerCase();
-  const rows = (answers ?? []).filter((a) => a.value.trim() !== '');
+  const answered = (answers ?? []).filter((a) => a.value.trim() !== '');
   const files = (attachmentNames ?? []).filter((n) => n.trim() !== '');
+  // The submitted record, as a scannable label→value panel — the whole point of the
+  // email. Contact fields lead, so a name/email is the first thing the owner sees.
+  const rows: EmailFieldRow[] = [];
+  if (name?.trim()) rows.push({ label: 'From', value: name });
+  if (email?.trim()) rows.push({ label: 'Email', value: email });
+  for (const a of answered) rows.push({ label: a.label, value: a.value });
+  if (files.length > 0) {
+    rows.push({
+      label: files.length === 1 ? 'Attachment' : 'Attachments',
+      value: files.join('\n'),
+    });
+  }
+  // Prefer the sender's name on the reply button, falling back to their address — a
+  // length check, not `||`/`??`, because a blank name must fall through (not render).
+  const replyTarget = name && name.trim().length > 0 ? name.trim() : email;
   return (
     <EmailLayout preview={`${who} sent a message via ${site}`}>
       <Section>
         <EmailHeading>New {label} submission</EmailHeading>
         <EmailParagraph>
           {who} just reached out through {site}.
-          {email ? (
-            <>
-              {' '}
-              Reply straight to them at <EmailLink href={`mailto:${email}`}>{email}</EmailLink>.
-            </>
-          ) : null}
+          {email ? ' Reply to this email and it goes straight back to them.' : ''}
         </EmailParagraph>
 
         {rows.length > 0 ? (
-          rows.map((a) => (
-            <React.Fragment key={a.label}>
-              <EmailMuted>{a.label}</EmailMuted>
-              {a.value.includes('\n') ? (
-                <EmailCallout tone="info">{a.value}</EmailCallout>
-              ) : (
-                <EmailParagraph flush>{a.value}</EmailParagraph>
-              )}
-            </React.Fragment>
-          ))
+          <EmailFieldPanel rows={rows} />
         ) : (
           <EmailParagraph flush>No details were provided.</EmailParagraph>
         )}
 
+        {email ? <EmailButton href={`mailto:${email}`}>Reply to {replyTarget}</EmailButton> : null}
+
         {files.length > 0 ? (
-          <>
-            <EmailMuted>{files.length === 1 ? 'Attachment' : 'Attachments'}</EmailMuted>
-            <EmailParagraph flush>
-              {files.join(', ')} — open your form submissions to download.
-            </EmailParagraph>
-          </>
+          <EmailMuted>Open your form submissions to download the attachments.</EmailMuted>
         ) : null}
 
         <EmailMuted>

@@ -105,6 +105,45 @@ function createOperatorAuth() {
       cookieCache: { enabled: true, maxAge: 5 * 60 },
     },
 
+    databaseHooks: {
+      user: {
+        update: {
+          // Two-step verification was turned on or off for an operator. Same
+          // mechanism, and same exactness, as the tenant instance
+          // (@sparx/auth server.ts): `twoFactorEnabled` flips only via
+          // internalAdapter.updateUser, which the plugin calls on the enable
+          // COMPLETION (`/two-factor/verify-totp`) and on `/two-factor/disable`
+          // — never on a login challenge — so `context.path` gating is exact.
+          // Operators have MANDATORY MFA, so in practice this fires on first
+          // enrolment; wiring it here (not in one app's route) keeps the two
+          // auth boundaries at parity. Best-effort + non-blocking.
+          after: async (updated, context) => {
+            try {
+              const path = (context as { path?: string } | null)?.path;
+              const isDisable = path === '/two-factor/disable';
+              const isEnable = path === '/two-factor/verify-totp' || path === '/two-factor/enable';
+              if (!isDisable && !isEnable) return;
+              const u = updated as unknown as { id: string; email?: string; name?: string | null };
+              if (!u.email) return;
+              const base = operatorBaseUrl().replace(/\/$/, '');
+              await publishOperatorEmail({
+                template: 'two-factor-changed',
+                to: u.email,
+                actorId: u.id,
+                props: {
+                  enabled: !isDisable,
+                  name: u.name ?? undefined,
+                  secureUrl: base,
+                },
+              });
+            } catch {
+              // swallow — never block an operator security change on a notification
+            }
+          },
+        },
+      },
+    },
+
     advanced: {
       // Distinct cookie namespace from the tenant instance (belt-and-suspenders;
       // they're on different domains anyway).

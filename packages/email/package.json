@@ -9,6 +9,10 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./template-ids": {
+      "types": "./src/template-ids.ts",
+      "default": "./src/template-ids.ts"
+    },
     "./templates": {
       "types": "./src/templates/index.ts",
       "default": "./src/templates/index.ts"

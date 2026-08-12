@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailCallout, EmailHeading, EmailMuted, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailCallout,
+  EmailDisplayHeading,
+  EmailFinePrint,
+  EmailParagraph,
+} from '../components';
 
 export interface DomainRenewalReminderEmailProps {
   /** The domain name, e.g. "acme.com". */
@@ -27,35 +32,36 @@ export function DomainRenewalReminderEmail({
   const tone = daysUntilExpiry <= 7 ? 'warn' : 'info';
 
   return (
-    <EmailLayout preview={`${domainName} expires in ${daysUntilExpiry} ${dayLabel}`}>
-      <Section>
-        <EmailHeading>Domain expiring soon</EmailHeading>
-        <EmailCallout tone={tone}>
-          {domainName} expires in {daysUntilExpiry} {dayLabel} — on {expiresAt}.
-        </EmailCallout>
-        {autoRenew ? (
-          <>
-            <EmailParagraph>
-              Auto-renew is enabled, so {domainName} will renew automatically before the expiry
-              date. No action is needed unless you want to change your renewal settings.
-            </EmailParagraph>
-            <EmailButton href={renewUrl}>Manage domain</EmailButton>
-          </>
-        ) : (
-          <>
-            <EmailParagraph>
-              Renew now to keep {domainName} active and avoid losing your site&apos;s custom
-              address.
-            </EmailParagraph>
-            <EmailButton href={renewUrl}>Renew domain</EmailButton>
-          </>
-        )}
-        <EmailMuted>
-          You&apos;re receiving this because {domainName} is registered through sparx. Visit your
-          domain settings to update renewal preferences.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview={`${domainName} expires in ${daysUntilExpiry} ${dayLabel}`}
+      footerReason={`You're receiving this because ${domainName} is registered through sparx.`}
+    >
+      <EmailDisplayHeading>Domain expiring soon</EmailDisplayHeading>
+      <EmailCallout tone={tone}>
+        {domainName} expires in {daysUntilExpiry} {dayLabel} — on {expiresAt}.
+      </EmailCallout>
+      {autoRenew ? (
+        <>
+          <EmailParagraph>
+            Auto-renew is enabled, so {domainName} will renew automatically before the expiry date.
+            No action is needed unless you want to change your renewal settings.
+          </EmailParagraph>
+          <EmailActionButton href={renewUrl} variant="ghost">
+            Manage domain
+          </EmailActionButton>
+        </>
+      ) : (
+        <>
+          <EmailParagraph>
+            Renew now to keep {domainName} active and avoid losing your site&apos;s custom address.
+          </EmailParagraph>
+          <EmailActionButton href={renewUrl}>Renew domain</EmailActionButton>
+        </>
+      )}
+      <EmailFinePrint>
+        Visit your domain settings anytime to update renewal preferences.
+      </EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

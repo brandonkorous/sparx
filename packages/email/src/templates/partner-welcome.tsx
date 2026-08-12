@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailHeading, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailDisplayHeading,
+  EmailLead,
+  EmailParagraph,
+  EmailSteps,
+} from '../components';
 
 export interface PartnerWelcomeEmailProps {
   /** The partner's name (falls back to "there"). */
@@ -25,23 +30,41 @@ export function PartnerWelcomeEmail({
   needsPassword,
 }: PartnerWelcomeEmailProps) {
   return (
-    <EmailLayout preview="You're approved — welcome to the sparx Partner Program">
-      <Section>
-        <EmailHeading>Welcome to the sparx Partner Program</EmailHeading>
-        <EmailParagraph>Hi {name ?? 'there'},</EmailParagraph>
-        <EmailParagraph>
-          Your application has been approved — you&apos;re officially a sparx partner. Your partner
-          workspace is ready: share your referral link, earn commissions, run bootcamps, and get
-          paid, all from your dashboard.
-        </EmailParagraph>
-        <EmailParagraph>
-          {needsPassword
-            ? "We've sent you a separate email with a link to set your password. Once that's done, sign in and open the Partner section to get started."
-            : 'Sign in and switch to your new partner workspace to get started.'}
-        </EmailParagraph>
-        <EmailButton href={dashboardUrl}>Open your dashboard</EmailButton>
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview="You're approved — welcome to the sparx Partner Program"
+      footerLinks={[{ label: 'Partner guide', href: 'https://sparx.works/partners' }]}
+      footerReason="You're receiving this because your sparx partner application was approved."
+    >
+      <EmailDisplayHeading>
+        Welcome to the Partner Program{name ? `, ${name}` : ''}.
+      </EmailDisplayHeading>
+      <EmailLead>
+        You&apos;re officially a sparx partner — your workspace is ready and there&apos;s money to
+        be made.
+      </EmailLead>
+      <EmailParagraph>Here&apos;s how to get going:</EmailParagraph>
+
+      <EmailSteps
+        steps={[
+          {
+            title: needsPassword ? 'Set your password' : 'Sign in to your workspace',
+            description: needsPassword
+              ? "We've sent a separate email with a link to set your password — do that first, then sign in."
+              : 'Switch to your new partner workspace from the account menu.',
+          },
+          {
+            title: 'Share your referral link',
+            description: 'Every sign-up through your link is tracked to you automatically.',
+          },
+          {
+            title: 'Earn, run bootcamps, and get paid',
+            description: 'Watch commissions accrue and manage payouts, all from your dashboard.',
+          },
+        ]}
+      />
+
+      <EmailActionButton href={dashboardUrl}>Open your dashboard</EmailActionButton>
+    </PlatformEmailLayout>
   );
 }
 

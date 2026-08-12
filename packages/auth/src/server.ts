@@ -117,6 +117,19 @@ function createAuth() {
           },
         });
       },
+      // A password RESET completed — send the account owner a security confirmation
+      // (fires on the reset-token flow; an in-session /change-password is separate and
+      // has no better-auth callback). Non-blocking: it only enqueues an event.
+      onPasswordReset: async ({ user }) => {
+        const extras = user as unknown as { tenantId?: string };
+        await publishAuthEmail({
+          tenantId: extras.tenantId ?? '',
+          actorId: user.id,
+          template: 'password-changed',
+          to: user.email,
+          props: { name: user.name ?? undefined },
+        });
+      },
     },
 
     // Verify-but-don't-block (docs: auth pages redesign Slice 2). We keep
@@ -223,6 +236,99 @@ function createAuth() {
               email: u.email,
               name: u.name ?? null,
             });
+          },
+        },
+        update: {
+          // Two-step verification was turned on or off — send the owner a security
+          // notice. `twoFactorEnabled` flips ONLY via internalAdapter.updateUser,
+          // which the twoFactor plugin calls in exactly two places: the enable
+          // COMPLETION (`/two-factor/verify-totp`, first success after enrolment,
+          // when `verified` was still false) and `/two-factor/disable`. A 2FA
+          // challenge at LOGIN re-runs verify-totp but never calls updateUser (the
+          // row is already verified), so path-gating here is exact — there is no
+          // login/enable ambiguity and no other user update reaches these paths.
+          //
+          // The db hook's `context` is better-auth's endpoint context (stored in
+          // the request ALS), so `context.path` is the plugin-relative endpoint
+          // path, and `updated` is the full user row. Best-effort + non-blocking:
+          // a notification must never fail (and thus roll back) a settings change.
+          after: async (updated, context) => {
+            try {
+              const path = (context as { path?: string } | null)?.path;
+              const isDisable = path === '/two-factor/disable';
+              // `/two-factor/enable` only updates the user when the server is set
+              // to skip verification (ours is not) — listed for forward safety.
+              const isEnable = path === '/two-factor/verify-totp' || path === '/two-factor/enable';
+              if (!isDisable && !isEnable) return;
+              const u = updated as unknown as {
+                id: string;
+                email?: string;
+                name?: string | null;
+                tenantId?: string;
+              };
+              if (!u.email) return;
+              const base = (process.env.BETTER_AUTH_URL ?? 'http://localhost:3001').replace(
+                /\/$/,
+                ''
+              );
+              await publishAuthEmail({
+                tenantId: u.tenantId ?? '',
+                actorId: u.id,
+                template: 'two-factor-changed',
+                to: u.email,
+                props: {
+                  enabled: !isDisable,
+                  name: u.name ?? undefined,
+                  secureUrl: `${base}/settings/security`,
+                },
+              });
+            } catch {
+              // swallow — never block a security-settings change on a notification
+            }
+          },
+        },
+      },
+      session: {
+        create: {
+          // Alert on a sign-in from a device we haven't seen for this user — "new
+          // device" = the first session that carries this user agent. Best-effort +
+          // non-blocking: a notification failure must never affect sign-in. `create`
+          // fires on a genuine sign-in, NOT on the 5-min cookie refresh (that's
+          // `session.update`), so this doesn't email on every request.
+          after: async (session) => {
+            try {
+              const s = session as unknown as {
+                id: string;
+                userId: string;
+                ipAddress?: string;
+                userAgent?: string;
+              };
+              if (!s.userAgent) return; // no way to identify the device → skip
+              const priorWithSameDevice = await authPrisma.session.count({
+                where: { userId: s.userId, userAgent: s.userAgent, id: { not: s.id } },
+              });
+              if (priorWithSameDevice > 0) return; // known device
+              const account = await authPrisma.user.findUnique({
+                where: { id: s.userId },
+                select: { email: true, name: true, tenantId: true },
+              });
+              if (!account?.email) return;
+              // Empty string (nothing captured) → omit, not render blank.
+              const ipAddress = s.ipAddress && s.ipAddress.length > 0 ? s.ipAddress : undefined;
+              await publishAuthEmail({
+                tenantId: account.tenantId ?? '',
+                actorId: s.userId,
+                template: 'new-device-signin',
+                to: account.email,
+                props: {
+                  name: account.name ?? undefined,
+                  ipAddress,
+                  device: s.userAgent, // guaranteed non-empty by the guard above
+                },
+              });
+            } catch {
+              // swallow — never block sign-in on a notification
+            }
           },
         },
       },

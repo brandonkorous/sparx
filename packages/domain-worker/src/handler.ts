@@ -10,8 +10,11 @@
 import { promises as dns } from 'node:dns';
 import type { Logger } from 'pino';
 import { prisma } from '@sparx/db';
+import { publishEvent } from '@sparx/events';
 import type { DomainPurchasedPayload, SparxEvent } from '@sparx/events';
+import { appLink, appOrigin } from '@sparx/links/server';
 import { configureDNS, buildSparxDnsRecords, GoDaddyError } from './godaddy.js';
+import { publisher, pubLogger } from './publisher.js';
 import { env } from './env.js';
 
 const CNAME_TARGET = env.SPARX_CNAME_TARGET;
@@ -94,4 +97,33 @@ export async function handleDomainPurchased(
     data: { status: 'active', verifiedAt: new Date() },
   });
   logger.info({ domain }, 'domain is now active');
+
+  // Tell the owner their domain is live. Best-effort — a notification failure must
+  // never fail the activation (which would trigger a Pub/Sub retry of a done job).
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: event.tenantId },
+      select: { email: true },
+    });
+    if (tenant?.email) {
+      await publishEvent(
+        publisher,
+        'email.send',
+        event.tenantId,
+        null,
+        {
+          to: tenant.email,
+          template: 'domain-live',
+          props: {
+            domainName: domain,
+            siteUrl: `https://${domain}`,
+            dashboardUrl: appLink('platform.settings.domains') ?? appOrigin(),
+          },
+        },
+        pubLogger
+      );
+    }
+  } catch (err) {
+    logger.warn({ err, domain }, 'failed to publish domain-live email; domain is still active');
+  }
 }

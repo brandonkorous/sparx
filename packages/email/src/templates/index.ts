@@ -89,6 +89,94 @@ export {
 } from './billing-trial-ending';
 
 export {
+  SubscriptionUpdateEmail,
+  subscriptionUpdateSubject,
+  type SubscriptionUpdateEmailProps,
+  type SubscriptionUpdateKind,
+} from './subscription-update';
+
+export { DomainLiveEmail, domainLiveSubject, type DomainLiveEmailProps } from './domain-live';
+
+export {
+  DomainExpiredEmail,
+  domainExpiredSubject,
+  type DomainExpiredEmailProps,
+} from './domain-expired';
+
+export {
+  EmailDomainVerifiedEmail,
+  emailDomainVerifiedSubject,
+  type EmailDomainVerifiedEmailProps,
+} from './email-domain-verified';
+
+export {
+  DocumentSignatureRequestEmail,
+  documentSignatureRequestSubject,
+  type DocumentSignatureRequestEmailProps,
+} from './document-signature-request';
+
+export {
+  InvitationAcceptedEmail,
+  invitationAcceptedSubject,
+  type InvitationAcceptedEmailProps,
+} from './invitation-accepted';
+
+export {
+  TeamMemberRemovedEmail,
+  teamMemberRemovedSubject,
+  type TeamMemberRemovedEmailProps,
+} from './team-member-removed';
+
+export {
+  TeamRoleChangedEmail,
+  teamRoleChangedSubject,
+  type TeamRoleChangedEmailProps,
+} from './team-role-changed';
+
+export {
+  ModuleToggleEmail,
+  moduleToggleSubject,
+  type ModuleToggleEmailProps,
+} from './module-toggle';
+
+export {
+  PartnerApplicationReceivedEmail,
+  partnerApplicationReceivedSubject,
+  type PartnerApplicationReceivedEmailProps,
+} from './partner-application-received';
+
+export {
+  PartnerEarningsEmail,
+  partnerEarningsSubject,
+  type PartnerEarningsEmailProps,
+  type PartnerEarningsKind,
+} from './partner-earnings';
+
+export {
+  PasswordChangedEmail,
+  passwordChangedSubject,
+  type PasswordChangedEmailProps,
+} from './password-changed';
+
+export {
+  TwoFactorChangedEmail,
+  twoFactorChangedSubject,
+  type TwoFactorChangedEmailProps,
+} from './two-factor-changed';
+
+export {
+  NewDeviceSigninEmail,
+  newDeviceSigninSubject,
+  type NewDeviceSigninEmailProps,
+} from './new-device-signin';
+
+export {
+  FeedbackReceivedEmail,
+  feedbackReceivedSubject,
+  type FeedbackReceivedEmailProps,
+} from './feedback-received';
+
+export {
   SocialPostFailedEmail,
   socialPostFailedSubject,
   type SocialPostFailedEmailProps,

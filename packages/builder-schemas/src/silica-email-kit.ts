@@ -200,43 +200,89 @@ export function when(ref: string, children: LayoutChild[]): SectionNode {
  *
  *  The authored cell copy is not filler: silica renders the authored children once
  *  when a collection resolves empty, so this is what an item-less email shows. */
-export function itemsTable(ref: string): SectionNode[] {
+export function itemsTable(ref: string, opts: { thumbnails?: boolean } = {}): SectionNode[] {
   // Column widths sum to 93%, NOT 100%: the projector renders columns as
   // `display:inline-block`, and the whitespace between them adds a space's worth of
   // width — three columns at a full 100% overflow and the last wraps, tearing each
   // item's price onto its own centred line. The 7% slack absorbs the inter-column
   // whitespace so the row stays intact. `align:'left'` hugs the row to the left edge
   // (the section's `<td>` is otherwise `align:center`, same fix `detailPanel` uses).
-  const COL = { item: 54, qty: 13, amount: 26 } as const;
+  //
+  // `thumbnails` prepends a product-image column (bound to each item's `imageUrl`) —
+  // the single biggest lift on a commerce receipt: a customer recognises what they
+  // bought by its picture before they read a word. It's OPT-IN because an item with no
+  // image (a wholesale line, a service) would leave a dead column; the commerce order
+  // emails set it, invoices/quotes don't. Widths still sum to ~93% for the same slack.
+  const thumbs = opts.thumbnails ?? false;
+  const COL = thumbs
+    ? ({ thumb: 15, item: 40, qty: 12, amount: 26 } as const)
+    : ({ thumb: 0, item: 54, qty: 13, amount: 26 } as const);
+  const headerCols = [
+    ...(thumbs ? [column(COL.thumb, [])] : []),
+    column(COL.item, [caption('Item')]),
+    column(COL.qty, [caption('Qty', 'right')]),
+    column(COL.amount, [caption('Amount', 'right')]),
+  ];
+  const rowCols = [
+    ...(thumbs ? [column(COL.thumb, [image('imageUrl', { width: 44 })])] : []),
+    column(COL.item, [text('Item', { ref: 'name' })]),
+    column(COL.qty, [text('1', { align: 'right', ref: 'quantity' })]),
+    column(COL.amount, [text('—', { align: 'right', ref: 'lineTotal' })]),
+  ];
   const header: SectionNode = {
-    ...section(
-      [
-        columns([
-          column(COL.item, [caption('Item')]),
-          column(COL.qty, [caption('Qty', 'right')]),
-          column(COL.amount, [caption('Amount', 'right')]),
-        ]),
-        divider(),
-      ],
-      8
-    ),
+    ...section([columns(headerCols), divider()], 8),
     align: 'left',
   };
   const rows: SectionNode = {
-    ...section(
-      [
-        columns([
-          column(COL.item, [text('Item', { ref: 'name' })]),
-          column(COL.qty, [text('1', { align: 'right', ref: 'quantity' })]),
-          column(COL.amount, [text('—', { align: 'right', ref: 'lineTotal' })]),
-        ]),
-      ],
-      8
-    ),
+    ...section([columns(rowCols)], 8),
     align: 'left',
     data: { kind: 'collection', ref },
   };
   return [header, rows];
+}
+
+/** One line of a cost summary — the money math under a receipt. `strong` marks the
+ *  ONE total row: it gets a rule above it and renders large in the brand colour, so
+ *  the eye lands on the number that matters. `ref` drops an optional line (a discount,
+ *  a tax that doesn't apply) cleanly, same `hideWhenEmpty` mechanism as `when()`. */
+export interface SummaryRow {
+  label: string;
+  value: string;
+  ref?: string;
+  strong?: boolean;
+}
+
+/**
+ * A right-aligned label→value cost summary — subtotal · shipping · tax · total — that
+ * sits under `itemsTable` and makes the math legible at a glance instead of buried in a
+ * detail panel. Each row is a two-column `label | value` line (value right-aligned, the
+ * accountant's convention); the `strong` total row is set off by a rule and painted in
+ * the brand colour. Columns sum to ~95% for the same inline-block slack `itemsTable`
+ * leaves (one gap, so less slack needed than the three-column table).
+ */
+export function costSummary(rows: SummaryRow[]): SectionNode {
+  const COL = { label: 60, value: 35 } as const;
+  const line = (r: SummaryRow): ColumnsNode => {
+    const label = text(r.label, {
+      size: r.strong ? 17 : SIZE.body,
+      weight: r.strong ? 'bold' : 'normal',
+    });
+    const value = text(r.value, {
+      align: 'right',
+      size: r.strong ? 20 : SIZE.body,
+      weight: r.strong ? 'semibold' : 'normal',
+      ...(r.strong ? { colorRole: 'primary' as const } : {}),
+    });
+    const cols = columns([column(COL.label, [label]), column(COL.value, [value])]);
+    return r.ref ? { ...cols, data: { kind: 'value', ref: r.ref } } : cols;
+  };
+  const children: LayoutChild[] = [];
+  rows.forEach((r, i) => {
+    if (i > 0) children.push(r.strong ? divider() : spacer(6));
+    if (r.strong && i > 0) children.push(spacer(10));
+    children.push(line(r));
+  });
+  return { ...section(children, 8), align: 'left' };
 }
 
 // ── Detail panel ───────────────────────────────────────────────────────────────
@@ -299,7 +345,10 @@ const CARD = {
   align: 'left',
 } satisfies Partial<SectionNode>;
 
-export function detailPanel(rows: DetailRow[], opts: { status?: DetailStatus } = {}): SectionNode {
+export function detailPanel(
+  rows: DetailRow[],
+  opts: { status?: DetailStatus; ref?: string } = {}
+): SectionNode {
   const row = (r: DetailRow): ColumnsNode => {
     const value = r.emphasize
       ? text(r.value, { size: 20, weight: 'semibold', colorRole: 'primary' })
@@ -321,7 +370,11 @@ export function detailPanel(rows: DetailRow[], opts: { status?: DetailStatus } =
     );
   }
   children.push(...rows.map(row));
-  return { ...section(children, 18), ...CARD };
+  const panel: SectionNode = { ...section(children, 18), ...CARD };
+  // `ref` gates the WHOLE card: a single-fact panel (a ship-to on a digital order)
+  // drops entirely when its data is absent, rather than rendering an empty inset box.
+  // A section fills no default field, so a bound section is pure show/hide (like when()).
+  return opts.ref ? { ...panel, data: { kind: 'value', ref: opts.ref } } : panel;
 }
 
 /** A tinted, bordered card wrapping FREE content (a heading, prose, a button) — the
@@ -479,6 +532,65 @@ export function productRail(opts: {
     data: { kind: 'collection', ref },
   };
   const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
+  return [headingSection, cardRow, cta];
+}
+
+/**
+ * A CONTENT rail — the editorial twin of `productRail`. A heading, a repeating list of
+ * the tenant's latest published content (image · title · excerpt, each linking to the
+ * article), and a "read more" button. This is how a business that PUBLISHES turns email
+ * into engagement: a content-and-commerce store features its journal under an order, and
+ * a content-only publisher (no products to rail) still has something to cross-promote.
+ *
+ * Bound to a `cms.<type>` collection the send resolves (`resolveCmsCollection` →
+ * title/excerpt/imageUrl/url/dateLabel), `blog_post` by default. Same three-section
+ * split as `productRail` (a collection repeats its section's children, so heading + CTA
+ * live in their own non-repeating sections). The whole rail is gated on CONTENT
+ * PRESENCE: the heading + CTA value-bind the SAME collection ref, and an empty array
+ * (`isEmptyValue`) or an absent CMS drops them — so a tenant with no published posts
+ * (or no CMS module at all) sees no rail, no dangling heading, no empty button. The card
+ * section's own text is authored empty, so the placeholder repeat renders nothing.
+ */
+export function contentRail(opts: {
+  heading: string;
+  ctaLabel: string;
+  ctaHref: string;
+  ref?: string;
+}): SectionNode[] {
+  const ref = opts.ref ?? 'cms.blog_post';
+  // Gate on the content itself: an empty collection resolves to `[]`, which
+  // `isEmptyValue` counts as absent, so the heading + CTA drop when there's nothing
+  // to show (and a non-CMS tenant, where the ref is unknown, drops too).
+  const contentGate = { kind: 'value' as const, ref };
+  const COL = { image: 26, text: 70 } as const;
+  const headingSection: SectionNode = {
+    ...section([text(opts.heading, { size: 20, weight: 'bold' })], 16),
+    data: contentGate,
+  };
+  const cardRow: SectionNode = {
+    ...section(
+      [
+        columns([
+          column(COL.image, [link('url', [image('imageUrl', { width: 96 })])]),
+          column(COL.text, [
+            link('url', [
+              text('', { ref: 'title', weight: 'semibold', size: 16 }),
+              spacer(4),
+              text('', { ref: 'excerpt', size: 14 }),
+            ]),
+          ]),
+        ]),
+        spacer(18),
+      ],
+      10
+    ),
+    align: 'left',
+    data: { kind: 'collection', ref },
+  };
+  const cta: SectionNode = {
+    ...section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8),
+    data: contentGate,
+  };
   return [headingSection, cardRow, cta];
 }
 

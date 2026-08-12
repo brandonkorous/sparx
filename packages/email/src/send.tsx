@@ -96,6 +96,81 @@ import {
   billingTrialEndingSubject,
   type BillingTrialEndingEmailProps,
 } from './templates/billing-trial-ending';
+import {
+  SubscriptionUpdateEmail,
+  subscriptionUpdateSubject,
+  type SubscriptionUpdateEmailProps,
+} from './templates/subscription-update';
+import {
+  DomainLiveEmail,
+  domainLiveSubject,
+  type DomainLiveEmailProps,
+} from './templates/domain-live';
+import {
+  DomainExpiredEmail,
+  domainExpiredSubject,
+  type DomainExpiredEmailProps,
+} from './templates/domain-expired';
+import {
+  EmailDomainVerifiedEmail,
+  emailDomainVerifiedSubject,
+  type EmailDomainVerifiedEmailProps,
+} from './templates/email-domain-verified';
+import {
+  DocumentSignatureRequestEmail,
+  documentSignatureRequestSubject,
+  type DocumentSignatureRequestEmailProps,
+} from './templates/document-signature-request';
+import {
+  InvitationAcceptedEmail,
+  invitationAcceptedSubject,
+  type InvitationAcceptedEmailProps,
+} from './templates/invitation-accepted';
+import {
+  TeamMemberRemovedEmail,
+  teamMemberRemovedSubject,
+  type TeamMemberRemovedEmailProps,
+} from './templates/team-member-removed';
+import {
+  TeamRoleChangedEmail,
+  teamRoleChangedSubject,
+  type TeamRoleChangedEmailProps,
+} from './templates/team-role-changed';
+import {
+  ModuleToggleEmail,
+  moduleToggleSubject,
+  type ModuleToggleEmailProps,
+} from './templates/module-toggle';
+import {
+  PartnerApplicationReceivedEmail,
+  partnerApplicationReceivedSubject,
+  type PartnerApplicationReceivedEmailProps,
+} from './templates/partner-application-received';
+import {
+  PartnerEarningsEmail,
+  partnerEarningsSubject,
+  type PartnerEarningsEmailProps,
+} from './templates/partner-earnings';
+import {
+  PasswordChangedEmail,
+  passwordChangedSubject,
+  type PasswordChangedEmailProps,
+} from './templates/password-changed';
+import {
+  TwoFactorChangedEmail,
+  twoFactorChangedSubject,
+  type TwoFactorChangedEmailProps,
+} from './templates/two-factor-changed';
+import {
+  NewDeviceSigninEmail,
+  newDeviceSigninSubject,
+  type NewDeviceSigninEmailProps,
+} from './templates/new-device-signin';
+import {
+  FeedbackReceivedEmail,
+  feedbackReceivedSubject,
+  type FeedbackReceivedEmailProps,
+} from './templates/feedback-received';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -137,9 +212,38 @@ export type TemplateId =
   | 'billing-receipt'
   | 'billing-payment-failed'
   | 'billing-trial-ending'
+  // One email for every subscription STATE change (started/canceled/plan-changed/
+  // paused/resumed), published from the Stripe billing webhook.
+  | 'subscription-update'
+  // Domain lifecycle (published from domain-worker + the email-domains verify route).
+  | 'domain-live'
+  | 'domain-expired'
+  | 'email-domain-verified'
+  // A tenant→customer document signing request (published from signature-mail.ts).
+  | 'document-signature-request'
+  // Team / org membership.
+  | 'invitation-accepted'
+  | 'team-member-removed'
+  | 'team-role-changed'
+  // A module was turned on/off (billing implication → confirm to the owner).
+  | 'module-toggle'
+  // Partner program.
+  | 'partner-application-received'
+  | 'partner-earnings'
+  // Account security.
+  | 'password-changed'
+  | 'two-factor-changed'
+  | 'new-device-signin'
+  // "We got your feedback" acknowledgement.
+  | 'feedback-received'
   // The social module's two "something needs you" emails (docs/social-audit GAPs 1+2).
   | 'social-post-failed'
   | 'social-connection-expired';
+
+// The same set as a VALUE lives in `./template-ids` — a JSX-free module, so a
+// backend can ask "what templates exist" without loading React. Re-exported
+// here because this is where callers look for it.
+export { TEMPLATE_IDS } from './template-ids';
 
 export type TemplateSend =
   | {
@@ -265,6 +369,111 @@ export type TemplateSend =
       template: 'billing-trial-ending';
       to: string;
       props: BillingTrialEndingEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'subscription-update';
+      to: string;
+      props: SubscriptionUpdateEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'domain-live';
+      to: string;
+      props: DomainLiveEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'domain-expired';
+      to: string;
+      props: DomainExpiredEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'email-domain-verified';
+      to: string;
+      props: EmailDomainVerifiedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'document-signature-request';
+      to: string;
+      props: DocumentSignatureRequestEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'invitation-accepted';
+      to: string;
+      props: InvitationAcceptedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'team-member-removed';
+      to: string;
+      props: TeamMemberRemovedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'team-role-changed';
+      to: string;
+      props: TeamRoleChangedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'module-toggle';
+      to: string;
+      props: ModuleToggleEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'partner-application-received';
+      to: string;
+      props: PartnerApplicationReceivedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'partner-earnings';
+      to: string;
+      props: PartnerEarningsEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'password-changed';
+      to: string;
+      props: PasswordChangedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'two-factor-changed';
+      to: string;
+      props: TwoFactorChangedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'new-device-signin';
+      to: string;
+      props: NewDeviceSigninEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'feedback-received';
+      to: string;
+      props: FeedbackReceivedEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -594,6 +803,249 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'billing-trial-ending',
+      };
+    }
+    case 'subscription-update': {
+      const element = wrap(<SubscriptionUpdateEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: subscriptionUpdateSubject(input.props.kind, input.props.planLabel),
+        html,
+        text,
+        templateId: 'subscription-update',
+      };
+    }
+    case 'domain-live': {
+      const element = wrap(<DomainLiveEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: domainLiveSubject(input.props.domainName),
+        html,
+        text,
+        templateId: 'domain-live',
+      };
+    }
+    case 'domain-expired': {
+      const element = wrap(<DomainExpiredEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: domainExpiredSubject(input.props.domainName),
+        html,
+        text,
+        templateId: 'domain-expired',
+      };
+    }
+    case 'email-domain-verified': {
+      const element = wrap(<EmailDomainVerifiedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: emailDomainVerifiedSubject(input.props.domainName),
+        html,
+        text,
+        templateId: 'email-domain-verified',
+      };
+    }
+    case 'document-signature-request': {
+      const element = wrap(<DocumentSignatureRequestEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: documentSignatureRequestSubject(
+          input.props.documentLabel,
+          input.props.documentNumber
+        ),
+        html,
+        text,
+        templateId: 'document-signature-request',
+      };
+    }
+    case 'invitation-accepted': {
+      const element = wrap(<InvitationAcceptedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: invitationAcceptedSubject(input.props.inviteeName ?? input.props.inviteeEmail),
+        html,
+        text,
+        templateId: 'invitation-accepted',
+      };
+    }
+    case 'team-member-removed': {
+      const element = wrap(<TeamMemberRemovedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: teamMemberRemovedSubject(input.props.orgName),
+        html,
+        text,
+        templateId: 'team-member-removed',
+      };
+    }
+    case 'team-role-changed': {
+      const element = wrap(<TeamRoleChangedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: teamRoleChangedSubject(input.props.orgName),
+        html,
+        text,
+        templateId: 'team-role-changed',
+      };
+    }
+    case 'module-toggle': {
+      const element = wrap(<ModuleToggleEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: moduleToggleSubject(input.props.enabled, input.props.moduleName),
+        html,
+        text,
+        templateId: 'module-toggle',
+      };
+    }
+    case 'partner-application-received': {
+      const element = wrap(<PartnerApplicationReceivedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: partnerApplicationReceivedSubject(input.props.applicantName),
+        html,
+        text,
+        templateId: 'partner-application-received',
+      };
+    }
+    case 'partner-earnings': {
+      const element = wrap(<PartnerEarningsEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: partnerEarningsSubject(input.props.kind, input.props.amountLabel),
+        html,
+        text,
+        templateId: 'partner-earnings',
+      };
+    }
+    case 'password-changed': {
+      const element = wrap(<PasswordChangedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: passwordChangedSubject,
+        html,
+        text,
+        templateId: 'password-changed',
+      };
+    }
+    case 'two-factor-changed': {
+      const element = wrap(<TwoFactorChangedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: twoFactorChangedSubject(input.props.enabled),
+        html,
+        text,
+        templateId: 'two-factor-changed',
+      };
+    }
+    case 'new-device-signin': {
+      const element = wrap(<NewDeviceSigninEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: newDeviceSigninSubject,
+        html,
+        text,
+        templateId: 'new-device-signin',
+      };
+    }
+    case 'feedback-received': {
+      const element = wrap(<FeedbackReceivedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: feedbackReceivedSubject(input.props.feedbackTitle),
+        html,
+        text,
+        templateId: 'feedback-received',
       };
     }
     case 'social-post-failed': {

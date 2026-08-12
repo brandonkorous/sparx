@@ -44,7 +44,9 @@ import type { SectionNode } from '@wizeworks/silicaui-builder/email';
 import {
   actionLink,
   button,
+  contentRail,
   copyBlock,
+  costSummary,
   detailPanel,
   emailDoc,
   featureList,
@@ -106,6 +108,14 @@ const welcomeCustomer = (): SectionNode[] => [
       body: 'Reply to any email from us and you’ll reach a real person, not a bot.',
     },
   ]),
+  // Orient a new customer to what the business publishes — the latest stories, each
+  // deep-linked. Drops entirely for a tenant with no CMS content, so a commerce-only
+  // store never shows an empty "read the latest" block.
+  ...contentRail({
+    heading: 'Fresh from {{site.name}}',
+    ctaLabel: 'Read the latest',
+    ctaHref: '{{site.url}}',
+  }),
   copyBlock([
     button('Visit {{site.name}}', '{{site.url}}', 'center'),
     text('We’re glad you’re here — welcome aboard.', { align: 'center' }),
@@ -120,6 +130,13 @@ const winBack = (): SectionNode[] => [
     ),
     button('See what’s new', '{{site.url}}', 'center'),
   ]),
+  // Fresh content is the strongest re-engagement hook a publisher has — the latest
+  // stories, each deep-linked. The whole rail drops for a tenant without the CMS module.
+  ...contentRail({
+    heading: 'The latest from {{site.name}}',
+    ctaLabel: 'Read more',
+    ctaHref: '{{site.url}}',
+  }),
 ];
 
 const abandonedCart = (): SectionNode[] => [
@@ -127,7 +144,9 @@ const abandonedCart = (): SectionNode[] => [
     heading('Still thinking it over?'),
     para('Your cart is saved and ready whenever you are. Here’s what you left at {{site.name}}:'),
   ]),
-  ...itemsTable('cart.items'),
+  // The highest-return email a store sends — the products, shown with their pictures, so
+  // the customer sees exactly what they were about to buy.
+  ...itemsTable('cart.items', { thumbnails: true }),
   // A single-row total callout — the items above ARE the summary, so the card just
   // anchors the amount rather than repeating a record header.
   detailPanel([{ label: 'Cart total', value: '{{cart.total}}', emphasize: true }]),
@@ -135,6 +154,13 @@ const abandonedCart = (): SectionNode[] => [
     button('Complete your order', '{{cart.recoveryUrl}}', 'center'),
     para('Items in your cart aren’t reserved — check out to make them yours.'),
   ]),
+  // Marketing send (under the unsubscribe footer), so a cross-sell rail earns its place —
+  // the mechanism that turns a saved cart into a bigger order, each card deep-linked.
+  ...productRail({
+    heading: 'You might also like',
+    ctaLabel: 'Browse the collection',
+    ctaHref: '{{site.url}}',
+  }),
 ];
 
 const postPurchaseReview = (): SectionNode[] => [
@@ -144,13 +170,20 @@ const postPurchaseReview = (): SectionNode[] => [
       'Thanks for shopping with {{site.name}}, {{customer.greeting}}. We’d love to hear what you thought of order {{order.number}}:'
     ),
   ]),
-  ...itemsTable('order.items'),
+  ...itemsTable('order.items', { thumbnails: true }),
   copyBlock([button('Leave a review', '{{order.reviewUrl}}', 'center')]),
   // A marketing send (rides under the unsubscribe footer), so a product rail of what
   // else they might like is welcome — each card deep-links to its own page.
   ...productRail({
     heading: 'More to explore',
     ctaLabel: 'Shop the collection',
+    ctaHref: '{{site.url}}',
+  }),
+  // …and, for a content-and-commerce business, the latest stories too — post-purchase is
+  // a strong engagement moment. Drops entirely for a store with no CMS content.
+  ...contentRail({
+    heading: 'From the {{site.name}} journal',
+    ctaLabel: 'Read the latest',
     ctaHref: '{{site.url}}',
   }),
 ];
@@ -333,28 +366,35 @@ const invoicingReceipt = (): SectionNode[] => [
 
 const orderConfirmation = (): SectionNode[] => [
   copyBlock([
-    heading('Your order is confirmed'),
+    text('✓ Order confirmed', { size: 14, weight: 'semibold', colorRole: 'success' }),
+    heading('Thanks, {{customer.greeting}} — your order’s in.'),
     para(
-      'Thanks for your order, {{customer.greeting}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
+      'We’re getting order {{order.number}} ready. We’ll email you tracking the moment it ships.'
     ),
   ]),
-  detailPanel(
-    [
-      { label: 'Order', value: '{{order.number}}' },
-      { label: 'Order total', value: '{{order.total}}', emphasize: true },
-      // The resolver supplies `order.shippingAddress` as an already-formatted one-line
-      // string; the row self-drops for a digital order with no shipping address.
-      { label: 'Shipping to', value: '{{order.shippingAddress}}', ref: 'order.shippingAddress' },
-    ],
-    { status: { label: '✓ Confirmed', role: 'success' } }
-  ),
-  ...itemsTable('order.items'),
-  copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
+  // The receipt — product thumbnails so the customer recognises what they bought, then
+  // the money math (subtotal · shipping · total) set off with the total in the brand
+  // colour. This is the core-tier receipt system, and commerce earns the rich thumbnails.
+  ...itemsTable('order.items', { thumbnails: true }),
+  costSummary([
+    { label: 'Subtotal', value: '{{order.subtotal}}', ref: 'order.subtotal' },
+    { label: 'Discount', value: '−{{order.discountTotal}}', ref: 'order.discountTotal' },
+    { label: 'Shipping', value: '{{order.shippingTotal}}', ref: 'order.shippingTotal' },
+    { label: 'Tax', value: '{{order.taxTotal}}', ref: 'order.taxTotal' },
+    { label: 'Total', value: '{{order.total}}', strong: true },
+  ]),
+  // Ship-to as its own scannable panel. The resolver supplies `order.shippingAddress`
+  // as an already-formatted one-line string; the WHOLE card drops for a digital order
+  // with no shipping address (the `ref` on the panel), so no empty box is left behind.
+  detailPanel([{ label: 'Shipping to', value: '{{order.shippingAddress}}' }], {
+    ref: 'order.shippingAddress',
+  }),
+  copyBlock([button('Track your order', '{{order.statusUrl}}', 'center')]),
   // A single incidental product rail under fully transactional content (the order is the
   // email's primary purpose — CAN-SPAM primary-purpose test). Positive moment, so a
-  // gentle "while you wait" rail fits.
+  // gentle cross-sell rail fits.
   ...productRail({
-    heading: 'While you wait',
+    heading: 'Pairs well with',
     ctaLabel: 'Keep shopping',
     ctaHref: '{{site.url}}',
   }),
@@ -381,7 +421,7 @@ const shippingConfirmation = (): SectionNode[] => [
   when('shipping.trackingNumber', [
     button('Track your package', '{{shipping.trackingUrl}}', 'center'),
   ]),
-  ...itemsTable('order.items'),
+  ...itemsTable('order.items', { thumbnails: true }),
 ];
 
 // ── Commerce: order lifecycle (docs/implementation/transactional-email §4 P1) ─
@@ -414,6 +454,13 @@ const orderDelivered = (): SectionNode[] => [
   ...productRail({
     heading: 'Ready for your next find?',
     ctaLabel: 'Shop the collection',
+    ctaHref: '{{site.url}}',
+  }),
+  // Content-and-commerce businesses get their latest stories under it too — drops for a
+  // store with no CMS content.
+  ...contentRail({
+    heading: 'While it’s fresh',
+    ctaLabel: 'Read the latest',
     ctaHref: '{{site.url}}',
   }),
 ];

@@ -223,6 +223,14 @@ function footerSection(
       )}</p>`
     );
   }
+  // sparx attribution — the tenant's customer sees who powers the business, a quiet
+  // "who built this?" lead-gen signal, and parity with the legacy `EmailLayout` footer
+  // that already carries it. Smallest tier, links home with a source tag; "sparx" takes
+  // the brand link colour so it sits inside the tenant's palette rather than shouting.
+  parts.push(
+    `<p style="margin:14px 0 0;font-size:12px;line-height:1.5;${base}">Sent with ` +
+      `<a href="https://sparx.works/?ref=powered-by" style="color:${brand.primary};text-decoration:none;font-weight:600">sparx</a></p>`
+  );
   // A top rule inside the footer content gives the separation a section can't (no
   // border on sections) without depending on the faint muted-vs-white bg contrast.
   const html = `<div style="border-top:1px solid ${brand.border};padding-top:20px">${parts

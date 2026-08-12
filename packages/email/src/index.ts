@@ -30,6 +30,9 @@ export {
   sendEmail,
   sendTemplate,
   _renderTemplateForTest,
+  // The id set as a VALUE — email-worker's coverage test asserts its delivery
+  // gate accepts every one of them.
+  TEMPLATE_IDS,
   type TemplateId,
   type TemplateSend,
   type RenderTemplateOptions,

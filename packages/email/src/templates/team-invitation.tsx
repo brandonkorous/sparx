@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
+import { PlatformEmailLayout } from './_layout';
 import {
-  EmailButton,
+  EmailActionButton,
   EmailCallout,
-  EmailHeading,
-  EmailLink,
-  EmailMuted,
+  EmailDisplayHeading,
+  EmailFallbackLink,
+  EmailFinePrint,
   EmailParagraph,
 } from '../components';
 
@@ -42,28 +41,26 @@ export function TeamInvitationEmail({
   expiresInDays,
 }: TeamInvitationEmailProps) {
   return (
-    <EmailLayout preview={`${inviterName} invited you to join ${orgName} on sparx`}>
-      <Section>
-        <EmailHeading>You&apos;re invited to join {orgName}</EmailHeading>
-        <EmailParagraph>Hi there,</EmailParagraph>
-        <EmailParagraph>
-          {inviterName} invited you to join <strong>{orgName}</strong> on sparx as a{' '}
-          <strong>{role}</strong>. Accept the invitation to get access to the workspace.
-        </EmailParagraph>
-        <EmailCallout tone="info">
-          This invitation was sent to {inviteeEmail}. Sign in with that address (or create an
-          account for it) to accept.
-        </EmailCallout>
-        <EmailButton href={acceptUrl}>Accept invitation</EmailButton>
-        <EmailParagraph flush>
-          Or paste this link into your browser: <EmailLink href={acceptUrl}>{acceptUrl}</EmailLink>
-        </EmailParagraph>
-        <EmailMuted>
-          This invitation expires in {expiresInDays} days. If you weren&apos;t expecting it, you can
-          safely ignore this email.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview={`${inviterName} invited you to join ${orgName} on sparx`}
+      footerReason={`You're receiving this because ${inviterName} invited you to ${orgName} on sparx.`}
+    >
+      <EmailDisplayHeading>You&apos;re invited to join {orgName}</EmailDisplayHeading>
+      <EmailParagraph>
+        {inviterName} invited you to join <strong>{orgName}</strong> on sparx as a{' '}
+        <strong>{role}</strong>. Accept the invitation to get access to the workspace.
+      </EmailParagraph>
+      <EmailCallout tone="info">
+        This invitation was sent to {inviteeEmail}. Sign in with that address (or create an account
+        for it) to accept.
+      </EmailCallout>
+      <EmailActionButton href={acceptUrl}>Accept invitation</EmailActionButton>
+      <EmailFallbackLink url={acceptUrl} />
+      <EmailFinePrint>
+        This invitation expires in {expiresInDays} days. If you weren&apos;t expecting it, you can
+        safely ignore this email.
+      </EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

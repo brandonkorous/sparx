@@ -31,7 +31,13 @@ export interface PublishAuthEmailInput {
     | 'email-verification'
     | 'team-invitation'
     | 'magic-link'
-    | 'login-otp';
+    | 'login-otp'
+    // Security notices emitted from better-auth lifecycle hooks.
+    | 'password-changed'
+    | 'new-device-signin'
+    | 'two-factor-changed'
+    // The inviter's "someone accepted" notice (workbench accept-invite action).
+    | 'invitation-accepted';
   to: string;
   /** Template-specific props — shape enforced at render time by @sparx/email. */
   props: Record<string, unknown>;

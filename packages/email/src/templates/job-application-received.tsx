@@ -4,10 +4,12 @@ import { EmailLayout } from './_layout';
 import {
   EmailButton,
   EmailCallout,
+  EmailFieldPanel,
   EmailHeading,
   EmailLink,
   EmailMuted,
   EmailParagraph,
+  type EmailFieldRow,
 } from '../components';
 
 // Internal notification to the sparx team when someone applies on /careers.
@@ -41,45 +43,27 @@ export function JobApplicationReceivedEmail({
   resumeUrl,
   resumeFilename,
 }: JobApplicationReceivedEmailProps) {
+  // The applicant's details as one scannable record, contact first so a reply or a
+  // call is a glance away. Optional facts self-omit rather than leaving blank lines.
+  const rows: EmailFieldRow[] = [
+    { label: 'Applicant', value: applicantName },
+    { label: 'Email', value: applicantEmail },
+  ];
+  if (phone?.trim()) rows.push({ label: 'Phone', value: phone });
+  if (location?.trim()) rows.push({ label: 'Location', value: location });
+  if (linkedinUrl?.trim()) rows.push({ label: 'LinkedIn', value: linkedinUrl });
+  if (portfolioUrl?.trim()) rows.push({ label: 'Portfolio', value: portfolioUrl });
+  if (roleInterest?.trim()) rows.push({ label: 'What they want to own', value: roleInterest });
   return (
     <EmailLayout preview={`${applicantName} applied — ${roleTitle}`}>
       <Section>
         <EmailHeading>New application — {roleTitle}</EmailHeading>
         <EmailParagraph>
-          {applicantName} just applied. Reply straight to them at{' '}
+          {applicantName} just applied. Reply to this email to reach them at{' '}
           <EmailLink href={`mailto:${applicantEmail}`}>{applicantEmail}</EmailLink>.
         </EmailParagraph>
 
-        <EmailMuted>Applicant</EmailMuted>
-        <EmailParagraph flush>{applicantName}</EmailParagraph>
-        <EmailParagraph flush>
-          <EmailLink href={`mailto:${applicantEmail}`}>{applicantEmail}</EmailLink>
-        </EmailParagraph>
-        {phone ? <EmailParagraph flush>{phone}</EmailParagraph> : null}
-        {location ? <EmailParagraph flush>{location}</EmailParagraph> : null}
-
-        {linkedinUrl || portfolioUrl ? (
-          <>
-            <EmailMuted>Links</EmailMuted>
-            {linkedinUrl ? (
-              <EmailParagraph flush>
-                LinkedIn: <EmailLink href={linkedinUrl}>{linkedinUrl}</EmailLink>
-              </EmailParagraph>
-            ) : null}
-            {portfolioUrl ? (
-              <EmailParagraph flush>
-                Portfolio: <EmailLink href={portfolioUrl}>{portfolioUrl}</EmailLink>
-              </EmailParagraph>
-            ) : null}
-          </>
-        ) : null}
-
-        {roleInterest ? (
-          <>
-            <EmailMuted>What they want to own</EmailMuted>
-            <EmailParagraph flush>{roleInterest}</EmailParagraph>
-          </>
-        ) : null}
+        <EmailFieldPanel rows={rows} />
 
         {coverLetter ? (
           <>

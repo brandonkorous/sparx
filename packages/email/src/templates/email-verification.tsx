@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailHeading, EmailLink, EmailMuted, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailDisplayHeading,
+  EmailFallbackLink,
+  EmailFinePrint,
+  EmailParagraph,
+} from '../components';
 
 export interface EmailVerificationEmailProps {
   /** Recipient's name; falls back to "there" if unknown. */
@@ -23,27 +28,25 @@ export function EmailVerificationEmail({
   outro,
 }: EmailVerificationEmailProps) {
   return (
-    <EmailLayout preview="Confirm your sparx email">
-      <Section>
-        <EmailHeading>Confirm your email</EmailHeading>
-        <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
-        {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
-        <EmailParagraph>
-          Thanks for creating a sparx account. Confirm this email address to unlock everything —
-          connecting a custom domain, going live, and sending email. The link expires in{' '}
-          {expiresInMinutes} minutes.
-        </EmailParagraph>
-        <EmailButton href={verifyUrl}>Confirm email</EmailButton>
-        {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
-        <EmailMuted>If the button doesn&apos;t work, paste this URL into your browser:</EmailMuted>
-        <EmailParagraph flush>
-          <EmailLink href={verifyUrl}>{verifyUrl}</EmailLink>
-        </EmailParagraph>
-        <EmailMuted>
-          If you didn&apos;t create a sparx account, you can safely ignore this email.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview="Confirm your sparx email"
+      footerReason="You're receiving this because this address was used to create a sparx account."
+    >
+      <EmailDisplayHeading>Confirm your email</EmailDisplayHeading>
+      <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
+      {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
+      <EmailParagraph>
+        Thanks for creating a sparx account. Confirm this email address to unlock everything —
+        connecting a custom domain, going live, and sending email. The link expires in{' '}
+        {expiresInMinutes} minutes.
+      </EmailParagraph>
+      <EmailActionButton href={verifyUrl}>Confirm email</EmailActionButton>
+      {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
+      <EmailFallbackLink url={verifyUrl} />
+      <EmailFinePrint>
+        If you didn&apos;t create a sparx account, you can safely ignore this email.
+      </EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

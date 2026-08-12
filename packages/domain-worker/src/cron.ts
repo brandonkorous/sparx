@@ -100,5 +100,61 @@ export async function runRenewalCheck(logger: Logger): Promise<{ processed: numb
     }
   }
 
+  // Post-expiry notice: a purchased domain that has passed its expiry date and hasn't
+  // been told yet (the threshold reminders above only fire BEFORE expiry). Marked with
+  // an 'expired' entry in the same dedupe array so it sends at most once.
+  const expired = await prisma.domain.findMany({
+    where: {
+      type: 'purchased',
+      status: 'active',
+      expiresAt: { lt: now },
+      NOT: { renewalRemindersSent: { has: 'expired' } },
+    },
+    select: { id: true, host: true, tenantId: true, expiresAt: true },
+  });
+
+  for (const domain of expired) {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: domain.tenantId },
+      select: { email: true },
+    });
+    if (!tenant?.email) {
+      logger.warn(
+        { domainId: domain.id, host: domain.host },
+        'tenant email not found; skipping expiry notice'
+      );
+      continue;
+    }
+
+    try {
+      await publishEvent(
+        publisher,
+        'email.send',
+        domain.tenantId,
+        null,
+        {
+          to: tenant.email,
+          template: 'domain-expired',
+          props: {
+            domainName: domain.host,
+            expiredOnLabel: domain.expiresAt ? formatDate(domain.expiresAt) : undefined,
+            renewUrl: appLink('platform.settings.domains') ?? appOrigin(),
+          },
+        },
+        pubLogger
+      );
+
+      await prisma.domain.update({
+        where: { id: domain.id },
+        data: { renewalRemindersSent: { push: 'expired' } },
+      });
+
+      logger.info({ host: domain.host }, 'domain-expired notice published');
+      processed++;
+    } catch (err) {
+      logger.error({ err, host: domain.host }, 'failed to publish expiry notice');
+    }
+  }
+
   return { processed };
 }

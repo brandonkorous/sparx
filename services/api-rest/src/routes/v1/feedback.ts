@@ -270,6 +270,22 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
     };
     await publish(request.log, 'feedback.submitted', auth.tenantId, auth.actorId, { ...payload });
 
+    // Acknowledge real feedback with a "we got it" email (not the quick pulse
+    // ratings — those are a tap, not a message that deserves a reply).
+    if (input.source !== 'pulse' && created.submitterEmail) {
+      const subj = input.subject?.trim();
+      const firstLine = input.body.trim().split('\n')[0]?.trim();
+      let title = 'your feedback';
+      if (subj && subj.length > 0) title = subj;
+      else if (firstLine && firstLine.length > 0) title = firstLine;
+      const feedbackTitle = title.slice(0, 120);
+      await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
+        to: created.submitterEmail,
+        template: 'feedback-received',
+        props: { recipientName: null, feedbackTitle },
+      });
+    }
+
     reply.code(201);
     return ok(mapSubmission(created));
   });

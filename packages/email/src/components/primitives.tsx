@@ -213,6 +213,67 @@ export function EmailCallout({ children, tone = 'info' }: EmailCalloutProps) {
 }
 
 // ────────────────────────────────────────────────────────────────────────
+// Field panel — a bordered, inset label→value card. The legacy-layout twin of
+// the silica `detailPanel`: it turns the owner/applicant notification emails
+// (a form submission, a job application, a chat) from a flat run of muted
+// labels into a scannable record the reader takes in at a glance. Brand-driven
+// like every atomic here; a multi-line value renders with its breaks preserved.
+// ────────────────────────────────────────────────────────────────────────
+
+export interface EmailFieldRow {
+  label: string;
+  value: React.ReactNode;
+}
+
+export interface EmailFieldPanelProps {
+  rows: EmailFieldRow[];
+}
+
+export function EmailFieldPanel({ rows }: EmailFieldPanelProps) {
+  const brand = useBrand();
+  return (
+    <ReSection
+      style={{
+        backgroundColor: colors.surfaceMuted,
+        borderRadius: radius.callout,
+        border: `1px solid ${brand.border}`,
+        padding: `${spacing.xs}px ${spacing.lg}px ${spacing.lg}px`,
+        margin: `${spacing.md}px 0`,
+      }}
+    >
+      {rows.map((r, i) => (
+        <React.Fragment key={`${r.label}-${i}`}>
+          <ReText
+            style={{
+              ...typography.muted,
+              color: colors.textMuted,
+              fontFamily: brand.fontBody,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              margin: `${spacing.md}px 0 0`,
+            }}
+          >
+            {r.label}
+          </ReText>
+          <ReText
+            style={{
+              ...typography.body,
+              color: brand.foreground,
+              fontFamily: brand.fontBody,
+              whiteSpace: 'pre-line',
+              margin: '2px 0 0',
+            }}
+          >
+            {r.value}
+          </ReText>
+        </React.Fragment>
+      ))}
+    </ReSection>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────────────
 // Spacer + Divider — explicit vertical rhythm controls.
 // ────────────────────────────────────────────────────────────────────────
 

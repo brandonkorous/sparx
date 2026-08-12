@@ -1,7 +1,17 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailCallout, EmailHeading, EmailMuted, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailAmountHero,
+  EmailDisplayHeading,
+  EmailLineItems,
+  EmailParagraph,
+  EmailPayCard,
+  EmailSectionLabel,
+  EmailFinePrint,
+  type LineItem,
+  type SummaryRow,
+} from '../components';
 
 export interface MarketSettlementReportEmailProps {
   /** The seller's display name. */
@@ -59,54 +69,75 @@ export function MarketSettlementReportEmail({
   settlementUrl,
 }: MarketSettlementReportEmailProps) {
   const orderLabel = orderCount === 1 ? 'order' : 'orders';
+  const net = formatCents(netCents, currency);
+
+  const items: LineItem[] = [
+    {
+      title: 'Gross sales',
+      subtitle: `${orderCount} ${orderLabel} settled`,
+      amount: formatCents(grossCents, currency),
+    },
+  ];
+  const summary: SummaryRow[] = [
+    {
+      label: `sparx commission (${commissionRateLabel})`,
+      value: `−${formatCents(commissionCents, currency)}`,
+    },
+  ];
+  if (refundCents > 0) {
+    summary.push({ label: 'Refunds', value: `−${formatCents(refundCents, currency)}` });
+  }
 
   return (
-    <EmailLayout preview={`Your sparx.market settlement for ${periodLabel}`}>
-      <Section>
-        <EmailHeading>Your sparx.market settlement</EmailHeading>
-        <EmailParagraph>Hi {merchantName},</EmailParagraph>
-        <EmailParagraph>
-          Here&apos;s your sparx.market settlement for {periodLabel}. You had {orderCount}{' '}
-          {orderLabel} settle this period — the breakdown is below.
-        </EmailParagraph>
+    <PlatformEmailLayout
+      preview={`Your sparx.market settlement for ${periodLabel}`}
+      mastheadRight="sparx.market"
+      footerLinks={[{ label: 'View settlement', href: settlementUrl }]}
+      footerReason="You're receiving this because you sell on sparx.market."
+    >
+      <EmailDisplayHeading>Your sparx.market settlement</EmailDisplayHeading>
+      <EmailParagraph>
+        Hi {merchantName}, here&apos;s your settlement for {periodLabel}.
+      </EmailParagraph>
 
-        <EmailCallout>
-          Gross sales: {formatCents(grossCents, currency)}
-          <br />
-          sparx commission ({commissionRateLabel}): −{formatCents(commissionCents, currency)}
-          {refundCents > 0 ? (
-            <>
-              <br />
-              Refunds: −{formatCents(refundCents, currency)}
-            </>
-          ) : null}
-          <br />
-          <strong>Net payout: {formatCents(netCents, currency)}</strong>
-        </EmailCallout>
+      <EmailAmountHero
+        amount={net}
+        caption={`Net payout · ${periodLabel}`}
+        status={
+          pendingBankAccount
+            ? { label: 'Action needed', tone: 'warn' }
+            : { label: 'On its way', tone: 'success' }
+        }
+      />
 
-        {pendingBankAccount ? (
-          <>
-            <EmailParagraph>
-              Your payout is ready, but we don&apos;t have a verified bank account on file yet. Add
-              a payout account and we&apos;ll send {formatCents(netCents, currency)} to it.
-            </EmailParagraph>
-            <EmailButton href={settlementUrl}>Add payout account</EmailButton>
-          </>
-        ) : (
-          <>
-            <EmailParagraph>
-              Your payout of {formatCents(netCents, currency)} is on its way via {payoutDestination}
-              . Transfers typically land in 1–3 business days.
-            </EmailParagraph>
-            <EmailButton href={settlementUrl}>View settlement</EmailButton>
-          </>
-        )}
+      <EmailSectionLabel>Settlement breakdown</EmailSectionLabel>
+      <EmailLineItems items={items} summary={summary} total={{ label: 'Net payout', value: net }} />
 
-        <EmailMuted>
-          sparx commission is deducted at settlement — it&apos;s never charged separately.
-        </EmailMuted>
-      </Section>
-    </EmailLayout>
+      {pendingBankAccount ? (
+        <>
+          <EmailParagraph style={{ marginTop: 20 }}>
+            Your payout is ready, but we don&apos;t have a verified bank account on file yet. Add a
+            payout account and we&apos;ll send {net} to it.
+          </EmailParagraph>
+          <EmailActionButton href={settlementUrl}>Add payout account</EmailActionButton>
+        </>
+      ) : (
+        <>
+          <EmailPayCard
+            brandLabel="ACH"
+            title={payoutDestination}
+            note="Transfers typically land in 1–3 business days."
+          />
+          <EmailActionButton href={settlementUrl} variant="ghost">
+            View settlement
+          </EmailActionButton>
+        </>
+      )}
+
+      <EmailFinePrint>
+        sparx commission is deducted at settlement — it&apos;s never charged separately.
+      </EmailFinePrint>
+    </PlatformEmailLayout>
   );
 }
 

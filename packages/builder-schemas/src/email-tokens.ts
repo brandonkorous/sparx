@@ -139,6 +139,14 @@ const IDENTITY_SAMPLE = {
   supportEmail: 'help@acme.example',
 };
 
+// A neutral product-thumbnail placeholder for the editor CANVAS only. Line-item and
+// product-rail rows carry an `imageUrl`, and at a real send the resolver fills it with
+// the product's own photo; the sample needs *something* to draw so the canvas shows the
+// thumbnail layout instead of an empty frame. An inline SVG data URI keeps it
+// self-contained (no network, no missing asset) — it is never used in an actual send.
+const SAMPLE_ITEM_IMG =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' rx='10' fill='%23f4f4f5'/%3E%3Cpath d='M33 36h30v26H33z' fill='none' stroke='%23a1a1aa' stroke-width='2'/%3E%3Cpath d='M33 54l10-8 8 6 7-5 5 4' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='44' cy='44' r='3' fill='%23a1a1aa'/%3E%3C/svg%3E";
+
 export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
   // The canonical `site` root + the historical `tenant` alias point at the SAME
   // identity, so `{{site.name}}` and a legacy `{{tenant.name}}` both resolve.
@@ -162,19 +170,42 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     status: 'paid',
     total: '$84.00',
     subtotal: '$78.00',
+    shippingTotal: '$6.00',
     placedAt: 'Jun 12, 2026',
     reviewUrl: '#',
     statusUrl: '#',
-    shippingAddress: {
-      name: 'Alex Rivera',
-      line1: '128 Maple Ave',
-      city: 'Springfield',
-      region: 'IL',
-      postalCode: '62704',
-      country: 'US',
-      cityStateZip: 'Springfield, IL 62704',
-      oneLine: 'Alex Rivera, 128 Maple Ave, Springfield, IL 62704, US',
-    },
+    // The send resolver formats the shipping address to a single line, so the sample
+    // is that same STRING — not the structured object it used to be, which rendered as
+    // "[object Object]" on the editor canvas (the resolver never sees the sample; the
+    // canvas does). The digital-order case still self-drops the row (empty value).
+    shippingAddress: 'Alex Rivera, 128 Maple Ave, Springfield, IL 62704',
+    // Line items — the receipt the whole email is about. Absent from the sample before,
+    // so the canvas showed tenants an empty item table while they edited it. Fields
+    // match the resolver's item vocabulary (name · quantity · unitPrice · lineTotal),
+    // plus imageUrl for the product thumbnail.
+    items: [
+      {
+        name: 'House Blend — Whole bean, 12 oz',
+        quantity: '2',
+        unitPrice: '$18.00',
+        lineTotal: '$36.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+      {
+        name: 'Ethiopia Guji — Whole bean, 12 oz',
+        quantity: '1',
+        unitPrice: '$22.00',
+        lineTotal: '$22.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+      {
+        name: 'Cold Brew Kit',
+        quantity: '1',
+        unitPrice: '$20.00',
+        lineTotal: '$20.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+    ],
   },
   shipping: {
     status: 'shipped',
@@ -195,13 +226,47 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     cancellationReason: '',
     manageUrl: '#',
   },
-  cart: { total: '$48.00', itemCount: '2', recoveryUrl: '#' },
+  cart: {
+    total: '$48.00',
+    itemCount: '2',
+    recoveryUrl: '#',
+    items: [
+      {
+        name: 'House Blend — Whole bean, 12 oz',
+        quantity: '1',
+        unitPrice: '$18.00',
+        lineTotal: '$18.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+      {
+        name: 'Ceramic Dripper',
+        quantity: '1',
+        unitPrice: '$30.00',
+        lineTotal: '$30.00',
+        imageUrl: SAMPLE_ITEM_IMG,
+      },
+    ],
+  },
   quote: {
     number: 'Q-204',
     status: 'submitted',
     total: '$1,250.00',
     validUntil: 'Jun 30, 2026',
     reviewUrl: '#',
+    items: [
+      {
+        name: 'Wholesale House Blend — 5 lb',
+        quantity: '10',
+        unitPrice: '$85.00',
+        lineTotal: '$850.00',
+      },
+      {
+        name: 'Wholesale Ethiopia Guji — 5 lb',
+        quantity: '4',
+        unitPrice: '$100.00',
+        lineTotal: '$400.00',
+      },
+    ],
   },
   invoice: {
     number: 'INV-204',
@@ -211,6 +276,20 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     daysUntilDue: '5',
     overdueDays: '0',
     payUrl: '#',
+    items: [
+      {
+        name: 'Wholesale House Blend — 5 lb',
+        quantity: '10',
+        unitPrice: '$85.00',
+        lineTotal: '$850.00',
+      },
+      {
+        name: 'Wholesale Ethiopia Guji — 5 lb',
+        quantity: '4',
+        unitPrice: '$100.00',
+        lineTotal: '$400.00',
+      },
+    ],
   },
   company: {
     companyName: 'Rivera & Co.',
@@ -225,6 +304,48 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     body: '20% off this week',
     ctaLabel: 'Shop now',
     ctaHref: '#',
+  },
+  // The product-rail collection (`resolveProducts` shape: title · priceLabel · imageUrl
+  // · url). Absent before, so the canvas rendered a rail heading with nothing under it —
+  // the dangling "While you wait" on the order confirmation. Now the rail populates in
+  // the editor exactly as it does at send.
+  commerce: {
+    product: [
+      { title: 'Cold Brew Kit', priceLabel: '$28.00', imageUrl: SAMPLE_ITEM_IMG, url: '#' },
+      { title: 'Ceramic Dripper', priceLabel: '$34.00', imageUrl: SAMPLE_ITEM_IMG, url: '#' },
+      { title: 'Single-Origin Sampler', priceLabel: '$42.00', imageUrl: SAMPLE_ITEM_IMG, url: '#' },
+    ],
+  },
+  // Active-module flags. A module-gated block (`moduleFeature`, `crossSell`,
+  // `contentRail`) value-binds `modules.<slug>` and shows only when it resolves
+  // non-empty. Absent before, so the canvas hid every module card while a tenant edited
+  // a welcome email; now the editor previews them exactly as an active tenant receives.
+  modules: {
+    commerce: 'commerce',
+    cms: 'cms',
+    scheduling: 'scheduling',
+    b2b: 'b2b',
+  },
+  // The CMS content-rail collection (`resolveCmsCollection` shape: title · excerpt ·
+  // imageUrl · url · dateLabel). Lets a publisher's welcome / win-back email preview its
+  // latest stories in the editor — the engagement twin of the product rail.
+  cms: {
+    blog_post: [
+      {
+        title: 'How we roast our single-origin lots',
+        excerpt: 'A look inside the roastery, and why we cup every batch before it ships.',
+        imageUrl: SAMPLE_ITEM_IMG,
+        url: '#',
+        dateLabel: 'Jun 8, 2026',
+      },
+      {
+        title: 'Brewing the perfect pour-over at home',
+        excerpt: 'Grind, water, ratio, time — the four dials that change everything.',
+        imageUrl: SAMPLE_ITEM_IMG,
+        url: '#',
+        dateLabel: 'May 30, 2026',
+      },
+    ],
   },
 };
 

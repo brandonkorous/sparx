@@ -22,8 +22,10 @@ import {
   type PartnerTier,
 } from '@sparx/partner-schemas';
 
+import { appOrigin } from '@sparx/links/server';
+
 import { env } from '../../env.js';
-import { publishPartnerEvent } from './events.js';
+import { formatPartnerMoney, publishPartnerEmail, publishPartnerEvent } from './events.js';
 import { provisionPartnerAccount, ProvisionAccountError } from './provision-account.js';
 import { uniqueSlug } from './slug.js';
 
@@ -357,6 +359,19 @@ export const partnerService = {
       applicationId: row.id,
       requestedTier: input.requestedTier,
     });
+    // Tell staff a new application is waiting for review (mirrors the careers notify).
+    await publishPartnerEmail(platformTenantId, null, {
+      to: env.PARTNER_NOTIFY_EMAIL ?? 'partners@sparx.works',
+      template: 'partner-application-received',
+      props: {
+        applicantName: input.name,
+        applicantEmail: input.email,
+        requestedTier: input.requestedTier,
+        websiteUrl: input.websiteUrl ?? undefined,
+        kind: input.kind,
+        reviewUrl: appOrigin(),
+      },
+    });
     return row;
   },
 
@@ -464,6 +479,22 @@ export const partnerService = {
       partnerId: partner.id,
       referredTenantId: input.referredTenantId,
     });
+    // Let the partner know a referral landed (the partner row has no email — the
+    // contact is Tenant.email, the correct platform→partner address).
+    const referralContact = await withSystem((tx) =>
+      tx.tenant.findUnique({ where: { id: partner.tenantId }, select: { email: true, name: true } })
+    );
+    if (referralContact?.email) {
+      await publishPartnerEmail(partner.tenantId, null, {
+        to: referralContact.email,
+        template: 'partner-earnings',
+        props: {
+          kind: 'referral',
+          partnerName: referralContact.name ?? undefined,
+          dashboardUrl: appOrigin(),
+        },
+      });
+    }
     return { recorded: true };
   },
 
@@ -506,6 +537,24 @@ export const partnerService = {
       partnerId: referral.partnerId,
       amountCents,
     });
+    const commissionContact = await withSystem((tx) =>
+      tx.tenant.findUnique({
+        where: { id: referral.tenantId },
+        select: { email: true, name: true },
+      })
+    );
+    if (commissionContact?.email) {
+      await publishPartnerEmail(referral.tenantId, null, {
+        to: commissionContact.email,
+        template: 'partner-earnings',
+        props: {
+          kind: 'commission',
+          partnerName: commissionContact.name ?? undefined,
+          amountLabel: formatPartnerMoney(amountCents),
+          dashboardUrl: appOrigin(),
+        },
+      });
+    }
     return { accrued: true };
   },
 

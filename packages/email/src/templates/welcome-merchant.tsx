@@ -1,7 +1,12 @@
 import * as React from 'react';
-import { Section } from '@react-email/components';
-import { EmailLayout } from './_layout';
-import { EmailButton, EmailHeading, EmailParagraph } from '../components';
+import { PlatformEmailLayout } from './_layout';
+import {
+  EmailActionButton,
+  EmailDisplayHeading,
+  EmailLead,
+  EmailParagraph,
+  EmailSteps,
+} from '../components';
 
 export interface WelcomeMerchantEmailProps {
   /** Owner's first name (falls back to "there"). */
@@ -26,20 +31,50 @@ export function WelcomeMerchantEmail({
   outro,
 }: WelcomeMerchantEmailProps) {
   return (
-    <EmailLayout preview="Welcome to sparx">
-      <Section>
-        <EmailHeading>Welcome to sparx</EmailHeading>
-        <EmailParagraph>Hi {name ?? 'there'},</EmailParagraph>
-        {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
-        <EmailParagraph>
-          Your site is live on sparx. A short checklist is waiting in your dashboard — confirm your
-          details, add your first page, and pick a theme when the Sitebuilder module ships. You can
-          finish it now or come back anytime.
-        </EmailParagraph>
-        <EmailButton href={dashboardUrl}>Open dashboard</EmailButton>
-        {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
-      </Section>
-    </EmailLayout>
+    <PlatformEmailLayout
+      preview="Your account's ready — three quick steps and you're online."
+      footerLinks={[
+        { label: 'Help center', href: 'https://sparx.works/help' },
+        { label: 'Getting started', href: 'https://sparx.works/docs' },
+      ]}
+      footerReason="You're receiving this because you created a sparx account."
+    >
+      <EmailDisplayHeading>Welcome to sparx{name ? `, ${name}` : ''}.</EmailDisplayHeading>
+      <EmailLead>
+        Everything you need to run your business online — a website, a store, a mailing list — now
+        lives in one place.
+      </EmailLead>
+      {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
+      <EmailParagraph>
+        Your site is live on sparx. There&rsquo;s no rush, but here&rsquo;s the quickest path to
+        getting it ready — most people are up and running in about ten minutes.
+      </EmailParagraph>
+
+      <EmailSteps
+        steps={[
+          {
+            title: 'Confirm your details',
+            description: 'Name your site and set a web address. You can change both later.',
+          },
+          {
+            title: 'Add your first page',
+            description: 'Start from a ready-made template or a blank canvas — no code, ever.',
+          },
+          {
+            title: 'Turn on what you need',
+            description:
+              'A store, a blog, bookings, email. Switch on only what you use — you pay for nothing else.',
+          },
+        ]}
+      />
+
+      <EmailActionButton href={dashboardUrl}>Open your dashboard</EmailActionButton>
+
+      {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
+      <EmailParagraph flush>
+        Glad you&rsquo;re here. Reply to this email anytime — a real person reads it.
+      </EmailParagraph>
+    </PlatformEmailLayout>
   );
 }
 

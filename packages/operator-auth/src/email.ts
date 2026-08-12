@@ -26,7 +26,7 @@ function emailTenantId(): string {
 }
 
 export interface PublishOperatorEmailInput {
-  template: 'password-reset' | 'email-verification';
+  template: 'password-reset' | 'email-verification' | 'two-factor-changed';
   to: string;
   props: Record<string, unknown>;
   actorId: string | null;

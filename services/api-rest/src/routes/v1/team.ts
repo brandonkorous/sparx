@@ -700,6 +700,29 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
       return active.get(current.userId) ?? null;
     });
 
+    // Tell the affected member their role changed (only on a real role change — not
+    // a module/site-access edit). Self-role-changes are blocked above, so this always
+    // notifies someone other than the actor.
+    if (nextRole !== current.role && current.user.email) {
+      const orgName = await withRequestTenant(request, async (tx) => {
+        const t = await tx.tenant.findUnique({
+          where: { id: auth.tenantId },
+          select: { name: true },
+        });
+        return t?.name ?? 'your team';
+      });
+      await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
+        to: current.user.email,
+        template: 'team-role-changed',
+        props: {
+          memberName: current.user.name ?? undefined,
+          orgName,
+          newRole: nextRole,
+          dashboardUrl: appOrigin(),
+        },
+      });
+    }
+
     return ok(
       serializeMember(
         {
@@ -726,7 +749,7 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
 
     const current = await authPrisma.member.findFirst({
       where: { id, organizationId: auth.tenantId },
-      include: { user: { select: { email: true } } },
+      include: { user: { select: { email: true, name: true } } },
     });
     if (!current) throw notFound('Member', id);
 
@@ -758,6 +781,22 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
         },
       })
     );
+
+    // Tell the removed person their access changed — access changes are never silent.
+    if (current.user.email) {
+      const orgName = await withRequestTenant(request, async (tx) => {
+        const t = await tx.tenant.findUnique({
+          where: { id: auth.tenantId },
+          select: { name: true },
+        });
+        return t?.name ?? 'your team';
+      });
+      await publish(request.log, 'email.send', auth.tenantId, auth.actorId, {
+        to: current.user.email,
+        template: 'team-member-removed',
+        props: { memberName: current.user.name ?? undefined, orgName },
+      });
+    }
 
     return ok({ id });
   });

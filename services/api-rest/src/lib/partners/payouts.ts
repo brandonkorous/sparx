@@ -11,9 +11,10 @@
 
 import { getPlatformStripe } from '@sparx/payments';
 import { withSystem, withTenant } from '@sparx/db';
+import { appOrigin } from '@sparx/links/server';
 import { PaymentsUnconfiguredError } from '../payments-onboarding.js';
 
-import { publishPartnerEvent } from './events.js';
+import { formatPartnerMoney, publishPartnerEmail, publishPartnerEvent } from './events.js';
 
 /** Ensure the partner has a Stripe Express connected account for payouts, creating
  *  one on first use + persisting its id on the partner row. Idempotent. */
@@ -146,6 +147,25 @@ export async function runPayouts(now: Date): Promise<PayoutRunSummary> {
         amountCents: totalCents,
         transferId: transfer.id,
       });
+      // Tell the partner their payout is on the way (contact = Tenant.email).
+      const payoutContact = await withSystem((tx) =>
+        tx.tenant.findUnique({
+          where: { id: partner.tenantId },
+          select: { email: true, name: true },
+        })
+      );
+      if (payoutContact?.email) {
+        await publishPartnerEmail(partner.tenantId, null, {
+          to: payoutContact.email,
+          template: 'partner-earnings',
+          props: {
+            kind: 'payout',
+            partnerName: payoutContact.name ?? undefined,
+            amountLabel: formatPartnerMoney(totalCents, currency),
+            dashboardUrl: appOrigin(),
+          },
+        });
+      }
       summary.partnersPaid += 1;
       summary.totalCents += totalCents;
     } catch (err) {
