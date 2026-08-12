@@ -31,7 +31,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Ban, Undo2 } from 'lucide-react';
+import { ExternalLink, Ban, Route, Undo2 } from 'lucide-react';
+import { useGeneratePickList, pickErrorMessage } from '../inventory/picking-data';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
@@ -187,6 +188,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const refunds = useOrderRefunds(id);
   const cancel = useCancelOrder(id);
   const refund = useRefundOrder(id);
+  const generateWalk = useGeneratePickList();
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
   // the tab on every refetch — including the one that follows a cancellation,
@@ -245,6 +247,13 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // exists to hand back an error is worse than no button.
   const cancellable =
     order.status !== 'cancelled' && order.status !== 'delivered' && order.status !== 'refunded';
+
+  // Whether the warehouse has anything left to fetch. Same test the pick-list
+  // generator applies server-side, so the button and the endpoint agree about
+  // when there is work — a button that exists only to hand back "nothing to
+  // pick" is worse than no button.
+  const stillToFulfil =
+    cancellable && items.some((item) => item.quantity - item.quantityFulfilled > 0);
 
   // What is still refundable: money actually taken, less anything already given
   // back. Rounded to cents so floating-point noise can't offer a $0.0000001 refund.
@@ -345,6 +354,48 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         )}
         <div className="flex-1" />
+
+        {/* Send it to the warehouse (docs/146 Phase 4). Only while there is
+            something left to send: an order already fulfilled has nothing to
+            fetch, and offering the button anyway produces a walk that generates
+            zero lines and an error nobody expected.
+            Wears the INVENTORY hue on a commerce pane, deliberately — it is a
+            warehouse action surfacing here, and colour follows functionality
+            rather than the page it happens to be on. */}
+        {stillToFulfil ? (
+          <Button
+            size="sm"
+            color="module-inventory"
+            variant="outline"
+            disabled={generateWalk.isPending}
+            onClick={() => {
+              void (async () => {
+                try {
+                  const walk = await generateWalk.mutateAsync({ orderIds: [order.id] });
+                  toast.add({
+                    title: `Walk ${walk.number} ready`,
+                    description: `${String(walk.lineCount)} to fetch at ${walk.warehouseName}.`,
+                    type: 'success',
+                  });
+                  ctx.open('inventory.picking.detail', { id: walk.id }, { target: 'beside' });
+                } catch (error) {
+                  toast.add({
+                    title: 'Could not create a walk',
+                    description: pickErrorMessage(
+                      error,
+                      'Nothing was changed. Check the order still has something to send.'
+                    ),
+                    type: 'error',
+                  });
+                }
+              })();
+            }}
+          >
+            <Route className="size-4" aria-hidden />
+            Send to the warehouse
+          </Button>
+        ) : null}
+
         <Text className="text-sm tabular-nums">{formatMoney(order.total, currency)}</Text>
       </PaneToolbar>
 

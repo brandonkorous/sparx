@@ -361,7 +361,11 @@ function MediaPickerDialog({
           if (!next) onCancel();
         }}
       >
-        <DialogContent className="flex max-h-[calc(100%-2rem)] w-full max-w-2xl flex-col gap-3">
+        {/* `@container` is load-bearing: a PaneScope'd dialog portals to the
+            pane HOST, which sits outside the `@container` on PANE_SHELL, so the
+            grid's `@md:`/`@2xl:` steps below matched nothing and the picker
+            showed three columns at every width. */}
+        <DialogContent className="@container flex max-h-[calc(100%-2rem)] w-full max-w-2xl flex-col gap-3">
           <div className="flex flex-col gap-1">
             <DialogTitle>{multiple ? 'Choose pictures' : 'Choose a picture'}</DialogTitle>
             <DialogDescription>

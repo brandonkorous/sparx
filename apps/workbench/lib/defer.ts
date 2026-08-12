@@ -30,6 +30,22 @@ export function afterPaneChange(run: () => void): void {
   setTimeout(run, 0);
 }
 
+/**
+ * Announce AFTER a mutation's own commit.
+ *
+ * The third trigger for the same root cause, and the easiest to walk into: a
+ * React Query `onSuccess` runs while React is already rendering the commit that
+ * the cache update provoked. Calling `setState` and then `toast.add` in that
+ * callback puts Base UI's measuring flushSync inside that commit, and React
+ * rejects it — reordering the two does not help, because the whole callback is
+ * inside the commit.
+ *
+ * Seed your form state first, then hand the toast to this.
+ */
+export function afterCommit(run: () => void): void {
+  setTimeout(run, 0);
+}
+
 /** Promise flavour, for `await deferTick()` before an async confirm. */
 export function deferTick(): Promise<void> {
   return new Promise((resolve) => {

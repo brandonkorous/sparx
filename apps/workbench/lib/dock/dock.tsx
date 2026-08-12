@@ -182,6 +182,13 @@ export function Dock({ siteKey }: { siteKey: string }) {
       // loads /popout into the new window and portals the group across.
       popoutUrl="/popout"
       disableFloatingGroups={false}
+      // dockview's own overflow dropdown is off because it cannot be made good
+      // from out here: it builds each row by re-rendering the TAB component, and
+      // it sizes the popup on the animation frame before React has filled it, so
+      // a long list renders past both ends of the screen with nothing to scroll.
+      // The replacement is a real menu in the group header — lib/dock/tab-list-menu.tsx.
+      // Turning this off changes nothing else: the strip still scrolls.
+      disableTabsOverflowList
     />
   );
 }

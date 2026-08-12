@@ -120,7 +120,10 @@ export function LineEditorModal({
             scrolls, so the footer stays reachable (DialogFooter is static, not
             sticky). max-h is a percentage of the PANE, since a viewport-based
             cap would overflow the box the dialog is confined to. */}
-        <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-xl flex-col overflow-hidden">
+        {/* `@container` is load-bearing: a PaneScope'd dialog portals to the
+            pane HOST, which sits outside the `@container` on PANE_SHELL, so the
+            two-column form below matched nothing and every field stacked. */}
+        <DialogContent className="@container flex max-h-[calc(100%-2rem)] max-w-xl flex-col overflow-hidden">
           <DialogTitle>{isEdit ? 'Edit line' : 'Add a line'}</DialogTitle>
 
           {/* px-1 keeps the focus ring clear of the scroll edge (overflow-y

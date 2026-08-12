@@ -34,7 +34,7 @@ import {
 } from '../lib/surfaces/registry';
 import { routeAcceptsId, routeForEntity } from '@sparx/links';
 import {
-  moduleIsVisible,
+  surfaceIsVisible,
   useKnownModules,
   useReachableModules,
 } from '../lib/surfaces/use-visible-nav';
@@ -115,7 +115,7 @@ export function Launcher({
   //    surface that would 404. ──────────────────────────────────────────────
   const navEntries = useMemo<Entry[]>(() => {
     const favoriteKeys = new Set((favorites ?? []).map((f) => f.actionId));
-    const surfaces = listedSurfaces().filter((s) => moduleIsVisible(s.module, reachable, known));
+    const surfaces = listedSurfaces().filter((s) => surfaceIsVisible(s, reachable, known));
 
     const toEntry = (s: ReturnType<typeof listedSurfaces>[number]): Entry => ({
       id: s.key,
@@ -156,7 +156,7 @@ export function Launcher({
       const route = routeForEntity(hit.entityType);
       if (!route) continue;
       const surface = getSurface(route.surface);
-      if (!surface || !moduleIsVisible(surface.module, reachable, known)) continue;
+      if (!surface || !surfaceIsVisible(surface, reachable, known)) continue;
       // A handful of entity types have no detail surface — a review is worked in
       // a queue, a page is authored in the builder — so their home is a LIST and
       // it takes no id. That falls out of whether the address has a parameter,

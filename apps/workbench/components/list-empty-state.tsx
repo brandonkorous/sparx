@@ -4,24 +4,26 @@
 // that governs it lives.
 //
 // A list can be empty for two different reasons, and they must never share a
-// message: a search or filter that matched nothing is a NO-RESULTS state (keep
-// the plain lucide glyph — a cheerful mascot over a fruitless search reads
-// tone-deaf, and inviting someone to "add your first" when they have four
-// hundred and mistyped a name is the worse mistake), while a genuinely empty
-// list is FIRST-RUN — the WelcomeEmptyState mascot, welcoming the first one.
+// message: a search or filter that matched nothing is a NO-RESULTS state (the
+// query is why it's empty, so inviting someone to "add your first" when they
+// have four hundred and mistyped a name is the worse mistake), while a
+// genuinely empty list is FIRST-RUN — an invitation to make the first one.
 //
-// Callers describe BOTH states and pass the one boolean that distinguishes them;
-// this component owns the choice. That is the whole point: "when does the mascot
-// appear" is decided here, once, not re-decided (and potentially mis-decided) at
-// every list in the app. Error and loading are separate branches the caller
-// still owns — this is only the no-rows node.
+// Callers describe BOTH states and pass the one boolean that distinguishes
+// them; this component owns the choice. That is the whole point: "which message
+// does an empty list show" is decided here, once, not re-decided (and
+// potentially mis-decided) at every list in the app. Error and loading are
+// separate branches the caller still owns — this is only the no-rows node.
 //
-// Layers: silica <EmptyState> (primitive) → <WelcomeEmptyState> (the mascot
-// primitive, for non-list first-runs too) → this (the list decision wrapper).
+// Both branches render silica's <EmptyState> with the list's own glyph. The
+// mascot used to sit on the first-run branch and no longer appears in ANY empty
+// state: an empty list is a state to resolve, not a moment to be greeted, and a
+// character stamped across every void is exactly what stops it reading as a
+// character. Sparky's home is the brand chrome — the auth pane he roams behind
+// and the marketing footer he leans over.
 
 import type { ReactNode } from 'react';
 import { EmptyState } from '@wizeworks/silicaui-react';
-import { WelcomeEmptyState } from './welcome-empty-state';
 
 interface NoResultsState {
   /** The list's own glyph, reused — so the no-results state still looks like this list. */
@@ -33,6 +35,9 @@ interface NoResultsState {
 }
 
 interface FirstRunState {
+  /** Defaults to the no-results glyph, so a list names itself in both states
+   *  without every caller passing the same icon twice. */
+  icon?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   /** The create action — a <Button color="module"> that makes the first one. */
@@ -62,7 +67,8 @@ export function ListEmptyState({
   }
 
   return (
-    <WelcomeEmptyState
+    <EmptyState
+      icon={firstRun.icon ?? noResults.icon}
       title={firstRun.title}
       description={firstRun.description}
       actions={firstRun.actions}

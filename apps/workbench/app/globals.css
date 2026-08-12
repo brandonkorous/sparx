@@ -265,6 +265,65 @@ h6 {
   color: var(--color-base-content);
 }
 
+/* An uncoloured form control follows the MODULE, not the brand.
+ *
+ * Every silica field resolves its focus ring as
+ * `var(--<family>-accent, var(--color-primary))`, and in sparx `--color-primary`
+ * is Ember #e04631 — the wordmark's red-orange. So a control with no `color`
+ * prop focuses in what reads, at a glance, as the danger colour: the field says
+ * "you got that wrong" about content that is perfectly fine. A scan of the CRM
+ * surfaces alone found 52 of 207 controls in that state across 15 files, and the
+ * per-field fix is a prop nobody can be relied on to remember on the 53rd.
+ *
+ * So the DEFAULT is repointed once, here, for every data-entry family inside a
+ * module pane. An explicit `color=` still wins and nothing at a call site
+ * changes meaning: `.input-error` writes the same variable ON the element, and
+ * an element declaration beats an inherited one.
+ *
+ * THE `-border` COMPANIONS ARE LOAD-BEARING, not noise. A resting border reads
+ * `var(--X-border, var(--X-accent, var(--color-base-300)))` — it falls THROUGH
+ * to the accent — so repointing the accent alone would outline every text box in
+ * the app in the module hue at rest. Pinning the border back to base-300
+ * reproduces today's resting appearance exactly, keeps the chassis neutral
+ * (DESIGN.md), and confines the module hue to focus, which is the one moment it
+ * carries information. Families with no border chain need only the accent.
+ *
+ * Scoped to `[data-module]` — the attribute <ModuleScope> renders, mapped to a
+ * hue in @sparx/brand/theme.css — so it reaches every pane and nothing outside
+ * one. Deliberately NOT applied to chrome: `--btn-accent`, `--tabs-accent`,
+ * `--sidebar-accent`, `--dock-accent`, `--pagination-accent`, `--avatar-accent`,
+ * `--dt-accent` and `--wordmark-accent` keep the brand primary. The wordmark
+ * above all — its "x" IS Ember, and that is the mark, not a default. */
+[data-module] {
+  --input-accent: var(--color-module);
+  --input-border: var(--color-base-300);
+  --textarea-accent: var(--color-module);
+  --textarea-border: var(--color-base-300);
+  --select-accent: var(--color-module);
+  --select-border: var(--color-base-300);
+  --multi-select-accent: var(--color-module);
+  --multi-select-border: var(--color-base-300);
+  --checkbox-accent: var(--color-module);
+  --checkbox-border: var(--color-base-300);
+  --radio-accent: var(--color-module);
+  --radio-border: var(--color-base-300);
+  --pin-input-accent: var(--color-module);
+  --pin-input-border: var(--color-base-300);
+  --segment-field-accent: var(--color-module);
+  --segment-field-border: var(--color-base-300);
+  --tag-accent: var(--color-module);
+  --tag-border: var(--color-base-300);
+
+  /* No border chain — the accent is the checked fill or the track, and its
+     resting state has its own token. */
+  --switch-accent: var(--color-module);
+  --toggle-accent: var(--color-module);
+  --range-accent: var(--color-module);
+  --slider-accent: var(--color-module);
+  --calendar-accent: var(--color-module);
+  --filter-accent: var(--color-module);
+}
+
 /* A dropdown opened INSIDE a dialog has to render above it.
  *
  * silicaui 0.28 added a layering scale (--z-drawer 40 / --z-dialog 50 /

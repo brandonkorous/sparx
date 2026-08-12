@@ -98,7 +98,29 @@ export function HomeSurface({ ctx }: { ctx: SurfaceContext }) {
           ))}
         </div>
 
-        <div className="border-base-300 mt-10 flex flex-wrap items-center gap-3 border-t pt-6">
+        {/* Coming from somewhere else is the single most common thing a brand new
+            account is about to do, and the moment to say so is before they start
+            typing their catalogue in by hand. It sits above the keyboard hint
+            because it is a decision, not a shortcut. */}
+        <div className="border-base-300 mt-10 flex flex-col gap-2 rounded-xl border border-dashed p-4">
+          <p className="font-medium">Already selling somewhere else?</p>
+          <Text className="text-sm">
+            Bring your products, customers, stock and writing across from Shopify, Squarespace, Wix,
+            WordPress, HubSpot and a dozen others. Export the file they already make for you, drop
+            it in, and see exactly what will happen before anything is saved.
+          </Text>
+          <Button
+            variant="outline"
+            className="self-start"
+            onClick={() => {
+              ctx.open('platform.migrate');
+            }}
+          >
+            Move my business over
+          </Button>
+        </div>
+
+        <div className="border-base-300 mt-6 flex flex-wrap items-center gap-3 border-t pt-6">
           <Button
             color="module"
             onClick={() => {

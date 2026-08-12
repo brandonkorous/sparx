@@ -71,11 +71,26 @@ function readFeedbackDraft(): FeedbackDraft | null {
   return readDraft(DRAFT_KEY) as FeedbackDraft | null;
 }
 
+/**
+ * Words already written for them.
+ *
+ * Set when the composer is opened from a failure rather than from the toolbar: the
+ * screen knows exactly what went wrong, and the operator almost certainly cannot
+ * describe it — "it said something about scopes" is what a real person remembers of
+ * an API error. Prefilling turns a report nobody can write into one they only have to
+ * add a sentence to, and every word of it stays editable.
+ */
+export interface FeedbackPrefill {
+  subject?: string;
+  body?: string;
+}
+
 export interface FeedbackComposeProps {
   source: FeedbackSource;
   initialCategory: FeedbackCategory;
   /** Carried from the sentiment chip so a rating and its explanation are one record. */
   sentiment?: number;
+  prefill?: FeedbackPrefill;
   buildContext: () => FeedbackContextPayload;
   onSubmitted: () => void;
   onCancel: () => void;
@@ -85,6 +100,7 @@ export function FeedbackCompose({
   source,
   initialCategory,
   sentiment,
+  prefill,
   buildContext,
   onSubmitted,
   onCancel,
@@ -93,10 +109,16 @@ export function FeedbackCompose({
 
   // A restored draft wins over the defaults — including its original context,
   // which is the whole point of keeping the two together.
+  //
+  // It wins over a PREFILL too, and that ordering is deliberate: a half-written
+  // message is somebody's own words, and overwriting them with a machine-generated
+  // description of an error is a worse failure than showing a slightly stale report.
+  // "Start over" below is the escape hatch, and it restores the prefill rather than
+  // clearing to nothing.
   const [restored] = useState(() => readFeedbackDraft());
   const [category, setCategory] = useState<FeedbackCategory>(restored?.category ?? initialCategory);
-  const [subject, setSubject] = useState(restored?.subject ?? '');
-  const [body, setBody] = useState(restored?.body ?? '');
+  const [subject, setSubject] = useState(restored?.subject ?? prefill?.subject ?? '');
+  const [body, setBody] = useState(restored?.body ?? prefill?.body ?? '');
   const [context, setContext] = useState<FeedbackContextPayload>(
     () => restored?.context ?? buildContext()
   );
@@ -116,8 +138,8 @@ export function FeedbackCompose({
   const startOver = () => {
     clearDraft(DRAFT_KEY);
     setCategory(initialCategory);
-    setSubject('');
-    setBody('');
+    setSubject(prefill?.subject ?? '');
+    setBody(prefill?.body ?? '');
     setContext(buildContext());
   };
 

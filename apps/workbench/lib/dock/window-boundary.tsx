@@ -160,7 +160,7 @@ export function ChromeWindowBoundary({ api, children }: PaneWindowBoundaryProps)
   const container = useOwnerWindowBody(host, api);
 
   return (
-    <div ref={host} className="flex h-full items-center pr-1">
+    <div ref={host} className="flex h-full items-center gap-0.5 pr-1">
       <PortalContainerProvider container={container}>{children}</PortalContainerProvider>
     </div>
   );

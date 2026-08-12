@@ -18,7 +18,6 @@ import { Button, Card, EmptyState, SearchInput, Table, useToast } from '@wizewor
 import { Plus, Puzzle, Sparkles } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { FitmentDictionaryPicker } from './fitment-dictionary-picker';
@@ -147,7 +146,8 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
             description="Try part of the list's name or one of its levels — or clear the search to see them all."
           />
         ) : domains.length === 0 ? (
-          <WelcomeEmptyState
+          <EmptyState
+            icon={<Puzzle className="size-6" aria-hidden />}
             title="No compatibility lists yet"
             description="A compatibility list lets shoppers filter to just the products that fit what they own — a vehicle, a phone, a machine. Start from a ready-made list, or build your own."
             actions={

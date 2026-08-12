@@ -42,7 +42,6 @@ import { Bot, Plus, Sparkles } from 'lucide-react';
 import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   aiErrorMessage,
@@ -285,7 +284,8 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </p>
           ) : prompts.length === 0 ? (
             <Card>
-              <WelcomeEmptyState
+              <EmptyState
+                icon={<Bot className="size-6" aria-hidden />}
                 title="No instructions yet"
                 description={
                   canInstall

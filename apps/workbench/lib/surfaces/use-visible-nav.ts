@@ -71,6 +71,37 @@ export function moduleIsVisible(
   return reachable.has(module);
 }
 
+/**
+ * Whether a single SURFACE should be offered.
+ *
+ * Most surfaces answer this with their module — a Commerce surface needs
+ * Commerce — and for those this is exactly `moduleIsVisible`. A surface that
+ * declares `requiresModules` is saying its hue and its entitlement are different
+ * questions, and ANY listed module satisfies it.
+ *
+ * The Finance group is why this exists: Payments and Payouts are a free view of
+ * data that came with commerce/invoicing/b2b, the spend surfaces are the billable
+ * `finance` module, and the sparx bill must never be hidden at all — three
+ * different answers inside one coloured group.
+ *
+ * Shared with the launcher deliberately. The rail and the command palette
+ * disagreeing about what exists is a bug this file already exists to prevent
+ * once; a second gate written twice would reintroduce it.
+ */
+export function surfaceIsVisible(
+  surface: Pick<SurfaceDefinition, 'module' | 'requiresModules'>,
+  reachable: Set<string> | null,
+  known: Set<string>
+): boolean {
+  const required = surface.requiresModules;
+  if (!required) return moduleIsVisible(surface.module, reachable, known);
+  // Declared-but-empty is "always show", and it has to short-circuit before the
+  // `.some()` below, which is false for an empty list.
+  if (required.length === 0) return true;
+  if (!reachable) return true;
+  return required.some((slug) => moduleIsVisible(slug, reachable, known));
+}
+
 /** Slugs the server told us about at all — distinct from the ones it approved. */
 export function useKnownModules(): Set<string> {
   const { data: moduleStates } = useModuleStates();
@@ -126,7 +157,6 @@ export function useVisibleNav(): NavModule[] {
   return useMemo(
     () =>
       nav
-        .filter((entry) => moduleIsVisible(entry.module, reachable, known))
         .map((entry) => {
           if (entry.module !== 'crm' || recordTypeRows.length === 0) return entry;
           return {
@@ -134,7 +164,31 @@ export function useVisibleNav(): NavModule[] {
             sections: [...entry.sections, { title: 'Your records', surfaces: recordTypeRows }],
             count: entry.count + recordTypeRows.length,
           };
-        }),
+        })
+        // Gate per SURFACE, not per module. A module group whose surfaces answer
+        // the entitlement question differently (Finance) keeps the ones this
+        // account can use and drops the rest, instead of the group being all-or-
+        // nothing. `count` is recomputed from what survived — a badge counting
+        // rows nobody can see is worse than no badge.
+        .map((entry) => {
+          const sections = entry.sections
+            .map((section) => ({
+              ...section,
+              surfaces: section.surfaces.filter((surface) =>
+                surfaceIsVisible(surface, reachable, known)
+              ),
+            }))
+            .filter((section) => section.surfaces.length > 0);
+          return {
+            ...entry,
+            sections,
+            count: sections.reduce((total, section) => total + section.surfaces.length, 0),
+          };
+        })
+        // A module with nothing left to show is not a module this account has.
+        // This subsumes the old whole-module filter: every surface in a gated
+        // module fails its own gate, so the group empties and disappears.
+        .filter((entry) => entry.count > 0),
     [nav, reachable, known, recordTypeRows]
   );
 }

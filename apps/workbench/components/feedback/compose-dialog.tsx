@@ -51,6 +51,7 @@ export function FeedbackComposeDialog({
           source={state.source}
           initialCategory={state.category}
           sentiment={state.sentiment}
+          prefill={state.prefill}
           buildContext={buildContext}
           onSubmitted={onClose}
           onCancel={onClose}

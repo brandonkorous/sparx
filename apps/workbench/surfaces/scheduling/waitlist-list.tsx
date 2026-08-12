@@ -619,7 +619,10 @@ function AddToWaitlistModal({
           if (!next) onClose();
         }}
       >
-        <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
+        {/* `@container` is load-bearing: a PaneScope'd dialog portals to the
+            pane HOST, which sits outside the `@container` on PANE_SHELL, so the
+            two-column form below matched nothing and every field stacked. */}
+        <DialogContent className="@container flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
           <DialogTitle>Add someone to the waiting list</DialogTitle>
 
           <form

@@ -20,6 +20,7 @@ import {
   Badge,
   Button,
   Card,
+  EmptyState,
   Field,
   FieldControl,
   FieldDescription,
@@ -31,14 +32,13 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Plus, Trash2 } from 'lucide-react';
+import { MessageSquareText, Plus, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
-import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   chatErrorMessage,
@@ -336,7 +336,8 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
                 Loading…
               </p>
             ) : replies.length === 0 ? (
-              <WelcomeEmptyState
+              <EmptyState
+                icon={<MessageSquareText className="size-6" aria-hidden />}
                 title="No quick replies yet"
                 description="Add your first one above — the answers you send most often are the ones worth saving."
               />

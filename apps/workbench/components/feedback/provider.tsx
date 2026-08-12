@@ -33,12 +33,16 @@ import { descriptorKey } from '../../lib/surfaces/descriptor';
 import { useWorkbench } from '../../lib/workbench/context';
 import { buildFeedbackContext } from './context';
 import { FeedbackComposeDialog } from './compose-dialog';
+import type { FeedbackPrefill } from './compose';
 
 export interface OpenSendOptions {
   source?: FeedbackSource;
   category?: FeedbackCategory;
   /** Carried from the sentiment chip so a rating and its explanation are one record. */
   sentiment?: number;
+  /** Words already written, for a composer opened from a failure rather than the
+   *  toolbar. See FeedbackPrefill in ./compose for why this exists. */
+  prefill?: FeedbackPrefill;
 }
 
 export interface ComposeState {
@@ -46,6 +50,7 @@ export interface ComposeState {
   source: FeedbackSource;
   category: FeedbackCategory;
   sentiment?: number;
+  prefill?: FeedbackPrefill;
 }
 
 const CLOSED: ComposeState = { open: false, source: 'button', category: 'idea' };
@@ -120,6 +125,7 @@ export function FeedbackProvider({
           source: options?.source ?? 'button',
           category: options?.category ?? 'idea',
           sentiment: options?.sentiment,
+          prefill: options?.prefill,
         });
       },
       openList: (options) => {

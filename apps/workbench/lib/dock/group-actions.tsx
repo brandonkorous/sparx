@@ -1,20 +1,25 @@
 'use client';
 
-// The tear-off affordance, rendered at the right end of every group's tab strip.
+// The right end of every group's tab strip: what's open here, and tear-off.
 //
-// A browser cannot detect a tab dragged outside its own window, so "tear this
-// off" has to be an explicit control rather than a drag gesture — dockview's
-// popoutUrl only says where a detached group loads, not how one gets detached.
-// One button per group: in the main window it moves the group into its own
-// window; inside a popout window the same slot offers the way back. Closing a
-// popout window also returns its group — the button is the discoverable path,
-// not the only one.
+// Two controls, in the order you need them. The tab list answers "where is the
+// thing I opened" once the strip has more tabs than it can show — see
+// ./tab-list-menu.tsx, which replaces dockview's own unusable overflow dropdown.
+//
+// Tear-off is second. A browser cannot detect a tab dragged outside its own
+// window, so "tear this off" has to be an explicit control rather than a drag
+// gesture — dockview's popoutUrl only says where a detached group loads, not how
+// one gets detached. One button per group: in the main window it moves the group
+// into its own window; inside a popout window the same slot offers the way back.
+// Closing a popout window also returns its group — the button is the
+// discoverable path, not the only one.
 
 import { useEffect, useState } from 'react';
 import type { IDockviewHeaderActionsProps } from 'dockview';
 import { Button, Tooltip } from '@wizeworks/silicaui-react';
 import { AppWindow, PanelsTopLeft } from 'lucide-react';
 import { ChromeWindowBoundary } from './window-boundary';
+import { TabListMenu } from './tab-list-menu';
 
 export function GroupActions(props: IDockviewHeaderActionsProps) {
   // Location is live state, not a render-time constant: the SAME group instance
@@ -32,9 +37,11 @@ export function GroupActions(props: IDockviewHeaderActionsProps) {
   const detached = location === 'popout';
 
   return (
-    // The boundary keeps this button's tooltip in the group's own window once
-    // the group is torn off — same fix the panes get, chrome-sized.
+    // The boundary keeps these buttons' tooltips and menus in the group's own
+    // window once the group is torn off — same fix the panes get, chrome-sized.
     <ChromeWindowBoundary api={props.api}>
+      <TabListMenu panels={props.panels} activePanel={props.activePanel} />
+
       <Tooltip
         content={
           detached
